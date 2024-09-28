@@ -1,7 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() {
+  setupFirebase();
   runApp(const MyApp());
+}
+
+Future<void> setupFirebase() async {
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    throw Exception('Firebaseの初期化に失敗しました');
+  }
 }
 
 class MyApp extends StatelessWidget {
