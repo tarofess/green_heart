@@ -44,6 +44,7 @@ dependencies:
   path_provider:
   path:
   permission_handler:
+  flutter_screenutil:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -87,6 +88,14 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
+  fonts:
+    - family: MPLUSRounded1c-Regular
+      fonts:
+        - asset: assets/fonts/MPLUSRounded1c-Regular.ttf
+    - family: MPLUSRounded1c-Medium
+      fonts:
+        - asset: assets/fonts/MPLUSRounded1c-Medium.ttf
+  
   # fonts:
   #   - family: Schyler
   #     fonts:
