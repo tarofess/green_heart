@@ -40,6 +40,9 @@ dependencies:
   firebase_core:
   firebase_crashlytics:
   firebase_database:
+  firebase_auth:
+  google_sign_in:
+  flutter_signin_button:
   image_picker:
   path_provider:
   path:
