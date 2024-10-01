@@ -36,10 +36,23 @@ class AccountRegistrationPage extends ConsumerWidget {
               },
             ),
             SignInButton(
-              Buttons.Email,
-              text: "Emailでログイン",
-              onPressed: () {},
-            )
+              Buttons.Apple,
+              text: "Appleでログイン",
+              onPressed: () async {
+                User? user =
+                    await _authService.signInWithApple(context: context);
+                if (user != null) {
+                  _navigationService.pushReplacement(context, HomePage());
+                }
+              },
+            ),
+            SignInButton(
+              Buttons.Facebook,
+              text: "Facebookでログイン",
+              onPressed: () async {
+                // User? user = await _authService.signUpWithEmail(email, password);
+              },
+            ),
           ],
         ),
       ),
