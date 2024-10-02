@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:green_heart/application/state/initialize_app_provider.dart';
 import 'package:green_heart/infrastructure/service/firebase_auth_service.dart';
 import 'package:green_heart/infrastructure/get_it.dart';
-import 'package:green_heart/presentation/page/account_registration_page.dart';
+import 'package:green_heart/presentation/page/login_page.dart';
 import 'package:green_heart/presentation/page/home_page.dart';
 import 'package:green_heart/presentation/theme/default_theme.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
@@ -27,7 +27,6 @@ class MyApp extends ConsumerWidget {
         splitScreenMode: true,
         builder: (context, child) {
           final initializeApp = ref.watch(initializeAppProvider);
-
           return initializeApp.when(
             data: (_) {
               final FirebaseAuthService authService =
@@ -38,7 +37,7 @@ class MyApp extends ConsumerWidget {
                   if (snapshot.hasData) {
                     return HomePage();
                   } else {
-                    return AccountRegistrationPage();
+                    return LoginPage();
                   }
                 },
               );
