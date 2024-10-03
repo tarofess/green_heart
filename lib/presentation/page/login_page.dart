@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
 import 'package:green_heart/application/state/auth_provider.dart';
+import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class LoginPage extends ConsumerWidget {
@@ -24,7 +25,13 @@ class LoginPage extends ConsumerWidget {
                 try {
                   await ref.read(googleSignInUseCaseProvider).execute();
                 } catch (e) {
-                  print(e.toString());
+                  if (context.mounted) {
+                    showErrorDialog(
+                      context: context,
+                      title: 'ログインエラー',
+                      content: e.toString(),
+                    );
+                  }
                 }
               },
             ),
@@ -35,7 +42,13 @@ class LoginPage extends ConsumerWidget {
                 try {
                   await ref.read(appleSignInUseCaseProvider).execute();
                 } catch (e) {
-                  print(e.toString());
+                  if (context.mounted) {
+                    showErrorDialog(
+                      context: context,
+                      title: 'ログインエラー',
+                      content: e.toString(),
+                    );
+                  }
                 }
               },
             ),
