@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class InitializationFailurePage extends StatelessWidget {
+class ErrorPage extends StatelessWidget {
   final Object? error;
   final VoidCallback retry;
 
-  const InitializationFailurePage({super.key, this.error, required this.retry});
+  const ErrorPage({super.key, this.error, required this.retry});
 
   @override
   Widget build(BuildContext context) {

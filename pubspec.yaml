@@ -36,6 +36,7 @@ dependencies:
   freezed_annotation:
   json_serializable:
   shared_preferences:
+  go_router:
   firebase_core:
   firebase_crashlytics:
   firebase_database:
