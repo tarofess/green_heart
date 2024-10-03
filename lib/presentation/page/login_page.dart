@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
-import 'package:green_heart/infrastructure/get_it.dart';
-import 'package:green_heart/infrastructure/service/firebase_auth_service.dart';
+import 'package:green_heart/application/state/auth_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class LoginPage extends ConsumerWidget {
-  final FirebaseAuthService _authService = getIt<FirebaseAuthService>();
-
-  LoginPage({super.key});
+  const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,14 +21,22 @@ class LoginPage extends ConsumerWidget {
               Buttons.Google,
               text: "Googleでログイン",
               onPressed: () async {
-                await _authService.signInWithGoogle(context: context);
+                try {
+                  await ref.read(googleSignInUseCaseProvider).execute();
+                } catch (e) {
+                  print(e.toString());
+                }
               },
             ),
             SignInButton(
               Buttons.Apple,
               text: "Appleでログイン",
               onPressed: () async {
-                await _authService.signInWithApple(context: context);
+                try {
+                  await ref.read(appleSignInUseCaseProvider).execute();
+                } catch (e) {
+                  print(e.toString());
+                }
               },
             ),
           ],

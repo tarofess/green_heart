@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:green_heart/application/state/auth_provider.dart';
 import 'package:green_heart/application/state/initialize_app_provider.dart';
-import 'package:green_heart/infrastructure/service/firebase_auth_service.dart';
-import 'package:green_heart/infrastructure/get_it.dart';
 import 'package:green_heart/presentation/page/login_page.dart';
 import 'package:green_heart/presentation/page/home_page.dart';
 import 'package:green_heart/presentation/theme/default_theme.dart';
@@ -29,10 +28,8 @@ class MyApp extends ConsumerWidget {
           final initializeApp = ref.watch(initializeAppProvider);
           return initializeApp.when(
             data: (_) {
-              final FirebaseAuthService authService =
-                  getIt<FirebaseAuthService>();
               return StreamBuilder(
-                stream: authService.authStateChanges,
+                stream: ref.watch(authRepositoryProvider).authStateChanges,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return HomePage();
