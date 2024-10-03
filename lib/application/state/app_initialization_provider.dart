@@ -5,11 +5,9 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:green_heart/firebase_options.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:green_heart/infrastructure/get_it.dart';
 
-final initializeAppProvider = FutureProvider.autoDispose((ref) async {
+final appInitializationProvider = FutureProvider.autoDispose((ref) async {
   await setupFirebase();
-  setupGetIt();
 });
 
 Future<void> setupFirebase() async {

@@ -36,7 +36,6 @@ dependencies:
   freezed_annotation:
   json_serializable:
   shared_preferences:
-  get_it:
   firebase_core:
   firebase_crashlytics:
   firebase_database:

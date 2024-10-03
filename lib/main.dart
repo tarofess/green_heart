@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:green_heart/application/state/auth_provider.dart';
-import 'package:green_heart/application/state/initialize_app_provider.dart';
+import 'package:green_heart/application/state/app_initialization_provider.dart';
+import 'package:green_heart/presentation/page/initialization_failure_page.dart';
 import 'package:green_heart/presentation/page/login_page.dart';
 import 'package:green_heart/presentation/page/home_page.dart';
 import 'package:green_heart/presentation/theme/default_theme.dart';
@@ -25,7 +26,7 @@ class MyApp extends ConsumerWidget {
         minTextAdapt: true,
         splitScreenMode: true,
         builder: (context, child) {
-          final initializeApp = ref.watch(initializeAppProvider);
+          final initializeApp = ref.watch(appInitializationProvider);
           return initializeApp.when(
             data: (_) {
               return StreamBuilder(
@@ -43,47 +44,14 @@ class MyApp extends ConsumerWidget {
               return const Scaffold(body: LoadingIndicator());
             },
             error: (e, _) {
-              return ErrorScreen(
+              return InitializationFailurePage(
                 error: e,
-                retry: () => ref.refresh(initializeAppProvider),
+                retry: () => ref.refresh(appInitializationProvider),
               );
             },
             skipLoadingOnRefresh: false,
           );
         },
-      ),
-    );
-  }
-}
-
-class ErrorScreen extends StatelessWidget {
-  final Object? error;
-  final VoidCallback retry;
-
-  const ErrorScreen({super.key, this.error, required this.retry});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('アプリの初期化に失敗しました。\n再度お試しください。'),
-            SizedBox(height: 16.r),
-            Text(
-              '$error',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 16.r),
-            ElevatedButton(
-              onPressed: retry,
-              child: const Text('リトライ'),
-            ),
-          ],
-        ),
       ),
     );
   }
