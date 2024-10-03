@@ -44,7 +44,7 @@ dependencies:
   google_sign_in:
   sign_in_with_apple:
   crypto:
-  flutter_signin_button:
+  auth_buttons:
   image_picker:
   path_provider:
   path:
