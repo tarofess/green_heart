@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:green_heart/application/state/profile_provider.dart';
 import 'package:green_heart/domain/type/profile.dart';
+import 'package:green_heart/presentation/dialog/message_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -45,8 +46,18 @@ class ProfileEditPage extends HookConsumerWidget {
                   );
 
                   await LoadingOverlay.of(context).during(
-                    () => ref.read(profileProvider(profile)).execute(),
+                    () => ref.read(profileSaveProvider(profile)).execute(),
                   );
+
+                  if (context.mounted) {
+                    await showMessageDialog(
+                      context: context,
+                      title: '保存完了',
+                      content: 'プロフィールを保存しました。',
+                    );
+                  }
+
+                  ref.read(profileStateProvider.notifier).state = profile;
                   if (context.mounted) context.go('/home');
                 }
               } catch (e) {

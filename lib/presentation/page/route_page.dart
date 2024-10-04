@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:green_heart/application/state/app_initialization_provider.dart';
 import 'package:green_heart/application/state/auth_provider.dart';
-import 'package:green_heart/presentation/page/home_page.dart';
+import 'package:green_heart/application/state/profile_provider.dart';
 import 'package:green_heart/presentation/page/error_page.dart';
-import 'package:green_heart/presentation/page/signin_page.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -22,11 +22,20 @@ class RoutePage extends ConsumerWidget {
             return StreamBuilder(
               stream: ref.watch(authRepositoryProvider).authStateChanges,
               builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return const HomePage();
-                } else {
-                  return const SignInPage();
-                }
+                WidgetsBinding.instance.addPostFrameCallback((_) async {
+                  if (snapshot.hasData) {
+                    final profile = await ref
+                        .read(profileGetProvider)
+                        .execute(snapshot.data!.uid);
+                    if (profile != null) {
+                      ref.read(profileStateProvider.notifier).state = profile;
+                      if (context.mounted) context.go('/home');
+                    }
+                  } else {
+                    context.go('/signin');
+                  }
+                });
+                return const SizedBox();
               },
             );
           },
