@@ -1,12 +1,18 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:green_heart/application/state/profile_provider.dart';
+import 'package:green_heart/domain/type/profile.dart';
+import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ProfileEditPage extends HookConsumerWidget {
-  ProfileEditPage({super.key});
+  ProfileEditPage({super.key, required this.user});
 
   final formKey = GlobalKey<FormState>();
+  final User user;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -19,19 +25,53 @@ class ProfileEditPage extends HookConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('プロフィール編集'),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              try {
+                if (formKey.currentState!.validate()) {
+                  final profile = Profile(
+                    uid: user.uid,
+                    name: nameTextController.text,
+                    birthDate: DateTime(
+                      int.parse(birthYearTextController.text),
+                      int.parse(birthMonthTextController.text),
+                      int.parse(birthDayTextController.text),
+                    ),
+                    bio: bioTextController.text,
+                    imageUrl: '',
+                    createdAt: DateTime.now(),
+                    updatedAt: DateTime.now(),
+                  );
+
+                  await LoadingOverlay.of(context).during(
+                    () => ref.read(profileProvider(profile)).execute(),
+                  );
+                  if (context.mounted) context.go('/home');
+                }
+              } catch (e) {
+                print('Failed to save profile: $e');
+              }
+            },
+            child: const Text('保存'),
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            buildImageField(),
-            buildNameField(nameTextController),
-            buildBirthdayField(
-              birthYearTextController,
-              birthMonthTextController,
-              birthDayTextController,
-            ),
-            buildBioField(bioTextController),
-          ],
+      body: Form(
+        key: formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              buildImageField(),
+              buildNameField(nameTextController),
+              buildBirthdayField(
+                birthYearTextController,
+                birthMonthTextController,
+                birthDayTextController,
+              ),
+              buildBioField(bioTextController),
+            ],
+          ),
         ),
       ),
     );

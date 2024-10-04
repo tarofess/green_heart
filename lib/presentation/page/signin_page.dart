@@ -109,7 +109,9 @@ class SignInPage extends ConsumerWidget {
     User? user = await ref.read(signInUseCaseProvider).execute();
     if (user != null) {
       if (user.metadata.creationTime == user.metadata.lastSignInTime) {
-        if (context.mounted) context.go('/signin/profile_edit');
+        if (context.mounted) {
+          context.go('/signin/profile_edit', extra: {'user': user});
+        }
       } else {
         if (context.mounted) context.go('/home');
       }
