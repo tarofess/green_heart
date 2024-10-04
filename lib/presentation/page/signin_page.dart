@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:green_heart/application/state/auth_provider.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
+import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SignInPage extends ConsumerWidget {
@@ -34,8 +35,13 @@ class SignInPage extends ConsumerWidget {
                       ),
                       onPressed: () async {
                         try {
-                          await executeSignIn(
-                              context, ref, googleSignInUseCaseProvider);
+                          await LoadingOverlay.of(context).during(
+                            () => executeSignIn(
+                              context,
+                              ref,
+                              googleSignInUseCaseProvider,
+                            ),
+                          );
                         } catch (e) {
                           if (context.mounted) {
                             showErrorDialog(
@@ -67,8 +73,13 @@ class SignInPage extends ConsumerWidget {
                       ),
                       onPressed: () async {
                         try {
-                          await executeSignIn(
-                              context, ref, appleSignInUseCaseProvider);
+                          await LoadingOverlay.of(context).during(
+                            () => executeSignIn(
+                              context,
+                              ref,
+                              appleSignInUseCaseProvider,
+                            ),
+                          );
                         } catch (e) {
                           if (context.mounted) {
                             showErrorDialog(
@@ -98,7 +109,7 @@ class SignInPage extends ConsumerWidget {
     User? user = await ref.read(signInUseCaseProvider).execute();
     if (user != null) {
       if (user.metadata.creationTime == user.metadata.lastSignInTime) {
-        if (context.mounted) context.go('/signin/signup');
+        if (context.mounted) context.go('/signin/profile_edit');
       } else {
         if (context.mounted) context.go('/home');
       }
