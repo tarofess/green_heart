@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:green_heart/presentation/page/home_page.dart';
-import 'package:green_heart/presentation/page/login_page.dart';
+import 'package:green_heart/presentation/page/signin_page.dart';
 import 'package:green_heart/presentation/page/route_page.dart';
 import 'package:green_heart/presentation/page/signup_page.dart';
 
@@ -20,16 +20,18 @@ final GoRouter router = GoRouter(
           },
         ),
         GoRoute(
-          path: 'login',
+          path: 'signin',
           builder: (BuildContext context, GoRouterState state) {
-            return const LoginPage();
+            return const SignInPage();
           },
-        ),
-        GoRoute(
-          path: 'signup',
-          builder: (BuildContext context, GoRouterState state) {
-            return const SignUpPage();
-          },
+          routes: [
+            GoRoute(
+              path: 'signup',
+              builder: (BuildContext context, GoRouterState state) {
+                return const SignUpPage();
+              },
+            ),
+          ],
         ),
       ],
     ),

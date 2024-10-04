@@ -4,7 +4,7 @@ import 'package:green_heart/application/state/app_initialization_provider.dart';
 import 'package:green_heart/application/state/auth_provider.dart';
 import 'package:green_heart/presentation/page/home_page.dart';
 import 'package:green_heart/presentation/page/error_page.dart';
-import 'package:green_heart/presentation/page/login_page.dart';
+import 'package:green_heart/presentation/page/signin_page.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -25,7 +25,7 @@ class RoutePage extends ConsumerWidget {
                 if (snapshot.hasData) {
                   return const HomePage();
                 } else {
-                  return const LoginPage();
+                  return const SignInPage();
                 }
               },
             );
