@@ -14,28 +14,28 @@ class AppleSignInUseCase {
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'invalid-credential':
-          throw Exception('無効な認証情報です。');
+          throw Exception('認証情報に問題があります。再度お試しください。');
         case 'user-disabled':
-          throw Exception('このユーザーアカウントは無効化されています。');
+          throw Exception('このアカウントは現在使用できません。サポートにお問い合わせください。');
         case 'operation-not-allowed':
-          throw Exception('Appleサインインが有効になっていません。');
+          throw Exception('申し訳ありませんが、現在Appleサインインをご利用いただけません。');
         default:
-          throw Exception('認証に失敗しました: ${e.message}');
+          throw Exception('サインインに失敗しました。しばらくしてから再度お試しください。');
       }
     } on SignInWithAppleAuthorizationException catch (e) {
       switch (e.code) {
         case AuthorizationErrorCode.canceled:
-          throw Exception('Appleサインインがキャンセルされました。');
+          throw Exception('Appleサインインがキャンセルされました。再度お試しください。');
         case AuthorizationErrorCode.failed:
-          throw Exception('Appleサインインに失敗しました。');
+          throw Exception('Appleサインインに失敗しました。再度お試しいただくか、別の方法でサインインしてください。');
         case AuthorizationErrorCode.invalidResponse:
-          throw Exception('Appleサインインのレスポンスが無効です。');
+          throw Exception('Appleからの応答に問題がありました。しばらくしてから再度お試しください。');
         case AuthorizationErrorCode.notHandled:
-          throw Exception('Appleサインインが処理されていません。');
+          throw Exception('Appleサインインの処理中に問題が発生しました。別の方法でサインインしてください。');
         case AuthorizationErrorCode.unknown:
-          throw Exception('Appleサインインで不明なエラーが発生しました。');
+          throw Exception('予期せぬエラーが発生しました。しばらくしてから再度お試しください。');
         default:
-          throw Exception('Appleサインインに失敗しました: ${e.message}');
+          throw Exception('Appleサインインに失敗しました。別の方法でサインインしてください。');
       }
     } catch (e) {
       rethrow;

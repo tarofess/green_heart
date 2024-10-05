@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:green_heart/application/state/profile_provider.dart';
 import 'package:green_heart/domain/feature/profile_validater.dart';
 import 'package:green_heart/domain/type/profile.dart';
+import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/presentation/dialog/message_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -65,7 +66,13 @@ class ProfileEditPage extends HookConsumerWidget {
                     if (context.mounted) context.go('/home');
                   }
                 } catch (e) {
-                  print('Failed to save profile: $e');
+                  if (context.mounted) {
+                    showErrorDialog(
+                      context: context,
+                      title: '保存失敗',
+                      content: e.toString(),
+                    );
+                  }
                 }
               },
               child: const Text('保存'),

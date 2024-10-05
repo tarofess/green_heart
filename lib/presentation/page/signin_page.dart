@@ -21,82 +21,90 @@ class SignInPage extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: 32.r, right: 32.r),
-                    child: GoogleAuthButton(
-                      text: 'Googleアカウントで続ける',
-                      style: AuthButtonStyle(
-                        width: double.infinity,
-                        height: 50.r,
-                        textStyle: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onPressed: () async {
-                        try {
-                          await LoadingOverlay.of(context).during(
-                            () => executeSignIn(
-                              context,
-                              ref,
-                              googleSignInUseCaseProvider,
-                            ),
-                          );
-                        } catch (e) {
-                          if (context.mounted) {
-                            showErrorDialog(
-                              context: context,
-                              title: 'サインインエラー',
-                              content: e.toString(),
-                            );
-                          }
-                        }
-                      },
-                    ),
-                  ),
+                  buildGoogleSignInButton(context, ref),
                   SizedBox(height: 16.r),
-                  Padding(
-                    padding: EdgeInsets.only(left: 32.r, right: 32.r),
-                    child: AppleAuthButton(
-                      text: 'Appleアカウントで続ける',
-                      style: AuthButtonStyle(
-                        width: double.infinity,
-                        height: 50.r,
-                        buttonColor: Colors.black,
-                        iconBackground: Colors.black,
-                        iconColor: Colors.white,
-                        textStyle: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onPressed: () async {
-                        try {
-                          await LoadingOverlay.of(context).during(
-                            () => executeSignIn(
-                              context,
-                              ref,
-                              appleSignInUseCaseProvider,
-                            ),
-                          );
-                        } catch (e) {
-                          if (context.mounted) {
-                            showErrorDialog(
-                              context: context,
-                              title: 'サインインエラー',
-                              content: e.toString(),
-                            );
-                          }
-                        }
-                      },
-                    ),
-                  ),
+                  buildAppleSignInButton(context, ref),
                 ],
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget buildGoogleSignInButton(BuildContext context, WidgetRef ref) {
+    return Padding(
+      padding: EdgeInsets.only(left: 32.r, right: 32.r),
+      child: GoogleAuthButton(
+        text: 'Googleアカウントで続ける',
+        style: AuthButtonStyle(
+          width: double.infinity,
+          height: 50.r,
+          textStyle: TextStyle(
+            fontSize: 16.sp,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        onPressed: () async {
+          try {
+            await LoadingOverlay.of(context).during(
+              () => executeSignIn(
+                context,
+                ref,
+                googleSignInUseCaseProvider,
+              ),
+            );
+          } catch (e) {
+            if (context.mounted) {
+              showErrorDialog(
+                context: context,
+                title: 'サインインエラー',
+                content: e.toString(),
+              );
+            }
+          }
+        },
+      ),
+    );
+  }
+
+  Widget buildAppleSignInButton(BuildContext context, WidgetRef ref) {
+    return Padding(
+      padding: EdgeInsets.only(left: 32.r, right: 32.r),
+      child: AppleAuthButton(
+        text: 'Appleアカウントで続ける',
+        style: AuthButtonStyle(
+          width: double.infinity,
+          height: 50.r,
+          buttonColor: Colors.black,
+          iconBackground: Colors.black,
+          iconColor: Colors.white,
+          textStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 16.sp,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        onPressed: () async {
+          try {
+            await LoadingOverlay.of(context).during(
+              () => executeSignIn(
+                context,
+                ref,
+                appleSignInUseCaseProvider,
+              ),
+            );
+          } catch (e) {
+            if (context.mounted) {
+              showErrorDialog(
+                context: context,
+                title: 'サインインエラー',
+                content: e.toString(),
+              );
+            }
+          }
+        },
       ),
     );
   }
