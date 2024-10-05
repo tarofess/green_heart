@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -9,6 +11,7 @@ import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/presentation/dialog/message_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
+import 'package:green_heart/presentation/widget/profile_image_action_sheet.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ProfileEditPage extends HookConsumerWidget {
@@ -19,6 +22,7 @@ class ProfileEditPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final imagePath = useState('');
     final nameTextController = useTextEditingController();
     final birthYearTextController = useTextEditingController();
     final birthMonthTextController = useTextEditingController();
@@ -35,24 +39,29 @@ class ProfileEditPage extends HookConsumerWidget {
               onPressed: () async {
                 try {
                   if (formKey.currentState!.validate()) {
-                    final profile = Profile(
-                      name: nameTextController.text,
-                      birthDate: DateTime(
-                        int.parse(birthYearTextController.text),
-                        int.parse(birthMonthTextController.text),
-                        int.parse(birthDayTextController.text),
-                      ),
-                      bio: bioTextController.text,
-                      imageUrl: '',
-                      createdAt: DateTime.now(),
-                      updatedAt: DateTime.now(),
-                    );
+                    await LoadingOverlay.of(context).during(() async {
+                      final firebaseStorePath = await ref
+                          .read(profileImageUploadProvider)
+                          .execute(imagePath.value);
 
-                    await LoadingOverlay.of(context).during(
-                      () => ref
+                      final profile = Profile(
+                        name: nameTextController.text,
+                        birthDate: DateTime(
+                          int.parse(birthYearTextController.text),
+                          int.parse(birthMonthTextController.text),
+                          int.parse(birthDayTextController.text),
+                        ),
+                        bio: bioTextController.text,
+                        imageUrl: firebaseStorePath,
+                        createdAt: DateTime.now(),
+                        updatedAt: DateTime.now(),
+                      );
+
+                      await ref
                           .read(profileSaveProvider)
-                          .execute(user.uid, profile),
-                    );
+                          .execute(user.uid, profile);
+                      ref.read(profileStateProvider.notifier).state = profile;
+                    });
 
                     if (context.mounted) {
                       await showMessageDialog(
@@ -61,8 +70,6 @@ class ProfileEditPage extends HookConsumerWidget {
                         content: 'プロフィールを保存しました。',
                       );
                     }
-
-                    ref.read(profileStateProvider.notifier).state = profile;
                     if (context.mounted) context.go('/home');
                   }
                 } catch (e) {
@@ -84,7 +91,7 @@ class ProfileEditPage extends HookConsumerWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                buildImageField(),
+                buildImageField(context, ref, imagePath),
                 buildNameField(nameTextController),
                 buildBirthdayField(
                   birthYearTextController,
@@ -100,27 +107,40 @@ class ProfileEditPage extends HookConsumerWidget {
     );
   }
 
-  Widget buildImageField() {
+  Widget buildImageField(
+      BuildContext context, WidgetRef ref, ValueNotifier<String> imagePath) {
     return Padding(
       padding: EdgeInsets.all(16.r),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
-            child: CircleAvatar(
-              radius: 100.r,
-              backgroundColor: Colors.grey[200],
-              child: Icon(
-                Icons.person,
-                size: 100.r,
-                color: Colors.grey[500],
-              ),
-            ),
+            child: imagePath.value == ''
+                ? CircleAvatar(
+                    radius: 100.r,
+                    backgroundColor: Colors.grey[200],
+                    child: Icon(
+                      Icons.person,
+                      size: 100.r,
+                      color: Colors.grey[500],
+                    ),
+                  )
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(100.r),
+                    child: Image.file(
+                      File(imagePath.value),
+                      width: 200.r,
+                      height: 200.r,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
           ),
           const SizedBox(height: 8),
           Center(
             child: TextButton(
-              onPressed: () {},
+              onPressed: () async {
+                await showProfileImageActionSheet(context, ref, imagePath);
+              },
               child: const Text('プロフィール画像を編集'),
             ),
           ),

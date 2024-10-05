@@ -61,5 +61,9 @@
       <string>google</string>
       <string>$(REVERSED_CLIENT_ID)</string>
     </array>
+    <key>NSCameraUsageDescription</key>
+    <string>プロフィール写真の撮影およびアプリ内での設定にカメラへのアクセスが必要です</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>プロフィール写真をアプリ内で設定するために写真ライブラリへのアクセスが必要です</string>
 </dict>
 </plist>
