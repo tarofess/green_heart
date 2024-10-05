@@ -4,8 +4,8 @@ import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/infrastructure/repository/firebase_profile_repository.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-final profileSaveProvider = Provider.family<ProfileSaveUsecase, Profile>(
-  (ref, profile) => ProfileSaveUsecase(FirebaseProfileRepository(), profile),
+final profileSaveProvider = Provider(
+  (ref) => ProfileSaveUsecase(FirebaseProfileRepository()),
 );
 
 final profileGetProvider = Provider(

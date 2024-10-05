@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:green_heart/application/state/profile_provider.dart';
+import 'package:green_heart/domain/feature/profile_validater.dart';
 import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/presentation/dialog/message_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
@@ -23,65 +24,69 @@ class ProfileEditPage extends HookConsumerWidget {
     final birthDayTextController = useTextEditingController();
     final bioTextController = useTextEditingController();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('プロフィール編集'),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              try {
-                if (formKey.currentState!.validate()) {
-                  final profile = Profile(
-                    uid: user.uid,
-                    name: nameTextController.text,
-                    birthDate: DateTime(
-                      int.parse(birthYearTextController.text),
-                      int.parse(birthMonthTextController.text),
-                      int.parse(birthDayTextController.text),
-                    ),
-                    bio: bioTextController.text,
-                    imageUrl: '',
-                    createdAt: DateTime.now(),
-                    updatedAt: DateTime.now(),
-                  );
-
-                  await LoadingOverlay.of(context).during(
-                    () => ref.read(profileSaveProvider(profile)).execute(),
-                  );
-
-                  if (context.mounted) {
-                    await showMessageDialog(
-                      context: context,
-                      title: '保存完了',
-                      content: 'プロフィールを保存しました。',
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('プロフィール編集'),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                try {
+                  if (formKey.currentState!.validate()) {
+                    final profile = Profile(
+                      name: nameTextController.text,
+                      birthDate: DateTime(
+                        int.parse(birthYearTextController.text),
+                        int.parse(birthMonthTextController.text),
+                        int.parse(birthDayTextController.text),
+                      ),
+                      bio: bioTextController.text,
+                      imageUrl: '',
+                      createdAt: DateTime.now(),
+                      updatedAt: DateTime.now(),
                     );
-                  }
 
-                  ref.read(profileStateProvider.notifier).state = profile;
-                  if (context.mounted) context.go('/home');
+                    await LoadingOverlay.of(context).during(
+                      () => ref
+                          .read(profileSaveProvider)
+                          .execute(user.uid, profile),
+                    );
+
+                    if (context.mounted) {
+                      await showMessageDialog(
+                        context: context,
+                        title: '保存完了',
+                        content: 'プロフィールを保存しました。',
+                      );
+                    }
+
+                    ref.read(profileStateProvider.notifier).state = profile;
+                    if (context.mounted) context.go('/home');
+                  }
+                } catch (e) {
+                  print('Failed to save profile: $e');
                 }
-              } catch (e) {
-                print('Failed to save profile: $e');
-              }
-            },
-            child: const Text('保存'),
-          ),
-        ],
-      ),
-      body: Form(
-        key: formKey,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              buildImageField(),
-              buildNameField(nameTextController),
-              buildBirthdayField(
-                birthYearTextController,
-                birthMonthTextController,
-                birthDayTextController,
-              ),
-              buildBioField(bioTextController),
-            ],
+              },
+              child: const Text('保存'),
+            ),
+          ],
+        ),
+        body: Form(
+          key: formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                buildImageField(),
+                buildNameField(nameTextController),
+                buildBirthdayField(
+                  birthYearTextController,
+                  birthMonthTextController,
+                  birthDayTextController,
+                ),
+                buildBioField(bioTextController),
+              ],
+            ),
           ),
         ),
       ),
@@ -131,9 +136,12 @@ class ProfileEditPage extends HookConsumerWidget {
             ),
           ),
           SizedBox(height: 8.r),
-          TextField(
+          TextFormField(
             controller: nameTextController,
-            decoration: buildInputDecoration('名前'),
+            decoration: buildInputDecoration('名前を入力してください。'),
+            validator: (value) {
+              return ProfileValidater.validateName(nameTextController.text);
+            },
           ),
         ],
       ),
@@ -162,26 +170,41 @@ class ProfileEditPage extends HookConsumerWidget {
             children: [
               Flexible(
                 flex: 2,
-                child: TextField(
+                child: TextFormField(
                   controller: birthYearTextController,
                   keyboardType: TextInputType.number,
                   decoration: buildInputDecoration('西暦'),
+                  validator: (value) {
+                    return ProfileValidater.validateBirthYear(
+                      DateTime(int.parse(birthYearTextController.text)),
+                    );
+                  },
                 ),
               ),
               SizedBox(width: 8.r),
               Flexible(
-                child: TextField(
+                child: TextFormField(
                   controller: birthMonthTextController,
                   keyboardType: TextInputType.number,
                   decoration: buildInputDecoration('月'),
+                  validator: (value) {
+                    return ProfileValidater.validateBirthMonth(
+                      birthMonthTextController.text,
+                    );
+                  },
                 ),
               ),
               SizedBox(width: 8.r),
               Flexible(
-                child: TextField(
+                child: TextFormField(
                   controller: birthDayTextController,
                   keyboardType: TextInputType.number,
                   decoration: buildInputDecoration('日'),
+                  validator: (value) {
+                    return ProfileValidater.validateBirthDay(
+                      birthDayTextController.text,
+                    );
+                  },
                 ),
               ),
             ],
@@ -205,10 +228,13 @@ class ProfileEditPage extends HookConsumerWidget {
             ),
           ),
           SizedBox(height: 8.r),
-          TextField(
+          TextFormField(
             controller: bioTextController,
-            decoration: buildInputDecoration('自己紹介文を入力してください'),
+            decoration: buildInputDecoration('自己紹介文を入力してください。'),
             maxLines: 5,
+            validator: (value) {
+              return ProfileValidater.validateBio(bioTextController.text);
+            },
           ),
         ],
       ),

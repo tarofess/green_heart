@@ -20,10 +20,10 @@ class FirebaseProfileRepository implements ProfileRepository {
   }
 
   @override
-  Future<void> saveProfile(Profile profile) async {
+  Future<void> saveProfile(String uid, Profile profile) async {
     try {
       final firestore = FirebaseFirestore.instance;
-      final docRef = firestore.collection('profile').doc(profile.uid);
+      final docRef = firestore.collection('profile').doc(uid);
       await docRef.set(profile.toJson());
     } catch (e) {
       throw Exception('プロフィールの保存中にエラーが発生しました。');

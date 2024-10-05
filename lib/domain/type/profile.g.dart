@@ -8,7 +8,6 @@ part of 'profile.dart';
 
 _$ProfileImpl _$$ProfileImplFromJson(Map<String, dynamic> json) =>
     _$ProfileImpl(
-      uid: json['uid'] as String,
       name: json['name'] as String,
       birthDate: DateTime.parse(json['birthDate'] as String),
       bio: json['bio'] as String,
@@ -20,7 +19,6 @@ _$ProfileImpl _$$ProfileImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$ProfileImplToJson(_$ProfileImpl instance) =>
     <String, dynamic>{
-      'uid': instance.uid,
       'name': instance.name,
       'birthDate': instance.birthDate.toIso8601String(),
       'bio': instance.bio,

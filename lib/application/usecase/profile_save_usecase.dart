@@ -3,13 +3,12 @@ import 'package:green_heart/domain/type/profile.dart';
 
 class ProfileSaveUsecase {
   final ProfileRepository _repository;
-  final Profile profile;
 
-  ProfileSaveUsecase(this._repository, this.profile);
+  ProfileSaveUsecase(this._repository);
 
-  Future<void> execute() async {
+  Future<void> execute(String uid, Profile profile) async {
     try {
-      await _repository.saveProfile(profile);
+      await _repository.saveProfile(uid, profile);
     } catch (e) {
       throw Exception('Failed to save profile: $e');
     }
