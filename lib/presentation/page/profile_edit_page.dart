@@ -1,24 +1,24 @@
 import 'dart:io';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:green_heart/application/state/profile_provider.dart';
+import 'package:green_heart/application/state/shared_preferences_provider.dart';
 import 'package:green_heart/domain/feature/profile_validater.dart';
 import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/presentation/dialog/message_dialog.dart';
+import 'package:green_heart/presentation/router/router.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/presentation/widget/profile_image_action_sheet.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ProfileEditPage extends HookConsumerWidget {
-  ProfileEditPage({super.key, required this.user});
+  ProfileEditPage({super.key});
 
   final formKey = GlobalKey<FormState>();
-  final User user;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -39,10 +39,13 @@ class ProfileEditPage extends HookConsumerWidget {
               onPressed: () async {
                 try {
                   if (formKey.currentState!.validate()) {
+                    String firebaseStorePath = '';
                     await LoadingOverlay.of(context).during(() async {
-                      final firebaseStorePath = await ref
-                          .read(profileImageUploadProvider)
-                          .execute(imagePath.value);
+                      if (imagePath.value != '') {
+                        firebaseStorePath = await ref
+                            .read(profileImageUploadProvider)
+                            .execute(imagePath.value);
+                      }
 
                       final profile = Profile(
                         name: nameTextController.text,
@@ -57,10 +60,16 @@ class ProfileEditPage extends HookConsumerWidget {
                         updatedAt: DateTime.now(),
                       );
 
+                      final uid = ref.read(authStateProvider).value?.uid;
+                      if (uid == null) throw Exception('ユーザーIDが取得できませんでした。');
+
+                      await ref.read(profileSaveProvider).execute(uid, profile);
                       await ref
-                          .read(profileSaveProvider)
-                          .execute(user.uid, profile);
-                      ref.read(profileStateProvider.notifier).state = profile;
+                          .read(sharedPreferencesServiceProvider)
+                          .saveUid(uid);
+                      await ref
+                          .read(profileNotifierProvider.notifier)
+                          .setProfile(profile);
                     });
 
                     if (context.mounted) {
@@ -70,7 +79,7 @@ class ProfileEditPage extends HookConsumerWidget {
                         content: 'プロフィールを保存しました。',
                       );
                     }
-                    if (context.mounted) context.go('/home');
+                    if (context.mounted) context.go('/');
                   }
                 } catch (e) {
                   if (context.mounted) {
@@ -203,7 +212,7 @@ class ProfileEditPage extends HookConsumerWidget {
                   decoration: buildInputDecoration('西暦'),
                   validator: (value) {
                     return ProfileValidater.validateBirthYear(
-                      DateTime(int.parse(birthYearTextController.text)),
+                      birthYearTextController.text,
                     );
                   },
                 ),

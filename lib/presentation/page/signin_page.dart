@@ -1,8 +1,6 @@
 import 'package:auth_buttons/auth_buttons.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:green_heart/application/state/auth_provider.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
@@ -49,11 +47,7 @@ class SignInPage extends ConsumerWidget {
         onPressed: () async {
           try {
             await LoadingOverlay.of(context).during(
-              () => executeSignIn(
-                context,
-                ref,
-                googleSignInUseCaseProvider,
-              ),
+              () => ref.read(googleSignInUseCaseProvider).execute(),
             );
           } catch (e) {
             if (context.mounted) {
@@ -89,11 +83,7 @@ class SignInPage extends ConsumerWidget {
         onPressed: () async {
           try {
             await LoadingOverlay.of(context).during(
-              () => executeSignIn(
-                context,
-                ref,
-                appleSignInUseCaseProvider,
-              ),
+              () => ref.read(appleSignInUseCaseProvider).execute(),
             );
           } catch (e) {
             if (context.mounted) {
@@ -107,22 +97,5 @@ class SignInPage extends ConsumerWidget {
         },
       ),
     );
-  }
-
-  Future<void> executeSignIn(
-    BuildContext context,
-    WidgetRef ref,
-    Provider signInUseCaseProvider,
-  ) async {
-    User? user = await ref.read(signInUseCaseProvider).execute();
-    if (user != null) {
-      if (user.metadata.creationTime == user.metadata.lastSignInTime) {
-        if (context.mounted) {
-          context.go('/signin/profile_edit', extra: {'user': user});
-        }
-      } else {
-        if (context.mounted) context.go('/home');
-      }
-    }
   }
 }

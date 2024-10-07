@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:green_heart/application/state/app_initialization_provider.dart';
+import 'package:green_heart/presentation/page/error_page.dart';
 import 'package:green_heart/presentation/router/router.dart';
 import 'package:green_heart/presentation/theme/default_theme.dart';
+import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 void main() {
@@ -12,10 +16,32 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      theme: createDefaultTheme(),
-      routerConfig: router,
+    final initializeApp = ref.watch(appInitializationProvider);
+
+    return ScreenUtilInit(
+      designSize: const Size(360, 690),
+      builder: (context, child) {
+        return initializeApp.when(
+          data: (_) => MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            theme: createDefaultTheme(),
+            routerConfig: ref.watch(routerProvider),
+          ),
+          loading: () => const MaterialApp(
+            debugShowCheckedModeBanner: false,
+            home: Scaffold(
+              body: LoadingIndicator(),
+            ),
+          ),
+          error: (e, _) => MaterialApp(
+            debugShowCheckedModeBanner: false,
+            home: ErrorPage(
+              error: e,
+              retry: () => ref.refresh(appInitializationProvider),
+            ),
+          ),
+        );
+      },
     );
   }
 }

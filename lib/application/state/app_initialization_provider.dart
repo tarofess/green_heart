@@ -25,6 +25,6 @@ Future<void> setupFirebase() async {
       return true;
     };
   } catch (e) {
-    throw Exception('Firebaseの初期化に失敗しました');
+    throw Exception('Firebaseの初期化に失敗しました。');
   }
 }

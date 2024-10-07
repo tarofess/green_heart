@@ -6,13 +6,9 @@ class GoogleSignInUseCase {
 
   GoogleSignInUseCase(this._authRepository);
 
-  Future<User?> execute() async {
+  Future<void> execute() async {
     try {
-      final user = await _authRepository.signInWithGoogle();
-      if (user == null) {
-        throw Exception('Googleサインインがキャンセルされました。');
-      }
-      return user;
+      await _authRepository.signInWithGoogle();
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'account-exists-with-different-credential':

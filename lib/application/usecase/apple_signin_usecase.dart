@@ -7,10 +7,9 @@ class AppleSignInUseCase {
 
   AppleSignInUseCase(this._authRepository);
 
-  Future<User?> execute() async {
+  Future<void> execute() async {
     try {
-      final user = await _authRepository.signInWithApple();
-      return user;
+      await _authRepository.signInWithApple();
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'invalid-credential':
@@ -25,7 +24,7 @@ class AppleSignInUseCase {
     } on SignInWithAppleAuthorizationException catch (e) {
       switch (e.code) {
         case AuthorizationErrorCode.canceled:
-          throw Exception('Appleサインインがキャンセルされました。再度お試しください。');
+          return;
         case AuthorizationErrorCode.failed:
           throw Exception('Appleサインインに失敗しました。再度お試しいただくか、別の方法でサインインしてください。');
         case AuthorizationErrorCode.invalidResponse:

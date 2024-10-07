@@ -14,8 +14,7 @@ class FirebaseAuthRepository implements AuthRepository {
   User? get currentUser => _auth.currentUser;
 
   @override
-  Future<User?> signInWithGoogle() async {
-    User? user;
+  Future<void> signInWithGoogle() async {
     final GoogleSignIn googleSignIn = GoogleSignIn();
     final GoogleSignInAccount? googleSignInAccount =
         await googleSignIn.signIn();
@@ -29,17 +28,12 @@ class FirebaseAuthRepository implements AuthRepository {
         idToken: googleSignInAuthentication.idToken,
       );
 
-      final UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
-      user = userCredential.user;
+      await _auth.signInWithCredential(credential);
     }
-
-    return user;
   }
 
   @override
-  Future<User?> signInWithApple() async {
-    User? user;
+  Future<void> signInWithApple() async {
     final rawNonce = AuthUtils.generateNonce();
     final nonce = AuthUtils.sha256ofString(rawNonce);
 
@@ -57,10 +51,7 @@ class FirebaseAuthRepository implements AuthRepository {
       accessToken: appleCredential.authorizationCode,
     );
 
-    final userCredential = await _auth.signInWithCredential(oauthCredential);
-    user = userCredential.user;
-
-    return user;
+    await _auth.signInWithCredential(oauthCredential);
   }
 
   @override
