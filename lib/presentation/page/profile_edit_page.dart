@@ -4,13 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:green_heart/application/state/profile_provider.dart';
-import 'package:green_heart/application/state/shared_preferences_provider.dart';
+import 'package:green_heart/application/state/viewmodel_provider.dart';
 import 'package:green_heart/domain/feature/profile_validater.dart';
-import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/presentation/dialog/message_dialog.dart';
-import 'package:green_heart/presentation/router/router.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/presentation/widget/profile_image_action_sheet.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -22,6 +19,7 @@ class ProfileEditPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final viewModel = ref.watch(profileEditPageViewModelProvider);
     final imagePath = useState('');
     final nameTextController = useTextEditingController();
     final birthYearTextController = useTextEditingController();
@@ -39,38 +37,17 @@ class ProfileEditPage extends HookConsumerWidget {
               onPressed: () async {
                 try {
                   if (formKey.currentState!.validate()) {
-                    String firebaseStorePath = '';
-                    await LoadingOverlay.of(context).during(() async {
-                      if (imagePath.value != '') {
-                        firebaseStorePath = await ref
-                            .read(profileImageUploadProvider)
-                            .execute(imagePath.value);
-                      }
-
-                      final profile = Profile(
-                        name: nameTextController.text,
-                        birthDate: DateTime(
-                          int.parse(birthYearTextController.text),
-                          int.parse(birthMonthTextController.text),
-                          int.parse(birthDayTextController.text),
-                        ),
-                        bio: bioTextController.text,
-                        imageUrl: firebaseStorePath,
-                        createdAt: DateTime.now(),
-                        updatedAt: DateTime.now(),
-                      );
-
-                      final uid = ref.read(authStateProvider).value?.uid;
-                      if (uid == null) throw Exception('ユーザーIDが取得できませんでした。');
-
-                      await ref.read(profileSaveProvider).execute(uid, profile);
-                      await ref
-                          .read(sharedPreferencesServiceProvider)
-                          .saveUid(uid);
-                      await ref
-                          .read(profileNotifierProvider.notifier)
-                          .setProfile(profile);
-                    });
+                    await LoadingOverlay.of(context).during(
+                      () async => viewModel.saveProfile(
+                        ref,
+                        imagePath,
+                        nameTextController,
+                        birthYearTextController,
+                        birthMonthTextController,
+                        birthDayTextController,
+                        bioTextController,
+                      ),
+                    );
 
                     if (context.mounted) {
                       await showMessageDialog(
@@ -100,14 +77,14 @@ class ProfileEditPage extends HookConsumerWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                buildImageField(context, ref, imagePath),
-                buildNameField(nameTextController),
-                buildBirthdayField(
+                _buildImageField(context, ref, imagePath),
+                _buildNameField(nameTextController),
+                _buildBirthdayField(
                   birthYearTextController,
                   birthMonthTextController,
                   birthDayTextController,
                 ),
-                buildBioField(bioTextController),
+                _buildBioField(bioTextController),
               ],
             ),
           ),
@@ -116,7 +93,7 @@ class ProfileEditPage extends HookConsumerWidget {
     );
   }
 
-  Widget buildImageField(
+  Widget _buildImageField(
       BuildContext context, WidgetRef ref, ValueNotifier<String> imagePath) {
     return Padding(
       padding: EdgeInsets.all(16.r),
@@ -158,7 +135,7 @@ class ProfileEditPage extends HookConsumerWidget {
     );
   }
 
-  Widget buildNameField(TextEditingController nameTextController) {
+  Widget _buildNameField(TextEditingController nameTextController) {
     return Padding(
       padding: EdgeInsets.all(16.r),
       child: Column(
@@ -174,7 +151,7 @@ class ProfileEditPage extends HookConsumerWidget {
           SizedBox(height: 8.r),
           TextFormField(
             controller: nameTextController,
-            decoration: buildInputDecoration('名前を入力してください。'),
+            decoration: _buildInputDecoration('名前を入力してください。'),
             validator: (value) {
               return ProfileValidater.validateName(nameTextController.text);
             },
@@ -184,7 +161,7 @@ class ProfileEditPage extends HookConsumerWidget {
     );
   }
 
-  Widget buildBirthdayField(
+  Widget _buildBirthdayField(
     TextEditingController birthYearTextController,
     TextEditingController birthMonthTextController,
     TextEditingController birthDayTextController,
@@ -209,7 +186,7 @@ class ProfileEditPage extends HookConsumerWidget {
                 child: TextFormField(
                   controller: birthYearTextController,
                   keyboardType: TextInputType.number,
-                  decoration: buildInputDecoration('西暦'),
+                  decoration: _buildInputDecoration('西暦'),
                   validator: (value) {
                     return ProfileValidater.validateBirthYear(
                       birthYearTextController.text,
@@ -222,7 +199,7 @@ class ProfileEditPage extends HookConsumerWidget {
                 child: TextFormField(
                   controller: birthMonthTextController,
                   keyboardType: TextInputType.number,
-                  decoration: buildInputDecoration('月'),
+                  decoration: _buildInputDecoration('月'),
                   validator: (value) {
                     return ProfileValidater.validateBirthMonth(
                       birthMonthTextController.text,
@@ -235,7 +212,7 @@ class ProfileEditPage extends HookConsumerWidget {
                 child: TextFormField(
                   controller: birthDayTextController,
                   keyboardType: TextInputType.number,
-                  decoration: buildInputDecoration('日'),
+                  decoration: _buildInputDecoration('日'),
                   validator: (value) {
                     return ProfileValidater.validateBirthDay(
                       birthDayTextController.text,
@@ -250,7 +227,7 @@ class ProfileEditPage extends HookConsumerWidget {
     );
   }
 
-  Widget buildBioField(TextEditingController bioTextController) {
+  Widget _buildBioField(TextEditingController bioTextController) {
     return Padding(
       padding: EdgeInsets.all(16.r),
       child: Column(
@@ -266,7 +243,7 @@ class ProfileEditPage extends HookConsumerWidget {
           SizedBox(height: 8.r),
           TextFormField(
             controller: bioTextController,
-            decoration: buildInputDecoration('自己紹介文を入力してください。'),
+            decoration: _buildInputDecoration('自己紹介文を入力してください。'),
             maxLines: 5,
             validator: (value) {
               return ProfileValidater.validateBio(bioTextController.text);
@@ -277,7 +254,7 @@ class ProfileEditPage extends HookConsumerWidget {
     );
   }
 
-  InputDecoration buildInputDecoration(String hintText) {
+  InputDecoration _buildInputDecoration(String hintText) {
     return InputDecoration(
       hintText: hintText,
       border: OutlineInputBorder(

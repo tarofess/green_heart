@@ -9,14 +9,14 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 final profileNotifierProvider =
     AsyncNotifierProvider<ProfileNotifier, Profile?>(() => ProfileNotifier());
 
-final profileSaveProvider = Provider(
+final profileSaveUsecaseProvider = Provider(
   (ref) => ProfileSaveUsecase(FirebaseProfileRepository()),
 );
 
-final profileGetProvider = Provider(
+final profileGetUsecaseProvider = Provider(
   (ref) => ProfileGetUsecase(FirebaseProfileRepository()),
 );
 
-final profileImageUploadProvider = Provider(
+final profileImageUploadUsecaseProvider = Provider(
   (ref) => ProfileImageUploadUsecase(FirebaseProfileRepository()),
 );

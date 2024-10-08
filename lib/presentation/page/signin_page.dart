@@ -19,9 +19,9 @@ class SignInPage extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  buildGoogleSignInButton(context, ref),
+                  _buildGoogleSignInButton(context, ref),
                   SizedBox(height: 16.r),
-                  buildAppleSignInButton(context, ref),
+                  _buildAppleSignInButton(context, ref),
                 ],
               ),
             ),
@@ -31,7 +31,7 @@ class SignInPage extends ConsumerWidget {
     );
   }
 
-  Widget buildGoogleSignInButton(BuildContext context, WidgetRef ref) {
+  Widget _buildGoogleSignInButton(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: EdgeInsets.only(left: 32.r, right: 32.r),
       child: GoogleAuthButton(
@@ -63,7 +63,7 @@ class SignInPage extends ConsumerWidget {
     );
   }
 
-  Widget buildAppleSignInButton(BuildContext context, WidgetRef ref) {
+  Widget _buildAppleSignInButton(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: EdgeInsets.only(left: 32.r, right: 32.r),
       child: AppleAuthButton(

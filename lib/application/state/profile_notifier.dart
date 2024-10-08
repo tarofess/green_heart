@@ -11,11 +11,11 @@ class ProfileNotifier extends AsyncNotifier<Profile?> {
       return null;
     }
 
-    final profile = await ref.read(profileGetProvider).execute(uid);
+    final profile = await ref.read(profileGetUsecaseProvider).execute(uid);
     return profile;
   }
 
-  Future<void> setProfile(Profile profile) async {
+  void setProfile(Profile profile) {
     state = AsyncData(profile);
   }
 }
