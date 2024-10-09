@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:green_heart/application/interface/auth_repository.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+
+import 'package:green_heart/application/interface/auth_repository.dart';
 
 class AppleSignInUseCase {
   final AuthRepository _authRepository;

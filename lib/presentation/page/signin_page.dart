@@ -1,10 +1,11 @@
 import 'package:auth_buttons/auth_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:green_heart/application/state/auth_provider.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import 'package:green_heart/application/di/auth_provider.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SignInPage extends ConsumerWidget {
   const SignInPage({super.key});

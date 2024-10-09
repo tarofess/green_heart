@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:green_heart/application/state/profile_provider.dart';
-import 'package:green_heart/application/state/shared_preferences_provider.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import 'package:green_heart/application/state/profile_notifier_provider.dart';
+import 'package:green_heart/application/di/shared_preferences_provider.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
+import 'package:green_heart/application/di/profile_provider.dart';
 import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/domain/util/date_util.dart';
-import 'package:green_heart/presentation/router/router.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ProfileEditPageViewModel {
   Future<void> saveProfile(

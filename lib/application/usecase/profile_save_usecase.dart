@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:green_heart/application/interface/profile_repository.dart';
 import 'package:green_heart/domain/type/profile.dart';
 

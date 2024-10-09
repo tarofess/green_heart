@@ -1,7 +1,8 @@
-import 'package:green_heart/application/state/profile_provider.dart';
-import 'package:green_heart/application/state/shared_preferences_provider.dart';
-import 'package:green_heart/domain/type/profile.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import 'package:green_heart/application/di/shared_preferences_provider.dart';
+import 'package:green_heart/application/di/profile_provider.dart';
+import 'package:green_heart/domain/type/profile.dart';
 
 class ProfileNotifier extends AsyncNotifier<Profile?> {
   @override

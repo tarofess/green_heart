@@ -1,11 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:green_heart/application/state/auth_provider.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/presentation/page/home_page.dart';
 import 'package:green_heart/presentation/page/signin_page.dart';
 import 'package:green_heart/presentation/page/profile_edit_page.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -35,8 +35,4 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
   );
-});
-
-final authStateProvider = StreamProvider<User?>((ref) {
-  return ref.watch(authRepositoryProvider).authStateChanges;
 });

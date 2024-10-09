@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:green_heart/application/interface/auth_repository.dart';
 
 class GoogleSignInUseCase {

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
 import 'package:green_heart/application/state/app_initialization_provider.dart';
 import 'package:green_heart/presentation/page/error_page.dart';
 import 'package:green_heart/presentation/router/router.dart';
 import 'package:green_heart/presentation/theme/default_theme.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
