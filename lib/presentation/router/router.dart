@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/auth_state_provider.dart';
-import 'package:green_heart/presentation/page/home_page.dart';
+import 'package:green_heart/presentation/page/tab_page.dart';
 import 'package:green_heart/presentation/page/signin_page.dart';
 import 'package:green_heart/presentation/page/profile_edit_page.dart';
 
@@ -14,7 +14,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) => const HomePage(),
+        builder: (context, state) => const TabPage(),
       ),
       GoRoute(
         path: '/signin',
@@ -25,7 +25,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => ProfileEditPage(),
       ),
     ],
-    redirect: (BuildContext context, GoRouterState state) async {
+    redirect: (BuildContext context, GoRouterState state) {
       final isNotLoggedIn = authState.value == null;
 
       if (isNotLoggedIn && state.matchedLocation != '/signin') {

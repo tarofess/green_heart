@@ -45,3 +45,7 @@ class ProfileEditPageViewModel {
     ref.read(profileNotifierProvider.notifier).setProfile(profile);
   }
 }
+
+final profileEditPageViewModelProvider = Provider(
+  (ref) => ProfileEditPageViewModel(),
+);
