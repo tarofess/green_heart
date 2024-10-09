@@ -6,6 +6,7 @@ import 'package:green_heart/presentation/router/router.dart';
 import 'package:green_heart/presentation/theme/default_theme.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -26,6 +27,13 @@ class MyApp extends ConsumerWidget {
             debugShowCheckedModeBanner: false,
             theme: createDefaultTheme(),
             routerConfig: ref.watch(routerProvider),
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('ja', 'JP')],
+            locale: const Locale('ja', 'JP'),
           ),
           loading: () => const MaterialApp(
             debugShowCheckedModeBanner: false,

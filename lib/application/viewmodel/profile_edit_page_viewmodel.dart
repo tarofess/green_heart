@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:green_heart/application/state/profile_provider.dart';
 import 'package:green_heart/application/state/shared_preferences_provider.dart';
 import 'package:green_heart/domain/type/profile.dart';
+import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/presentation/router/router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -10,9 +11,7 @@ class ProfileEditPageViewModel {
     WidgetRef ref,
     ValueNotifier<String> imagePath,
     TextEditingController nameTextController,
-    TextEditingController birthYearTextController,
-    TextEditingController birthMonthTextController,
-    TextEditingController birthDayTextController,
+    TextEditingController birthdayTextController,
     TextEditingController bioTextController,
   ) async {
     String firebaseStorePath = '';
@@ -24,10 +23,8 @@ class ProfileEditPageViewModel {
 
     final profile = Profile(
       name: nameTextController.text,
-      birthDate: DateTime(
-        int.parse(birthYearTextController.text),
-        int.parse(birthMonthTextController.text),
-        int.parse(birthDayTextController.text),
+      birthDate: DateTime.parse(
+        DateUtil.convertToYYYYMMDD(birthdayTextController.text),
       ),
       bio: bioTextController.text,
       imageUrl: firebaseStorePath,

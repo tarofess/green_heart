@@ -11,6 +11,7 @@ import 'package:green_heart/presentation/dialog/message_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/presentation/widget/profile_image_action_sheet.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 
 class ProfileEditPage extends HookConsumerWidget {
   ProfileEditPage({super.key});
@@ -22,9 +23,7 @@ class ProfileEditPage extends HookConsumerWidget {
     final viewModel = ref.watch(profileEditPageViewModelProvider);
     final imagePath = useState('');
     final nameTextController = useTextEditingController();
-    final birthYearTextController = useTextEditingController();
-    final birthMonthTextController = useTextEditingController();
-    final birthDayTextController = useTextEditingController();
+    final birthdayTextController = useTextEditingController();
     final bioTextController = useTextEditingController();
 
     return GestureDetector(
@@ -42,9 +41,7 @@ class ProfileEditPage extends HookConsumerWidget {
                         ref,
                         imagePath,
                         nameTextController,
-                        birthYearTextController,
-                        birthMonthTextController,
-                        birthDayTextController,
+                        birthdayTextController,
                         bioTextController,
                       ),
                     );
@@ -79,11 +76,7 @@ class ProfileEditPage extends HookConsumerWidget {
               children: [
                 _buildImageField(context, ref, imagePath),
                 _buildNameField(nameTextController),
-                _buildBirthdayField(
-                  birthYearTextController,
-                  birthMonthTextController,
-                  birthDayTextController,
-                ),
+                _buildBirthdayField(context, birthdayTextController),
                 _buildBioField(bioTextController),
               ],
             ),
@@ -151,7 +144,7 @@ class ProfileEditPage extends HookConsumerWidget {
           SizedBox(height: 8.r),
           TextFormField(
             controller: nameTextController,
-            decoration: _buildInputDecoration('名前を入力してください。'),
+            decoration: _buildInputDecoration('名前を入力してください'),
             validator: (value) {
               return ProfileValidater.validateName(nameTextController.text);
             },
@@ -162,9 +155,8 @@ class ProfileEditPage extends HookConsumerWidget {
   }
 
   Widget _buildBirthdayField(
-    TextEditingController birthYearTextController,
-    TextEditingController birthMonthTextController,
-    TextEditingController birthDayTextController,
+    BuildContext context,
+    TextEditingController birthdayTextController,
   ) {
     return Padding(
       padding: EdgeInsets.all(16.r),
@@ -179,49 +171,18 @@ class ProfileEditPage extends HookConsumerWidget {
             ),
           ),
           SizedBox(height: 8.r),
-          Row(
-            children: [
-              Flexible(
-                flex: 2,
-                child: TextFormField(
-                  controller: birthYearTextController,
-                  keyboardType: TextInputType.number,
-                  decoration: _buildInputDecoration('西暦'),
-                  validator: (value) {
-                    return ProfileValidater.validateBirthYear(
-                      birthYearTextController.text,
-                    );
-                  },
-                ),
-              ),
-              SizedBox(width: 8.r),
-              Flexible(
-                child: TextFormField(
-                  controller: birthMonthTextController,
-                  keyboardType: TextInputType.number,
-                  decoration: _buildInputDecoration('月'),
-                  validator: (value) {
-                    return ProfileValidater.validateBirthMonth(
-                      birthMonthTextController.text,
-                    );
-                  },
-                ),
-              ),
-              SizedBox(width: 8.r),
-              Flexible(
-                child: TextFormField(
-                  controller: birthDayTextController,
-                  keyboardType: TextInputType.number,
-                  decoration: _buildInputDecoration('日'),
-                  validator: (value) {
-                    return ProfileValidater.validateBirthDay(
-                      birthDayTextController.text,
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
+          TextFormField(
+            controller: birthdayTextController,
+            decoration: _buildInputDecoration('生年月日を選択してください'),
+            readOnly: true,
+            onTap: () async {
+              await _selectBirthday(context, birthdayTextController);
+            },
+            validator: (value) {
+              return ProfileValidater.validateBirthday(
+                  birthdayTextController.text);
+            },
+          )
         ],
       ),
     );
@@ -243,7 +204,7 @@ class ProfileEditPage extends HookConsumerWidget {
           SizedBox(height: 8.r),
           TextFormField(
             controller: bioTextController,
-            decoration: _buildInputDecoration('自己紹介文を入力してください。'),
+            decoration: _buildInputDecoration('自己紹介文を200文字以内で入力してください'),
             maxLines: 5,
             validator: (value) {
               return ProfileValidater.validateBio(bioTextController.text);
@@ -270,5 +231,23 @@ class ProfileEditPage extends HookConsumerWidget {
       ),
       contentPadding: EdgeInsets.symmetric(horizontal: 16.r, vertical: 12.r),
     );
+  }
+
+  Future<void> _selectBirthday(
+    BuildContext context,
+    TextEditingController birthdayTextController,
+  ) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      locale: const Locale('ja', 'JP'),
+    );
+
+    if (pickedDate != null) {
+      birthdayTextController.text =
+          DateFormat('yyyy年MM月dd日').format(pickedDate);
+    }
   }
 }
