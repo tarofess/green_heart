@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:green_heart/presentation/page/notification_setting_page.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/auth_state_provider.dart';
@@ -34,6 +35,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/account_info',
         builder: (context, state) => const AccountPage(),
+      ),
+      GoRoute(
+        path: '/notification_setting',
+        builder: (context, state) => const NotificationSettingPage(),
       ),
       GoRoute(
         path: '/app_info',

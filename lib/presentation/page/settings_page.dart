@@ -40,7 +40,9 @@ class SettingsPage extends ConsumerWidget {
     return ListTile(
       leading: const Icon(Icons.notifications),
       title: const Text('通知設定'),
-      onTap: () {},
+      onTap: () {
+        context.push('/notification_setting');
+      },
     );
   }
 
