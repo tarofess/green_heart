@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:green_heart/presentation/page/app_info_page.dart';
 import 'package:green_heart/presentation/page/settings_page.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -28,6 +29,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/settings',
         builder: (context, state) => const SettingsPage(),
+      ),
+      GoRoute(
+        path: '/app_info',
+        builder: (context, state) {
+          final Map<String, dynamic> extra =
+              state.extra as Map<String, dynamic>;
+          final appInfo = extra['app_info'] as String?;
+          return AppInfoPage(appInfo: appInfo);
+        },
       ),
     ],
     redirect: (BuildContext context, GoRouterState state) {

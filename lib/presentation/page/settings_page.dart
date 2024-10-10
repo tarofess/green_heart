@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
 import 'package:green_heart/application/di/auth_di.dart';
+import 'package:green_heart/application/di/settings_di.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -51,7 +54,22 @@ class SettingsPage extends ConsumerWidget {
     return ListTile(
       leading: const Icon(Icons.info),
       title: const Text('アプリの情報'),
-      onTap: () {},
+      onTap: () async {
+        try {
+          final appInfo = await ref.read(appInfoUsecaseProvider).execute();
+          if (context.mounted) {
+            context.push('/app_info', extra: {'app_info': appInfo});
+          }
+        } catch (e) {
+          if (context.mounted) {
+            showErrorDialog(
+              context: context,
+              title: 'アプリ情報取得エラー',
+              content: e.toString(),
+            );
+          }
+        }
+      },
     );
   }
 
