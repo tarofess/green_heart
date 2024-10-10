@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:green_heart/presentation/page/app_info_page.dart';
-import 'package:green_heart/presentation/page/settings_page.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/presentation/page/tab_page.dart';
 import 'package:green_heart/presentation/page/signin_page.dart';
 import 'package:green_heart/presentation/page/profile_edit_page.dart';
+import 'package:green_heart/presentation/page/account_page.dart';
+import 'package:green_heart/presentation/page/app_info_page.dart';
+import 'package:green_heart/presentation/page/settings_page.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -29,6 +30,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/settings',
         builder: (context, state) => const SettingsPage(),
+      ),
+      GoRoute(
+        path: '/account_info',
+        builder: (context, state) => const AccountPage(),
       ),
       GoRoute(
         path: '/app_info',

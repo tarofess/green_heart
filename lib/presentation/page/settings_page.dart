@@ -30,7 +30,9 @@ class SettingsPage extends ConsumerWidget {
     return ListTile(
       leading: const Icon(Icons.account_circle),
       title: const Text('アカウント情報'),
-      onTap: () {},
+      onTap: () {
+        context.push('/account_info');
+      },
     );
   }
 

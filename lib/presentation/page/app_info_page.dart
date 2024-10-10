@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:green_heart/application/di/settings_di.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import 'package:green_heart/application/di/settings_di.dart';
 
 class AppInfoPage extends HookConsumerWidget {
   const AppInfoPage({super.key, required this.appInfo});
