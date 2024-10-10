@@ -20,7 +20,9 @@ class TabPage extends HookConsumerWidget {
     return profile.when(
       data: (data) {
         if (data == null) {
-          context.go('/profile_edit');
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.go('/profile_edit');
+          });
           return const Scaffold(body: SizedBox());
         } else {
           return Scaffold(

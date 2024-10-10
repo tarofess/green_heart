@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:green_heart/application/di/picture_provider.dart';
+import 'package:green_heart/application/di/picture_di.dart';
 import 'package:green_heart/infrastructure/util/permission_util.dart';
 
 Future<void> showProfileImageActionSheet(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:green_heart/application/di/auth_provider.dart';
+import 'package:green_heart/application/di/auth_di.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
