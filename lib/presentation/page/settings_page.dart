@@ -46,7 +46,9 @@ class SettingsPage extends ConsumerWidget {
     return ListTile(
       leading: const Icon(Icons.mail),
       title: const Text('お問い合わせ'),
-      onTap: () {},
+      onTap: () async {
+        await ref.read(emailSendUsecaseProvider).execute();
+      },
     );
   }
 

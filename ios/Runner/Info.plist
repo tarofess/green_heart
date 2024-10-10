@@ -65,5 +65,9 @@
     <string>プロフィール写真の撮影およびアプリ内での設定にカメラへのアクセスが必要です</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>プロフィール写真をアプリ内で設定するために写真ライブラリへのアクセスが必要です</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+	<string>mailto</string>
+	</array>
 </dict>
 </plist>
