@@ -18,24 +18,24 @@ class AppleSignInUseCase {
         case 'user-disabled':
           throw Exception('このアカウントは現在使用できません。サポートにお問い合わせください。');
         case 'operation-not-allowed':
-          throw Exception('申し訳ありませんが、現在Appleサインインをご利用いただけません。');
+          throw Exception('申し訳ありませんが、現在Appleログインをご利用いただけません。');
         default:
-          throw Exception('サインインに失敗しました。しばらくしてから再度お試しください。');
+          throw Exception('ログインに失敗しました。しばらくしてから再度お試しください。');
       }
     } on SignInWithAppleAuthorizationException catch (e) {
       switch (e.code) {
         case AuthorizationErrorCode.canceled:
           return;
         case AuthorizationErrorCode.failed:
-          throw Exception('Appleサインインに失敗しました。再度お試しいただくか、別の方法でサインインしてください。');
+          throw Exception('Appleログインに失敗しました。再度お試しいただくか、別の方法でログインしてください。');
         case AuthorizationErrorCode.invalidResponse:
           throw Exception('Appleからの応答に問題がありました。しばらくしてから再度お試しください。');
         case AuthorizationErrorCode.notHandled:
-          throw Exception('Appleサインインの処理中に問題が発生しました。別の方法でサインインしてください。');
+          throw Exception('Appleログインの処理中に問題が発生しました。別の方法でログインしてください。');
         case AuthorizationErrorCode.unknown:
           throw Exception('予期せぬエラーが発生しました。しばらくしてから再度お試しください。');
         default:
-          throw Exception('Appleサインインに失敗しました。別の方法でサインインしてください。');
+          throw Exception('Appleログインに失敗しました。別の方法でログインしてください。');
       }
     } catch (e) {
       rethrow;

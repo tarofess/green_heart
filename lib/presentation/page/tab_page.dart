@@ -41,6 +41,10 @@ class TabPage extends HookConsumerWidget {
               },
             ),
             body: viewModel.pages[selectedIndex.value],
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {},
+              child: const Icon(Icons.add),
+            ),
           );
         }
       },

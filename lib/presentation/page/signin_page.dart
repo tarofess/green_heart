@@ -34,14 +34,14 @@ class SignInPage extends ConsumerWidget {
 
   Widget _buildGoogleSignInButton(BuildContext context, WidgetRef ref) {
     return Padding(
-      padding: EdgeInsets.only(left: 32.r, right: 32.r),
+      padding: EdgeInsets.only(left: 30.r, right: 30.r),
       child: GoogleAuthButton(
-        text: 'Googleアカウントで続ける',
+        text: 'Googleアカウントでログイン',
         style: AuthButtonStyle(
           width: double.infinity,
           height: 50.r,
           textStyle: TextStyle(
-            fontSize: 16.sp,
+            fontSize: 15.sp,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -66,9 +66,9 @@ class SignInPage extends ConsumerWidget {
 
   Widget _buildAppleSignInButton(BuildContext context, WidgetRef ref) {
     return Padding(
-      padding: EdgeInsets.only(left: 32.r, right: 32.r),
+      padding: EdgeInsets.only(left: 30.r, right: 30.r),
       child: AppleAuthButton(
-        text: 'Appleアカウントで続ける',
+        text: 'Appleアカウントでログイン',
         style: AuthButtonStyle(
           width: double.infinity,
           height: 50.r,
@@ -77,7 +77,7 @@ class SignInPage extends ConsumerWidget {
           iconColor: Colors.white,
           textStyle: TextStyle(
             color: Colors.white,
-            fontSize: 16.sp,
+            fontSize: 15.sp,
             fontWeight: FontWeight.bold,
           ),
         ),

@@ -4,6 +4,8 @@ Future<bool> showConfirmationDialog({
   required BuildContext context,
   required String title,
   required String content,
+  required String positiveButtonText,
+  required String negativeButtonText,
 }) async {
   final result = await showDialog(
     context: context,
@@ -25,9 +27,9 @@ Future<bool> showConfirmationDialog({
                     ),
                   ),
                   onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text(
-                    'いいえ',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  child: Text(
+                    negativeButtonText,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -42,9 +44,9 @@ Future<bool> showConfirmationDialog({
                     ),
                   ),
                   onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text(
-                    'はい',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  child: Text(
+                    positiveButtonText,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
