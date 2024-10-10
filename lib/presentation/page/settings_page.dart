@@ -56,7 +56,8 @@ class SettingsPage extends ConsumerWidget {
       title: const Text('アプリの情報'),
       onTap: () async {
         try {
-          final appInfo = await ref.read(appInfoUsecaseProvider).execute();
+          final appInfo =
+              await ref.read(appVersionGetUsecaseProvider).execute();
           if (context.mounted) {
             context.push('/app_info', extra: {'app_info': appInfo});
           }

@@ -1,9 +1,9 @@
 import 'package:green_heart/application/interface/app_info_repository.dart';
 
-class AppInfoUsecase {
+class AppVersionGetUsecase {
   final AppInfoRepository _appInfoRepository;
 
-  AppInfoUsecase(this._appInfoRepository);
+  AppVersionGetUsecase(this._appInfoRepository);
 
   Future<String> execute() async {
     try {

@@ -1,13 +1,13 @@
 import 'package:green_heart/application/interface/file_repository.dart';
 
-class UpdateHistoryUsecase {
+class AppInfoReadTextFileUsecase {
   final FileRepository _historyRepository;
 
-  UpdateHistoryUsecase(this._historyRepository);
+  AppInfoReadTextFileUsecase(this._historyRepository);
 
-  Future<String?> execute() async {
+  Future<String?> execute(String fileName) async {
     try {
-      return await _historyRepository.getFileText();
+      return await _historyRepository.readFileText(fileName);
     } catch (e) {
       throw Exception('ファイルの読み込みに失敗しました。');
     }

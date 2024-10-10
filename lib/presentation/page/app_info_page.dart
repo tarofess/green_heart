@@ -10,18 +10,30 @@ class AppInfoPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isExpandedList = useState<List<bool>>([false, false, false]);
+    final isExpandedList =
+        useState<List<bool>>([false, false, false, false, false]);
+    final termsOfUse = useState('');
+    final privacyPolicy = useState('');
     final updateHistoryText = useState('');
 
     useEffect(() {
-      Future<void> getUpdateHistory() async {
-        updateHistoryText.value =
-            await ref.read(updateHistoryUsecaseProvider).execute() ??
-                '更新履歴を取得できませんでした。';
+      Future<void> getFilesText() async {
+        termsOfUse.value = await ref
+                .read(appInfoReadTextFileUsecaseProvider)
+                .execute('terms_of_use.txt') ??
+            '利用規約を取得できませんでした。';
+        privacyPolicy.value = await ref
+                .read(appInfoReadTextFileUsecaseProvider)
+                .execute('privacy_policy.txt') ??
+            'プライバシーポリシーを取得できませんでした。';
+        updateHistoryText.value = await ref
+                .read(appInfoReadTextFileUsecaseProvider)
+                .execute('update_history.txt') ??
+            '更新履歴を取得できませんでした。';
       }
 
       try {
-        getUpdateHistory();
+        getFilesText();
       } catch (e) {
         return;
       }
@@ -56,10 +68,24 @@ class AppInfoPage extends HookConsumerWidget {
             ),
             ExpansionPanel(
               headerBuilder: (BuildContext context, bool isExpanded) {
+                return const ListTile(title: Text('利用規約'));
+              },
+              body: ListTile(title: Text(termsOfUse.value)),
+              isExpanded: isExpandedList.value[2],
+            ),
+            ExpansionPanel(
+              headerBuilder: (BuildContext context, bool isExpanded) {
+                return const ListTile(title: Text('プライバシーポリシー'));
+              },
+              body: ListTile(title: Text(privacyPolicy.value)),
+              isExpanded: isExpandedList.value[3],
+            ),
+            ExpansionPanel(
+              headerBuilder: (BuildContext context, bool isExpanded) {
                 return const ListTile(title: Text('更新履歴'));
               },
               body: ListTile(title: Text(updateHistoryText.value)),
-              isExpanded: isExpandedList.value[2],
+              isExpanded: isExpandedList.value[4],
             ),
           ],
         ),

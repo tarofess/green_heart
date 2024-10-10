@@ -1,3 +1,3 @@
 abstract class FileRepository {
-  Future<String?> getFileText();
+  Future<String?> readFileText(String fileName);
 }
