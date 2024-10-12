@@ -69,8 +69,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         return '/signin';
       }
 
-      if (!isNotLoggedIn || state.matchedLocation == '/') {}
-
       return null;
     },
   );

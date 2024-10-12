@@ -3,11 +3,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'package:green_heart/application/state/app_initialization_provider.dart';
 import 'package:green_heart/presentation/page/error_page.dart';
 import 'package:green_heart/presentation/router/router.dart';
 import 'package:green_heart/presentation/theme/default_theme.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
+import 'package:green_heart/application/di/init_di.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -18,7 +18,7 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final initializeApp = ref.watch(appInitializationProvider);
+    final initializeApp = ref.watch(appInitProvider);
 
     return ScreenUtilInit(
       designSize: const Size(360, 690),
@@ -46,7 +46,7 @@ class MyApp extends ConsumerWidget {
             debugShowCheckedModeBanner: false,
             home: ErrorPage(
               error: e,
-              retry: () => ref.refresh(appInitializationProvider),
+              retry: () => ref.refresh(appInitProvider),
             ),
           ),
         );
@@ -54,3 +54,7 @@ class MyApp extends ConsumerWidget {
     );
   }
 }
+
+final appInitProvider = FutureProvider.autoDispose((ref) async {
+  await ref.read(firebaseInitUsecaseProvider).execute();
+});
