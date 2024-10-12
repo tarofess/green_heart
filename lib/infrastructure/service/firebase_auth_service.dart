@@ -2,10 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
-import 'package:green_heart/application/interface/auth_repository.dart';
+import 'package:green_heart/application/interface/auth_service.dart';
 import 'package:green_heart/infrastructure/util/auth_utils.dart';
 
-class FirebaseAuthRepository implements AuthRepository {
+class FirebaseAuthService implements AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override

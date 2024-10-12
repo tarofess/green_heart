@@ -1,13 +1,13 @@
-import 'package:green_heart/application/interface/picture_repository.dart';
+import 'package:green_heart/application/interface/picture_service.dart';
 
 class TakePhotoUsecase {
-  final PictureRepository _pictureRepository;
+  final PictureService _pictureService;
 
-  TakePhotoUsecase(this._pictureRepository);
+  TakePhotoUsecase(this._pictureService);
 
   Future<String?> execute() async {
     try {
-      return await _pictureRepository.takePhoto();
+      return await _pictureService.takePhoto();
     } catch (e) {
       throw Exception('写真の撮影に失敗しました。');
     }

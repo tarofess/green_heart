@@ -1,8 +1,8 @@
 import 'package:image_picker/image_picker.dart';
 
-import 'package:green_heart/application/interface/picture_repository.dart';
+import 'package:green_heart/application/interface/picture_service.dart';
 
-class ImagePickerRepository implements PictureRepository {
+class ImagePickerService implements PictureService {
   @override
   Future<String?> takePhoto() async {
     final XFile? photo = await ImagePicker().pickImage(

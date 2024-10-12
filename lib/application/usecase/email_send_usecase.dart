@@ -1,13 +1,13 @@
-import 'package:green_heart/application/interface/email_repository.dart';
+import 'package:green_heart/application/interface/email_service.dart';
 
 class EmailSendUsecase {
-  final EmailRepository _emailRepository;
+  final EmailService _emailService;
 
-  EmailSendUsecase(this._emailRepository);
+  EmailSendUsecase(this._emailService);
 
   Future<void> execute() async {
     try {
-      await _emailRepository.sendEmail();
+      await _emailService.sendEmail();
     } catch (e) {
       throw Exception('メールを送信できませんでした。再度お試しください。');
     }

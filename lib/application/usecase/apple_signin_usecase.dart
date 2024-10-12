@@ -1,16 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
-import 'package:green_heart/application/interface/auth_repository.dart';
+import 'package:green_heart/application/interface/auth_service.dart';
 
 class AppleSignInUseCase {
-  final AuthRepository _authRepository;
+  final AuthService _authService;
 
-  AppleSignInUseCase(this._authRepository);
+  AppleSignInUseCase(this._authService);
 
   Future<void> execute() async {
     try {
-      await _authRepository.signInWithApple();
+      await _authService.signInWithApple();
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'invalid-credential':

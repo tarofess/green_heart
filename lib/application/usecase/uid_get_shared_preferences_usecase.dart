@@ -1,9 +1,9 @@
 import 'package:green_heart/application/interface/shared_preferences_service.dart';
 
-class StringGetSharedPreferencesUsecase {
+class UidGetSharedPreferencesUsecase {
   final SharedPreferencesService _sharedPreferencesService;
 
-  StringGetSharedPreferencesUsecase(this._sharedPreferencesService);
+  UidGetSharedPreferencesUsecase(this._sharedPreferencesService);
 
   Future<String?> execute(String key) async {
     try {

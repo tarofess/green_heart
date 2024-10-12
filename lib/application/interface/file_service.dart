@@ -1,3 +1,3 @@
-abstract class FileRepository {
+abstract class FileService {
   Future<String?> readFileText(String fileName);
 }

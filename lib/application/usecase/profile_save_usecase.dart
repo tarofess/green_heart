@@ -7,13 +7,13 @@ import 'package:green_heart/application/interface/profile_repository.dart';
 import 'package:green_heart/domain/type/profile.dart';
 
 class ProfileSaveUsecase {
-  final ProfileRepository _repository;
+  final ProfileRepository _profileRepository;
 
-  ProfileSaveUsecase(this._repository);
+  ProfileSaveUsecase(this._profileRepository);
 
   Future<void> execute(String uid, Profile profile) async {
     try {
-      await _repository.saveProfile(uid, profile);
+      await _profileRepository.saveProfile(uid, profile);
     } on TimeoutException {
       throw Exception('処理がタイムアウトしました。通信環境をご確認ください。');
     } on SocketException {

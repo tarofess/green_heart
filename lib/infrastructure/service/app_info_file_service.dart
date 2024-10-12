@@ -1,8 +1,8 @@
 import 'package:flutter/services.dart';
 
-import 'package:green_heart/application/interface/file_repository.dart';
+import 'package:green_heart/application/interface/file_service.dart';
 
-class AppInfoFileRepository implements FileRepository {
+class AppInfoFileService implements FileService {
   @override
   Future<String?> readFileText(String fileName) async {
     return await rootBundle.loadString('assets/$fileName');

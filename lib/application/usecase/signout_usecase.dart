@@ -2,16 +2,16 @@ import 'dart:async';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'package:green_heart/application/interface/auth_repository.dart';
+import 'package:green_heart/application/interface/auth_service.dart';
 
 class SignOutUseCase {
-  final AuthRepository _authRepository;
+  final AuthService _authService;
 
-  SignOutUseCase(this._authRepository);
+  SignOutUseCase(this._authService);
 
   Future<void> execute() async {
     try {
-      await _authRepository.signOut();
+      await _authService.signOut();
     } on TimeoutException {
       throw Exception('サインアウト処理がタイムアウトしました。通信環境をご確認ください。');
     } on SocketException {

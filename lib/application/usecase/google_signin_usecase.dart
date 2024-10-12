@@ -1,15 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'package:green_heart/application/interface/auth_repository.dart';
+import 'package:green_heart/application/interface/auth_service.dart';
 
 class GoogleSignInUseCase {
-  final AuthRepository _authRepository;
+  final AuthService _authService;
 
-  GoogleSignInUseCase(this._authRepository);
+  GoogleSignInUseCase(this._authService);
 
   Future<void> execute() async {
     try {
-      await _authRepository.signInWithGoogle();
+      await _authService.signInWithGoogle();
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'account-exists-with-different-credential':

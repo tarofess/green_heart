@@ -1,8 +1,8 @@
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:green_heart/application/interface/email_repository.dart';
+import 'package:green_heart/application/interface/email_service.dart';
 
-class ContactEmailRepository implements EmailRepository {
+class ContactEmailService implements EmailService {
   @override
   Future<void> sendEmail() async {
     final String encodedSubject = Uri.encodeComponent('お問い合わせ');

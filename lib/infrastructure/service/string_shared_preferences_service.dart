@@ -1,8 +1,8 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:green_heart/application/interface/shared_preferences_repository.dart';
+import 'package:green_heart/application/interface/shared_preferences_service.dart';
 
-class StringSharedPreferencesRepository implements SharedPreferencesRepository {
+class StringSharedPreferencesService implements SharedPreferencesService {
   @override
   Future<String?> get(String key) async {
     final prefs = await SharedPreferences.getInstance();

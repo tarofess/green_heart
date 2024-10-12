@@ -1,13 +1,13 @@
-import 'package:green_heart/application/interface/picture_repository.dart';
+import 'package:green_heart/application/interface/picture_service.dart';
 
 class PickImageUsecase {
-  final PictureRepository _pictureRepository;
+  final PictureService _pictureService;
 
-  PickImageUsecase(this._pictureRepository);
+  PickImageUsecase(this._pictureService);
 
   Future<String?> execute() async {
     try {
-      return await _pictureRepository.pickImageFromGallery();
+      return await _pictureService.pickImageFromGallery();
     } catch (e) {
       throw Exception('写真の選択に失敗しました。');
     }

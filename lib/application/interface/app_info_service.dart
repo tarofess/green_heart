@@ -1,3 +1,3 @@
-abstract class AppInfoRepository {
+abstract class AppInfoService {
   Future<String> getAppVersion();
 }
