@@ -32,9 +32,32 @@ Future<void> setupFirebase() async {
 }
 
 Future<void> setupMessaging() async {
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
   await FirebaseMessaging.instance.requestPermission(
     alert: true,
     badge: true,
     sound: true,
   );
+
+  setupNotificationHandlers();
+}
+
+void setupNotificationHandlers() {
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    // フォアグラウンドでの通知処理
+  });
+
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    // バックグラウンドでの通知タップ処理
+  });
+
+  FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
+    if (message != null) {
+      // アプリが終了している状態での通知タップ処理
+    }
+  });
 }
