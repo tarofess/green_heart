@@ -7,8 +7,9 @@ import 'package:green_heart/domain/type/profile.dart';
 class ProfileNotifier extends AsyncNotifier<Profile?> {
   @override
   Future<Profile?> build() async {
-    final uid =
-        await ref.read(uidGetSharedPreferencesUsecaseProvider).execute();
+    final uid = await ref
+        .read(stringGetSharedPreferencesUsecaseProvider)
+        .execute('uid');
     if (uid == null) {
       return null;
     }

@@ -41,7 +41,9 @@ class ProfileEditPageViewModel {
     }
 
     await ref.read(profileSaveUsecaseProvider).execute(uid, profile);
-    await ref.read(uidSaveSharedPreferencesUsecaseProvider).execute(uid);
+    await ref
+        .read(stringSaveSharedPreferencesUsecaseProvider)
+        .execute('uid', uid);
     ref.read(profileNotifierProvider.notifier).setProfile(profile);
   }
 }
