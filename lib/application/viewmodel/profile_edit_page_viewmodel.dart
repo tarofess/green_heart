@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/profile_notifier_provider.dart';
-import 'package:green_heart/application/di/shared_preferences_di.dart';
+import 'package:green_heart/application/di/shared_pref_di.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/domain/type/profile.dart';
@@ -41,9 +41,7 @@ class ProfileEditPageViewModel {
     }
 
     await ref.read(profileSaveUsecaseProvider).execute(uid, profile);
-    await ref
-        .read(stringSaveSharedPreferencesUsecaseProvider)
-        .execute('uid', uid);
+    await ref.read(stringSaveSharedPrefUsecaseProvider).execute('uid', uid);
     ref.read(profileNotifierProvider.notifier).setProfile(profile);
   }
 }
