@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:green_heart/application/state/profile_notifier_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/auth_state_provider.dart';
@@ -20,6 +21,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     if (next.value != null) {
       try {
         await ref.read(fcmTokenSaveUsecaeProvider).execute(next.value!.uid);
+        await ref.read(profileNotifierProvider.notifier).build();
       } catch (e) {
         return;
       }
@@ -63,12 +65,22 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ],
     redirect: (BuildContext context, GoRouterState state) {
-      final isNotLoggedIn = authState.value == null;
+      final isLoggedIn = authState.value != null;
+      final profileState = ref.read(profileNotifierProvider);
+      final isProfileLoaded = profileState is AsyncData;
+      final profile = isProfileLoaded ? profileState.value : null;
 
-      if (isNotLoggedIn && state.matchedLocation != '/signin') {
+      if (!isLoggedIn && state.matchedLocation != '/signin') {
         return '/signin';
       }
 
+      if (isLoggedIn && !isProfileLoaded) {
+        return null;
+      }
+
+      if (isLoggedIn && isProfileLoaded && profile == null) {
+        return '/profile_edit';
+      }
       return null;
     },
   );
