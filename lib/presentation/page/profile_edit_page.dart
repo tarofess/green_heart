@@ -16,7 +16,9 @@ import 'package:green_heart/application/viewmodel/profile_edit_page_viewmodel.da
 class ProfileEditPage extends HookConsumerWidget {
   ProfileEditPage({super.key});
 
-  final formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
+  final FocusNode _nameFocusNode = FocusNode();
+  final FocusNode _bioFocusNode = FocusNode();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -35,7 +37,7 @@ class ProfileEditPage extends HookConsumerWidget {
             TextButton(
               onPressed: () async {
                 try {
-                  if (formKey.currentState!.validate()) {
+                  if (_formKey.currentState!.validate()) {
                     await LoadingOverlay.of(context).during(
                       () async => viewModel.saveProfile(
                         ref,
@@ -70,7 +72,7 @@ class ProfileEditPage extends HookConsumerWidget {
           ],
         ),
         body: Form(
-          key: formKey,
+          key: _formKey,
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -94,33 +96,40 @@ class ProfileEditPage extends HookConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
-            child: imagePath.value == ''
-                ? CircleAvatar(
-                    radius: 100.r,
-                    backgroundColor: Colors.grey[200],
-                    child: Icon(
-                      Icons.person,
-                      size: 100.r,
-                      color: Colors.grey[500],
+            child: GestureDetector(
+              child: imagePath.value == ''
+                  ? CircleAvatar(
+                      radius: 100.r,
+                      backgroundColor: Colors.grey[200],
+                      child: Icon(
+                        Icons.person,
+                        size: 100.r,
+                        color: Colors.grey[500],
+                      ),
+                    )
+                  : ClipRRect(
+                      borderRadius: BorderRadius.circular(100.r),
+                      child: Image.file(
+                        File(imagePath.value),
+                        width: 200.r,
+                        height: 200.r,
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  )
-                : ClipRRect(
-                    borderRadius: BorderRadius.circular(100.r),
-                    child: Image.file(
-                      File(imagePath.value),
-                      width: 200.r,
-                      height: 200.r,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+              onTap: () async {
+                await showProfileImageActionSheet(context, ref, imagePath);
+                unfocusAllKeyboard();
+              },
+            ),
           ),
           const SizedBox(height: 8),
           Center(
             child: TextButton(
+              child: const Text('プロフィール画像を編集'),
               onPressed: () async {
                 await showProfileImageActionSheet(context, ref, imagePath);
+                unfocusAllKeyboard();
               },
-              child: const Text('プロフィール画像を編集'),
             ),
           ),
         ],
@@ -143,6 +152,7 @@ class ProfileEditPage extends HookConsumerWidget {
           ),
           SizedBox(height: 8.r),
           TextFormField(
+            focusNode: _nameFocusNode,
             controller: nameTextController,
             decoration: _buildInputDecoration('名前を入力してください'),
             validator: (value) {
@@ -203,6 +213,7 @@ class ProfileEditPage extends HookConsumerWidget {
           ),
           SizedBox(height: 8.r),
           TextFormField(
+            focusNode: _bioFocusNode,
             controller: bioTextController,
             decoration: _buildInputDecoration('自己紹介文を200文字以内で入力してください'),
             maxLines: 5,
@@ -249,5 +260,10 @@ class ProfileEditPage extends HookConsumerWidget {
       birthdayTextController.text =
           DateFormat('yyyy年MM月dd日').format(pickedDate);
     }
+  }
+
+  void unfocusAllKeyboard() {
+    _nameFocusNode.unfocus();
+    _bioFocusNode.unfocus();
   }
 }
