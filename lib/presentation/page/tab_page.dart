@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/presentation/viewmodel/tab_page_viewmodel.dart';
@@ -20,7 +21,7 @@ class TabPage extends HookConsumerWidget {
             label: 'ホーム',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.post_add),
+            icon: Icon(Icons.feed_outlined),
             label: 'みんなの投稿',
           ),
         ],
@@ -31,8 +32,10 @@ class TabPage extends HookConsumerWidget {
       ),
       body: viewModel.pages[selectedIndex.value],
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.add),
+        onPressed: () {
+          context.go('/post');
+        },
+        child: const Icon(Icons.create),
       ),
     );
   }
