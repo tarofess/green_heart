@@ -2,11 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:green_heart/application/di/post_di.dart';
-import 'package:green_heart/application/state/auth_state_provider.dart';
-import 'package:green_heart/domain/type/post.dart';
-import 'package:green_heart/presentation/dialog/message_dialog.dart';
-import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -14,6 +9,8 @@ import 'package:green_heart/infrastructure/util/permission_util.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/presentation/viewmodel/post_page_viewmodel.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
+import 'package:green_heart/presentation/dialog/message_dialog.dart';
+import 'package:green_heart/presentation/widget/loading_overlay.dart';
 
 class PostPage extends HookConsumerWidget {
   const PostPage({super.key});
@@ -56,46 +53,12 @@ class PostPage extends HookConsumerWidget {
           },
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.upload),
-            onPressed: postTextController.text.isNotEmpty ||
-                    selectedImages.value.isNotEmpty
-                ? () async {
-                    try {
-                      final post = Post(
-                        uid: ref.read(authStateProvider).value!.uid,
-                        content: postTextController.text,
-                        createdAt: DateTime.now(),
-                        updatedAt: DateTime.now(),
-                      );
-                      await LoadingOverlay.of(context).during(
-                        () => ref.read(postUploadUsecaseProvider).execute(
-                              post,
-                              ref.read(authStateProvider).value!.uid,
-                              selectedImages.value,
-                            ),
-                      );
-
-                      if (context.mounted) {
-                        await showMessageDialog(
-                          context: context,
-                          title: '投稿完了',
-                          content: '投稿が完了しました。',
-                        );
-                        if (context.mounted) context.pop();
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        showErrorDialog(
-                          context: context,
-                          title: '投稿エラー',
-                          content: e.toString(),
-                        );
-                      }
-                    }
-                  }
-                : null,
-          ),
+          _buildUploadButton(
+            context,
+            ref,
+            postTextController,
+            selectedImages,
+          )
         ],
       ),
       body: Column(
@@ -122,6 +85,47 @@ class PostPage extends HookConsumerWidget {
           _buildBottomBar(context, ref, selectedImages),
         ],
       ),
+    );
+  }
+
+  Widget _buildUploadButton(
+    BuildContext context,
+    WidgetRef ref,
+    TextEditingController postTextController,
+    ValueNotifier<List<String>> selectedImages,
+  ) {
+    return IconButton(
+      icon: const Icon(Icons.upload),
+      onPressed:
+          postTextController.text.isNotEmpty || selectedImages.value.isNotEmpty
+              ? () async {
+                  try {
+                    await LoadingOverlay.of(context).during(
+                      () => ref.read(postPageViewModel).uploadPost(
+                            postTextController.text,
+                            selectedImages,
+                          ),
+                    );
+
+                    if (context.mounted) {
+                      await showMessageDialog(
+                        context: context,
+                        title: '投稿完了',
+                        content: '投稿が完了しました。',
+                      );
+                      if (context.mounted) context.pop();
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      showErrorDialog(
+                        context: context,
+                        title: '投稿エラー',
+                        content: e.toString(),
+                      );
+                    }
+                  }
+                }
+              : null,
     );
   }
 
