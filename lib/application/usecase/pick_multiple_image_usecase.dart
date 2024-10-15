@@ -5,7 +5,7 @@ class PickMultipleImageUsecase {
 
   PickMultipleImageUsecase(this._pictureService);
 
-  Future<List<String?>> execute() async {
+  Future<List<String>> execute() async {
     try {
       return await _pictureService.pickMultipleImagesFromGallery();
     } catch (e) {

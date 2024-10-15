@@ -26,7 +26,7 @@ class ImagePickerService implements PictureService {
   }
 
   @override
-  Future<List<String?>> pickMultipleImagesFromGallery() async {
+  Future<List<String>> pickMultipleImagesFromGallery() async {
     final List<XFile> images = await ImagePicker().pickMultiImage(
       maxHeight: 800,
       maxWidth: 800,

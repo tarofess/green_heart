@@ -2,6 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:green_heart/application/di/post_di.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
+import 'package:green_heart/domain/type/post.dart';
+import 'package:green_heart/presentation/dialog/message_dialog.dart';
+import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,7 +22,8 @@ class PostPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final focusNode = useFocusNode();
     final postTextController = useTextEditingController();
-    final selectedImages = useState<List<String?>>([]);
+    final selectedImages = useState<List<String>>([]);
+    useListenable(postTextController);
 
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -52,7 +58,43 @@ class PostPage extends HookConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.upload),
-            onPressed: () async {},
+            onPressed: postTextController.text.isNotEmpty ||
+                    selectedImages.value.isNotEmpty
+                ? () async {
+                    try {
+                      final post = Post(
+                        uid: ref.read(authStateProvider).value!.uid,
+                        content: postTextController.text,
+                        createdAt: DateTime.now(),
+                        updatedAt: DateTime.now(),
+                      );
+                      await LoadingOverlay.of(context).during(
+                        () => ref.read(postUploadUsecaseProvider).execute(
+                              post,
+                              ref.read(authStateProvider).value!.uid,
+                              selectedImages.value,
+                            ),
+                      );
+
+                      if (context.mounted) {
+                        await showMessageDialog(
+                          context: context,
+                          title: '投稿完了',
+                          content: '投稿が完了しました。',
+                        );
+                        if (context.mounted) context.pop();
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        showErrorDialog(
+                          context: context,
+                          title: '投稿エラー',
+                          content: e.toString(),
+                        );
+                      }
+                    }
+                  }
+                : null,
           ),
         ],
       ),
@@ -83,7 +125,7 @@ class PostPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildPickedImageArea(ValueNotifier<List<String?>> selectedImages) {
+  Widget _buildPickedImageArea(ValueNotifier<List<String>> selectedImages) {
     return selectedImages.value.isNotEmpty
         ? Padding(
             padding: EdgeInsets.only(left: 16.r, right: 16.r, bottom: 16.r),
@@ -100,7 +142,7 @@ class PostPage extends HookConsumerWidget {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(12.r),
                           child: Image.file(
-                            File(selectedImages.value[index] ?? ''),
+                            File(selectedImages.value[index]),
                             width: 240.r,
                             height: 240.r,
                             fit: BoxFit.cover,
@@ -142,7 +184,7 @@ class PostPage extends HookConsumerWidget {
   Widget _buildBottomBar(
     BuildContext context,
     WidgetRef ref,
-    ValueNotifier<List<String?>> selectedImages,
+    ValueNotifier<List<String>> selectedImages,
   ) {
     return Container(
       decoration: BoxDecoration(
@@ -166,7 +208,7 @@ class PostPage extends HookConsumerWidget {
   Widget _buildImageIconButton(
     BuildContext context,
     WidgetRef ref,
-    ValueNotifier<List<String?>> selectedImages,
+    ValueNotifier<List<String>> selectedImages,
   ) {
     return IconButton(
       icon: Icon(
