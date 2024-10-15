@@ -26,11 +26,12 @@ class FirebaseProfileRepository implements ProfileRepository {
   }
 
   @override
-  Future<String> uploadImage(String path) async {
+  Future<String> uploadImage(String uid, String path) async {
     File file = File(path);
     String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    Reference ref =
-        FirebaseStorage.instance.ref().child('image/profile/$fileName.jpg');
+    Reference ref = FirebaseStorage.instance
+        .ref()
+        .child('image/profile/$uid/$fileName.jpg');
     await ref.putFile(file);
     return await ref.getDownloadURL();
   }

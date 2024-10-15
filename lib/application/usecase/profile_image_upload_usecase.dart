@@ -5,9 +5,9 @@ class ProfileImageUploadUsecase {
 
   ProfileImageUploadUsecase(this._profileRepository);
 
-  Future<String> execute(String path) async {
+  Future<String> execute(String uid, String path) async {
     try {
-      return await _profileRepository.uploadImage(path);
+      return await _profileRepository.uploadImage(uid, path);
     } catch (e) {
       throw Exception('画像のアップロードに失敗しました。');
     }

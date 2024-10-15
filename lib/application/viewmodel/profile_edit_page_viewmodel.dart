@@ -34,10 +34,16 @@ class ProfileEditPageViewModel {
     TextEditingController birthdayTextController,
     TextEditingController bioTextController,
   ) async {
+    final uid = _user?.uid;
+    if (uid == null) {
+      throw Exception('ユーザーIDが取得できませんでした。'
+          '再度お試しください。');
+    }
+
     String firebaseStorePath = '';
     if (imagePath.value != '') {
       firebaseStorePath =
-          await _profileImageUploadUsecase.execute(imagePath.value);
+          await _profileImageUploadUsecase.execute(uid, imagePath.value);
     }
 
     final profile = Profile(
@@ -50,12 +56,6 @@ class ProfileEditPageViewModel {
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
-
-    final uid = _user?.uid;
-    if (uid == null) {
-      throw Exception('ユーザーIDが取得できませんでした。'
-          '再度お試しください。');
-    }
 
     await _profileSaveUsecase.execute(uid, profile);
     await _stringSaveSharedPrefUsecase.execute('uid', uid);
