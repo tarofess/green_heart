@@ -100,7 +100,7 @@ class AccountPage extends HookConsumerWidget {
         try {
           if (context.mounted) {
             await LoadingOverlay.of(context).during(
-              () async => viewModel.deleteAccount(ref),
+              () async => viewModel.deleteAccount(),
             );
           }
           if (context.mounted) {

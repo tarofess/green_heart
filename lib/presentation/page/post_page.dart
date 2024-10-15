@@ -163,7 +163,7 @@ class PostPage extends HookConsumerWidget {
               try {
                 if (await PermissionUtil.requestStoragePermission(context)) {
                   if (context.mounted) FocusScope.of(context).unfocus();
-                  await viewModel.pickImages(ref, selectedImages);
+                  await viewModel.pickImages(selectedImages);
                 }
               } catch (e) {
                 if (context.mounted) {

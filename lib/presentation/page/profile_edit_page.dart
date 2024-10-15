@@ -40,7 +40,6 @@ class ProfileEditPage extends HookConsumerWidget {
                   if (_formKey.currentState!.validate()) {
                     await LoadingOverlay.of(context).during(
                       () async => viewModel.saveProfile(
-                        ref,
                         imagePath,
                         nameTextController,
                         birthdayTextController,
