@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:green_heart/infrastructure/util/permission_util.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/presentation/viewmodel/post_page_viewmodel.dart';
+import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 
 class PostPage extends HookConsumerWidget {
   const PostPage({super.key});
@@ -30,7 +31,23 @@ class PostPage extends HookConsumerWidget {
         title: const Text('投稿'),
         leading: IconButton(
           icon: const Icon(Icons.cancel_outlined),
-          onPressed: () => context.pop(),
+          onPressed: () async {
+            if (postTextController.text.isEmpty &&
+                selectedImages.value.isEmpty) {
+              context.pop();
+            } else {
+              final result = await showConfirmationDialog(
+                context: context,
+                title: '投稿を破棄しますか？',
+                content: '入力内容は保存されません。',
+                positiveButtonText: '破棄する',
+                negativeButtonText: 'キャンセル',
+              );
+              if (result) {
+                if (context.mounted) context.pop();
+              }
+            }
+          },
         ),
         actions: [
           IconButton(
