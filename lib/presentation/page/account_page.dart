@@ -16,7 +16,6 @@ class AccountPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final viewModel = ref.watch(accountPageViewModelProvider);
     final isExpandedList = useState<List<bool>>([false, false]);
     final providerName = useState('');
 
@@ -69,16 +68,12 @@ class AccountPage extends HookConsumerWidget {
       ),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.only(bottom: 20.r, left: 20.r, right: 20.r),
-        child: _buildAccountDeleteButton(context, ref, viewModel),
+        child: _buildAccountDeleteButton(context, ref),
       ),
     );
   }
 
-  Widget _buildAccountDeleteButton(
-    BuildContext context,
-    WidgetRef ref,
-    AccountPageViewModel viewModel,
-  ) {
+  Widget _buildAccountDeleteButton(BuildContext context, WidgetRef ref) {
     return ElevatedButton(
       child: const Text(
         'アカウントを削除する',
@@ -100,7 +95,8 @@ class AccountPage extends HookConsumerWidget {
         try {
           if (context.mounted) {
             await LoadingOverlay.of(context).during(
-              () async => viewModel.deleteAccount(),
+              () async =>
+                  ref.read(accountPageViewModelProvider).deleteAccount(),
             );
           }
           if (context.mounted) {

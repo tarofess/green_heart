@@ -2,18 +2,18 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:green_heart/infrastructure/util/permission_util.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/presentation/viewmodel/post_page_viewmodel.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class PostPage extends HookConsumerWidget {
   const PostPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final viewModel = ref.watch(postPageViewModel);
     final focusNode = useFocusNode();
     final postTextController = useTextEditingController();
     final selectedImages = useState<List<String?>>([]);
@@ -60,7 +60,7 @@ class PostPage extends HookConsumerWidget {
               ),
             ),
           ),
-          _buildBottomBar(context, ref, viewModel, selectedImages),
+          _buildBottomBar(context, ref, selectedImages),
         ],
       ),
     );
@@ -125,7 +125,6 @@ class PostPage extends HookConsumerWidget {
   Widget _buildBottomBar(
     BuildContext context,
     WidgetRef ref,
-    PostPageViewModel viewModel,
     ValueNotifier<List<String?>> selectedImages,
   ) {
     return Container(
@@ -134,7 +133,7 @@ class PostPage extends HookConsumerWidget {
       ),
       child: Row(
         children: [
-          _buildImageIconButton(context, ref, viewModel, selectedImages),
+          _buildImageIconButton(context, ref, selectedImages),
           const Spacer(),
           IconButton(
             icon: const Icon(Icons.keyboard_arrow_down, color: Colors.green),
@@ -150,7 +149,6 @@ class PostPage extends HookConsumerWidget {
   Widget _buildImageIconButton(
     BuildContext context,
     WidgetRef ref,
-    PostPageViewModel viewModel,
     ValueNotifier<List<String?>> selectedImages,
   ) {
     return IconButton(
@@ -163,7 +161,7 @@ class PostPage extends HookConsumerWidget {
               try {
                 if (await PermissionUtil.requestStoragePermission(context)) {
                   if (context.mounted) FocusScope.of(context).unfocus();
-                  await viewModel.pickImages(selectedImages);
+                  await ref.read(postPageViewModel).pickImages(selectedImages);
                 }
               } catch (e) {
                 if (context.mounted) {

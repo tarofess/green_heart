@@ -22,7 +22,6 @@ class ProfileEditPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final viewModel = ref.watch(profileEditPageViewModelProvider);
     final imagePath = useState('');
     final nameTextController = useTextEditingController();
     final birthdayTextController = useTextEditingController();
@@ -39,12 +38,14 @@ class ProfileEditPage extends HookConsumerWidget {
                 try {
                   if (_formKey.currentState!.validate()) {
                     await LoadingOverlay.of(context).during(
-                      () async => viewModel.saveProfile(
-                        imagePath,
-                        nameTextController,
-                        birthdayTextController,
-                        bioTextController,
-                      ),
+                      () async => ref
+                          .read(profileEditPageViewModelProvider)
+                          .saveProfile(
+                            imagePath,
+                            nameTextController,
+                            birthdayTextController,
+                            bioTextController,
+                          ),
                     );
 
                     if (context.mounted) {
