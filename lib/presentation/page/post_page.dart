@@ -3,17 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:green_heart/infrastructure/util/permission_util.dart';
+import 'package:green_heart/presentation/dialog/error_dialog.dart';
+import 'package:green_heart/presentation/viewmodel/post_page_viewmodel.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 
 class PostPage extends HookConsumerWidget {
   const PostPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final viewModel = ref.watch(postPageViewModel);
     final focusNode = useFocusNode();
     final postTextController = useTextEditingController();
-    final selectedImages = useState<List<XFile>>([]);
+    final selectedImages = useState<List<String?>>([]);
 
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -21,18 +24,6 @@ class PostPage extends HookConsumerWidget {
       });
       return null;
     }, []);
-
-    Future<void> pickImages() async {
-      FocusScope.of(context).unfocus();
-
-      final ImagePicker picker = ImagePicker();
-      try {
-        final List<XFile> images = await picker.pickMultiImage(limit: 4);
-        selectedImages.value = images;
-      } catch (e) {
-        throw Exception('画像の取得に失敗しました。再度お試しください。');
-      }
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -69,13 +60,13 @@ class PostPage extends HookConsumerWidget {
               ),
             ),
           ),
-          _buildBottomBar(pickImages),
+          _buildBottomBar(context, ref, viewModel, selectedImages),
         ],
       ),
     );
   }
 
-  Widget _buildPickedImageArea(ValueNotifier<List<XFile>> selectedImages) {
+  Widget _buildPickedImageArea(ValueNotifier<List<String?>> selectedImages) {
     return selectedImages.value.isNotEmpty
         ? Padding(
             padding: EdgeInsets.only(left: 16.r, right: 16.r, bottom: 16.r),
@@ -92,7 +83,7 @@ class PostPage extends HookConsumerWidget {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(12.r),
                           child: Image.file(
-                            File(selectedImages.value[index].path),
+                            File(selectedImages.value[index] ?? ''),
                             width: 240.r,
                             height: 240.r,
                             fit: BoxFit.cover,
@@ -131,17 +122,19 @@ class PostPage extends HookConsumerWidget {
         : const SizedBox();
   }
 
-  Widget _buildBottomBar(VoidCallback onImagePick) {
+  Widget _buildBottomBar(
+    BuildContext context,
+    WidgetRef ref,
+    PostPageViewModel viewModel,
+    ValueNotifier<List<String?>> selectedImages,
+  ) {
     return Container(
       decoration: BoxDecoration(
         border: Border(top: BorderSide(color: Colors.grey.shade300)),
       ),
       child: Row(
         children: [
-          IconButton(
-            icon: const Icon(Icons.image, color: Colors.green),
-            onPressed: onImagePick,
-          ),
+          _buildImageIconButton(context, ref, viewModel, selectedImages),
           const Spacer(),
           IconButton(
             icon: const Icon(Icons.keyboard_arrow_down, color: Colors.green),
@@ -151,6 +144,38 @@ class PostPage extends HookConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildImageIconButton(
+    BuildContext context,
+    WidgetRef ref,
+    PostPageViewModel viewModel,
+    ValueNotifier<List<String?>> selectedImages,
+  ) {
+    return IconButton(
+      icon: Icon(
+        Icons.image,
+        color: selectedImages.value.length < 4 ? Colors.green : Colors.grey,
+      ),
+      onPressed: selectedImages.value.length < 4
+          ? () async {
+              try {
+                if (await PermissionUtil.requestStoragePermission(context)) {
+                  if (context.mounted) FocusScope.of(context).unfocus();
+                  await viewModel.pickImages(ref, selectedImages);
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  showErrorDialog(
+                    context: context,
+                    title: '画像取得エラー',
+                    content: e.toString(),
+                  );
+                }
+              }
+            }
+          : null,
     );
   }
 }

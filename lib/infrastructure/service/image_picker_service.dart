@@ -24,4 +24,15 @@ class ImagePickerService implements PictureService {
     );
     return image?.path;
   }
+
+  @override
+  Future<List<String?>> pickMultipleImagesFromGallery() async {
+    final List<XFile> images = await ImagePicker().pickMultiImage(
+      maxHeight: 800,
+      maxWidth: 800,
+      imageQuality: 80,
+      limit: 4,
+    );
+    return images.map((image) => image.path).toList();
+  }
 }
