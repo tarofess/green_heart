@@ -9,7 +9,7 @@ class Profile with _$Profile {
     required String name,
     required DateTime birthDate,
     required String bio,
-    required String imageUrl,
+    String? imageUrl,
     @Default(1) int status,
     required DateTime createdAt,
     required DateTime updatedAt,

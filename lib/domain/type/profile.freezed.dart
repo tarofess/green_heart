@@ -23,7 +23,7 @@ mixin _$Profile {
   String get name => throw _privateConstructorUsedError;
   DateTime get birthDate => throw _privateConstructorUsedError;
   String get bio => throw _privateConstructorUsedError;
-  String get imageUrl => throw _privateConstructorUsedError;
+  String? get imageUrl => throw _privateConstructorUsedError;
   int get status => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
@@ -46,7 +46,7 @@ abstract class $ProfileCopyWith<$Res> {
       {String name,
       DateTime birthDate,
       String bio,
-      String imageUrl,
+      String? imageUrl,
       int status,
       DateTime createdAt,
       DateTime updatedAt});
@@ -70,7 +70,7 @@ class _$ProfileCopyWithImpl<$Res, $Val extends Profile>
     Object? name = null,
     Object? birthDate = null,
     Object? bio = null,
-    Object? imageUrl = null,
+    Object? imageUrl = freezed,
     Object? status = null,
     Object? createdAt = null,
     Object? updatedAt = null,
@@ -88,10 +88,10 @@ class _$ProfileCopyWithImpl<$Res, $Val extends Profile>
           ? _value.bio
           : bio // ignore: cast_nullable_to_non_nullable
               as String,
-      imageUrl: null == imageUrl
+      imageUrl: freezed == imageUrl
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -119,7 +119,7 @@ abstract class _$$ProfileImplCopyWith<$Res> implements $ProfileCopyWith<$Res> {
       {String name,
       DateTime birthDate,
       String bio,
-      String imageUrl,
+      String? imageUrl,
       int status,
       DateTime createdAt,
       DateTime updatedAt});
@@ -141,7 +141,7 @@ class __$$ProfileImplCopyWithImpl<$Res>
     Object? name = null,
     Object? birthDate = null,
     Object? bio = null,
-    Object? imageUrl = null,
+    Object? imageUrl = freezed,
     Object? status = null,
     Object? createdAt = null,
     Object? updatedAt = null,
@@ -159,10 +159,10 @@ class __$$ProfileImplCopyWithImpl<$Res>
           ? _value.bio
           : bio // ignore: cast_nullable_to_non_nullable
               as String,
-      imageUrl: null == imageUrl
+      imageUrl: freezed == imageUrl
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -186,7 +186,7 @@ class _$ProfileImpl implements _Profile {
       {required this.name,
       required this.birthDate,
       required this.bio,
-      required this.imageUrl,
+      this.imageUrl,
       this.status = 1,
       required this.createdAt,
       required this.updatedAt});
@@ -201,7 +201,7 @@ class _$ProfileImpl implements _Profile {
   @override
   final String bio;
   @override
-  final String imageUrl;
+  final String? imageUrl;
   @override
   @JsonKey()
   final int status;
@@ -259,7 +259,7 @@ abstract class _Profile implements Profile {
       {required final String name,
       required final DateTime birthDate,
       required final String bio,
-      required final String imageUrl,
+      final String? imageUrl,
       final int status,
       required final DateTime createdAt,
       required final DateTime updatedAt}) = _$ProfileImpl;
@@ -273,7 +273,7 @@ abstract class _Profile implements Profile {
   @override
   String get bio;
   @override
-  String get imageUrl;
+  String? get imageUrl;
   @override
   int get status;
   @override

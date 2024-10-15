@@ -6,7 +6,6 @@ import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
-import 'package:green_heart/application/usecase/profile_image_upload_usecase.dart';
 import 'package:green_heart/application/usecase/profile_save_usecase.dart';
 import 'package:green_heart/application/usecase/string_save_shared_pref_usecase.dart';
 import 'package:green_heart/application/di/profile_di.dart';
@@ -14,14 +13,12 @@ import 'package:green_heart/application/di/shared_pref_di.dart';
 import 'package:green_heart/application/state/profile_notifier_provider.dart';
 
 class ProfileEditPageViewModel {
-  final ProfileImageUploadUsecase _profileImageUploadUsecase;
   final ProfileSaveUsecase _profileSaveUsecase;
   final StringSaveSharedPrefUsecase _stringSaveSharedPrefUsecase;
   final ProfileNotifier _profileNotifier;
   final User? _user;
 
   ProfileEditPageViewModel(
-    this._profileImageUploadUsecase,
     this._profileSaveUsecase,
     this._stringSaveSharedPrefUsecase,
     this._profileNotifier,
@@ -40,24 +37,17 @@ class ProfileEditPageViewModel {
           '再度お試しください。');
     }
 
-    String firebaseStorePath = '';
-    if (imagePath.value != '') {
-      firebaseStorePath =
-          await _profileImageUploadUsecase.execute(uid, imagePath.value);
-    }
-
     final profile = Profile(
       name: nameTextController.text,
       birthDate: DateTime.parse(
         DateUtil.convertToYYYYMMDD(birthdayTextController.text),
       ),
       bio: bioTextController.text,
-      imageUrl: firebaseStorePath,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
 
-    await _profileSaveUsecase.execute(uid, profile);
+    await _profileSaveUsecase.execute(uid, profile, imagePath.value);
     await _stringSaveSharedPrefUsecase.execute('uid', uid);
     _profileNotifier.setProfile(profile);
   }
@@ -65,7 +55,6 @@ class ProfileEditPageViewModel {
 
 final profileEditPageViewModelProvider = Provider(
   (ref) => ProfileEditPageViewModel(
-    ref.read(profileImageUploadUsecaseProvider),
     ref.read(profileSaveUsecaseProvider),
     ref.read(stringSaveSharedPrefUsecaseProvider),
     ref.read(profileNotifierProvider.notifier),

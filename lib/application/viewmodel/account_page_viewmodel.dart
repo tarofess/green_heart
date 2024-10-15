@@ -27,7 +27,11 @@ class AccountPageViewModel {
     if (deletedProfile == null && _user?.uid == null) {
       throw Exception('プロフィール情報が取得できませんでした。');
     }
-    await _profileSaveUsecase.execute(_user!.uid, deletedProfile!);
+    await _profileSaveUsecase.execute(
+      _user!.uid,
+      deletedProfile!,
+      deletedProfile.imageUrl,
+    );
   }
 }
 

@@ -11,8 +11,13 @@ class ProfileSaveUsecase {
 
   ProfileSaveUsecase(this._profileRepository);
 
-  Future<void> execute(String uid, Profile profile) async {
+  Future<void> execute(String uid, Profile profile, String? path) async {
     try {
+      String? firebaseStorePath;
+      if (path != null) {
+        firebaseStorePath = await _profileRepository.uploadImage(uid, path);
+        profile = profile.copyWith(imageUrl: firebaseStorePath);
+      }
       await _profileRepository.saveProfile(uid, profile);
     } on TimeoutException {
       throw Exception('処理がタイムアウトしました。通信環境をご確認ください。');

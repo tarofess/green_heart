@@ -11,7 +11,7 @@ _$ProfileImpl _$$ProfileImplFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       birthDate: DateTime.parse(json['birthDate'] as String),
       bio: json['bio'] as String,
-      imageUrl: json['imageUrl'] as String,
+      imageUrl: json['imageUrl'] as String?,
       status: (json['status'] as num?)?.toInt() ?? 1,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),

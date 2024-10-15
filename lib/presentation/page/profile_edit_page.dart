@@ -118,7 +118,7 @@ class ProfileEditPage extends HookConsumerWidget {
                     ),
               onTap: () async {
                 await showProfileImageActionSheet(context, ref, imagePath);
-                unfocusAllKeyboard();
+                _unfocusAllKeyboard();
               },
             ),
           ),
@@ -128,7 +128,7 @@ class ProfileEditPage extends HookConsumerWidget {
               child: const Text('プロフィール画像を編集'),
               onPressed: () async {
                 await showProfileImageActionSheet(context, ref, imagePath);
-                unfocusAllKeyboard();
+                _unfocusAllKeyboard();
               },
             ),
           ),
@@ -262,7 +262,7 @@ class ProfileEditPage extends HookConsumerWidget {
     }
   }
 
-  void unfocusAllKeyboard() {
+  void _unfocusAllKeyboard() {
     _nameFocusNode.unfocus();
     _bioFocusNode.unfocus();
   }
