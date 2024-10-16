@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'package:green_heart/application/exception/app_exception.dart';
 import 'package:green_heart/application/interface/notification_repository.dart';
+import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 
 class FcmNotificationRepository implements NotificationRepository {
   @override
@@ -11,7 +13,8 @@ class FcmNotificationRepository implements NotificationRepository {
         'timestamp': FieldValue.serverTimestamp(),
       });
     } catch (e) {
-      throw Exception('fcmTokenの保存に失敗しました。');
+      final exception = ExceptionHandler.handleException(e);
+      throw exception ?? AppException('fcmTokenの保存に失敗しました。');
     }
   }
 }

@@ -2,8 +2,10 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
+import 'package:green_heart/application/exception/app_exception.dart';
 import 'package:green_heart/application/interface/post_repository.dart';
 import 'package:green_heart/domain/type/post.dart';
+import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 
 class FirebasePostRepository implements PostRepository {
   @override
@@ -13,7 +15,8 @@ class FirebasePostRepository implements PostRepository {
       final docRef = firestore.collection('post').doc();
       await docRef.set(post.toJson());
     } catch (e) {
-      throw Exception('投稿に失敗しました。再度お試しください。');
+      final exception = ExceptionHandler.handleException(e);
+      throw exception ?? AppException('投稿に失敗しました。再度お試しください。');
     }
   }
 
@@ -33,7 +36,8 @@ class FirebasePostRepository implements PostRepository {
       }
       return urls;
     } catch (e) {
-      throw Exception('画像のアップロードに失敗しました。再度お試しください。');
+      final exception = ExceptionHandler.handleException(e);
+      throw exception ?? AppException('画像のアップロードに失敗しました。再度お試しください。');
     }
   }
 
@@ -45,7 +49,8 @@ class FirebasePostRepository implements PostRepository {
         await ref.delete();
       }
     } catch (e) {
-      throw Exception('画像アップロードのロールバック処理に失敗しました。');
+      final exception = ExceptionHandler.handleException(e);
+      throw exception ?? AppException('画像アップロードのロールバック処理に失敗しました。');
     }
   }
 }

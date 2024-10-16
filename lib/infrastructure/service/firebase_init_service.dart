@@ -5,7 +5,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 import 'package:green_heart/application/interface/init_service.dart';
+import 'package:green_heart/application/exception/app_exception.dart';
 import 'package:green_heart/firebase_options.dart';
+import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 import 'package:green_heart/infrastructure/service/messaging_handlers_service.dart';
 
 class FirebaseInitService implements InitService {
@@ -20,7 +22,8 @@ class FirebaseInitService implements InitService {
       await setupCrashlytics();
       await setupMessaging();
     } catch (e) {
-      rethrow;
+      final exception = ExceptionHandler.handleException(e);
+      throw exception ?? AppException(e.toString());
     }
   }
 
@@ -31,7 +34,8 @@ class FirebaseInitService implements InitService {
         options: DefaultFirebaseOptions.currentPlatform,
       );
     } catch (e) {
-      throw Exception('Firebaseの初期化に失敗しました。');
+      final exception = ExceptionHandler.handleException(e);
+      throw exception ?? AppException('Firebaseの初期化に失敗しました。');
     }
   }
 
@@ -45,7 +49,8 @@ class FirebaseInitService implements InitService {
         return true;
       };
     } catch (e) {
-      throw Exception('Firebase Crashlyticsの初期化に失敗しました。');
+      final exception = ExceptionHandler.handleException(e);
+      throw exception ?? AppException('Firebase Crashlyticsの初期化に失敗しました。');
     }
   }
 
@@ -65,7 +70,8 @@ class FirebaseInitService implements InitService {
 
       _messagingHandlersService.setupNotificationHandlers();
     } catch (e) {
-      throw Exception('Firebase Messagingの初期化に失敗しました。');
+      final exception = ExceptionHandler.handleException(e);
+      throw exception ?? AppException('Firebase Messagingの初期化に失敗しました。');
     }
   }
 }

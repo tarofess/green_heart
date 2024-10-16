@@ -1,6 +1,8 @@
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:green_heart/application/interface/email_service.dart';
+import 'package:green_heart/application/exception/app_exception.dart';
+import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 
 class ContactEmailService implements EmailService {
   @override
@@ -17,10 +19,11 @@ class ContactEmailService implements EmailService {
       if (await canLaunchUrl(emailLaunchUri)) {
         await launchUrl(emailLaunchUri);
       } else {
-        throw Exception('メールアプリを起動できませんでした。');
+        throw AppException('メールアプリを起動できませんでした。');
       }
     } catch (e) {
-      throw Exception('メールを送信できませんでした。再度お試しください。');
+      final exception = ExceptionHandler.handleException(e);
+      throw exception ?? AppException('メールを送信できませんでした。再度お試しください。');
     }
   }
 }

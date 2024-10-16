@@ -1,6 +1,8 @@
 import 'package:image_picker/image_picker.dart';
 
 import 'package:green_heart/application/interface/picture_service.dart';
+import 'package:green_heart/application/exception/app_exception.dart';
+import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 
 class ImagePickerService implements PictureService {
   @override
@@ -14,7 +16,8 @@ class ImagePickerService implements PictureService {
       );
       return photo?.path;
     } catch (e) {
-      throw Exception('写真の撮影に失敗しました。再度お試しください。');
+      final exception = ExceptionHandler.handleException(e);
+      throw exception ?? AppException('写真の撮影に失敗しました。再度お試しください。');
     }
   }
 
@@ -29,7 +32,8 @@ class ImagePickerService implements PictureService {
       );
       return image?.path;
     } catch (e) {
-      throw Exception('写真の選択に失敗しました。再度お試しください。');
+      final exception = ExceptionHandler.handleException(e);
+      throw exception ?? AppException('写真の選択に失敗しました。再度お試しください。');
     }
   }
 
@@ -44,7 +48,8 @@ class ImagePickerService implements PictureService {
       );
       return images.map((image) => image.path).toList();
     } catch (e) {
-      throw Exception('写真の選択に失敗しました。再度お試しください。');
+      final exception = ExceptionHandler.handleException(e);
+      throw exception ?? AppException('写真の選択に失敗しました。再度お試しください。');
     }
   }
 }

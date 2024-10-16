@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:green_heart/application/exception/app_exception.dart';
 
 import 'package:green_heart/application/interface/profile_repository.dart';
 import 'package:green_heart/domain/type/profile.dart';
+import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 
 class FirebaseProfileRepository implements ProfileRepository {
   @override
@@ -18,27 +20,9 @@ class FirebaseProfileRepository implements ProfileRepository {
       } else {
         return null;
       }
-    } on TimeoutException {
-      throw Exception('処理がタイムアウトしました。通信環境をご確認ください。');
-    } on SocketException {
-      throw Exception('ネットワーク接続エラーが発生しました。インターネット接続をご確認ください。');
-    } on HttpException {
-      throw Exception('HTTPエラーが発生しました。しばらくしてから再度お試しください。');
-    } on FormatException {
-      throw Exception('データの形式が正しくありません。アプリを更新してください。');
-    } on FirebaseException catch (e) {
-      switch (e.code) {
-        case 'permission-denied':
-          throw Exception('アクセス権限がありません。');
-        case 'not-found':
-          throw Exception('プロフィールが見つかりません。');
-        case 'unavailable':
-          throw Exception('サービスが一時的に利用できません。しばらくしてから再度お試しください。');
-        default:
-          throw Exception('Firebaseエラーが発生しました: ${e.message}');
-      }
     } catch (e) {
-      throw Exception('予期せぬエラーが発生しました。サポートにお問い合わせください。');
+      final exception = ExceptionHandler.handleException(e);
+      throw exception ?? AppException('プロフィールの取得に失敗しました。再度お試しください。');
     }
   }
 
@@ -48,38 +32,25 @@ class FirebaseProfileRepository implements ProfileRepository {
       final firestore = FirebaseFirestore.instance;
       final docRef = firestore.collection('profile').doc(uid);
       await docRef.set(profile.toJson());
-    } on TimeoutException {
-      throw Exception('処理がタイムアウトしました。通信環境をご確認ください。');
-    } on SocketException {
-      throw Exception('ネットワーク接続エラーが発生しました。インターネット接続をご確認ください。');
-    } on HttpException {
-      throw Exception('HTTPエラーが発生しました。しばらくしてから再度お試しください。');
-    } on FormatException {
-      throw Exception('データの形式が正しくありません。アプリを更新してください。');
-    } on FirebaseException catch (e) {
-      switch (e.code) {
-        case 'permission-denied':
-          throw Exception('プロフィールの保存権限がありません。');
-        case 'unavailable':
-          throw Exception('サービスが一時的に利用できません。しばらくしてから再度お試しください。');
-        case 'unauthenticated':
-          throw Exception('認証エラーが発生しました。再度ログインしてください。');
-        default:
-          throw Exception('Firebaseエラーが発生しました: ${e.message}');
-      }
     } catch (e) {
-      throw Exception('予期せぬエラーが発生しました。サポートにお問い合わせください。');
+      final exception = ExceptionHandler.handleException(e);
+      throw exception ?? AppException('プロフィールの保存に失敗しました。再度お試しください。');
     }
   }
 
   @override
   Future<String> uploadImage(String uid, String path) async {
-    File file = File(path);
-    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    Reference ref = FirebaseStorage.instance
-        .ref()
-        .child('image/profile/$uid/$fileName.jpg');
-    await ref.putFile(file);
-    return await ref.getDownloadURL();
+    try {
+      File file = File(path);
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      Reference ref = FirebaseStorage.instance
+          .ref()
+          .child('image/profile/$uid/$fileName.jpg');
+      await ref.putFile(file);
+      return await ref.getDownloadURL();
+    } catch (e) {
+      final exception = ExceptionHandler.handleException(e);
+      throw exception ?? AppException('プロフィール画像のアップロードに失敗しました。再度お試しください。');
+    }
   }
 }
