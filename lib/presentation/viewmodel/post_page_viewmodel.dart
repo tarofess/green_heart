@@ -28,26 +28,26 @@ class PostPageViewModel {
       return;
     }
 
-    try {
-      final int remainingSlots = 4 - selectedImages.value.length;
-      if (remainingSlots > 1) {
-        final List<String> images = await _pickMultipleImageUsecase.execute();
-        selectedImages.value = [...selectedImages.value, ...images];
-      } else {
-        final String? image = await _pickImageUsecase.execute();
-        if (image != null) {
-          selectedImages.value = [...selectedImages.value, image];
-        }
+    final int remainingSlots = 4 - selectedImages.value.length;
+    if (remainingSlots > 1) {
+      final List<String> images = await _pickMultipleImageUsecase.execute();
+      selectedImages.value = [...selectedImages.value, ...images];
+    } else {
+      final String? image = await _pickImageUsecase.execute();
+      if (image != null) {
+        selectedImages.value = [...selectedImages.value, image];
       }
-    } catch (e) {
-      throw Exception('画像の取得に失敗しました。再度お試しください。');
     }
   }
 
   Future<void> uploadPost(
       String content, ValueNotifier<List<String>> selectedImages) async {
+    if (_user == null) {
+      throw Exception('投稿ができません。アカウントがログアウトされている可能性があります。');
+    }
+
     final post = Post(
-      uid: _user!.uid,
+      uid: _user.uid,
       content: content,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),

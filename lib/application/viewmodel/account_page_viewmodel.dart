@@ -15,17 +15,18 @@ class AccountPageViewModel {
   AccountPageViewModel(this._profile, this._user, this._profileSaveUsecase);
 
   Future<void> deleteAccount() async {
-    final deletedProfile = _profile?.copyWith(
+    if (_profile == null || _user == null) {
+      throw Exception('現在アカウントを削除できません。のちほどお試しください。');
+    }
+
+    final deletedProfile = _profile.copyWith(
       status: -1,
       updatedAt: DateTime.now(),
     );
 
-    if (deletedProfile == null && _user?.uid == null) {
-      throw Exception('プロフィール情報が取得できませんでした。');
-    }
     await _profileSaveUsecase.execute(
-      _user!.uid,
-      deletedProfile!,
+      _user.uid,
+      deletedProfile,
       deletedProfile.imageUrl,
     );
   }

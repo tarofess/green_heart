@@ -31,10 +31,8 @@ class ProfileEditPageViewModel {
     TextEditingController birthdayTextController,
     TextEditingController bioTextController,
   ) async {
-    final uid = _user?.uid;
-    if (uid == null) {
-      throw Exception('ユーザーIDが取得できませんでした。'
-          '再度お試しください。');
+    if (_user == null) {
+      throw Exception('プロフィールが保存できません。アカウントがログアウトされている可能性があります。');
     }
 
     final profile = Profile(
@@ -47,8 +45,8 @@ class ProfileEditPageViewModel {
       updatedAt: DateTime.now(),
     );
 
-    await _profileSaveUsecase.execute(uid, profile, imagePath.value);
-    await _stringSaveSharedPrefUsecase.execute('uid', uid);
+    await _profileSaveUsecase.execute(_user.uid, profile, imagePath.value);
+    await _stringSaveSharedPrefUsecase.execute('uid', _user.uid);
     _profileNotifier.setProfile(profile);
   }
 }

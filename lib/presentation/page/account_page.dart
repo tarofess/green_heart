@@ -60,7 +60,7 @@ class AccountPage extends HookConsumerWidget {
               },
               body: ListTile(
                   title:
-                      Text(ref.read(authStateProvider).value?.email ?? '不明')),
+                      Text(ref.read(authStateProvider).value?.email ?? 'なし')),
               isExpanded: isExpandedList.value[1],
             ),
           ],
