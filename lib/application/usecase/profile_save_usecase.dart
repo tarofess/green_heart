@@ -10,7 +10,7 @@ class ProfileSaveUsecase {
 
   Future<void> execute(String uid, Profile profile, String? path) async {
     String? firebaseStorePath;
-    if (path != null) {
+    if (path != null && path.isNotEmpty) {
       firebaseStorePath = await _profileRepository.uploadImage(uid, path);
       profile = profile.copyWith(imageUrl: firebaseStorePath);
     }
