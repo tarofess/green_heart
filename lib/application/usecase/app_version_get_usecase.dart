@@ -6,10 +6,6 @@ class AppVersionGetUsecase {
   AppVersionGetUsecase(this._appInfoService);
 
   Future<String> execute() async {
-    try {
-      return await _appInfoService.getAppVersion();
-    } catch (e) {
-      throw Exception('アプリの情報を取得できませんでした。');
-    }
+    return await _appInfoService.getAppVersion();
   }
 }

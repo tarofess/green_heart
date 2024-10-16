@@ -6,10 +6,6 @@ class TakePhotoUsecase {
   TakePhotoUsecase(this._pictureService);
 
   Future<String?> execute() async {
-    try {
-      return await _pictureService.takePhoto();
-    } catch (e) {
-      throw Exception('写真の撮影に失敗しました。');
-    }
+    return await _pictureService.takePhoto();
   }
 }

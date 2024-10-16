@@ -6,10 +6,6 @@ class FirebaseInitUsecase {
   FirebaseInitUsecase(this._initService);
 
   Future<void> execute() async {
-    try {
-      await _initService.initialize();
-    } catch (e) {
-      throw Exception('Firebaseの初期化に失敗しました。再度お試しください。');
-    }
+    await _initService.initialize();
   }
 }

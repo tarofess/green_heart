@@ -6,10 +6,6 @@ class StringSaveSharedPrefUsecase {
   StringSaveSharedPrefUsecase(this._sharedPrefService);
 
   Future<void> execute(String key, String value) async {
-    try {
-      await _sharedPrefService.setString(key, value);
-    } catch (e) {
-      throw Exception('文字列の保存中にエラーが発生しました。再度お試しください。');
-    }
+    await _sharedPrefService.setString(key, value);
   }
 }

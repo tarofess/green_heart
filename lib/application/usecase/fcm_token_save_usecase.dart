@@ -16,16 +16,12 @@ class FcmTokenSaveUsecase {
   );
 
   Future<void> execute(String uid) async {
-    try {
-      String? savedToken = await _getSharedPreferences.execute('fcmToken');
-      String? currentToken = await FirebaseMessaging.instance.getToken();
+    String? savedToken = await _getSharedPreferences.execute('fcmToken');
+    String? currentToken = await FirebaseMessaging.instance.getToken();
 
-      if (currentToken != null && savedToken != currentToken) {
-        await _notificationRepository.saveFcmToken(uid, currentToken);
-        await _saveSharedPreferences.execute('fcmToken', currentToken);
-      }
-    } catch (e) {
-      throw Exception('fcmTokenの保存に失敗しました。再度お試しください。');
+    if (currentToken != null && savedToken != currentToken) {
+      await _notificationRepository.saveFcmToken(uid, currentToken);
+      await _saveSharedPreferences.execute('fcmToken', currentToken);
     }
   }
 }

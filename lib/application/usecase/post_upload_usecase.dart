@@ -7,12 +7,14 @@ class PostUploadUsecase {
   PostUploadUsecase(this._postRepository);
 
   Future<void> execute(Post post, String uid, List<String> paths) async {
+    final imageUrls = await _postRepository.uploadImages(uid, paths);
+    post = post.copyWith(imageUrls: imageUrls);
     try {
-      final imageUrls = await _postRepository.uploadImages(uid, paths);
-      post = post.copyWith(imageUrls: imageUrls);
       await _postRepository.uploadPost(post);
     } catch (e) {
-      throw Exception('投稿に失敗しました。再度お試しください。');
+      // ロールバック処理
+      await _postRepository.deleteImages(imageUrls);
+      rethrow;
     }
   }
 }

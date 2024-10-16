@@ -1,9 +1,9 @@
 import 'dart:ui';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+
 import 'package:green_heart/application/interface/init_service.dart';
 import 'package:green_heart/firebase_options.dart';
 import 'package:green_heart/infrastructure/service/messaging_handlers_service.dart';

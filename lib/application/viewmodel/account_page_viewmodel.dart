@@ -12,11 +12,7 @@ class AccountPageViewModel {
   final User? _user;
   final ProfileSaveUsecase _profileSaveUsecase;
 
-  AccountPageViewModel(
-    this._profile,
-    this._user,
-    this._profileSaveUsecase,
-  );
+  AccountPageViewModel(this._profile, this._user, this._profileSaveUsecase);
 
   Future<void> deleteAccount() async {
     final deletedProfile = _profile?.copyWith(

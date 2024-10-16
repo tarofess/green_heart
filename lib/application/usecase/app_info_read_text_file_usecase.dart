@@ -6,10 +6,6 @@ class AppInfoReadTextFileUsecase {
   AppInfoReadTextFileUsecase(this._historyService);
 
   Future<String?> execute(String fileName) async {
-    try {
-      return await _historyService.readFileText(fileName);
-    } catch (e) {
-      throw Exception('ファイルの読み込みに失敗しました。');
-    }
+    return await _historyService.readFileText(fileName);
   }
 }

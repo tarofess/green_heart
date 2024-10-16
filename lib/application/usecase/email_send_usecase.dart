@@ -6,10 +6,6 @@ class EmailSendUsecase {
   EmailSendUsecase(this._emailService);
 
   Future<void> execute() async {
-    try {
-      await _emailService.sendEmail();
-    } catch (e) {
-      throw Exception('メールを送信できませんでした。再度お試しください。');
-    }
+    await _emailService.sendEmail();
   }
 }
