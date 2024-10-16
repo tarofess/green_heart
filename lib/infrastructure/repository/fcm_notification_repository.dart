@@ -12,8 +12,8 @@ class FcmNotificationRepository implements NotificationRepository {
         'token': fcmToken,
         'timestamp': FieldValue.serverTimestamp(),
       });
-    } catch (e) {
-      final exception = ExceptionHandler.handleException(e);
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('fcmTokenの保存に失敗しました。');
     }
   }

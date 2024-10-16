@@ -21,8 +21,8 @@ class ContactEmailService implements EmailService {
       } else {
         throw AppException('メールアプリを起動できませんでした。');
       }
-    } catch (e) {
-      final exception = ExceptionHandler.handleException(e);
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('メールを送信できませんでした。再度お試しください。');
     }
   }

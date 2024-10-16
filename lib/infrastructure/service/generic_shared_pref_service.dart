@@ -10,8 +10,8 @@ class GenericSharedPrefService implements SharedPrefService {
     try {
       final prefs = await SharedPreferences.getInstance();
       return prefs.getString(key);
-    } catch (e) {
-      final exception = ExceptionHandler.handleException(e);
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('端末に保存された文字列の取得に失敗しました。');
     }
   }
@@ -21,8 +21,8 @@ class GenericSharedPrefService implements SharedPrefService {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(key, value);
-    } catch (e) {
-      final exception = ExceptionHandler.handleException(e);
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('端末に文字列を保存する時にエラーが発生しました。');
     }
   }

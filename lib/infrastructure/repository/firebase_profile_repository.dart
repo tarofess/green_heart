@@ -20,8 +20,8 @@ class FirebaseProfileRepository implements ProfileRepository {
       } else {
         return null;
       }
-    } catch (e) {
-      final exception = ExceptionHandler.handleException(e);
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('プロフィールの取得に失敗しました。再度お試しください。');
     }
   }
@@ -32,8 +32,8 @@ class FirebaseProfileRepository implements ProfileRepository {
       final firestore = FirebaseFirestore.instance;
       final docRef = firestore.collection('profile').doc(uid);
       await docRef.set(profile.toJson());
-    } catch (e) {
-      final exception = ExceptionHandler.handleException(e);
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('プロフィールの保存に失敗しました。再度お試しください。');
     }
   }
@@ -48,8 +48,8 @@ class FirebaseProfileRepository implements ProfileRepository {
           .child('image/profile/$uid/$fileName.jpg');
       await ref.putFile(file);
       return await ref.getDownloadURL();
-    } catch (e) {
-      final exception = ExceptionHandler.handleException(e);
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('プロフィール画像のアップロードに失敗しました。再度お試しください。');
     }
   }
@@ -59,8 +59,8 @@ class FirebaseProfileRepository implements ProfileRepository {
     try {
       final ref = FirebaseStorage.instance.refFromURL(url);
       await ref.delete();
-    } catch (e) {
-      final exception = ExceptionHandler.handleException(e);
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('プロフィール画像の削除に失敗しました。再度お試しください。');
     }
   }

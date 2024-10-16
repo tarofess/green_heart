@@ -10,8 +10,8 @@ class MyAppInfoService implements AppInfoService {
     try {
       final packageInfo = await PackageInfo.fromPlatform();
       return packageInfo.version;
-    } catch (e) {
-      final exception = ExceptionHandler.handleException(e);
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('アプリのバージョンを取得できませんでした。');
     }
   }

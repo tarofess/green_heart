@@ -1,12 +1,18 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import 'package:green_heart/application/exception/app_exception.dart';
 
 class ExceptionHandler {
-  static AppException? handleException(dynamic e) {
+  static Future<AppException?> handleException(
+    dynamic e,
+    StackTrace? stackTrace,
+  ) async {
+    await FirebaseCrashlytics.instance.recordError(e, stackTrace);
+
     if (e is FirebaseAuthException) {
       return _handleFirebaseAuthException(e);
     } else if (e is SignInWithAppleAuthorizationException) {

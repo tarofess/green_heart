@@ -14,8 +14,8 @@ class FirebasePostRepository implements PostRepository {
       final firestore = FirebaseFirestore.instance;
       final docRef = firestore.collection('post').doc();
       await docRef.set(post.toJson());
-    } catch (e) {
-      final exception = ExceptionHandler.handleException(e);
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('投稿に失敗しました。再度お試しください。');
     }
   }
@@ -35,8 +35,8 @@ class FirebasePostRepository implements PostRepository {
         urls.add(url);
       }
       return urls;
-    } catch (e) {
-      final exception = ExceptionHandler.handleException(e);
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('画像のアップロードに失敗しました。再度お試しください。');
     }
   }
@@ -48,8 +48,8 @@ class FirebasePostRepository implements PostRepository {
         Reference ref = FirebaseStorage.instance.refFromURL(url);
         await ref.delete();
       }
-    } catch (e) {
-      final exception = ExceptionHandler.handleException(e);
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('画像アップロードのロールバック処理に失敗しました。');
     }
   }

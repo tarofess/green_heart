@@ -9,8 +9,8 @@ class AppInfoFileService implements FileService {
   Future<String?> readFileText(String fileName) async {
     try {
       return await rootBundle.loadString('assets/$fileName');
-    } catch (e) {
-      final exception = ExceptionHandler.handleException(e);
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('アプリ情報の読み込みに失敗しました。');
     }
   }

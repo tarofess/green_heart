@@ -15,8 +15,8 @@ class ImagePickerService implements PictureService {
         imageQuality: 80,
       );
       return photo?.path;
-    } catch (e) {
-      final exception = ExceptionHandler.handleException(e);
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('写真の撮影に失敗しました。再度お試しください。');
     }
   }
@@ -31,8 +31,8 @@ class ImagePickerService implements PictureService {
         imageQuality: 80,
       );
       return image?.path;
-    } catch (e) {
-      final exception = ExceptionHandler.handleException(e);
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('写真の選択に失敗しました。再度お試しください。');
     }
   }
@@ -47,8 +47,8 @@ class ImagePickerService implements PictureService {
         limit: 4,
       );
       return images.map((image) => image.path).toList();
-    } catch (e) {
-      final exception = ExceptionHandler.handleException(e);
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('写真の選択に失敗しました。再度お試しください。');
     }
   }

@@ -21,8 +21,8 @@ class FirebaseInitService implements InitService {
       await initFirebase();
       await setupCrashlytics();
       await setupMessaging();
-    } catch (e) {
-      final exception = ExceptionHandler.handleException(e);
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException(e.toString());
     }
   }
@@ -33,8 +33,8 @@ class FirebaseInitService implements InitService {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
-    } catch (e) {
-      final exception = ExceptionHandler.handleException(e);
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('Firebaseの初期化に失敗しました。');
     }
   }
@@ -48,8 +48,8 @@ class FirebaseInitService implements InitService {
         FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
         return true;
       };
-    } catch (e) {
-      final exception = ExceptionHandler.handleException(e);
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('Firebase Crashlyticsの初期化に失敗しました。');
     }
   }
@@ -69,8 +69,8 @@ class FirebaseInitService implements InitService {
       );
 
       _messagingHandlersService.setupNotificationHandlers();
-    } catch (e) {
-      final exception = ExceptionHandler.handleException(e);
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('Firebase Messagingの初期化に失敗しました。');
     }
   }
