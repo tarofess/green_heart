@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:green_heart/application/exception/app_exception.dart';
 
+import 'package:green_heart/application/exception/app_exception.dart';
 import 'package:green_heart/application/interface/profile_repository.dart';
 import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/infrastructure/exception/exception_handler.dart';
@@ -51,6 +51,17 @@ class FirebaseProfileRepository implements ProfileRepository {
     } catch (e) {
       final exception = ExceptionHandler.handleException(e);
       throw exception ?? AppException('プロフィール画像のアップロードに失敗しました。再度お試しください。');
+    }
+  }
+
+  @override
+  Future<void> deleteImage(String url) async {
+    try {
+      final ref = FirebaseStorage.instance.refFromURL(url);
+      await ref.delete();
+    } catch (e) {
+      final exception = ExceptionHandler.handleException(e);
+      throw exception ?? AppException('プロフィール画像の削除に失敗しました。再度お試しください。');
     }
   }
 }

@@ -14,6 +14,17 @@ class ProfileSaveUsecase {
       firebaseStorePath = await _profileRepository.uploadImage(uid, path);
       profile = profile.copyWith(imageUrl: firebaseStorePath);
     }
-    await _profileRepository.saveProfile(uid, profile);
+    try {
+      await _profileRepository.saveProfile(uid, profile);
+    } catch (e) {
+      if (firebaseStorePath != null) {
+        await _rollbackUploadImage(firebaseStorePath);
+      }
+      rethrow;
+    }
+  }
+
+  Future<void> _rollbackUploadImage(String firebaseStorePath) async {
+    await _profileRepository.deleteImage(firebaseStorePath);
   }
 }
