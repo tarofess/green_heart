@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -16,22 +17,34 @@ class AccountPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isExpandedList = useState<List<bool>>([false, false]);
+    final isExpandedList = useState<List<bool>>([false, false, false]);
     final providerName = useState('');
+    final registrationDate = useState('');
 
     useEffect(() {
-      switch (
-          ref.read(authStateProvider).value?.providerData.first.providerId) {
-        case 'google.com':
-          providerName.value = 'Google';
-          break;
-        case 'apple.com':
-          providerName.value = 'Apple';
-          break;
-        default:
-          providerName.value = '不明';
-          break;
+      void setProviderName() {
+        switch (
+            ref.read(authStateProvider).value?.providerData.first.providerId) {
+          case 'google.com':
+            providerName.value = 'Google';
+            break;
+          case 'apple.com':
+            providerName.value = 'Apple';
+            break;
+          default:
+            providerName.value = '不明';
+            break;
+        }
       }
+
+      void setRegistrationDate() {
+        final creationTime =
+            ref.read(authStateProvider).value?.metadata.creationTime;
+        registrationDate.value = DateUtil.formatCreationTime(creationTime);
+      }
+
+      setProviderName();
+      setRegistrationDate();
       return;
     });
 
@@ -49,9 +62,9 @@ class AccountPage extends HookConsumerWidget {
           children: [
             ExpansionPanel(
               headerBuilder: (BuildContext context, bool isExpanded) {
-                return const ListTile(title: Text('ログイン状態'));
+                return const ListTile(title: Text('ログイン方法'));
               },
-              body: ListTile(title: Text('${providerName.value}アカウントでログイン中')),
+              body: ListTile(title: Text('${providerName.value}アカウントでログイン')),
               isExpanded: isExpandedList.value[0],
             ),
             ExpansionPanel(
@@ -62,6 +75,13 @@ class AccountPage extends HookConsumerWidget {
                   title:
                       Text(ref.read(authStateProvider).value?.email ?? 'なし')),
               isExpanded: isExpandedList.value[1],
+            ),
+            ExpansionPanel(
+              headerBuilder: (BuildContext context, bool isExpanded) {
+                return const ListTile(title: Text('登録日'));
+              },
+              body: ListTile(title: Text(registrationDate.value)),
+              isExpanded: isExpandedList.value[2],
             ),
           ],
         ),

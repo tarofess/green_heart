@@ -90,6 +90,7 @@ flutter:
     - assets/terms_of_use.txt
     - assets/privacy_policy.txt
     - assets/update_history.txt
+    - assets/images/post_floating_action_icon.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
