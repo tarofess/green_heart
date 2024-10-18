@@ -6,4 +6,6 @@ abstract class AuthService {
   Future<void> signInWithGoogle();
   Future<void> signInWithApple();
   Future<void> signOut();
+  Future<void> reauthenticateWithGoogle();
+  Future<void> reauthenticateWithApple();
 }

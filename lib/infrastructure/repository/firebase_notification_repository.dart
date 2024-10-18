@@ -4,7 +4,7 @@ import 'package:green_heart/application/exception/app_exception.dart';
 import 'package:green_heart/application/interface/notification_repository.dart';
 import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 
-class FcmNotificationRepository implements NotificationRepository {
+class FirebaseNotificationRepository implements NotificationRepository {
   @override
   Future<void> saveFcmToken(String uid, String fcmToken) async {
     try {
@@ -15,6 +15,16 @@ class FcmNotificationRepository implements NotificationRepository {
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('fcmTokenの保存に失敗しました。');
+    }
+  }
+
+  @override
+  Future<void> deleteFcmToken(String uid) async {
+    try {
+      await FirebaseFirestore.instance.collection('fcmToken').doc(uid).delete();
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('fcmTokenの削除に失敗しました。');
     }
   }
 }

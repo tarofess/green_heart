@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:green_heart/application/state/delete_account_state_provider.dart';
 import 'package:green_heart/domain/type/profile.dart';
+import 'package:green_heart/presentation/page/account_deleted_page.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/auth_state_provider.dart';
@@ -94,12 +96,21 @@ final routerProvider = Provider<GoRouter>((ref) {
           return AppInfoPage(appInfo: appInfo);
         },
       ),
+      GoRoute(
+        path: '/account_deleted',
+        builder: (context, state) => const AccountDeletedPage(),
+      ),
     ],
     redirect: (BuildContext context, GoRouterState state) {
       final isLoggedIn = authState.value != null;
       final profileState = ref.read(profileNotifierProvider);
       final isProfileLoaded = profileState is AsyncData;
       final profile = isProfileLoaded ? profileState.value : null;
+      final isAccountDeleted = ref.read(deleteAccountStateProvider);
+
+      if (isAccountDeleted) {
+        return '/account_deleted';
+      }
 
       if (!isLoggedIn && state.matchedLocation != '/signin') {
         return '/signin';

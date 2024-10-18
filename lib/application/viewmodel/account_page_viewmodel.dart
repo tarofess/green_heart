@@ -1,40 +1,30 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:green_heart/application/di/account_di.dart';
+import 'package:green_heart/application/usecase/account_delete_usecase.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/state/profile_notifier_provider.dart';
-import 'package:green_heart/application/usecase/profile_save_usecase.dart';
 import 'package:green_heart/domain/type/profile.dart';
 
 class AccountPageViewModel {
   final Profile? _profile;
   final User? _user;
-  final ProfileSaveUsecase _profileSaveUsecase;
+  final AccountDeleteUsecase _accountDeleteUsecase;
 
-  AccountPageViewModel(this._profile, this._user, this._profileSaveUsecase);
+  AccountPageViewModel(this._profile, this._user, this._accountDeleteUsecase);
 
   Future<void> deleteAccount() async {
     if (_profile == null || _user == null) {
       throw Exception('現在アカウントを削除できません。のちほどお試しください。');
     }
 
-    final deletedProfile = _profile.copyWith(
-      status: -1,
-      updatedAt: DateTime.now(),
-    );
-
-    await _profileSaveUsecase.execute(
-      _user.uid,
-      deletedProfile,
-      deletedProfile.imageUrl,
-      null,
-    );
+    await _accountDeleteUsecase.execute(_user);
   }
 }
 
 final accountPageViewModelProvider = Provider((ref) => AccountPageViewModel(
       ref.read(profileNotifierProvider).value,
       ref.read(authStateProvider).value,
-      ref.read(profileSaveUsecaseProvider),
+      ref.read(accountDeleteUsecaseProvider),
     ));

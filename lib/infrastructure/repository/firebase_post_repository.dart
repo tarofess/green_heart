@@ -42,6 +42,32 @@ class FirebasePostRepository implements PostRepository {
   }
 
   @override
+  Future<void> deletePost(String postId) async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+      await firestore.collection('post').doc(postId).delete();
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('投稿の削除に失敗しました。再度お試しください。');
+    }
+  }
+
+  @override
+  Future<void> deleteAllPosts(String uid) async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+      final querySnapshot =
+          await firestore.collection('post').where('uid', isEqualTo: uid).get();
+      for (final doc in querySnapshot.docs) {
+        await doc.reference.delete();
+      }
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('投稿の削除に失敗しました。再度お試しください。');
+    }
+  }
+
+  @override
   Future<void> deleteImages(List<String> imageUrls) async {
     try {
       for (final url in imageUrls) {
@@ -51,6 +77,20 @@ class FirebasePostRepository implements PostRepository {
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('画像アップロードのロールバック処理に失敗しました。');
+    }
+  }
+
+  @override
+  Future<void> deleteAllImages(String uid) async {
+    try {
+      final ref = FirebaseStorage.instance.ref().child('image/post/$uid');
+      final listResult = await ref.listAll();
+      for (final item in listResult.items) {
+        await item.delete();
+      }
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('画像の削除に失敗しました。再度お試しください。');
     }
   }
 }

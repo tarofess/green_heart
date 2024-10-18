@@ -77,4 +77,59 @@ class FirebaseAuthService implements AuthService {
       throw exception ?? AppException('ログアウトに失敗しました。再度お試しください。');
     }
   }
+
+  @override
+  Future<void> reauthenticateWithGoogle() async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
+
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleSignInAuthentication =
+            await googleSignInAccount.authentication;
+
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleSignInAuthentication.accessToken,
+          idToken: googleSignInAuthentication.idToken,
+        );
+
+        await FirebaseAuth.instance.currentUser
+            ?.reauthenticateWithCredential(credential);
+      } else {
+        throw AppException('Google認証に失敗しました。再度お試しください。');
+      }
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('再認証に失敗しました。再度お試しください。');
+    }
+  }
+
+  @override
+  Future<void> reauthenticateWithApple() async {
+    try {
+      final rawNonce = AuthUtils.generateNonce();
+      final nonce = AuthUtils.sha256ofString(rawNonce);
+
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+        nonce: nonce,
+      );
+
+      final oauthCredential = OAuthProvider("apple.com").credential(
+        idToken: appleCredential.identityToken,
+        rawNonce: rawNonce,
+        accessToken: appleCredential.authorizationCode,
+      );
+
+      await FirebaseAuth.instance.currentUser
+          ?.reauthenticateWithCredential(oauthCredential);
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('再認証に失敗しました。再度お試しください。');
+    }
+  }
 }

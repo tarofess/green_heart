@@ -11,7 +11,7 @@ class DateUtil {
   static String formatCreationTime(DateTime? creationTime) {
     if (creationTime == null) return '日時不明';
 
-    final formatter = DateFormat('yyyy年MM月dd日 HH時mm分');
+    final formatter = DateFormat('yyyy年MM月dd日');
     return formatter.format(creationTime.toLocal());
   }
 

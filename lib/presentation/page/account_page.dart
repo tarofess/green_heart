@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:green_heart/domain/util/date_util.dart';
-import 'package:green_heart/presentation/widget/loading_overlay.dart';
+import 'package:green_heart/application/state/delete_account_state_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
-import 'package:green_heart/application/di/auth_di.dart';
-import 'package:green_heart/presentation/dialog/message_dialog.dart';
 import 'package:green_heart/application/viewmodel/account_page_viewmodel.dart';
+import 'package:green_heart/domain/util/date_util.dart';
+import 'package:green_heart/presentation/widget/loading_overlay.dart';
 
 class AccountPage extends HookConsumerWidget {
   const AccountPage({super.key});
@@ -106,27 +105,30 @@ class AccountPage extends HookConsumerWidget {
         final result = await showConfirmationDialog(
           context: context,
           title: 'アカウント削除',
-          content: '本当にアカウントを削除しますか？',
-          positiveButtonText: '削除',
+          content: 'アカウントを削除すると復元ができませんが、本当にアカウントを削除しますか？',
+          positiveButtonText: '削除する',
           negativeButtonText: 'キャンセル',
         );
         if (!result) return;
 
+        if (context.mounted) {
+          final result2 = await showConfirmationDialog(
+            context: context,
+            title: '再認証',
+            content: 'アカウント削除を続けるためにもう一度ログインし直してください。',
+            positiveButtonText: 'ログイン',
+            negativeButtonText: 'キャンセル',
+          );
+          if (!result2) return;
+        }
+
         try {
           if (context.mounted) {
-            await LoadingOverlay.of(context).during(
-              () async =>
-                  ref.read(accountPageViewModelProvider).deleteAccount(),
-            );
+            await LoadingOverlay.of(context).during(() async {
+              await ref.read(accountPageViewModelProvider).deleteAccount();
+              ref.read(deleteAccountStateProvider.notifier).state = true;
+            });
           }
-          if (context.mounted) {
-            await showMessageDialog(
-              context: context,
-              title: 'アカウント削除完了',
-              content: 'アカウントを削除しました。',
-            );
-          }
-          await ref.read(signOutUseCaseProvider).execute();
         } catch (e) {
           if (context.mounted) {
             await showErrorDialog(

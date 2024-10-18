@@ -55,13 +55,41 @@ class FirebaseProfileRepository implements ProfileRepository {
   }
 
   @override
+  Future<void> deleteProfile(String uid) async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+      final docRef = firestore.collection('profile').doc(uid);
+      await docRef.delete();
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('プロフィールの削除に失敗しました。再度お試しください。');
+    }
+  }
+
+  @override
   Future<void> deleteImage(String url) async {
     try {
+      if (await checkImageExists(url) == false) {
+        return;
+      }
       final ref = FirebaseStorage.instance.refFromURL(url);
       await ref.delete();
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('プロフィール画像の削除に失敗しました。再度お試しください。');
+    }
+  }
+
+  Future<bool> checkImageExists(String imagePath) async {
+    final ref = FirebaseStorage.instance.ref().child(imagePath);
+    try {
+      await ref.getDownloadURL();
+      return true;
+    } catch (e) {
+      if (e is FirebaseException && e.code == 'object-not-found') {
+        return false;
+      }
+      return false;
     }
   }
 }

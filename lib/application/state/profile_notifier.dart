@@ -17,7 +17,7 @@ class ProfileNotifier extends AsyncNotifier<Profile?> {
     return profile;
   }
 
-  void setProfile(Profile profile) {
+  void setProfile(Profile? profile) {
     state = AsyncData(profile);
   }
 }
