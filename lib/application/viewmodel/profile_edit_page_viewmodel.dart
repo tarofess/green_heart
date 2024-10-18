@@ -62,6 +62,6 @@ final profileEditPageViewModelProvider = Provider(
     ref.read(profileSaveUsecaseProvider),
     ref.read(stringSaveSharedPrefUsecaseProvider),
     ref.read(profileNotifierProvider.notifier),
-    ref.read(authStateProvider).value,
+    ref.watch(authStateProvider).value,
   ),
 );

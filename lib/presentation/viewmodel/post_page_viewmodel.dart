@@ -61,5 +61,5 @@ final postPageViewModel = Provider((ref) => PostPageViewModel(
       ref.read(pickImageUsecaseProvider),
       ref.read(pickMultipleImageUsecaseProvider),
       ref.read(postUploadUsecaseProvider),
-      ref.read(authStateProvider).value!,
+      ref.watch(authStateProvider).value!,
     ));

@@ -25,6 +25,6 @@ class AccountPageViewModel {
 
 final accountPageViewModelProvider = Provider((ref) => AccountPageViewModel(
       ref.read(profileNotifierProvider).value,
-      ref.read(authStateProvider).value,
+      ref.watch(authStateProvider).value,
       ref.read(accountDeleteUsecaseProvider),
     ));
