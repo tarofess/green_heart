@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:green_heart/application/state/profile_notifier_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/auth_di.dart';
@@ -16,6 +17,7 @@ class SettingsPage extends ConsumerWidget {
       appBar: AppBar(title: const Text('設定')),
       body: ListView(
         children: [
+          _buildEditProfileItem(context, ref),
           _buildAccountItem(context, ref),
           _buildNotificationItem(context, ref),
           _buildContactItem(context, ref),
@@ -23,6 +25,19 @@ class SettingsPage extends ConsumerWidget {
           _buildLogoutItem(context, ref),
         ],
       ),
+    );
+  }
+
+  Widget _buildEditProfileItem(BuildContext context, WidgetRef ref) {
+    return ListTile(
+      leading: const Icon(Icons.edit),
+      title: const Text('プロフィール編集'),
+      onTap: () {
+        context.push(
+          '/profile_edit',
+          extra: {'profile': ref.read(profileNotifierProvider).value},
+        );
+      },
     );
   }
 

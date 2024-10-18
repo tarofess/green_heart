@@ -14,4 +14,10 @@ class DateUtil {
     final formatter = DateFormat('yyyy年MM月dd日 HH時mm分');
     return formatter.format(creationTime.toLocal());
   }
+
+  static String convertToJapaneseDate(String dateTimeString) {
+    DateTime dateTime = DateTime.parse(dateTimeString);
+    DateFormat formatter = DateFormat('yyyy年MM月dd日', 'ja');
+    return formatter.format(dateTime);
+  }
 }

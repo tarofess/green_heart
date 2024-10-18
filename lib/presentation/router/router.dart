@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:green_heart/domain/type/profile.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/auth_state_provider.dart';
@@ -65,7 +66,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/profile_edit',
-        builder: (context, state) => ProfileEditPage(),
+        builder: (context, state) {
+          final Map<String, dynamic>? extra =
+              state.extra as Map<String, dynamic>?;
+          final profile = extra?['profile'] as Profile?;
+          return ProfileEditPage(profile: profile);
+        },
       ),
       GoRoute(
         path: '/settings',

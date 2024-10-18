@@ -28,6 +28,7 @@ class AccountPageViewModel {
       _user.uid,
       deletedProfile,
       deletedProfile.imageUrl,
+      null,
     );
   }
 }

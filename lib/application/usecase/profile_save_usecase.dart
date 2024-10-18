@@ -8,11 +8,17 @@ class ProfileSaveUsecase {
 
   ProfileSaveUsecase(this._profileRepository);
 
-  Future<void> execute(String uid, Profile profile, String? path) async {
+  Future<Profile> execute(
+    String uid,
+    Profile profile,
+    String? imagePath,
+    String? oldImageUrl,
+  ) async {
     String? firebaseStorePath;
-    if (path != null && path.isNotEmpty) {
-      firebaseStorePath = await _profileRepository.uploadImage(uid, path);
+    if (imagePath != null && imagePath.isNotEmpty) {
+      firebaseStorePath = await _profileRepository.uploadImage(uid, imagePath);
       profile = profile.copyWith(imageUrl: firebaseStorePath);
+      await deleteOldProfileImageIfExists(oldImageUrl);
     }
     try {
       await _profileRepository.saveProfile(uid, profile);
@@ -21,6 +27,14 @@ class ProfileSaveUsecase {
         await _rollbackUploadImage(firebaseStorePath);
       }
       rethrow;
+    }
+
+    return profile;
+  }
+
+  Future<void> deleteOldProfileImageIfExists(String? oldImageUrl) async {
+    if (oldImageUrl != null && oldImageUrl.isNotEmpty) {
+      await _profileRepository.deleteImage(oldImageUrl);
     }
   }
 

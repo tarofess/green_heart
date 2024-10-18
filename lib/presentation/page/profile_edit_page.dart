@@ -1,8 +1,11 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:green_heart/domain/type/profile.dart';
+import 'package:green_heart/domain/util/date_util.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -14,8 +17,9 @@ import 'package:green_heart/presentation/widget/profile_image_action_sheet.dart'
 import 'package:green_heart/application/viewmodel/profile_edit_page_viewmodel.dart';
 
 class ProfileEditPage extends HookConsumerWidget {
-  ProfileEditPage({super.key});
+  ProfileEditPage({super.key, this.profile});
 
+  final Profile? profile;
   final _formKey = GlobalKey<FormState>();
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _bioFocusNode = FocusNode();
@@ -26,6 +30,18 @@ class ProfileEditPage extends HookConsumerWidget {
     final nameTextController = useTextEditingController();
     final birthdayTextController = useTextEditingController();
     final bioTextController = useTextEditingController();
+
+    useEffect(() {
+      if (profile != null) {
+        imagePath.value = profile!.imageUrl ?? '';
+        nameTextController.text = profile!.name;
+        birthdayTextController.text = DateUtil.convertToJapaneseDate(
+          profile!.birthDate.toString(),
+        );
+        bioTextController.text = profile!.bio;
+      }
+      return null;
+    }, []);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -41,10 +57,11 @@ class ProfileEditPage extends HookConsumerWidget {
                       () async => ref
                           .read(profileEditPageViewModelProvider)
                           .saveProfile(
-                            imagePath,
                             nameTextController,
                             birthdayTextController,
                             bioTextController,
+                            imagePath: imagePath,
+                            oldImageUrl: profile?.imageUrl,
                           ),
                     );
 
@@ -55,7 +72,10 @@ class ProfileEditPage extends HookConsumerWidget {
                         content: 'プロフィールを保存しました。',
                       );
                     }
-                    if (context.mounted) context.go('/');
+
+                    if (context.mounted) {
+                      profile == null ? context.go('/') : context.pop();
+                    }
                   }
                 } catch (e) {
                   if (context.mounted) {
@@ -98,24 +118,18 @@ class ProfileEditPage extends HookConsumerWidget {
           Center(
             child: GestureDetector(
               child: imagePath.value == ''
-                  ? CircleAvatar(
-                      radius: 100.r,
-                      backgroundColor: Colors.grey[200],
-                      child: Icon(
-                        Icons.person,
-                        size: 100.r,
-                        color: Colors.grey[500],
-                      ),
-                    )
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(100.r),
-                      child: Image.file(
-                        File(imagePath.value),
-                        width: 200.r,
-                        height: 200.r,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                  ? _buildEmptyImage()
+                  : imagePath.value.startsWith('http')
+                      ? _buildFirebaseImage(imagePath.value)
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(100.r),
+                          child: Image.file(
+                            File(imagePath.value),
+                            width: 200.r,
+                            height: 200.r,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
               onTap: () async {
                 await showProfileImageActionSheet(context, ref, imagePath);
                 _unfocusAllKeyboard();
@@ -133,6 +147,47 @@ class ProfileEditPage extends HookConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyImage() {
+    return CircleAvatar(
+      radius: 100.r,
+      backgroundColor: Colors.grey[200],
+      child: Icon(
+        Icons.person,
+        size: 100.r,
+        color: Colors.grey[500],
+      ),
+    );
+  }
+
+  Widget _buildFirebaseImage(String imageUrl) {
+    return Container(
+      width: 200,
+      height: 200,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        image: DecorationImage(
+          fit: BoxFit.cover,
+          image: CachedNetworkImageProvider(imageUrl),
+        ),
+      ),
+      child: CachedNetworkImage(
+        key: ValueKey(imageUrl),
+        imageUrl: imageUrl,
+        imageBuilder: (context, imageProvider) => Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            image: DecorationImage(
+              image: imageProvider,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        placeholder: (context, url) => const CircularProgressIndicator(),
+        errorWidget: (context, url, error) => const Icon(Icons.error),
       ),
     );
   }

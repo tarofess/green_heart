@@ -26,11 +26,12 @@ class ProfileEditPageViewModel {
   );
 
   Future<void> saveProfile(
-    ValueNotifier<String> imagePath,
     TextEditingController nameTextController,
     TextEditingController birthdayTextController,
-    TextEditingController bioTextController,
-  ) async {
+    TextEditingController bioTextController, {
+    required ValueNotifier<String> imagePath,
+    required String? oldImageUrl,
+  }) async {
     if (_user == null) {
       throw Exception('プロフィールが保存できません。アカウントがログアウトされている可能性があります。');
     }
@@ -45,9 +46,14 @@ class ProfileEditPageViewModel {
       updatedAt: DateTime.now(),
     );
 
-    await _profileSaveUsecase.execute(_user.uid, profile, imagePath.value);
+    final savedProfile = await _profileSaveUsecase.execute(
+      _user.uid,
+      profile,
+      imagePath.value,
+      oldImageUrl,
+    );
     await _stringSaveSharedPrefUsecase.execute('uid', _user.uid);
-    _profileNotifier.setProfile(profile);
+    _profileNotifier.setProfile(savedProfile);
   }
 }
 
