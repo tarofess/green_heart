@@ -31,11 +31,19 @@ class AccountDeleteUsecase {
       throw Exception('現在アカウントを削除できません。のちほどお試しください。');
     }
 
-    await reauthenticate(user);
-    await deleteNotificationToken(user);
-    await deletePosts(user);
-    await deleteProfile(user, profile);
-    await deleteAccount(user);
+    try {
+      await reauthenticate(user);
+      await deleteNotificationToken(user);
+      await deletePosts(user);
+      await deleteProfile(user, profile);
+      await deleteAccount(user);
+    } catch (e) {
+      throw AppException(
+        'アカウントの削除に途中で失敗しました。\n'
+        '完全にアカウントを削除するために後ほどもう一度お試しください。',
+        e,
+      );
+    }
   }
 
   Future<void> reauthenticate(User user) async {
