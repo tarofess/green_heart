@@ -9,7 +9,7 @@ import 'package:green_heart/infrastructure/repository/firebase_post_repository.d
 import 'package:green_heart/infrastructure/repository/firebase_profile_repository.dart';
 
 final accountDeleteUsecaseProvider = Provider((ref) => AccountDeleteUsecase(
-      ref.read(authServiceProvider),
+      ref.watch(authServiceProvider),
       FirebaseAccountRepository(),
       FirebaseProfileRepository(),
       FirebasePostRepository(),
