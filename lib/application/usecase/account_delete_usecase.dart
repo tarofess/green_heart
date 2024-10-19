@@ -6,8 +6,8 @@ import 'package:green_heart/application/interface/notification_repository.dart';
 import 'package:green_heart/application/interface/post_repository.dart';
 import 'package:green_heart/application/interface/profile_repository.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
-import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/infrastructure/service/firebase_auth_service.dart';
+import 'package:green_heart/domain/type/profile.dart';
 
 class AccountDeleteUsecase {
   final FirebaseAuthService _authService;
@@ -15,7 +15,6 @@ class AccountDeleteUsecase {
   final ProfileRepository _profileRepository;
   final PostRepository _postRepository;
   final NotificationRepository _notificationRepository;
-  final Profile? _profile;
   final ProfileNotifier _profileNotifierProvider;
 
   AccountDeleteUsecase(
@@ -24,19 +23,18 @@ class AccountDeleteUsecase {
     this._profileRepository,
     this._postRepository,
     this._notificationRepository,
-    this._profile,
     this._profileNotifierProvider,
   );
 
-  Future<void> execute(User user) async {
-    if (_profile == null) {
+  Future<void> execute(User user, Profile? profile) async {
+    if (profile == null) {
       throw Exception('現在アカウントを削除できません。のちほどお試しください。');
     }
 
     await reauthenticate(user);
     await deleteNotificationToken(user);
     await deletePosts(user);
-    await deleteProfile(user);
+    await deleteProfile(user, profile);
     await deleteAccount(user);
   }
 
@@ -64,9 +62,9 @@ class AccountDeleteUsecase {
     await _postRepository.deleteAllImages(user.uid);
   }
 
-  Future<void> deleteProfile(User user) async {
-    if (_profile!.imageUrl != null) {
-      await _profileRepository.deleteImage(_profile.imageUrl!);
+  Future<void> deleteProfile(User user, Profile? profile) async {
+    if (profile!.imageUrl != null) {
+      await _profileRepository.deleteImage(profile.imageUrl!);
     }
     await _profileRepository.deleteProfile(user.uid);
     _profileNotifierProvider.setProfile(null);

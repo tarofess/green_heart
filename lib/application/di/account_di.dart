@@ -14,6 +14,5 @@ final accountDeleteUsecaseProvider = Provider((ref) => AccountDeleteUsecase(
       FirebaseProfileRepository(),
       FirebasePostRepository(),
       FirebaseNotificationRepository(),
-      ref.read(profileNotifierProvider).value,
       ref.read(profileNotifierProvider.notifier),
     ));

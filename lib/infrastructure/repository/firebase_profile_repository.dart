@@ -67,12 +67,12 @@ class FirebaseProfileRepository implements ProfileRepository {
   }
 
   @override
-  Future<void> deleteImage(String url) async {
+  Future<void> deleteImage(String imageUrl) async {
     try {
-      if (await checkImageExists(url) == false) {
+      if (await checkImageExists(imageUrl) == false) {
         return;
       }
-      final ref = FirebaseStorage.instance.refFromURL(url);
+      final ref = FirebaseStorage.instance.refFromURL(imageUrl);
       await ref.delete();
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
@@ -80,10 +80,10 @@ class FirebaseProfileRepository implements ProfileRepository {
     }
   }
 
-  Future<bool> checkImageExists(String imagePath) async {
-    final ref = FirebaseStorage.instance.ref().child(imagePath);
+  Future<bool> checkImageExists(String imageUrl) async {
+    final ref = FirebaseStorage.instance.refFromURL(imageUrl);
     try {
-      await ref.getDownloadURL();
+      await ref.getMetadata();
       return true;
     } catch (e) {
       if (e is FirebaseException && e.code == 'object-not-found') {

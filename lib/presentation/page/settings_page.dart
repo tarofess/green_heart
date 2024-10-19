@@ -18,10 +18,10 @@ class SettingsPage extends ConsumerWidget {
       body: ListView(
         children: [
           _buildEditProfileItem(context, ref),
-          _buildAccountItem(context, ref),
           _buildNotificationItem(context, ref),
           _buildContactItem(context, ref),
           _buildAppInfoItem(context, ref),
+          _buildAccountItem(context, ref),
           _buildLogoutItem(context, ref),
         ],
       ),
@@ -37,16 +37,6 @@ class SettingsPage extends ConsumerWidget {
           '/profile_edit',
           extra: {'profile': ref.read(profileNotifierProvider).value},
         );
-      },
-    );
-  }
-
-  Widget _buildAccountItem(BuildContext context, WidgetRef ref) {
-    return ListTile(
-      leading: const Icon(Icons.account_circle),
-      title: const Text('アカウント情報'),
-      onTap: () {
-        context.push('/account_info');
       },
     );
   }
@@ -91,6 +81,16 @@ class SettingsPage extends ConsumerWidget {
             );
           }
         }
+      },
+    );
+  }
+
+  Widget _buildAccountItem(BuildContext context, WidgetRef ref) {
+    return ListTile(
+      leading: const Icon(Icons.account_circle),
+      title: const Text('アカウント情報'),
+      onTap: () {
+        context.push('/account_info');
       },
     );
   }

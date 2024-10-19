@@ -19,12 +19,12 @@ class AccountPageViewModel {
       throw Exception('現在アカウントを削除できません。のちほどお試しください。');
     }
 
-    await _accountDeleteUsecase.execute(_user);
+    await _accountDeleteUsecase.execute(_user, _profile);
   }
 }
 
 final accountPageViewModelProvider = Provider((ref) => AccountPageViewModel(
-      ref.read(profileNotifierProvider).value,
+      ref.watch(profileNotifierProvider).value,
       ref.watch(authStateProvider).value,
       ref.read(accountDeleteUsecaseProvider),
     ));
