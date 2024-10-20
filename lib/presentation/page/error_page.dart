@@ -12,16 +12,11 @@ class ErrorPage extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Padding(
-          padding: EdgeInsets.all(20.r),
+          padding: EdgeInsets.all(24.r),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('アプリの初期化に失敗しました。\n再度お試しください。'),
-              SizedBox(height: 16.r),
-              Text(
-                '$error',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
+              Text('$error', style: TextStyle(fontSize: 14.sp)),
               SizedBox(height: 16.r),
               ElevatedButton(
                 onPressed: retry,
