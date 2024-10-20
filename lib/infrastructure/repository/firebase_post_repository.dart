@@ -9,6 +9,24 @@ import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 
 class FirebasePostRepository implements PostRepository {
   @override
+  Future<List<Post>> getAllPosts(String uid) async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+      final querySnapshot = await firestore
+          .collection('post')
+          .where('uid', isEqualTo: uid)
+          .orderBy('createdAt', descending: true)
+          .get();
+      return querySnapshot.docs
+          .map((doc) => Post.fromJson(doc.data()))
+          .toList();
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('投稿の取得に失敗しました。再度お試しください。');
+    }
+  }
+
+  @override
   Future<void> uploadPost(Post post) async {
     try {
       final firestore = FirebaseFirestore.instance;
