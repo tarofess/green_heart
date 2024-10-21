@@ -31,8 +31,9 @@ class AccountDeleteUsecase {
       throw Exception('現在アカウントを削除できません。のちほどお試しください。');
     }
 
+    await reauthenticate(user);
+
     try {
-      await reauthenticate(user);
       await deleteNotificationToken(user);
       await deletePosts(user);
       await deleteProfile(user, profile);
@@ -66,8 +67,13 @@ class AccountDeleteUsecase {
   }
 
   Future<void> deletePosts(User user) async {
-    await _postRepository.deleteAllPosts(user.uid);
-    await _postRepository.deleteAllImages(user.uid);
+    await Future.wait(
+      [
+        _postRepository.deleteAllPosts(user.uid),
+        _postRepository.deleteAllImages(user.uid),
+      ],
+      eagerError: true,
+    );
   }
 
   Future<void> deleteProfile(User user, Profile? profile) async {
