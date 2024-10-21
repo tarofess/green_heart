@@ -5,7 +5,9 @@ import 'package:green_heart/application/interface/account_repository.dart';
 import 'package:green_heart/application/interface/notification_repository.dart';
 import 'package:green_heart/application/interface/post_repository.dart';
 import 'package:green_heart/application/interface/profile_repository.dart';
+import 'package:green_heart/application/state/post_notifier.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
+import 'package:green_heart/application/usecase/signout_usecase.dart';
 import 'package:green_heart/infrastructure/service/firebase_auth_service.dart';
 import 'package:green_heart/domain/type/profile.dart';
 
@@ -16,6 +18,8 @@ class AccountDeleteUsecase {
   final PostRepository _postRepository;
   final NotificationRepository _notificationRepository;
   final ProfileNotifier _profileNotifierProvider;
+  final SignOutUseCase _signOutUseCase;
+  final PostNotifier _postNotifierProvider;
 
   AccountDeleteUsecase(
     this._authService,
@@ -24,6 +28,8 @@ class AccountDeleteUsecase {
     this._postRepository,
     this._notificationRepository,
     this._profileNotifierProvider,
+    this._signOutUseCase,
+    this._postNotifierProvider,
   );
 
   Future<void> execute(User user, Profile? profile) async {
@@ -32,19 +38,10 @@ class AccountDeleteUsecase {
     }
 
     await reauthenticate(user);
-
-    try {
-      await deleteNotificationToken(user);
-      await deletePosts(user);
-      await deleteProfile(user, profile);
-      await deleteAccount(user);
-    } catch (e) {
-      throw AppException(
-        'アカウントの削除に途中で失敗しました。\n'
-        '完全にアカウントを削除するために後ほどもう一度お試しください。',
-        e,
-      );
-    }
+    await deleteNotificationToken(user);
+    await deletePosts(user);
+    await deleteProfile(user, profile);
+    await deleteAccount(user);
   }
 
   Future<void> reauthenticate(User user) async {
@@ -63,28 +60,58 @@ class AccountDeleteUsecase {
   }
 
   Future<void> deleteNotificationToken(User user) async {
-    await _notificationRepository.deleteFcmToken(user.uid);
+    try {
+      await _notificationRepository.deleteFcmToken(user.uid);
+    } catch (e) {
+      throw AppException(
+        '通知トークンの削除に失敗したためアカウントが削除できませんでした。\n'
+        'アカウントを削除するために後ほどもう一度お試しください。',
+        e,
+      );
+    }
   }
 
   Future<void> deletePosts(User user) async {
-    await Future.wait(
-      [
-        _postRepository.deleteAllPosts(user.uid),
-        _postRepository.deleteAllImages(user.uid),
-      ],
-      eagerError: true,
-    );
+    try {
+      await Future.wait(
+        [
+          _postRepository.deleteAllPosts(user.uid),
+          _postRepository.deleteAllImages(user.uid),
+        ],
+        eagerError: true,
+      );
+      _postNotifierProvider.removeAllPosts();
+    } catch (e) {
+      throw AppException(
+        '投稿データの削除に失敗したためアカウントが完全に削除できませんでした。\n'
+        '完全にアカウントを削除するために後ほどもう一度お試しください。',
+        e,
+      );
+    }
   }
 
   Future<void> deleteProfile(User user, Profile? profile) async {
-    if (profile!.imageUrl != null) {
-      await _profileRepository.deleteImage(profile.imageUrl!);
+    try {
+      if (profile!.imageUrl != null) {
+        await _profileRepository.deleteImage(profile.imageUrl!);
+      }
+      await _profileRepository.deleteProfile(user.uid);
+      _profileNotifierProvider.setProfile(null);
+    } catch (e) {
+      throw AppException(
+        'プロフィールの削除に失敗したためアカウントが完全に削除できませんでした。\n'
+        '現在投稿データは全て削除されています。\n'
+        '完全にアカウントを削除するために後ほどもう一度お試しください。',
+        e,
+      );
     }
-    await _profileRepository.deleteProfile(user.uid);
-    _profileNotifierProvider.setProfile(null);
   }
 
   Future<void> deleteAccount(User user) async {
-    await _accountRepository.deleteAccount(user);
+    try {
+      await _accountRepository.deleteAccount(user);
+    } catch (e) {
+      _signOutUseCase.execute();
+    }
   }
 }

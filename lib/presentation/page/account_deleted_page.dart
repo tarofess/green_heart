@@ -19,7 +19,7 @@ class AccountDeletedPage extends ConsumerWidget {
               children: [
                 Text('アカウントを削除しました。', style: TextStyle(fontSize: 18.sp)),
                 SizedBox(height: 20.sp),
-                Text('またのご利用お待ちしています。', style: TextStyle(fontSize: 18.sp)),
+                Text('ご利用ありがとうございました。', style: TextStyle(fontSize: 18.sp)),
               ],
             ),
           ),

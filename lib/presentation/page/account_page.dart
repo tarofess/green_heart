@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:green_heart/application/state/profile_notifier_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/auth_state_provider.dart';
@@ -37,8 +38,7 @@ class AccountPage extends HookConsumerWidget {
       }
 
       void setRegistrationDate() {
-        final creationTime =
-            ref.read(authStateProvider).value?.metadata.creationTime;
+        final creationTime = ref.read(profileNotifierProvider).value?.createdAt;
         registrationDate.value =
             DateUtil.formatAccountRegistrationTime(creationTime);
       }
@@ -106,7 +106,8 @@ class AccountPage extends HookConsumerWidget {
         final result = await showConfirmationDialog(
           context: context,
           title: 'アカウント削除',
-          content: 'アカウントを削除すると復元ができませんが、本当にアカウントを削除しますか？',
+          content: 'アカウントを削除すると投稿データやプロフィールなどアカウントに紐付く全てのデータが削除されます。\n\n'
+              '一度削除すると復元ができませんが、本当にアカウントを削除しますか？',
           positiveButtonText: '削除する',
           negativeButtonText: 'キャンセル',
         );

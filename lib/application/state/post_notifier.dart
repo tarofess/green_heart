@@ -18,4 +18,8 @@ class PostNotifier extends AsyncNotifier<List<Post>> {
   void addPost(Post post) {
     state = AsyncValue.data([post, ...state.value ?? []]);
   }
+
+  void removeAllPosts() {
+    state = const AsyncValue.data([]);
+  }
 }
