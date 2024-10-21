@@ -11,42 +11,51 @@ class ProfileSaveUsecase {
   Future<Profile> execute(
     String uid,
     Profile profile,
-    String? imagePath,
+    String imagePath,
+    String? oldImageUrl,
+  ) async {
+    final firebaseStorePath = await processImage(
+      uid,
+      profile,
+      imagePath,
+      oldImageUrl,
+    );
+
+    profile = profile.copyWith(imageUrl: firebaseStorePath);
+    await _profileRepository.saveProfile(uid, profile);
+    return profile;
+  }
+
+  Future<String?> processImage(
+    String uid,
+    Profile profile,
+    String imagePath,
     String? oldImageUrl,
   ) async {
     String? firebaseStorePath;
     if (isImageChanged(imagePath, oldImageUrl)) {
-      firebaseStorePath = await _profileRepository.uploadImage(uid, imagePath!);
-      profile = profile.copyWith(imageUrl: firebaseStorePath);
-      await deleteOldProfileImageIfExists(oldImageUrl);
+      firebaseStorePath = await _profileRepository.uploadImage(uid, imagePath);
+      await deleteOldProfileImage(oldImageUrl);
+    } else if (isImageDeleted(imagePath, oldImageUrl)) {
+      firebaseStorePath = '';
+      await deleteOldProfileImage(oldImageUrl);
     } else {
-      profile = profile.copyWith(imageUrl: oldImageUrl);
+      firebaseStorePath = oldImageUrl;
     }
-    try {
-      await _profileRepository.saveProfile(uid, profile);
-    } catch (e) {
-      if (firebaseStorePath != null) {
-        await _rollbackUploadImage(firebaseStorePath);
-      }
-      rethrow;
-    }
-
-    return profile;
+    return firebaseStorePath;
   }
 
-  Future<void> deleteOldProfileImageIfExists(String? oldImageUrl) async {
+  Future<void> deleteOldProfileImage(String? oldImageUrl) async {
     if (oldImageUrl != null && oldImageUrl.isNotEmpty) {
       await _profileRepository.deleteImage(oldImageUrl);
     }
   }
 
-  Future<void> _rollbackUploadImage(String firebaseStorePath) async {
-    await _profileRepository.deleteImage(firebaseStorePath);
+  bool isImageChanged(String imagePath, String? oldImageUrl) {
+    return imagePath.isNotEmpty && imagePath != oldImageUrl;
   }
 
-  bool isImageChanged(String? imagePath, String? oldImageUrl) {
-    return imagePath != null &&
-        imagePath.isNotEmpty &&
-        imagePath != oldImageUrl;
+  bool isImageDeleted(String imagePath, String? oldImageUrl) {
+    return imagePath.isEmpty && imagePath != oldImageUrl;
   }
 }
