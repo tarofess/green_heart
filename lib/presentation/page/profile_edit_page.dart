@@ -36,7 +36,7 @@ class ProfileEditPage extends HookConsumerWidget {
         imagePath.value = profile!.imageUrl ?? '';
         nameTextController.text = profile!.name;
         birthdayTextController.text = DateUtil.convertToJapaneseDate(
-          profile!.birthDate.toString(),
+          profile!.birthday,
         );
         bioTextController.text = profile!.bio;
       }
@@ -57,10 +57,10 @@ class ProfileEditPage extends HookConsumerWidget {
                       () async => ref
                           .read(profileEditPageViewModelProvider)
                           .saveProfile(
-                            nameTextController,
-                            birthdayTextController,
-                            bioTextController,
-                            imagePath: imagePath,
+                            nameTextController.text,
+                            birthdayTextController.text,
+                            bioTextController.text,
+                            imagePath: imagePath.value,
                             oldImageUrl: profile?.imageUrl,
                           ),
                     );
@@ -223,31 +223,63 @@ class ProfileEditPage extends HookConsumerWidget {
     BuildContext context,
     TextEditingController birthdayTextController,
   ) {
+    final showBirthday = useState(true);
+    final savedBirthday = useState(birthdayTextController.text);
+
     return Padding(
       padding: EdgeInsets.all(16.r),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: EdgeInsets.only(left: 8.r),
-            child: const Text(
-              '生年月日',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
+          Row(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(left: 8.r),
+                child: const Text(
+                  '生年月日',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              const Spacer(),
+              Row(
+                children: [
+                  Radio<bool>(
+                    value: true,
+                    groupValue: showBirthday.value,
+                    onChanged: (value) {
+                      showBirthday.value = value!;
+                      if (value) {
+                        birthdayTextController.text = savedBirthday.value;
+                      }
+                    },
+                  ),
+                  const Text('表示'),
+                  Radio<bool>(
+                    value: false,
+                    groupValue: showBirthday.value,
+                    onChanged: (value) {
+                      showBirthday.value = value!;
+                      if (!value) {
+                        savedBirthday.value = birthdayTextController.text;
+                        birthdayTextController.clear();
+                      }
+                    },
+                  ),
+                  const Text('非表示'),
+                ],
+              ),
+            ],
           ),
           SizedBox(height: 8.r),
-          TextFormField(
-            controller: birthdayTextController,
-            decoration: _buildInputDecoration('生年月日を選択してください'),
-            readOnly: true,
-            onTap: () async {
-              await _selectBirthday(context, birthdayTextController);
-            },
-            validator: (value) {
-              return ProfileValidater.validateBirthday(
-                  birthdayTextController.text);
-            },
-          )
+          if (showBirthday.value)
+            TextFormField(
+              controller: birthdayTextController,
+              decoration: _buildInputDecoration('生年月日を選択してください'),
+              readOnly: true,
+              onTap: () async {
+                await _selectBirthday(context, birthdayTextController);
+              },
+            )
         ],
       ),
     );

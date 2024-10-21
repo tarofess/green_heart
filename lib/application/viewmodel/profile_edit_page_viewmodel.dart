@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/auth_state_provider.dart';
@@ -26,10 +25,10 @@ class ProfileEditPageViewModel {
   );
 
   Future<void> saveProfile(
-    TextEditingController nameTextController,
-    TextEditingController birthdayTextController,
-    TextEditingController bioTextController, {
-    required ValueNotifier<String> imagePath,
+    String name,
+    String birthday,
+    String bio, {
+    required String imagePath,
     required String? oldImageUrl,
   }) async {
     if (_user == null) {
@@ -37,11 +36,9 @@ class ProfileEditPageViewModel {
     }
 
     final profile = Profile(
-      name: nameTextController.text,
-      birthDate: DateTime.parse(
-        DateUtil.convertToYYYYMMDD(birthdayTextController.text),
-      ),
-      bio: bioTextController.text,
+      name: name,
+      birthday: DateUtil.convertToDateTime(birthday),
+      bio: bio,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
@@ -49,7 +46,7 @@ class ProfileEditPageViewModel {
     final savedProfile = await _profileSaveUsecase.execute(
       _user.uid,
       profile,
-      imagePath.value,
+      imagePath,
       oldImageUrl,
     );
     await _stringSaveSharedPrefUsecase.execute('uid', _user.uid);

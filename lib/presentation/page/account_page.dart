@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:green_heart/application/state/delete_account_state_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/auth_state_provider.dart';
@@ -10,6 +9,7 @@ import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/application/viewmodel/account_page_viewmodel.dart';
 import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
+import 'package:green_heart/application/state/delete_account_state_provider.dart';
 
 class AccountPage extends HookConsumerWidget {
   const AccountPage({super.key});
@@ -39,7 +39,8 @@ class AccountPage extends HookConsumerWidget {
       void setRegistrationDate() {
         final creationTime =
             ref.read(authStateProvider).value?.metadata.creationTime;
-        registrationDate.value = DateUtil.formatCreationTime(creationTime);
+        registrationDate.value =
+            DateUtil.formatAccountRegistrationTime(creationTime);
       }
 
       setProviderName();

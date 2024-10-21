@@ -174,9 +174,9 @@ class UserPage extends ConsumerWidget {
   }
 
   Widget _buildBirthDate(BuildContext context, WidgetRef ref) {
-    return profile?.birthDate == null
+    return profile?.birthday == null
         ? const SizedBox()
-        : Text('${DateUtil.calculateAge(profile!.birthDate)}才');
+        : Text('${DateUtil.getAgeFromBirthday(profile!.birthday!)}才');
   }
 
   Widget _buildFollowButton(BuildContext context, WidgetRef ref) {
@@ -201,7 +201,7 @@ class UserPage extends ConsumerWidget {
       physics: const NeverScrollableScrollPhysics(),
       itemCount: posts.length,
       itemBuilder: (context, index) {
-        return PostCard(post: posts[index], profile: profile!);
+        return PostCard(post: posts[index], profile: profile);
       },
     );
   }

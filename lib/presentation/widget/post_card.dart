@@ -7,10 +7,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:green_heart/domain/type/post.dart';
 
 class PostCard extends ConsumerWidget {
-  const PostCard({super.key, required this.post, required this.profile});
+  const PostCard({super.key, required this.post, this.profile});
 
   final Post post;
-  final Profile profile;
+  final Profile? profile;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -39,11 +39,11 @@ class PostCard extends ConsumerWidget {
       children: [
         CircleAvatar(
           radius: 24.r,
-          backgroundImage: CachedNetworkImageProvider(profile.imageUrl ?? ''),
+          backgroundImage: CachedNetworkImageProvider(profile?.imageUrl ?? ''),
         ),
         SizedBox(width: 8.r),
         Text(
-          profile.name,
+          profile?.name ?? '',
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ],

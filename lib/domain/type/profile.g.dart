@@ -9,7 +9,9 @@ part of 'profile.dart';
 _$ProfileImpl _$$ProfileImplFromJson(Map<String, dynamic> json) =>
     _$ProfileImpl(
       name: json['name'] as String,
-      birthDate: DateTime.parse(json['birthDate'] as String),
+      birthday: json['birthday'] == null
+          ? null
+          : DateTime.parse(json['birthday'] as String),
       bio: json['bio'] as String,
       imageUrl: json['imageUrl'] as String?,
       status: (json['status'] as num?)?.toInt() ?? 1,
@@ -20,7 +22,7 @@ _$ProfileImpl _$$ProfileImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$ProfileImplToJson(_$ProfileImpl instance) =>
     <String, dynamic>{
       'name': instance.name,
-      'birthDate': instance.birthDate.toIso8601String(),
+      'birthday': instance.birthday?.toIso8601String(),
       'bio': instance.bio,
       'imageUrl': instance.imageUrl,
       'status': instance.status,

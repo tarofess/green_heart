@@ -21,7 +21,7 @@ Profile _$ProfileFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Profile {
   String get name => throw _privateConstructorUsedError;
-  DateTime get birthDate => throw _privateConstructorUsedError;
+  DateTime? get birthday => throw _privateConstructorUsedError;
   String get bio => throw _privateConstructorUsedError;
   String? get imageUrl => throw _privateConstructorUsedError;
   int get status => throw _privateConstructorUsedError;
@@ -44,7 +44,7 @@ abstract class $ProfileCopyWith<$Res> {
   @useResult
   $Res call(
       {String name,
-      DateTime birthDate,
+      DateTime? birthday,
       String bio,
       String? imageUrl,
       int status,
@@ -68,7 +68,7 @@ class _$ProfileCopyWithImpl<$Res, $Val extends Profile>
   @override
   $Res call({
     Object? name = null,
-    Object? birthDate = null,
+    Object? birthday = freezed,
     Object? bio = null,
     Object? imageUrl = freezed,
     Object? status = null,
@@ -80,10 +80,10 @@ class _$ProfileCopyWithImpl<$Res, $Val extends Profile>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      birthDate: null == birthDate
-          ? _value.birthDate
-          : birthDate // ignore: cast_nullable_to_non_nullable
-              as DateTime,
+      birthday: freezed == birthday
+          ? _value.birthday
+          : birthday // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
       bio: null == bio
           ? _value.bio
           : bio // ignore: cast_nullable_to_non_nullable
@@ -117,7 +117,7 @@ abstract class _$$ProfileImplCopyWith<$Res> implements $ProfileCopyWith<$Res> {
   @useResult
   $Res call(
       {String name,
-      DateTime birthDate,
+      DateTime? birthday,
       String bio,
       String? imageUrl,
       int status,
@@ -139,7 +139,7 @@ class __$$ProfileImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? name = null,
-    Object? birthDate = null,
+    Object? birthday = freezed,
     Object? bio = null,
     Object? imageUrl = freezed,
     Object? status = null,
@@ -151,10 +151,10 @@ class __$$ProfileImplCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      birthDate: null == birthDate
-          ? _value.birthDate
-          : birthDate // ignore: cast_nullable_to_non_nullable
-              as DateTime,
+      birthday: freezed == birthday
+          ? _value.birthday
+          : birthday // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
       bio: null == bio
           ? _value.bio
           : bio // ignore: cast_nullable_to_non_nullable
@@ -184,7 +184,7 @@ class __$$ProfileImplCopyWithImpl<$Res>
 class _$ProfileImpl implements _Profile {
   const _$ProfileImpl(
       {required this.name,
-      required this.birthDate,
+      required this.birthday,
       required this.bio,
       this.imageUrl,
       this.status = 1,
@@ -197,7 +197,7 @@ class _$ProfileImpl implements _Profile {
   @override
   final String name;
   @override
-  final DateTime birthDate;
+  final DateTime? birthday;
   @override
   final String bio;
   @override
@@ -212,7 +212,7 @@ class _$ProfileImpl implements _Profile {
 
   @override
   String toString() {
-    return 'Profile(name: $name, birthDate: $birthDate, bio: $bio, imageUrl: $imageUrl, status: $status, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Profile(name: $name, birthday: $birthday, bio: $bio, imageUrl: $imageUrl, status: $status, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -221,8 +221,8 @@ class _$ProfileImpl implements _Profile {
         (other.runtimeType == runtimeType &&
             other is _$ProfileImpl &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.birthDate, birthDate) ||
-                other.birthDate == birthDate) &&
+            (identical(other.birthday, birthday) ||
+                other.birthday == birthday) &&
             (identical(other.bio, bio) || other.bio == bio) &&
             (identical(other.imageUrl, imageUrl) ||
                 other.imageUrl == imageUrl) &&
@@ -235,8 +235,8 @@ class _$ProfileImpl implements _Profile {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, name, birthDate, bio, imageUrl,
-      status, createdAt, updatedAt);
+  int get hashCode => Object.hash(
+      runtimeType, name, birthday, bio, imageUrl, status, createdAt, updatedAt);
 
   /// Create a copy of Profile
   /// with the given fields replaced by the non-null parameter values.
@@ -257,7 +257,7 @@ class _$ProfileImpl implements _Profile {
 abstract class _Profile implements Profile {
   const factory _Profile(
       {required final String name,
-      required final DateTime birthDate,
+      required final DateTime? birthday,
       required final String bio,
       final String? imageUrl,
       final int status,
@@ -269,7 +269,7 @@ abstract class _Profile implements Profile {
   @override
   String get name;
   @override
-  DateTime get birthDate;
+  DateTime? get birthday;
   @override
   String get bio;
   @override

@@ -7,7 +7,7 @@ part 'profile.g.dart';
 class Profile with _$Profile {
   const factory Profile({
     required String name,
-    required DateTime birthDate,
+    required DateTime? birthday,
     required String bio,
     String? imageUrl,
     @Default(1) int status,

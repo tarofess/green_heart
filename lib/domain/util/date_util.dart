@@ -1,27 +1,29 @@
 import 'package:intl/intl.dart';
 
 class DateUtil {
-  static String convertToYYYYMMDD(String dateString) {
-    final DateFormat inputFormat = DateFormat('yyyy年MM月dd日');
-    final DateFormat outputFormat = DateFormat('yyyy-MM-dd');
-    final DateTime date = inputFormat.parse(dateString);
-    return outputFormat.format(date);
+  static DateTime? convertToDateTime(String dateString) {
+    if (dateString.isEmpty) return null;
+
+    final DateFormat formatter = DateFormat('yyyy年MM月dd日');
+    final DateTime date = formatter.parse(dateString);
+    return date;
   }
 
-  static String formatCreationTime(DateTime? creationTime) {
+  static String convertToJapaneseDate(DateTime? birthday) {
+    if (birthday == null) return '';
+
+    DateFormat formatter = DateFormat('yyyy年MM月dd日', 'ja');
+    return formatter.format(birthday);
+  }
+
+  static String formatAccountRegistrationTime(DateTime? creationTime) {
     if (creationTime == null) return '日時不明';
 
     final formatter = DateFormat('yyyy年MM月dd日');
     return formatter.format(creationTime.toLocal());
   }
 
-  static String convertToJapaneseDate(String dateTimeString) {
-    DateTime dateTime = DateTime.parse(dateTimeString);
-    DateFormat formatter = DateFormat('yyyy年MM月dd日', 'ja');
-    return formatter.format(dateTime);
-  }
-
-  static int calculateAge(DateTime birthDate) {
+  static int getAgeFromBirthday(DateTime birthDate) {
     DateTime currentDate = DateTime.now();
     int age = currentDate.year - birthDate.year;
     int month1 = currentDate.month;
