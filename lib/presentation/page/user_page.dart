@@ -34,15 +34,9 @@ class UserPage extends ConsumerWidget {
                   ],
                 ),
                 SizedBox(height: 16.r),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: _buildUserName(context, ref),
-                    ),
-                    _buildBirthDate(context, ref),
-                  ],
-                ),
+                _buildUserName(context, ref),
+                SizedBox(height: 8.r),
+                _buildBirthDate(context, ref),
                 SizedBox(height: 16.r),
                 _buildUserBio(context, ref),
                 SizedBox(height: 16.r),
@@ -176,7 +170,7 @@ class UserPage extends ConsumerWidget {
   Widget _buildBirthDate(BuildContext context, WidgetRef ref) {
     return profile?.birthday == null
         ? const SizedBox()
-        : Text('${DateUtil.getAgeFromBirthday(profile!.birthday!)}才');
+        : Text('${DateUtil.convertToJapaneseDate(profile!.birthday!)}生まれ');
   }
 
   Widget _buildFollowButton(BuildContext context, WidgetRef ref) {

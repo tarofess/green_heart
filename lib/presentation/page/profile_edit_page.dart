@@ -223,7 +223,7 @@ class ProfileEditPage extends HookConsumerWidget {
     BuildContext context,
     TextEditingController birthdayTextController,
   ) {
-    final showBirthday = useState(true);
+    final showBirthday = useState(profile?.birthday == null ? false : true);
     final savedBirthday = useState(birthdayTextController.text);
 
     return Padding(
