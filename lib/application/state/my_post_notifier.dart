@@ -4,7 +4,7 @@ import 'package:green_heart/domain/type/post.dart';
 import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 
-class PostNotifier extends AsyncNotifier<List<Post>> {
+class MyPostNotifier extends AsyncNotifier<List<Post>> {
   @override
   Future<List<Post>> build() async {
     final uid = ref.read(authStateProvider).value?.uid;

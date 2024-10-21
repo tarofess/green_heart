@@ -7,7 +7,7 @@ import 'package:green_heart/infrastructure/repository/firebase_account_repositor
 import 'package:green_heart/infrastructure/repository/firebase_post_repository.dart';
 import 'package:green_heart/infrastructure/repository/firebase_profile_repository.dart';
 import 'package:green_heart/application/di/auth_di.dart';
-import 'package:green_heart/application/state/post_notifier_provider.dart';
+import 'package:green_heart/application/state/my_post_notifier_provider.dart';
 
 final accountDeleteUsecaseProvider = Provider((ref) => AccountDeleteUsecase(
       ref.watch(authServiceProvider),
@@ -17,5 +17,5 @@ final accountDeleteUsecaseProvider = Provider((ref) => AccountDeleteUsecase(
       FirebaseNotificationRepository(),
       ref.read(profileNotifierProvider.notifier),
       ref.read(signOutUseCaseProvider),
-      ref.read(postNotifierProvider.notifier),
+      ref.read(myPostNotifierProvider.notifier),
     ));

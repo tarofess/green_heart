@@ -1,11 +1,12 @@
 import 'package:green_heart/domain/type/post.dart';
 
 abstract class PostRepository {
-  Future<List<Post>> getAllPosts(String uid);
+  Future<List<Post>> getPostsByUid(String uid);
+  Future<List<Post>> getAllPosts();
   Future<void> uploadPost(Post post);
   Future<List<String>> uploadImages(String uid, List<String> paths);
   Future<void> deletePost(String postId);
-  Future<void> deleteAllPosts(String uid);
+  Future<void> deleteAllPostsByUid(String uid);
   Future<void> deleteImages(List<String> imageUrls);
-  Future<void> deleteAllImages(String uid);
+  Future<void> deleteAllImagesByUid(String uid);
 }

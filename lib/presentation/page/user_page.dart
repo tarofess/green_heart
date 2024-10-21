@@ -193,7 +193,7 @@ class UserPage extends ConsumerWidget {
       physics: const NeverScrollableScrollPhysics(),
       itemCount: posts.length,
       itemBuilder: (context, index) {
-        return PostCard(post: posts[index], profile: profile);
+        return PostCard(post: posts[index]);
       },
     );
   }

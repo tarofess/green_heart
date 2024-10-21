@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:green_heart/application/state/post_notifier.dart';
-import 'package:green_heart/application/state/post_notifier_provider.dart';
+import 'package:green_heart/application/state/my_post_notifier.dart';
+import 'package:green_heart/application/state/my_post_notifier_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/picture_di.dart';
@@ -16,7 +16,7 @@ class PostPageViewModel {
   final PickImageUsecase _pickImageUsecase;
   final PickMultipleImageUsecase _pickMultipleImageUsecase;
   final PostUploadUsecase _postUploadUsecase;
-  final PostNotifier postNotifier;
+  final MyPostNotifier postNotifier;
   final User? _user;
 
   PostPageViewModel(
@@ -72,6 +72,6 @@ final postPageViewModel = Provider((ref) => PostPageViewModel(
       ref.read(pickImageUsecaseProvider),
       ref.read(pickMultipleImageUsecaseProvider),
       ref.read(postUploadUsecaseProvider),
-      ref.read(postNotifierProvider.notifier),
+      ref.read(myPostNotifierProvider.notifier),
       ref.watch(authStateProvider).value!,
     ));

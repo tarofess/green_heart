@@ -1,20 +1,33 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/post.dart';
-import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/presentation/page/comment_page.dart';
+import 'package:green_heart/application/di/profile_di.dart';
+import 'package:green_heart/domain/type/profile.dart';
 
-class PostCard extends ConsumerWidget {
-  const PostCard({super.key, required this.post, this.profile});
+class PostCard extends HookConsumerWidget {
+  const PostCard({super.key, required this.post});
 
   final Post post;
-  final Profile? profile;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final profile = useState<Profile?>(null);
+
+    useEffect(() {
+      void getProfile() async {
+        profile.value =
+            await ref.read(profileGetUsecaseProvider).execute(post.uid);
+      }
+
+      getProfile();
+      return;
+    }, []);
+
     return Card(
       elevation: 2.0,
       child: Padding(
@@ -22,7 +35,7 @@ class PostCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildUserInfoArea(),
+            _buildUserInfoArea(profile),
             SizedBox(height: 16.r),
             _buildTextContentArea(),
             SizedBox(height: 16.r),
@@ -35,16 +48,18 @@ class PostCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildUserInfoArea() {
+  Widget _buildUserInfoArea(ValueNotifier<Profile?> profile) {
     return Row(
       children: [
         CircleAvatar(
           radius: 24.r,
-          backgroundImage: CachedNetworkImageProvider(profile?.imageUrl ?? ''),
+          backgroundImage: CachedNetworkImageProvider(
+            profile.value?.imageUrl ?? '',
+          ),
         ),
         SizedBox(width: 8.r),
         Text(
-          profile?.name ?? '',
+          profile.value?.name ?? '',
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ],

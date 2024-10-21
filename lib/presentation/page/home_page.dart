@@ -4,7 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/profile_notifier_provider.dart';
 import 'package:green_heart/presentation/page/user_page.dart';
-import 'package:green_heart/application/state/post_notifier_provider.dart';
+import 'package:green_heart/application/state/my_post_notifier_provider.dart';
 import 'package:green_heart/presentation/page/error_page.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 
@@ -14,7 +14,7 @@ class HomePage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(profileNotifierProvider).value;
-    final posts = ref.watch(postNotifierProvider);
+    final posts = ref.watch(myPostNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -33,7 +33,7 @@ class HomePage extends HookConsumerWidget {
         error: (e, stackTrace) {
           return ErrorPage(
             error: e,
-            retry: () => ref.refresh(postNotifierProvider),
+            retry: () => ref.refresh(myPostNotifierProvider),
           );
         },
         loading: () {
