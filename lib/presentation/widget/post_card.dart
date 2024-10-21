@@ -1,10 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:green_heart/domain/type/profile.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/post.dart';
+import 'package:green_heart/domain/type/profile.dart';
+import 'package:green_heart/presentation/page/comment_page.dart';
 
 class PostCard extends ConsumerWidget {
   const PostCard({super.key, required this.post, this.profile});
@@ -27,7 +28,7 @@ class PostCard extends ConsumerWidget {
             SizedBox(height: 16.r),
             _buildImageArea(post.imageUrls),
             SizedBox(height: 8.r),
-            _buildLikeAndCommentArea(),
+            _buildLikeAndCommentArea(context),
           ],
         ),
       ),
@@ -85,17 +86,49 @@ class PostCard extends ConsumerWidget {
         : const SizedBox();
   }
 
-  Widget _buildLikeAndCommentArea() {
+  Widget _buildLikeAndCommentArea(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        const Icon(Icons.favorite_border),
-        SizedBox(width: 8.r),
-        Text(post.likeCount.toString()),
+        Row(
+          children: [
+            const Icon(Icons.favorite_border),
+            SizedBox(width: 8.r),
+            Text(post.likeCount.toString()),
+          ],
+        ),
         SizedBox(width: 16.r),
-        const Icon(Icons.comment_outlined),
-        SizedBox(width: 8.r),
-        Text(post.commentCount.toString()),
+        GestureDetector(
+          child: Row(
+            children: [
+              const Icon(Icons.comment_outlined),
+              SizedBox(width: 8.r),
+              Text(post.commentCount.toString()),
+            ],
+          ),
+          onTap: () {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
+              ),
+              builder: (BuildContext context) {
+                return const ClipRRect(
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(20),
+                  ),
+                  child: FractionallySizedBox(
+                    heightFactor: 0.6,
+                    child: CommentPage(),
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ],
     );
   }
