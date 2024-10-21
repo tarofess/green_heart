@@ -15,10 +15,12 @@ class ProfileSaveUsecase {
     String? oldImageUrl,
   ) async {
     String? firebaseStorePath;
-    if (imagePath != null && imagePath.isNotEmpty) {
-      firebaseStorePath = await _profileRepository.uploadImage(uid, imagePath);
+    if (isImageChanged(imagePath, oldImageUrl)) {
+      firebaseStorePath = await _profileRepository.uploadImage(uid, imagePath!);
       profile = profile.copyWith(imageUrl: firebaseStorePath);
       await deleteOldProfileImageIfExists(oldImageUrl);
+    } else {
+      profile = profile.copyWith(imageUrl: oldImageUrl);
     }
     try {
       await _profileRepository.saveProfile(uid, profile);
@@ -40,5 +42,11 @@ class ProfileSaveUsecase {
 
   Future<void> _rollbackUploadImage(String firebaseStorePath) async {
     await _profileRepository.deleteImage(firebaseStorePath);
+  }
+
+  bool isImageChanged(String? imagePath, String? oldImageUrl) {
+    return imagePath != null &&
+        imagePath.isNotEmpty &&
+        imagePath != oldImageUrl;
   }
 }

@@ -43,9 +43,10 @@ class FirebaseProfileRepository implements ProfileRepository {
     try {
       File file = File(path);
       String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      String extension = path.split('.').last;
       Reference ref = FirebaseStorage.instance
           .ref()
-          .child('image/profile/$uid/$fileName.jpg');
+          .child('image/profile/$uid/$fileName.$extension');
       await ref.putFile(file);
       return await ref.getDownloadURL();
     } catch (e, stackTrace) {
