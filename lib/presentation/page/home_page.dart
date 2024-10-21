@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:green_heart/application/state/post_notifier_provider.dart';
-import 'package:green_heart/presentation/page/error_page.dart';
-import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/profile_notifier_provider.dart';
-import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/presentation/page/user_page.dart';
+import 'package:green_heart/application/state/post_notifier_provider.dart';
+import 'package:green_heart/presentation/page/error_page.dart';
+import 'package:green_heart/presentation/widget/loading_indicator.dart';
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
@@ -16,7 +15,6 @@ class HomePage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(profileNotifierProvider).value;
     final posts = ref.watch(postNotifierProvider);
-    final authState = ref.watch(authStateProvider).value;
 
     return Scaffold(
       appBar: AppBar(
@@ -30,11 +28,7 @@ class HomePage extends HookConsumerWidget {
       ),
       body: posts.when(
         data: (data) {
-          return UserPage(
-            profile: profile,
-            posts: data,
-            user: authState,
-          );
+          return UserPage(profile: profile, posts: data);
         },
         error: (e, stackTrace) {
           return ErrorPage(

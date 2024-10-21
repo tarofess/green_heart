@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -11,11 +10,10 @@ import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/presentation/widget/post_card.dart';
 
 class UserPage extends ConsumerWidget {
-  const UserPage({super.key, this.profile, required this.posts, this.user});
+  const UserPage({super.key, this.profile, required this.posts});
 
   final Profile? profile;
   final List<Post> posts;
-  final User? user;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
