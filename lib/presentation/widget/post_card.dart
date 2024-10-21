@@ -21,22 +21,9 @@ class PostCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 24.r,
-                  backgroundImage:
-                      CachedNetworkImageProvider(profile.imageUrl ?? ''),
-                ),
-                SizedBox(width: 8.r),
-                Text(
-                  profile.name,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
+            _buildUserInfoArea(),
             SizedBox(height: 16.r),
-            Text(post.content),
+            _buildTextContentArea(),
             SizedBox(height: 16.r),
             _buildImageArea(post.imageUrls),
             SizedBox(height: 8.r),
@@ -45,6 +32,26 @@ class PostCard extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildUserInfoArea() {
+    return Row(
+      children: [
+        CircleAvatar(
+          radius: 24.r,
+          backgroundImage: CachedNetworkImageProvider(profile.imageUrl ?? ''),
+        ),
+        SizedBox(width: 8.r),
+        Text(
+          profile.name,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTextContentArea() {
+    return post.content.isEmpty ? const SizedBox() : Text(post.content);
   }
 
   Widget _buildImageArea(List<String> postImages) {

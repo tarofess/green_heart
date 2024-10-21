@@ -57,8 +57,14 @@ class PostPageViewModel {
       updatedAt: DateTime.now(),
     );
 
-    await _postUploadUsecase.execute(post, _user.uid, selectedImages.value);
-    postNotifier.addPost(post);
+    final List<String> imageUrls = await _postUploadUsecase.execute(
+      post,
+      _user.uid,
+      selectedImages.value,
+    );
+
+    final imageUrlsAddedPost = post.copyWith(imageUrls: imageUrls);
+    postNotifier.addPost(imageUrlsAddedPost);
   }
 }
 
