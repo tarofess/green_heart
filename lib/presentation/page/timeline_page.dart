@@ -5,6 +5,7 @@ import 'package:green_heart/application/state/timeline_notifier_provider.dart';
 import 'package:green_heart/presentation/page/error_page.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/presentation/widget/post_card.dart';
+import 'package:green_heart/domain/type/post.dart';
 
 class TimelinePage extends ConsumerWidget {
   const TimelinePage({super.key});
@@ -19,7 +20,12 @@ class TimelinePage extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
-            onPressed: () {},
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: PostSearch(timeline: timeline),
+              );
+            },
           )
         ],
       ),
@@ -42,6 +48,63 @@ class TimelinePage extends ConsumerWidget {
           return const LoadingIndicator();
         },
       ),
+    );
+  }
+}
+
+class PostSearch extends SearchDelegate<String> {
+  final AsyncValue<List<Post>> timeline;
+
+  PostSearch({required this.timeline});
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: const Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.arrow_back),
+      onPressed: () {
+        close(context, '');
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return _buildSearchResults();
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    return _buildSearchResults();
+  }
+
+  Widget _buildSearchResults() {
+    return timeline.when(
+      data: (data) {
+        final results = data
+            .where((post) =>
+                post.content.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+        return ListView.builder(
+          itemCount: results.length,
+          itemBuilder: (context, index) {
+            return PostCard(post: results[index]);
+          },
+        );
+      },
+      loading: () => const LoadingIndicator(),
+      error: (_, __) => const Center(child: Text('エラーが発生しました')),
     );
   }
 }
