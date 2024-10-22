@@ -10,25 +10,26 @@ class ProfileSaveUsecase {
 
   Future<Profile> execute(
     String uid,
-    Profile profile,
+    String name,
+    String birthday,
+    String bio,
     String imagePath,
     String? oldImageUrl,
   ) async {
-    final firebaseStorePath = await processImage(
+    final firebaseStorePath = await processImage(uid, imagePath, oldImageUrl);
+    final savedProfile = await _profileRepository.saveProfile(
       uid,
-      profile,
-      imagePath,
-      oldImageUrl,
+      name,
+      birthday,
+      bio,
+      firebaseStorePath,
     );
 
-    profile = profile.copyWith(imageUrl: firebaseStorePath);
-    await _profileRepository.saveProfile(uid, profile);
-    return profile;
+    return savedProfile;
   }
 
   Future<String?> processImage(
     String uid,
-    Profile profile,
     String imagePath,
     String? oldImageUrl,
   ) async {

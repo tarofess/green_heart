@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:green_heart/application/exception/app_exception.dart';
 import 'package:green_heart/application/interface/profile_repository.dart';
 import 'package:green_heart/domain/type/profile.dart';
+import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 
 class FirebaseProfileRepository implements ProfileRepository {
@@ -27,11 +28,27 @@ class FirebaseProfileRepository implements ProfileRepository {
   }
 
   @override
-  Future<void> saveProfile(String uid, Profile profile) async {
+  Future<Profile> saveProfile(
+    String uid,
+    String name,
+    String birthday,
+    String bio,
+    String? imageUrl,
+  ) async {
     try {
+      final profile = Profile(
+        name: name,
+        birthday: DateUtil.convertToDateTime(birthday),
+        bio: bio,
+        imageUrl: imageUrl,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
       final firestore = FirebaseFirestore.instance;
       final docRef = firestore.collection('profile').doc(uid);
       await docRef.set(profile.toJson());
+
+      return profile;
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('プロフィールの保存に失敗しました。再度お試しください。');

@@ -2,8 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/auth_state_provider.dart';
-import 'package:green_heart/domain/type/profile.dart';
-import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/application/usecase/profile_save_usecase.dart';
 import 'package:green_heart/application/usecase/string_save_shared_pref_usecase.dart';
@@ -34,20 +32,15 @@ class ProfileEditPageViewModel {
       throw Exception('プロフィールが保存できません。アカウントがログアウトされている可能性があります。');
     }
 
-    final profile = Profile(
-      name: name,
-      birthday: DateUtil.convertToDateTime(birthday),
-      bio: bio,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    );
-
     final savedProfile = await _profileSaveUsecase.execute(
       _user.uid,
-      profile,
+      name,
+      birthday,
+      bio,
       imagePath,
       oldImageUrl,
     );
+
     await _stringSaveSharedPrefUsecase.execute('uid', _user.uid);
     _profileNotifier.setProfile(savedProfile);
   }
