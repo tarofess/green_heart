@@ -23,3 +23,8 @@ class MyPostNotifier extends AsyncNotifier<List<PostWithProfile>> {
     state = const AsyncValue.data([]);
   }
 }
+
+final myPostNotifierProvider =
+    AsyncNotifierProvider<MyPostNotifier, List<PostWithProfile>>(
+  () => MyPostNotifier(),
+);

@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:green_heart/application/di/account_di.dart';
-import 'package:green_heart/application/usecase/account_delete_usecase.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/auth_state_provider.dart';
-import 'package:green_heart/application/state/profile_notifier_provider.dart';
 import 'package:green_heart/domain/type/profile.dart';
+import 'package:green_heart/application/di/account_di.dart';
+import 'package:green_heart/application/usecase/account_delete_usecase.dart';
+import 'package:green_heart/application/state/profile_notifier.dart';
 
 class AccountPageViewModel {
   final Profile? _profile;

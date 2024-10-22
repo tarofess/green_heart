@@ -11,7 +11,7 @@ import 'package:green_heart/presentation/viewmodel/post_page_viewmodel.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/presentation/dialog/message_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
-import 'package:green_heart/application/state/profile_notifier_provider.dart';
+import 'package:green_heart/application/state/profile_notifier.dart';
 
 class PostPage extends HookConsumerWidget {
   const PostPage({super.key});

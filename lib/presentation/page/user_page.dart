@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:green_heart/application/state/profile_notifier_provider.dart';
 import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/domain/type/post_with_profile.dart';
 import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/presentation/widget/post_card.dart';
+import 'package:green_heart/application/state/profile_notifier.dart';
 
 class UserPage extends ConsumerWidget {
   const UserPage({super.key, this.profile, required this.postsWithProfile});

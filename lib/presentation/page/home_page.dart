@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:green_heart/application/state/profile_notifier_provider.dart';
 import 'package:green_heart/presentation/page/user_page.dart';
-import 'package:green_heart/application/state/my_post_notifier_provider.dart';
 import 'package:green_heart/presentation/page/error_page.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
+import 'package:green_heart/application/state/my_post_notifier.dart';
+import 'package:green_heart/application/state/profile_notifier.dart';
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});

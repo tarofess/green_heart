@@ -9,7 +9,6 @@ import 'package:green_heart/application/usecase/profile_save_usecase.dart';
 import 'package:green_heart/application/usecase/string_save_shared_pref_usecase.dart';
 import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/application/di/shared_pref_di.dart';
-import 'package:green_heart/application/state/profile_notifier_provider.dart';
 
 class ProfileEditPageViewModel {
   final ProfileSaveUsecase _profileSaveUsecase;

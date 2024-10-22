@@ -10,7 +10,6 @@ import 'package:green_heart/application/usecase/post_upload_usecase.dart';
 import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/domain/type/post.dart';
 import 'package:green_heart/application/state/my_post_notifier.dart';
-import 'package:green_heart/application/state/my_post_notifier_provider.dart';
 import 'package:green_heart/domain/type/post_with_profile.dart';
 import 'package:green_heart/domain/type/profile.dart';
 

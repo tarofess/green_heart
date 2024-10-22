@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:green_heart/application/state/timeline_notifier_provider.dart';
 import 'package:green_heart/presentation/page/error_page.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/presentation/widget/post_card.dart';
 import 'package:green_heart/domain/type/post_with_profile.dart';
+import 'package:green_heart/application/state/timeline_notifier.dart';
 
 class TimelinePage extends ConsumerWidget {
   const TimelinePage({super.key});

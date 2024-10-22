@@ -21,3 +21,8 @@ class ProfileNotifier extends AsyncNotifier<Profile?> {
     state = AsyncData(profile);
   }
 }
+
+final profileNotifierProvider =
+    AsyncNotifierProvider<ProfileNotifier, Profile?>(
+  () => ProfileNotifier(),
+);

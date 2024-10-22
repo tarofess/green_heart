@@ -14,3 +14,8 @@ class TimelineNotifier extends AsyncNotifier<List<PostWithProfile>> {
     state = AsyncValue.data([post, ...state.value ?? []]);
   }
 }
+
+final timelineNotifierProvider =
+    AsyncNotifierProvider<TimelineNotifier, List<PostWithProfile>>(
+  () => TimelineNotifier(),
+);
