@@ -10,9 +10,8 @@ class Post with _$Post {
     required String uid,
     required String content,
     @Default([]) List<String> imageUrls,
-    @Default(0) int likeCount,
+    @Default([]) List<String> likedUserIds,
     @Default(0) int commentCount,
-    @Default(false) bool isLiked,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _Post;

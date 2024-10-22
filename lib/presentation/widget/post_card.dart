@@ -6,6 +6,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:green_heart/presentation/page/comment_page.dart';
 import 'package:green_heart/domain/type/post_with_profile.dart';
 import 'package:green_heart/domain/util/date_util.dart';
+import 'package:green_heart/application/di/like_di.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
+import 'package:green_heart/application/state/timeline_notifier.dart';
 
 class PostCard extends ConsumerWidget {
   const PostCard({super.key, required this.postWithProfile});
@@ -27,7 +30,7 @@ class PostCard extends ConsumerWidget {
             SizedBox(height: 16.r),
             _buildImageArea(postWithProfile.post.imageUrls),
             SizedBox(height: 8.r),
-            _buildLikeAndCommentArea(context),
+            _buildLikeAndCommentArea(context, ref),
           ],
         ),
       ),
@@ -94,18 +97,42 @@ class PostCard extends ConsumerWidget {
         : const SizedBox();
   }
 
-  Widget _buildLikeAndCommentArea(BuildContext context) {
+  Widget _buildLikeAndCommentArea(BuildContext context, WidgetRef ref) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Row(
           children: [
-            Row(
-              children: [
-                const Icon(Icons.favorite_border),
-                SizedBox(width: 8.r),
-                Text(postWithProfile.post.likeCount.toString()),
-              ],
+            GestureDetector(
+              child: Row(
+                children: [
+                  Icon(
+                    postWithProfile.post.likedUserIds
+                            .contains(ref.read(authStateProvider).value?.uid)
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    color: postWithProfile.post.likedUserIds
+                            .contains(ref.read(authStateProvider).value?.uid)
+                        ? Colors.red
+                        : null,
+                  ),
+                  SizedBox(width: 8.r),
+                  Text(postWithProfile.post.likedUserIds.length.toString()),
+                ],
+              ),
+              onTap: () async {
+                final uid = ref.read(authStateProvider).value?.uid;
+                if (uid == null) return;
+
+                await ref.read(likeUsecaseProvider).execute(
+                      postWithProfile.post.id,
+                      uid,
+                    );
+                ref.read(timelineNotifierProvider.notifier).updateLikedUserIds(
+                      postWithProfile.post.id,
+                      uid,
+                    );
+              },
             ),
             SizedBox(width: 16.r),
             GestureDetector(

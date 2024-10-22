@@ -24,9 +24,8 @@ mixin _$Post {
   String get uid => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
   List<String> get imageUrls => throw _privateConstructorUsedError;
-  int get likeCount => throw _privateConstructorUsedError;
+  List<String> get likedUserIds => throw _privateConstructorUsedError;
   int get commentCount => throw _privateConstructorUsedError;
-  bool get isLiked => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
@@ -49,9 +48,8 @@ abstract class $PostCopyWith<$Res> {
       String uid,
       String content,
       List<String> imageUrls,
-      int likeCount,
+      List<String> likedUserIds,
       int commentCount,
-      bool isLiked,
       DateTime createdAt,
       DateTime updatedAt});
 }
@@ -75,9 +73,8 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
     Object? uid = null,
     Object? content = null,
     Object? imageUrls = null,
-    Object? likeCount = null,
+    Object? likedUserIds = null,
     Object? commentCount = null,
-    Object? isLiked = null,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -98,18 +95,14 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
           ? _value.imageUrls
           : imageUrls // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      likeCount: null == likeCount
-          ? _value.likeCount
-          : likeCount // ignore: cast_nullable_to_non_nullable
-              as int,
+      likedUserIds: null == likedUserIds
+          ? _value.likedUserIds
+          : likedUserIds // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       commentCount: null == commentCount
           ? _value.commentCount
           : commentCount // ignore: cast_nullable_to_non_nullable
               as int,
-      isLiked: null == isLiked
-          ? _value.isLiked
-          : isLiked // ignore: cast_nullable_to_non_nullable
-              as bool,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -134,9 +127,8 @@ abstract class _$$PostImplCopyWith<$Res> implements $PostCopyWith<$Res> {
       String uid,
       String content,
       List<String> imageUrls,
-      int likeCount,
+      List<String> likedUserIds,
       int commentCount,
-      bool isLiked,
       DateTime createdAt,
       DateTime updatedAt});
 }
@@ -157,9 +149,8 @@ class __$$PostImplCopyWithImpl<$Res>
     Object? uid = null,
     Object? content = null,
     Object? imageUrls = null,
-    Object? likeCount = null,
+    Object? likedUserIds = null,
     Object? commentCount = null,
-    Object? isLiked = null,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -180,18 +171,14 @@ class __$$PostImplCopyWithImpl<$Res>
           ? _value._imageUrls
           : imageUrls // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      likeCount: null == likeCount
-          ? _value.likeCount
-          : likeCount // ignore: cast_nullable_to_non_nullable
-              as int,
+      likedUserIds: null == likedUserIds
+          ? _value._likedUserIds
+          : likedUserIds // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       commentCount: null == commentCount
           ? _value.commentCount
           : commentCount // ignore: cast_nullable_to_non_nullable
               as int,
-      isLiked: null == isLiked
-          ? _value.isLiked
-          : isLiked // ignore: cast_nullable_to_non_nullable
-              as bool,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -212,12 +199,12 @@ class _$PostImpl implements _Post {
       required this.uid,
       required this.content,
       final List<String> imageUrls = const [],
-      this.likeCount = 0,
+      final List<String> likedUserIds = const [],
       this.commentCount = 0,
-      this.isLiked = false,
       required this.createdAt,
       required this.updatedAt})
-      : _imageUrls = imageUrls;
+      : _imageUrls = imageUrls,
+        _likedUserIds = likedUserIds;
 
   factory _$PostImpl.fromJson(Map<String, dynamic> json) =>
       _$$PostImplFromJson(json);
@@ -237,15 +224,18 @@ class _$PostImpl implements _Post {
     return EqualUnmodifiableListView(_imageUrls);
   }
 
+  final List<String> _likedUserIds;
   @override
   @JsonKey()
-  final int likeCount;
+  List<String> get likedUserIds {
+    if (_likedUserIds is EqualUnmodifiableListView) return _likedUserIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_likedUserIds);
+  }
+
   @override
   @JsonKey()
   final int commentCount;
-  @override
-  @JsonKey()
-  final bool isLiked;
   @override
   final DateTime createdAt;
   @override
@@ -253,7 +243,7 @@ class _$PostImpl implements _Post {
 
   @override
   String toString() {
-    return 'Post(id: $id, uid: $uid, content: $content, imageUrls: $imageUrls, likeCount: $likeCount, commentCount: $commentCount, isLiked: $isLiked, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Post(id: $id, uid: $uid, content: $content, imageUrls: $imageUrls, likedUserIds: $likedUserIds, commentCount: $commentCount, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -266,11 +256,10 @@ class _$PostImpl implements _Post {
             (identical(other.content, content) || other.content == content) &&
             const DeepCollectionEquality()
                 .equals(other._imageUrls, _imageUrls) &&
-            (identical(other.likeCount, likeCount) ||
-                other.likeCount == likeCount) &&
+            const DeepCollectionEquality()
+                .equals(other._likedUserIds, _likedUserIds) &&
             (identical(other.commentCount, commentCount) ||
                 other.commentCount == commentCount) &&
-            (identical(other.isLiked, isLiked) || other.isLiked == isLiked) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -285,9 +274,8 @@ class _$PostImpl implements _Post {
       uid,
       content,
       const DeepCollectionEquality().hash(_imageUrls),
-      likeCount,
+      const DeepCollectionEquality().hash(_likedUserIds),
       commentCount,
-      isLiked,
       createdAt,
       updatedAt);
 
@@ -313,9 +301,8 @@ abstract class _Post implements Post {
       required final String uid,
       required final String content,
       final List<String> imageUrls,
-      final int likeCount,
+      final List<String> likedUserIds,
       final int commentCount,
-      final bool isLiked,
       required final DateTime createdAt,
       required final DateTime updatedAt}) = _$PostImpl;
 
@@ -330,11 +317,9 @@ abstract class _Post implements Post {
   @override
   List<String> get imageUrls;
   @override
-  int get likeCount;
+  List<String> get likedUserIds;
   @override
   int get commentCount;
-  @override
-  bool get isLiked;
   @override
   DateTime get createdAt;
   @override
