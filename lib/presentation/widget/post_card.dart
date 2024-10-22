@@ -67,19 +67,24 @@ class PostCard extends ConsumerWidget {
               itemBuilder: (context, index) {
                 return Padding(
                   padding: EdgeInsets.all(6.r),
-                  child: Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12.r),
-                        child: CachedNetworkImage(
-                          width: 240.r,
-                          height: 240.r,
-                          key: ValueKey(postImages[index]),
-                          imageUrl: postImages[index],
-                          fit: BoxFit.cover,
+                  child: GestureDetector(
+                    onTap: () {
+                      _showFullScreenImage(context, postImages[index]);
+                    },
+                    child: Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12.r),
+                          child: CachedNetworkImage(
+                            width: 240.r,
+                            height: 240.r,
+                            key: ValueKey(postImages[index]),
+                            imageUrl: postImages[index],
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               },
@@ -132,6 +137,56 @@ class PostCard extends ConsumerWidget {
           },
         ),
       ],
+    );
+  }
+
+  void _showFullScreenImage(BuildContext context, String imageUrl) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 1.0,
+          minChildSize: 0.5,
+          maxChildSize: 1.0,
+          builder: (_, controller) {
+            return Container(
+              color: Colors.black,
+              child: Stack(
+                children: [
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      return InteractiveViewer(
+                        panEnabled: true,
+                        boundaryMargin: EdgeInsets.all(20.r),
+                        minScale: 0.5,
+                        maxScale: 4,
+                        child: Center(
+                          child: CachedNetworkImage(
+                            imageUrl: imageUrl,
+                            fit: BoxFit.contain,
+                            width: constraints.maxWidth,
+                            height: constraints.maxHeight,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  Positioned(
+                    top: 10.r,
+                    left: 0.r,
+                    child: IconButton(
+                      icon: const Icon(Icons.close, color: Colors.white),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
