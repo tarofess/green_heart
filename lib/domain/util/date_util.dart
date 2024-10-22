@@ -23,6 +23,13 @@ class DateUtil {
     return formatter.format(creationTime.toLocal());
   }
 
+  static String formatPostTime(DateTime? postTime) {
+    if (postTime == null) return '日時不明';
+
+    final formatter = DateFormat('yyyy/MM/dd HH:mm');
+    return formatter.format(postTime.toLocal());
+  }
+
   static int getAgeFromBirthday(DateTime birthDate) {
     DateTime currentDate = DateTime.now();
     int age = currentDate.year - birthDate.year;

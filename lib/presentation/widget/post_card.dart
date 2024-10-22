@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/presentation/page/comment_page.dart';
 import 'package:green_heart/domain/type/post_with_profile.dart';
+import 'package:green_heart/domain/util/date_util.dart';
 
 class PostCard extends ConsumerWidget {
   const PostCard({super.key, required this.postWithProfile});
@@ -95,46 +96,54 @@ class PostCard extends ConsumerWidget {
 
   Widget _buildLikeAndCommentArea(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Row(
           children: [
-            const Icon(Icons.favorite_border),
-            SizedBox(width: 8.r),
-            Text(postWithProfile.post.likeCount.toString()),
-          ],
-        ),
-        SizedBox(width: 16.r),
-        GestureDetector(
-          child: Row(
-            children: [
-              const Icon(Icons.comment_outlined),
-              SizedBox(width: 8.r),
-              Text(postWithProfile.post.commentCount.toString()),
-            ],
-          ),
-          onTap: () {
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(20),
-                ),
+            Row(
+              children: [
+                const Icon(Icons.favorite_border),
+                SizedBox(width: 8.r),
+                Text(postWithProfile.post.likeCount.toString()),
+              ],
+            ),
+            SizedBox(width: 16.r),
+            GestureDetector(
+              child: Row(
+                children: [
+                  const Icon(Icons.comment_outlined),
+                  SizedBox(width: 8.r),
+                  Text(postWithProfile.post.commentCount.toString()),
+                ],
               ),
-              builder: (BuildContext context) {
-                return const ClipRRect(
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(20),
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    ),
                   ),
-                  child: FractionallySizedBox(
-                    heightFactor: 0.6,
-                    child: CommentPage(),
-                  ),
+                  builder: (BuildContext context) {
+                    return const ClipRRect(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(20),
+                      ),
+                      child: FractionallySizedBox(
+                        heightFactor: 0.6,
+                        child: CommentPage(),
+                      ),
+                    );
+                  },
                 );
               },
-            );
-          },
+            ),
+          ],
+        ),
+        Text(
+          DateUtil.formatPostTime(postWithProfile.post.createdAt),
+          style: TextStyle(fontSize: 12.sp, color: Colors.black),
         ),
       ],
     );
