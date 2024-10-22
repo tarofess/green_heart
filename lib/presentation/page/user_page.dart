@@ -171,6 +171,11 @@ class UserPage extends ConsumerWidget {
         : Text('${DateUtil.convertToJapaneseDate(profile!.birthday!)}生まれ');
   }
 
+  Widget _buildUserBio(BuildContext context, WidgetRef ref) {
+    final bio = profile?.bio;
+    return bio == null || bio.isEmpty ? const SizedBox() : Text(bio);
+  }
+
   Widget _buildFollowButton(BuildContext context, WidgetRef ref) {
     return Center(
       child: SizedBox(
@@ -181,10 +186,6 @@ class UserPage extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  Widget _buildUserBio(BuildContext context, WidgetRef ref) {
-    return Text(profile?.bio ?? '');
   }
 
   Widget _buildUserPosts(BuildContext context, WidgetRef ref) {
