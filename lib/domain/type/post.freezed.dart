@@ -20,6 +20,7 @@ Post _$PostFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Post {
+  String get id => throw _privateConstructorUsedError;
   String get uid => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
   List<String> get imageUrls => throw _privateConstructorUsedError;
@@ -44,7 +45,8 @@ abstract class $PostCopyWith<$Res> {
       _$PostCopyWithImpl<$Res, Post>;
   @useResult
   $Res call(
-      {String uid,
+      {String id,
+      String uid,
       String content,
       List<String> imageUrls,
       int likeCount,
@@ -69,6 +71,7 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? uid = null,
     Object? content = null,
     Object? imageUrls = null,
@@ -79,6 +82,10 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
     Object? updatedAt = null,
   }) {
     return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
       uid: null == uid
           ? _value.uid
           : uid // ignore: cast_nullable_to_non_nullable
@@ -123,7 +130,8 @@ abstract class _$$PostImplCopyWith<$Res> implements $PostCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {String uid,
+      {String id,
+      String uid,
       String content,
       List<String> imageUrls,
       int likeCount,
@@ -145,6 +153,7 @@ class __$$PostImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? uid = null,
     Object? content = null,
     Object? imageUrls = null,
@@ -155,6 +164,10 @@ class __$$PostImplCopyWithImpl<$Res>
     Object? updatedAt = null,
   }) {
     return _then(_$PostImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
       uid: null == uid
           ? _value.uid
           : uid // ignore: cast_nullable_to_non_nullable
@@ -195,7 +208,8 @@ class __$$PostImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$PostImpl implements _Post {
   const _$PostImpl(
-      {required this.uid,
+      {required this.id,
+      required this.uid,
       required this.content,
       final List<String> imageUrls = const [],
       this.likeCount = 0,
@@ -208,6 +222,8 @@ class _$PostImpl implements _Post {
   factory _$PostImpl.fromJson(Map<String, dynamic> json) =>
       _$$PostImplFromJson(json);
 
+  @override
+  final String id;
   @override
   final String uid;
   @override
@@ -237,7 +253,7 @@ class _$PostImpl implements _Post {
 
   @override
   String toString() {
-    return 'Post(uid: $uid, content: $content, imageUrls: $imageUrls, likeCount: $likeCount, commentCount: $commentCount, isLiked: $isLiked, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Post(id: $id, uid: $uid, content: $content, imageUrls: $imageUrls, likeCount: $likeCount, commentCount: $commentCount, isLiked: $isLiked, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -245,6 +261,7 @@ class _$PostImpl implements _Post {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PostImpl &&
+            (identical(other.id, id) || other.id == id) &&
             (identical(other.uid, uid) || other.uid == uid) &&
             (identical(other.content, content) || other.content == content) &&
             const DeepCollectionEquality()
@@ -264,6 +281,7 @@ class _$PostImpl implements _Post {
   @override
   int get hashCode => Object.hash(
       runtimeType,
+      id,
       uid,
       content,
       const DeepCollectionEquality().hash(_imageUrls),
@@ -291,7 +309,8 @@ class _$PostImpl implements _Post {
 
 abstract class _Post implements Post {
   const factory _Post(
-      {required final String uid,
+      {required final String id,
+      required final String uid,
       required final String content,
       final List<String> imageUrls,
       final int likeCount,
@@ -302,6 +321,8 @@ abstract class _Post implements Post {
 
   factory _Post.fromJson(Map<String, dynamic> json) = _$PostImpl.fromJson;
 
+  @override
+  String get id;
   @override
   String get uid;
   @override

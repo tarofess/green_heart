@@ -6,11 +6,13 @@ class PostUploadUsecase {
 
   PostUploadUsecase(this._postRepository);
 
-  Future<List<String>> execute(
-      Post post, String uid, List<String> paths) async {
+  Future<Post> execute(
+    String uid,
+    String content,
+    List<String> paths,
+  ) async {
     final imageUrls = await _postRepository.uploadImages(uid, paths);
-    post = post.copyWith(imageUrls: imageUrls);
-    await _postRepository.uploadPost(post);
-    return imageUrls;
+    final post = await _postRepository.uploadPost(uid, content, imageUrls);
+    return post;
   }
 }

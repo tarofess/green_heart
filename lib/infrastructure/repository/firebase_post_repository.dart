@@ -75,11 +75,26 @@ class FirebasePostRepository implements PostRepository {
   }
 
   @override
-  Future<void> uploadPost(Post post) async {
+  Future<Post> uploadPost(
+    String uid,
+    String content,
+    List<String> imageUrls,
+  ) async {
     try {
       final firestore = FirebaseFirestore.instance;
       final docRef = firestore.collection('post').doc();
+
+      final post = Post(
+        id: docRef.id,
+        uid: uid,
+        content: content,
+        imageUrls: imageUrls,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
       await docRef.set(post.toJson());
+      return post;
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('投稿に失敗しました。再度お試しください。');

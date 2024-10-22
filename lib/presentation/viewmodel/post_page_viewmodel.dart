@@ -8,7 +8,6 @@ import 'package:green_heart/application/usecase/pick_image_usecase.dart';
 import 'package:green_heart/application/usecase/pick_multiple_image_usecase.dart';
 import 'package:green_heart/application/usecase/post_upload_usecase.dart';
 import 'package:green_heart/application/di/post_di.dart';
-import 'package:green_heart/domain/type/post.dart';
 import 'package:green_heart/application/state/my_post_notifier.dart';
 import 'package:green_heart/domain/type/post_with_profile.dart';
 import 'package:green_heart/domain/type/profile.dart';
@@ -51,22 +50,13 @@ class PostPageViewModel {
       throw Exception('投稿ができません。アカウントがログアウトされている可能性があります。');
     }
 
-    final post = Post(
-      uid: _user.uid,
-      content: content,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    );
-
-    final List<String> imageUrls = await _postUploadUsecase.execute(
-      post,
+    final post = await _postUploadUsecase.execute(
       _user.uid,
+      content,
       selectedImages.value,
     );
 
-    final imageUrlsAddedPost = post.copyWith(imageUrls: imageUrls);
-    final postWithProfile =
-        PostWithProfile(post: imageUrlsAddedPost, profile: profile!);
+    final postWithProfile = PostWithProfile(post: post, profile: profile!);
     postNotifier.addPost(postWithProfile);
   }
 }
