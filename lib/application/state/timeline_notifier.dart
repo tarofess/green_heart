@@ -1,16 +1,16 @@
-import 'package:green_heart/application/di/post_di.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:green_heart/domain/type/post.dart';
+import 'package:green_heart/application/di/post_di.dart';
+import 'package:green_heart/domain/type/post_with_profile.dart';
 
-class TimelineNotifier extends AsyncNotifier<List<Post>> {
+class TimelineNotifier extends AsyncNotifier<List<PostWithProfile>> {
   @override
-  Future<List<Post>> build() async {
+  Future<List<PostWithProfile>> build() async {
     final posts = await ref.read(timelineGetUsecaseProvider).execute();
     return posts;
   }
 
-  void addPost(Post post) {
+  void addPost(PostWithProfile post) {
     state = AsyncValue.data([post, ...state.value ?? []]);
   }
 }

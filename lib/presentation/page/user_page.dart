@@ -5,15 +5,15 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/profile_notifier_provider.dart';
 import 'package:green_heart/domain/type/profile.dart';
-import 'package:green_heart/domain/type/post.dart';
+import 'package:green_heart/domain/type/post_with_profile.dart';
 import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/presentation/widget/post_card.dart';
 
 class UserPage extends ConsumerWidget {
-  const UserPage({super.key, this.profile, required this.posts});
+  const UserPage({super.key, this.profile, required this.postsWithProfile});
 
   final Profile? profile;
-  final List<Post> posts;
+  final List<PostWithProfile> postsWithProfile;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -191,9 +191,9 @@ class UserPage extends ConsumerWidget {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: posts.length,
+      itemCount: postsWithProfile.length,
       itemBuilder: (context, index) {
-        return PostCard(post: posts[index]);
+        return PostCard(postWithProfile: postsWithProfile[index]);
       },
     );
   }

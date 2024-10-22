@@ -1,33 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:green_heart/domain/type/post.dart';
 import 'package:green_heart/presentation/page/comment_page.dart';
-import 'package:green_heart/application/di/profile_di.dart';
-import 'package:green_heart/domain/type/profile.dart';
+import 'package:green_heart/domain/type/post_with_profile.dart';
 
-class PostCard extends HookConsumerWidget {
-  const PostCard({super.key, required this.post});
+class PostCard extends ConsumerWidget {
+  const PostCard({super.key, required this.postWithProfile});
 
-  final Post post;
+  final PostWithProfile postWithProfile;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = useState<Profile?>(null);
-
-    useEffect(() {
-      void getProfile() async {
-        profile.value =
-            await ref.read(profileGetUsecaseProvider).execute(post.uid);
-      }
-
-      getProfile();
-      return;
-    }, []);
-
     return Card(
       elevation: 2.0,
       child: Padding(
@@ -35,11 +20,11 @@ class PostCard extends HookConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildUserInfoArea(profile),
+            _buildUserInfoArea(),
             SizedBox(height: 16.r),
             _buildTextContentArea(),
             SizedBox(height: 16.r),
-            _buildImageArea(post.imageUrls),
+            _buildImageArea(postWithProfile.post.imageUrls),
             SizedBox(height: 8.r),
             _buildLikeAndCommentArea(context),
           ],
@@ -48,18 +33,18 @@ class PostCard extends HookConsumerWidget {
     );
   }
 
-  Widget _buildUserInfoArea(ValueNotifier<Profile?> profile) {
+  Widget _buildUserInfoArea() {
     return Row(
       children: [
         CircleAvatar(
           radius: 24.r,
           backgroundImage: CachedNetworkImageProvider(
-            profile.value?.imageUrl ?? '',
+            postWithProfile.profile.imageUrl ?? '',
           ),
         ),
         SizedBox(width: 8.r),
         Text(
-          profile.value?.name ?? '',
+          postWithProfile.profile.name,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ],
@@ -67,7 +52,9 @@ class PostCard extends HookConsumerWidget {
   }
 
   Widget _buildTextContentArea() {
-    return post.content.isEmpty ? const SizedBox() : Text(post.content);
+    return postWithProfile.post.content.isEmpty
+        ? const SizedBox()
+        : Text(postWithProfile.post.content);
   }
 
   Widget _buildImageArea(List<String> postImages) {
@@ -109,7 +96,7 @@ class PostCard extends HookConsumerWidget {
           children: [
             const Icon(Icons.favorite_border),
             SizedBox(width: 8.r),
-            Text(post.likeCount.toString()),
+            Text(postWithProfile.post.likeCount.toString()),
           ],
         ),
         SizedBox(width: 16.r),
@@ -118,7 +105,7 @@ class PostCard extends HookConsumerWidget {
             children: [
               const Icon(Icons.comment_outlined),
               SizedBox(width: 8.r),
-              Text(post.commentCount.toString()),
+              Text(postWithProfile.post.commentCount.toString()),
             ],
           ),
           onTap: () {

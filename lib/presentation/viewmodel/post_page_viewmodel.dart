@@ -1,7 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:green_heart/application/state/my_post_notifier.dart';
-import 'package:green_heart/application/state/my_post_notifier_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/picture_di.dart';
@@ -11,6 +9,10 @@ import 'package:green_heart/application/usecase/pick_multiple_image_usecase.dart
 import 'package:green_heart/application/usecase/post_upload_usecase.dart';
 import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/domain/type/post.dart';
+import 'package:green_heart/application/state/my_post_notifier.dart';
+import 'package:green_heart/application/state/my_post_notifier_provider.dart';
+import 'package:green_heart/domain/type/post_with_profile.dart';
+import 'package:green_heart/domain/type/profile.dart';
 
 class PostPageViewModel {
   final PickImageUsecase _pickImageUsecase;
@@ -44,8 +46,8 @@ class PostPageViewModel {
     }
   }
 
-  Future<void> uploadPost(
-      String content, ValueNotifier<List<String>> selectedImages) async {
+  Future<void> uploadPost(String content,
+      ValueNotifier<List<String>> selectedImages, Profile? profile) async {
     if (_user == null) {
       throw Exception('投稿ができません。アカウントがログアウトされている可能性があります。');
     }
@@ -64,7 +66,9 @@ class PostPageViewModel {
     );
 
     final imageUrlsAddedPost = post.copyWith(imageUrls: imageUrls);
-    postNotifier.addPost(imageUrlsAddedPost);
+    final postWithProfile =
+        PostWithProfile(post: imageUrlsAddedPost, profile: profile!);
+    postNotifier.addPost(postWithProfile);
   }
 }
 

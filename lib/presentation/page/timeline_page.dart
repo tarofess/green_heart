@@ -5,7 +5,7 @@ import 'package:green_heart/application/state/timeline_notifier_provider.dart';
 import 'package:green_heart/presentation/page/error_page.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/presentation/widget/post_card.dart';
-import 'package:green_heart/domain/type/post.dart';
+import 'package:green_heart/domain/type/post_with_profile.dart';
 
 class TimelinePage extends ConsumerWidget {
   const TimelinePage({super.key});
@@ -39,7 +39,7 @@ class TimelinePage extends ConsumerWidget {
             child: ListView.builder(
               itemCount: data.length,
               itemBuilder: (context, index) {
-                return PostCard(post: data[index]);
+                return PostCard(postWithProfile: data[index]);
               },
             ),
           );
@@ -59,7 +59,7 @@ class TimelinePage extends ConsumerWidget {
 }
 
 class PostSearch extends SearchDelegate<String> {
-  final AsyncValue<List<Post>> timeline;
+  final AsyncValue<List<PostWithProfile>> timeline;
 
   PostSearch({required this.timeline});
 
@@ -99,13 +99,14 @@ class PostSearch extends SearchDelegate<String> {
     return timeline.when(
       data: (data) {
         final results = data
-            .where((post) =>
-                post.content.toLowerCase().contains(query.toLowerCase()))
+            .where((postWithProfile) => postWithProfile.post.content
+                .toLowerCase()
+                .contains(query.toLowerCase()))
             .toList();
         return ListView.builder(
           itemCount: results.length,
           itemBuilder: (context, index) {
-            return PostCard(post: results[index]);
+            return PostCard(postWithProfile: results[index]);
           },
         );
       },

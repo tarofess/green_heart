@@ -1,12 +1,12 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:green_heart/domain/type/post.dart';
 import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
+import 'package:green_heart/domain/type/post_with_profile.dart';
 
-class MyPostNotifier extends AsyncNotifier<List<Post>> {
+class MyPostNotifier extends AsyncNotifier<List<PostWithProfile>> {
   @override
-  Future<List<Post>> build() async {
+  Future<List<PostWithProfile>> build() async {
     final uid = ref.read(authStateProvider).value?.uid;
     if (uid == null) {
       throw Exception('ユーザーが存在しないので投稿を取得できません。再度お試しください。');
@@ -15,7 +15,7 @@ class MyPostNotifier extends AsyncNotifier<List<Post>> {
     return posts;
   }
 
-  void addPost(Post post) {
+  void addPost(PostWithProfile post) {
     state = AsyncValue.data([post, ...state.value ?? []]);
   }
 
