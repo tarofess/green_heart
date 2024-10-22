@@ -104,73 +104,9 @@ class PostCard extends ConsumerWidget {
       children: [
         Row(
           children: [
-            GestureDetector(
-              child: Row(
-                children: [
-                  Icon(
-                    postWithProfile.post.likedUserIds
-                            .contains(ref.read(authStateProvider).value?.uid)
-                        ? Icons.favorite
-                        : Icons.favorite_border,
-                    color: postWithProfile.post.likedUserIds
-                            .contains(ref.read(authStateProvider).value?.uid)
-                        ? Colors.red
-                        : null,
-                  ),
-                  SizedBox(width: 8.r),
-                  Text(postWithProfile.post.likedUserIds.length.toString()),
-                ],
-              ),
-              onTap: () async {
-                final uid = ref.read(authStateProvider).value?.uid;
-                if (uid == null) return;
-
-                await ref.read(likeUsecaseProvider).execute(
-                      postWithProfile.post.id,
-                      uid,
-                    );
-                ref.read(timelineNotifierProvider.notifier).updateLikedUserIds(
-                      postWithProfile.post.id,
-                      uid,
-                    );
-                ref.read(myPostNotifierProvider.notifier).updateLikedUserIds(
-                      postWithProfile.post.id,
-                      uid,
-                    );
-              },
-            ),
+            _buildLikeWidget(ref),
             SizedBox(width: 16.r),
-            GestureDetector(
-              child: Row(
-                children: [
-                  const Icon(Icons.comment_outlined),
-                  SizedBox(width: 8.r),
-                  Text(postWithProfile.post.commentCount.toString()),
-                ],
-              ),
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(20),
-                    ),
-                  ),
-                  builder: (BuildContext context) {
-                    return const ClipRRect(
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(20),
-                      ),
-                      child: FractionallySizedBox(
-                        heightFactor: 0.6,
-                        child: CommentPage(),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
+            _buildCommentWidget(context, ref),
           ],
         ),
         Text(
@@ -178,6 +114,78 @@ class PostCard extends ConsumerWidget {
           style: TextStyle(fontSize: 12.sp, color: Colors.black),
         ),
       ],
+    );
+  }
+
+  Widget _buildLikeWidget(WidgetRef ref) {
+    return GestureDetector(
+      child: Row(
+        children: [
+          Icon(
+            postWithProfile.post.likedUserIds
+                    .contains(ref.read(authStateProvider).value?.uid)
+                ? Icons.favorite
+                : Icons.favorite_border,
+            color: postWithProfile.post.likedUserIds
+                    .contains(ref.read(authStateProvider).value?.uid)
+                ? Colors.red
+                : null,
+          ),
+          SizedBox(width: 8.r),
+          Text(postWithProfile.post.likedUserIds.length.toString()),
+        ],
+      ),
+      onTap: () async {
+        final uid = ref.read(authStateProvider).value?.uid;
+        if (uid == null) return;
+
+        await ref.read(likeUsecaseProvider).execute(
+              postWithProfile.post.id,
+              uid,
+            );
+        ref.read(timelineNotifierProvider.notifier).updateLikedUserIds(
+              postWithProfile.post.id,
+              uid,
+            );
+        ref.read(myPostNotifierProvider.notifier).updateLikedUserIds(
+              postWithProfile.post.id,
+              uid,
+            );
+      },
+    );
+  }
+
+  Widget _buildCommentWidget(BuildContext context, WidgetRef ref) {
+    return GestureDetector(
+      child: Row(
+        children: [
+          const Icon(Icons.comment_outlined),
+          SizedBox(width: 8.r),
+          Text(postWithProfile.post.commentCount.toString()),
+        ],
+      ),
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(20),
+            ),
+          ),
+          builder: (BuildContext context) {
+            return const ClipRRect(
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
+              child: FractionallySizedBox(
+                heightFactor: 0.6,
+                child: CommentPage(),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
