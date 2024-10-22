@@ -31,11 +31,17 @@ class TimelinePage extends ConsumerWidget {
       ),
       body: timeline.when(
         data: (data) {
-          return ListView.builder(
-            itemCount: data.length,
-            itemBuilder: (context, index) {
-              return PostCard(post: data[index]);
+          return RefreshIndicator(
+            onRefresh: () async {
+              // ignore: unused_result
+              await ref.refresh(timelineNotifierProvider.future);
             },
+            child: ListView.builder(
+              itemCount: data.length,
+              itemBuilder: (context, index) {
+                return PostCard(post: data[index]);
+              },
+            ),
           );
         },
         error: (e, stackTrace) {
