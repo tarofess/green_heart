@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:green_heart/application/state/my_post_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/presentation/page/comment_page.dart';
@@ -129,6 +130,10 @@ class PostCard extends ConsumerWidget {
                       uid,
                     );
                 ref.read(timelineNotifierProvider.notifier).updateLikedUserIds(
+                      postWithProfile.post.id,
+                      uid,
+                    );
+                ref.read(myPostNotifierProvider.notifier).updateLikedUserIds(
                       postWithProfile.post.id,
                       uid,
                     );
