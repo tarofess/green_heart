@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:green_heart/domain/type/comment.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/presentation/page/error_page.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/presentation/widget/post_card.dart';
 import 'package:green_heart/application/state/timeline_notifier.dart';
-import 'package:green_heart/domain/type/post.dart';
-import 'package:green_heart/domain/type/profile.dart';
+import 'package:green_heart/domain/type/post_data.dart';
 
 class TimelinePage extends ConsumerWidget {
   const TimelinePage({super.key});
@@ -39,13 +37,9 @@ class TimelinePage extends ConsumerWidget {
               await ref.refresh(timelineNotifierProvider.future);
             },
             child: ListView.builder(
-              itemCount: data.$1.length,
+              itemCount: data.length,
               itemBuilder: (context, index) {
-                return PostCard(
-                  post: data.$1[index],
-                  profile: data.$2[index],
-                  comments: data.$3[index],
-                );
+                return PostCard(postData: data[index]);
               },
             ),
           );
@@ -65,8 +59,7 @@ class TimelinePage extends ConsumerWidget {
 }
 
 class PostSearch extends SearchDelegate<String> {
-  final AsyncValue<(List<Post>, List<Profile?>, List<List<Comment>>)>
-      timelinePosts;
+  final AsyncValue<List<PostData>> timelinePosts;
 
   PostSearch({required this.timelinePosts});
 
@@ -105,18 +98,15 @@ class PostSearch extends SearchDelegate<String> {
   Widget _buildSearchResults() {
     return timelinePosts.when(
       data: (data) {
-        final results = data.$1
-            .where((post) =>
-                post.content.toLowerCase().contains(query.toLowerCase()))
+        final results = data
+            .where((postData) => postData.post.content
+                .toLowerCase()
+                .contains(query.toLowerCase()))
             .toList();
         return ListView.builder(
           itemCount: results.length,
           itemBuilder: (context, index) {
-            return PostCard(
-              post: results[index],
-              profile: data.$2[index],
-              comments: data.$3[index],
-            );
+            return PostCard(postData: results[index]);
           },
         );
       },

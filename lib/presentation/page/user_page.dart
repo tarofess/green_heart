@@ -7,19 +7,13 @@ import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/presentation/widget/post_card.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
-import 'package:green_heart/domain/type/post.dart';
-import 'package:green_heart/domain/type/comment.dart';
+import 'package:green_heart/domain/type/post_data.dart';
 
 class UserPage extends ConsumerWidget {
-  const UserPage(
-      {super.key,
-      required this.profile,
-      required this.posts,
-      required this.comments});
+  const UserPage({super.key, required this.profile, required this.postData});
 
-  final List<Post> posts;
+  final List<PostData> postData;
   final Profile? profile;
-  final List<List<Comment>> comments;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -198,13 +192,9 @@ class UserPage extends ConsumerWidget {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: posts.length,
+      itemCount: postData.length,
       itemBuilder: (context, index) {
-        return PostCard(
-          post: posts[index],
-          profile: profile,
-          comments: comments[index],
-        );
+        return PostCard(postData: postData[index]);
       },
     );
   }

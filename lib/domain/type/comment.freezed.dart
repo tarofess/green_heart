@@ -21,7 +21,7 @@ Comment _$CommentFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Comment {
   String get id => throw _privateConstructorUsedError;
-  String get userId => throw _privateConstructorUsedError;
+  String get uid => throw _privateConstructorUsedError;
   String get postId => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -42,7 +42,7 @@ abstract class $CommentCopyWith<$Res> {
   @useResult
   $Res call(
       {String id,
-      String userId,
+      String uid,
       String postId,
       String content,
       DateTime createdAt});
@@ -64,7 +64,7 @@ class _$CommentCopyWithImpl<$Res, $Val extends Comment>
   @override
   $Res call({
     Object? id = null,
-    Object? userId = null,
+    Object? uid = null,
     Object? postId = null,
     Object? content = null,
     Object? createdAt = null,
@@ -74,9 +74,9 @@ class _$CommentCopyWithImpl<$Res, $Val extends Comment>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      userId: null == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
+      uid: null == uid
+          ? _value.uid
+          : uid // ignore: cast_nullable_to_non_nullable
               as String,
       postId: null == postId
           ? _value.postId
@@ -103,7 +103,7 @@ abstract class _$$CommentImplCopyWith<$Res> implements $CommentCopyWith<$Res> {
   @useResult
   $Res call(
       {String id,
-      String userId,
+      String uid,
       String postId,
       String content,
       DateTime createdAt});
@@ -123,7 +123,7 @@ class __$$CommentImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? userId = null,
+    Object? uid = null,
     Object? postId = null,
     Object? content = null,
     Object? createdAt = null,
@@ -133,9 +133,9 @@ class __$$CommentImplCopyWithImpl<$Res>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      userId: null == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
+      uid: null == uid
+          ? _value.uid
+          : uid // ignore: cast_nullable_to_non_nullable
               as String,
       postId: null == postId
           ? _value.postId
@@ -158,7 +158,7 @@ class __$$CommentImplCopyWithImpl<$Res>
 class _$CommentImpl implements _Comment {
   const _$CommentImpl(
       {required this.id,
-      required this.userId,
+      required this.uid,
       required this.postId,
       required this.content,
       required this.createdAt});
@@ -169,7 +169,7 @@ class _$CommentImpl implements _Comment {
   @override
   final String id;
   @override
-  final String userId;
+  final String uid;
   @override
   final String postId;
   @override
@@ -179,7 +179,7 @@ class _$CommentImpl implements _Comment {
 
   @override
   String toString() {
-    return 'Comment(id: $id, userId: $userId, postId: $postId, content: $content, createdAt: $createdAt)';
+    return 'Comment(id: $id, uid: $uid, postId: $postId, content: $content, createdAt: $createdAt)';
   }
 
   @override
@@ -188,7 +188,7 @@ class _$CommentImpl implements _Comment {
         (other.runtimeType == runtimeType &&
             other is _$CommentImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.uid, uid) || other.uid == uid) &&
             (identical(other.postId, postId) || other.postId == postId) &&
             (identical(other.content, content) || other.content == content) &&
             (identical(other.createdAt, createdAt) ||
@@ -198,7 +198,7 @@ class _$CommentImpl implements _Comment {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, id, userId, postId, content, createdAt);
+      Object.hash(runtimeType, id, uid, postId, content, createdAt);
 
   /// Create a copy of Comment
   /// with the given fields replaced by the non-null parameter values.
@@ -219,7 +219,7 @@ class _$CommentImpl implements _Comment {
 abstract class _Comment implements Comment {
   const factory _Comment(
       {required final String id,
-      required final String userId,
+      required final String uid,
       required final String postId,
       required final String content,
       required final DateTime createdAt}) = _$CommentImpl;
@@ -229,7 +229,7 @@ abstract class _Comment implements Comment {
   @override
   String get id;
   @override
-  String get userId;
+  String get uid;
   @override
   String get postId;
   @override
