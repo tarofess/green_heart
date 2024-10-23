@@ -29,6 +29,13 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
     );
     state = AsyncValue.data([newCommentData, ...state.value ?? []]);
   }
+
+  Future<void> deleteComment(String commentId) async {
+    state = AsyncValue.data(state.value?.where((commentData) {
+          return commentData.comment.id != commentId;
+        }).toList() ??
+        []);
+  }
 }
 
 final commentNotifierProvider =

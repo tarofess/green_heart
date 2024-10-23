@@ -25,20 +25,20 @@ class PostCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildUserInfoArea(),
+            _buildUserInfo(),
             SizedBox(height: 16.r),
-            _buildTextContentArea(),
+            _buildTextContent(),
             SizedBox(height: 16.r),
-            _buildImageArea(postData.post.imageUrls),
+            _buildImage(postData.post.imageUrls),
             SizedBox(height: 8.r),
-            _buildLikeAndCommentArea(context, ref),
+            _buildActionButtons(context, ref),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildUserInfoArea() {
+  Widget _buildUserInfo() {
     return Row(
       children: [
         CircleAvatar(
@@ -56,13 +56,13 @@ class PostCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildTextContentArea() {
+  Widget _buildTextContent() {
     return postData.post.content.isEmpty
         ? const SizedBox()
         : Text(postData.post.content);
   }
 
-  Widget _buildImageArea(List<String> postImages) {
+  Widget _buildImage(List<String> postImages) {
     return postImages.isNotEmpty
         ? SizedBox(
             height: 240.r,
@@ -98,7 +98,7 @@ class PostCard extends ConsumerWidget {
         : const SizedBox();
   }
 
-  Widget _buildLikeAndCommentArea(BuildContext context, WidgetRef ref) {
+  Widget _buildActionButtons(BuildContext context, WidgetRef ref) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -107,6 +107,8 @@ class PostCard extends ConsumerWidget {
             _buildLikeWidget(ref),
             SizedBox(width: 16.r),
             _buildCommentWidget(context, ref),
+            SizedBox(width: 16.r),
+            _buildDeletePostButton(context, ref),
           ],
         ),
         Text(
@@ -183,6 +185,13 @@ class PostCard extends ConsumerWidget {
           },
         );
       },
+    );
+  }
+
+  Widget _buildDeletePostButton(BuildContext context, WidgetRef ref) {
+    return GestureDetector(
+      child: const Icon(Icons.delete_outlined),
+      onTap: () async {},
     );
   }
 

@@ -13,6 +13,7 @@ import 'package:green_heart/application/state/my_post_notifier.dart';
 import 'package:green_heart/application/state/timeline_notifier.dart';
 import 'package:green_heart/presentation/page/error_page.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
+import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 
 class CommentPage extends HookConsumerWidget {
   const CommentPage({super.key, required this.postId});
@@ -33,7 +34,7 @@ class CommentPage extends HookConsumerWidget {
               Expanded(
                 child: comments.isEmpty
                     ? _buildEmptyCommentMessage()
-                    : _buildComment(comments),
+                    : _buildComment(ref, comments),
               ),
               const Divider(height: 1),
               Padding(
@@ -78,7 +79,7 @@ class CommentPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildComment(List<CommentData> comments) {
+  Widget _buildComment(WidgetRef ref, List<CommentData> comments) {
     return ListView.builder(
       itemCount: comments.length,
       itemBuilder: (context, index) {
@@ -104,9 +105,36 @@ class CommentPage extends HookConsumerWidget {
             comments[index].comment.content,
             style: TextStyle(fontSize: 16.sp),
           ),
-          trailing: Text(
-            DateUtil.formatCommentTime(comments[index].comment.createdAt),
-            style: TextStyle(fontSize: 12.sp),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              GestureDetector(
+                child: Icon(Icons.delete_outline, size: 20.sp),
+                onTap: () async {
+                  final result = await showConfirmationDialog(
+                    context: context,
+                    title: '確認',
+                    content: 'コメントを削除しますか？',
+                    positiveButtonText: '削除する',
+                    negativeButtonText: 'キャンセル',
+                  );
+                  if (!result) return;
+
+                  final commentId = comments[index].comment.id;
+                  await ref
+                      .read(commentDeleteUsecaseProvider)
+                      .execute(commentId);
+                  ref
+                      .read(commentNotifierProvider(postId).notifier)
+                      .deleteComment(commentId);
+                },
+              ),
+              const SizedBox(height: 4),
+              Text(
+                DateUtil.formatCommentTime(comments[index].comment.createdAt),
+                style: TextStyle(fontSize: 12.sp),
+              ),
+            ],
           ),
         );
       },
