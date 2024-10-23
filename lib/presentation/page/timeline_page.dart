@@ -4,8 +4,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:green_heart/presentation/page/error_page.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/presentation/widget/post_card.dart';
-import 'package:green_heart/domain/type/post_with_profile.dart';
 import 'package:green_heart/application/state/timeline_notifier.dart';
+import 'package:green_heart/domain/type/post.dart';
+import 'package:green_heart/domain/type/profile.dart';
 
 class TimelinePage extends ConsumerWidget {
   const TimelinePage({super.key});
@@ -23,7 +24,7 @@ class TimelinePage extends ConsumerWidget {
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: PostSearch(timeline: timeline),
+                delegate: PostSearch(timelinePosts: timeline),
               );
             },
           )
@@ -37,9 +38,9 @@ class TimelinePage extends ConsumerWidget {
               await ref.refresh(timelineNotifierProvider.future);
             },
             child: ListView.builder(
-              itemCount: data.length,
+              itemCount: data.$1.length,
               itemBuilder: (context, index) {
-                return PostCard(postWithProfile: data[index]);
+                return PostCard(post: data.$1[index], profile: data.$2[index]);
               },
             ),
           );
@@ -59,9 +60,9 @@ class TimelinePage extends ConsumerWidget {
 }
 
 class PostSearch extends SearchDelegate<String> {
-  final AsyncValue<List<PostWithProfile>> timeline;
+  final AsyncValue<(List<Post>, List<Profile?>)> timelinePosts;
 
-  PostSearch({required this.timeline});
+  PostSearch({required this.timelinePosts});
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -96,17 +97,16 @@ class PostSearch extends SearchDelegate<String> {
   }
 
   Widget _buildSearchResults() {
-    return timeline.when(
+    return timelinePosts.when(
       data: (data) {
-        final results = data
-            .where((postWithProfile) => postWithProfile.post.content
-                .toLowerCase()
-                .contains(query.toLowerCase()))
+        final results = data.$1
+            .where((post) =>
+                post.content.toLowerCase().contains(query.toLowerCase()))
             .toList();
         return ListView.builder(
           itemCount: results.length,
           itemBuilder: (context, index) {
-            return PostCard(postWithProfile: results[index]);
+            return PostCard(post: results[index], profile: data.$2[index]);
           },
         );
       },

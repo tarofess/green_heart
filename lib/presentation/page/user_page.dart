@@ -4,16 +4,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/profile.dart';
-import 'package:green_heart/domain/type/post_with_profile.dart';
 import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/presentation/widget/post_card.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
+import 'package:green_heart/domain/type/post.dart';
 
 class UserPage extends ConsumerWidget {
-  const UserPage({super.key, this.profile, required this.postsWithProfile});
+  const UserPage({super.key, required this.profile, required this.posts});
 
+  final List<Post> posts;
   final Profile? profile;
-  final List<PostWithProfile> postsWithProfile;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -168,7 +168,7 @@ class UserPage extends ConsumerWidget {
   Widget _buildBirthDate(BuildContext context, WidgetRef ref) {
     return profile?.birthday == null
         ? const SizedBox()
-        : Text('${DateUtil.convertToJapaneseDate(profile!.birthday!)}生まれ');
+        : Text('${DateUtil.convertToJapaneseDate(profile?.birthday!)}生まれ');
   }
 
   Widget _buildUserBio(BuildContext context, WidgetRef ref) {
@@ -192,9 +192,9 @@ class UserPage extends ConsumerWidget {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: postsWithProfile.length,
+      itemCount: posts.length,
       itemBuilder: (context, index) {
-        return PostCard(postWithProfile: postsWithProfile[index]);
+        return PostCard(post: posts[index], profile: profile);
       },
     );
   }

@@ -25,7 +25,7 @@ mixin _$Post {
   String get content => throw _privateConstructorUsedError;
   List<String> get imageUrls => throw _privateConstructorUsedError;
   List<String> get likedUserIds => throw _privateConstructorUsedError;
-  int get commentCount => throw _privateConstructorUsedError;
+  List<String> get commentIds => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
@@ -49,7 +49,7 @@ abstract class $PostCopyWith<$Res> {
       String content,
       List<String> imageUrls,
       List<String> likedUserIds,
-      int commentCount,
+      List<String> commentIds,
       DateTime createdAt,
       DateTime updatedAt});
 }
@@ -74,7 +74,7 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
     Object? content = null,
     Object? imageUrls = null,
     Object? likedUserIds = null,
-    Object? commentCount = null,
+    Object? commentIds = null,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -99,10 +99,10 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
           ? _value.likedUserIds
           : likedUserIds // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      commentCount: null == commentCount
-          ? _value.commentCount
-          : commentCount // ignore: cast_nullable_to_non_nullable
-              as int,
+      commentIds: null == commentIds
+          ? _value.commentIds
+          : commentIds // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -128,7 +128,7 @@ abstract class _$$PostImplCopyWith<$Res> implements $PostCopyWith<$Res> {
       String content,
       List<String> imageUrls,
       List<String> likedUserIds,
-      int commentCount,
+      List<String> commentIds,
       DateTime createdAt,
       DateTime updatedAt});
 }
@@ -150,7 +150,7 @@ class __$$PostImplCopyWithImpl<$Res>
     Object? content = null,
     Object? imageUrls = null,
     Object? likedUserIds = null,
-    Object? commentCount = null,
+    Object? commentIds = null,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -175,10 +175,10 @@ class __$$PostImplCopyWithImpl<$Res>
           ? _value._likedUserIds
           : likedUserIds // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      commentCount: null == commentCount
-          ? _value.commentCount
-          : commentCount // ignore: cast_nullable_to_non_nullable
-              as int,
+      commentIds: null == commentIds
+          ? _value._commentIds
+          : commentIds // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -200,11 +200,12 @@ class _$PostImpl implements _Post {
       required this.content,
       final List<String> imageUrls = const [],
       final List<String> likedUserIds = const [],
-      this.commentCount = 0,
+      final List<String> commentIds = const [],
       required this.createdAt,
       required this.updatedAt})
       : _imageUrls = imageUrls,
-        _likedUserIds = likedUserIds;
+        _likedUserIds = likedUserIds,
+        _commentIds = commentIds;
 
   factory _$PostImpl.fromJson(Map<String, dynamic> json) =>
       _$$PostImplFromJson(json);
@@ -233,9 +234,15 @@ class _$PostImpl implements _Post {
     return EqualUnmodifiableListView(_likedUserIds);
   }
 
+  final List<String> _commentIds;
   @override
   @JsonKey()
-  final int commentCount;
+  List<String> get commentIds {
+    if (_commentIds is EqualUnmodifiableListView) return _commentIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_commentIds);
+  }
+
   @override
   final DateTime createdAt;
   @override
@@ -243,7 +250,7 @@ class _$PostImpl implements _Post {
 
   @override
   String toString() {
-    return 'Post(id: $id, uid: $uid, content: $content, imageUrls: $imageUrls, likedUserIds: $likedUserIds, commentCount: $commentCount, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Post(id: $id, uid: $uid, content: $content, imageUrls: $imageUrls, likedUserIds: $likedUserIds, commentIds: $commentIds, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -258,8 +265,8 @@ class _$PostImpl implements _Post {
                 .equals(other._imageUrls, _imageUrls) &&
             const DeepCollectionEquality()
                 .equals(other._likedUserIds, _likedUserIds) &&
-            (identical(other.commentCount, commentCount) ||
-                other.commentCount == commentCount) &&
+            const DeepCollectionEquality()
+                .equals(other._commentIds, _commentIds) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -275,7 +282,7 @@ class _$PostImpl implements _Post {
       content,
       const DeepCollectionEquality().hash(_imageUrls),
       const DeepCollectionEquality().hash(_likedUserIds),
-      commentCount,
+      const DeepCollectionEquality().hash(_commentIds),
       createdAt,
       updatedAt);
 
@@ -302,7 +309,7 @@ abstract class _Post implements Post {
       required final String content,
       final List<String> imageUrls,
       final List<String> likedUserIds,
-      final int commentCount,
+      final List<String> commentIds,
       required final DateTime createdAt,
       required final DateTime updatedAt}) = _$PostImpl;
 
@@ -319,7 +326,7 @@ abstract class _Post implements Post {
   @override
   List<String> get likedUserIds;
   @override
-  int get commentCount;
+  List<String> get commentIds;
   @override
   DateTime get createdAt;
   @override

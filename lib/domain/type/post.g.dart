@@ -18,7 +18,10 @@ _$PostImpl _$$PostImplFromJson(Map<String, dynamic> json) => _$PostImpl(
               ?.map((e) => e as String)
               .toList() ??
           const [],
-      commentCount: (json['commentCount'] as num?)?.toInt() ?? 0,
+      commentIds: (json['commentIds'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
@@ -30,7 +33,7 @@ Map<String, dynamic> _$$PostImplToJson(_$PostImpl instance) =>
       'content': instance.content,
       'imageUrls': instance.imageUrls,
       'likedUserIds': instance.likedUserIds,
-      'commentCount': instance.commentCount,
+      'commentIds': instance.commentIds,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
     };

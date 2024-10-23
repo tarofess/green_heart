@@ -5,13 +5,11 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:green_heart/application/exception/app_exception.dart';
 import 'package:green_heart/application/interface/post_repository.dart';
 import 'package:green_heart/domain/type/post.dart';
-import 'package:green_heart/domain/type/post_with_profile.dart';
-import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 
 class FirebasePostRepository implements PostRepository {
   @override
-  Future<List<PostWithProfile>> getPostsByUid(String uid) async {
+  Future<List<Post>> getPostsByUid(String uid) async {
     try {
       final firestore = FirebaseFirestore.instance;
       final querySnapshot = await firestore
@@ -19,24 +17,9 @@ class FirebasePostRepository implements PostRepository {
           .where('uid', isEqualTo: uid)
           .orderBy('createdAt', descending: true)
           .get();
-
-      List<PostWithProfile> postsWithProfiles = [];
-
-      for (var doc in querySnapshot.docs) {
-        Post post = Post.fromJson(doc.data());
-
-        DocumentSnapshot profileSnapshot =
-            await firestore.collection('profile').doc(post.uid).get();
-
-        if (profileSnapshot.exists) {
-          Profile profile =
-              Profile.fromJson(profileSnapshot.data() as Map<String, dynamic>);
-
-          postsWithProfiles.add(PostWithProfile(post: post, profile: profile));
-        }
-      }
-
-      return postsWithProfiles;
+      return querySnapshot.docs
+          .map((doc) => Post.fromJson(doc.data()))
+          .toList();
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('投稿の取得に失敗しました。再度お試しください。');
@@ -44,30 +27,16 @@ class FirebasePostRepository implements PostRepository {
   }
 
   @override
-  Future<List<PostWithProfile>> getAllPosts() async {
+  Future<List<Post>> getAllPosts() async {
     try {
       final firestore = FirebaseFirestore.instance;
       final querySnapshot = await firestore
           .collection('post')
           .orderBy('createdAt', descending: true)
           .get();
-      List<PostWithProfile> postsWithProfiles = [];
-
-      for (var doc in querySnapshot.docs) {
-        Post post = Post.fromJson(doc.data());
-
-        DocumentSnapshot profileSnapshot =
-            await firestore.collection('profile').doc(post.uid).get();
-
-        if (profileSnapshot.exists) {
-          Profile profile =
-              Profile.fromJson(profileSnapshot.data() as Map<String, dynamic>);
-
-          postsWithProfiles.add(PostWithProfile(post: post, profile: profile));
-        }
-      }
-
-      return postsWithProfiles;
+      return querySnapshot.docs
+          .map((doc) => Post.fromJson(doc.data()))
+          .toList();
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('投稿の取得に失敗しました。再度お試しください。');

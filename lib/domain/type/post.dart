@@ -11,7 +11,7 @@ class Post with _$Post {
     required String content,
     @Default([]) List<String> imageUrls,
     @Default([]) List<String> likedUserIds,
-    @Default(0) int commentCount,
+    @Default([]) List<String> commentIds,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _Post;

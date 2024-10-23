@@ -1,20 +1,22 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:green_heart/application/state/my_post_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/presentation/page/comment_page.dart';
-import 'package:green_heart/domain/type/post_with_profile.dart';
 import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/application/di/like_di.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/state/timeline_notifier.dart';
+import 'package:green_heart/application/state/my_post_notifier.dart';
+import 'package:green_heart/domain/type/post.dart';
+import 'package:green_heart/domain/type/profile.dart';
 
 class PostCard extends ConsumerWidget {
-  const PostCard({super.key, required this.postWithProfile});
+  const PostCard({super.key, required this.post, required this.profile});
 
-  final PostWithProfile postWithProfile;
+  final Post post;
+  final Profile? profile;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,7 +31,7 @@ class PostCard extends ConsumerWidget {
             SizedBox(height: 16.r),
             _buildTextContentArea(),
             SizedBox(height: 16.r),
-            _buildImageArea(postWithProfile.post.imageUrls),
+            _buildImageArea(post.imageUrls),
             SizedBox(height: 8.r),
             _buildLikeAndCommentArea(context, ref),
           ],
@@ -44,12 +46,12 @@ class PostCard extends ConsumerWidget {
         CircleAvatar(
           radius: 24.r,
           backgroundImage: CachedNetworkImageProvider(
-            postWithProfile.profile.imageUrl ?? '',
+            profile?.imageUrl ?? '',
           ),
         ),
         SizedBox(width: 8.r),
         Text(
-          postWithProfile.profile.name,
+          profile?.name ?? '',
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ],
@@ -57,9 +59,7 @@ class PostCard extends ConsumerWidget {
   }
 
   Widget _buildTextContentArea() {
-    return postWithProfile.post.content.isEmpty
-        ? const SizedBox()
-        : Text(postWithProfile.post.content);
+    return post.content.isEmpty ? const SizedBox() : Text(post.content);
   }
 
   Widget _buildImageArea(List<String> postImages) {
@@ -110,7 +110,7 @@ class PostCard extends ConsumerWidget {
           ],
         ),
         Text(
-          DateUtil.formatPostTime(postWithProfile.post.createdAt),
+          DateUtil.formatPostTime(post.createdAt),
           style: TextStyle(fontSize: 12.sp, color: Colors.black),
         ),
       ],
@@ -122,33 +122,29 @@ class PostCard extends ConsumerWidget {
       child: Row(
         children: [
           Icon(
-            postWithProfile.post.likedUserIds
-                    .contains(ref.read(authStateProvider).value?.uid)
+            post.likedUserIds.contains(ref.read(authStateProvider).value?.uid)
                 ? Icons.favorite
                 : Icons.favorite_border,
-            color: postWithProfile.post.likedUserIds
+            color: post.likedUserIds
                     .contains(ref.read(authStateProvider).value?.uid)
                 ? Colors.red
                 : null,
           ),
           SizedBox(width: 8.r),
-          Text(postWithProfile.post.likedUserIds.length.toString()),
+          Text(post.likedUserIds.length.toString()),
         ],
       ),
       onTap: () async {
         final uid = ref.read(authStateProvider).value?.uid;
         if (uid == null) return;
 
-        await ref.read(likeUsecaseProvider).execute(
-              postWithProfile.post.id,
-              uid,
-            );
+        await ref.read(likeUsecaseProvider).execute(post.id, uid);
         ref.read(timelineNotifierProvider.notifier).updateLikedUserIds(
-              postWithProfile.post.id,
+              post.id,
               uid,
             );
         ref.read(myPostNotifierProvider.notifier).updateLikedUserIds(
-              postWithProfile.post.id,
+              post.id,
               uid,
             );
       },
@@ -161,7 +157,7 @@ class PostCard extends ConsumerWidget {
         children: [
           const Icon(Icons.comment_outlined),
           SizedBox(width: 8.r),
-          Text(postWithProfile.post.commentCount.toString()),
+          Text(post.commentIds.length.toString()),
         ],
       ),
       onTap: () {

@@ -9,7 +9,6 @@ import 'package:green_heart/application/usecase/pick_multiple_image_usecase.dart
 import 'package:green_heart/application/usecase/post_upload_usecase.dart';
 import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/application/state/my_post_notifier.dart';
-import 'package:green_heart/domain/type/post_with_profile.dart';
 import 'package:green_heart/domain/type/profile.dart';
 
 class PostPageViewModel {
@@ -56,8 +55,7 @@ class PostPageViewModel {
       selectedImages.value,
     );
 
-    final postWithProfile = PostWithProfile(post: post, profile: profile!);
-    postNotifier.addPost(postWithProfile);
+    postNotifier.addPost(post);
   }
 }
 

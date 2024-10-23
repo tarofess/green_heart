@@ -6,15 +6,13 @@ import 'package:green_heart/presentation/page/user_page.dart';
 import 'package:green_heart/presentation/page/error_page.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/application/state/my_post_notifier.dart';
-import 'package:green_heart/application/state/profile_notifier.dart';
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(profileNotifierProvider).value;
-    final posts = ref.watch(myPostNotifierProvider);
+    final userPosts = ref.watch(myPostNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -26,9 +24,9 @@ class HomePage extends HookConsumerWidget {
           ),
         ],
       ),
-      body: posts.when(
+      body: userPosts.when(
         data: (data) {
-          return UserPage(profile: profile, postsWithProfile: data);
+          return UserPage(posts: data.$1, profile: data.$2);
         },
         error: (e, stackTrace) {
           return ErrorPage(
