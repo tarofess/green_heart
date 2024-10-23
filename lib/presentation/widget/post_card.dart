@@ -158,7 +158,7 @@ class PostCard extends ConsumerWidget {
         children: [
           const Icon(Icons.comment_outlined),
           SizedBox(width: 8.r),
-          Text(postData.comments.length.toString()),
+          Text(postData.commentCount.toString()),
         ],
       ),
       onTap: () {
@@ -177,7 +177,7 @@ class PostCard extends ConsumerWidget {
               ),
               child: FractionallySizedBox(
                 heightFactor: 0.6,
-                child: CommentPage(comments: postData.comments),
+                child: CommentPage(postId: postData.post.id),
               ),
             );
           },

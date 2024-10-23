@@ -1,3 +1,4 @@
+import 'package:green_heart/application/usecase/comment_add_usecase.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/usecase/post_upload_usecase.dart';
@@ -27,4 +28,8 @@ final likeUsecaseProvider = Provider<LikeUsecase>(
 
 final commentGetUsecaseProvider = Provider(
   (ref) => CommentGetUsecase(FirebaseCommentRepository()),
+);
+
+final commentAddUsecaseProvider = Provider(
+  (ref) => CommentAddUsecase(FirebaseCommentRepository()),
 );

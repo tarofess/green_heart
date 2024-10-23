@@ -22,8 +22,7 @@ PostData _$PostDataFromJson(Map<String, dynamic> json) {
 mixin _$PostData {
   Post get post => throw _privateConstructorUsedError;
   Profile? get userProfile => throw _privateConstructorUsedError;
-  List<CommentData> get comments => throw _privateConstructorUsedError;
-  int get likeCount => throw _privateConstructorUsedError;
+  int get commentCount => throw _privateConstructorUsedError;
 
   /// Serializes this PostData to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -40,11 +39,7 @@ abstract class $PostDataCopyWith<$Res> {
   factory $PostDataCopyWith(PostData value, $Res Function(PostData) then) =
       _$PostDataCopyWithImpl<$Res, PostData>;
   @useResult
-  $Res call(
-      {Post post,
-      Profile? userProfile,
-      List<CommentData> comments,
-      int likeCount});
+  $Res call({Post post, Profile? userProfile, int commentCount});
 
   $PostCopyWith<$Res> get post;
   $ProfileCopyWith<$Res>? get userProfile;
@@ -67,8 +62,7 @@ class _$PostDataCopyWithImpl<$Res, $Val extends PostData>
   $Res call({
     Object? post = null,
     Object? userProfile = freezed,
-    Object? comments = null,
-    Object? likeCount = null,
+    Object? commentCount = null,
   }) {
     return _then(_value.copyWith(
       post: null == post
@@ -79,13 +73,9 @@ class _$PostDataCopyWithImpl<$Res, $Val extends PostData>
           ? _value.userProfile
           : userProfile // ignore: cast_nullable_to_non_nullable
               as Profile?,
-      comments: null == comments
-          ? _value.comments
-          : comments // ignore: cast_nullable_to_non_nullable
-              as List<CommentData>,
-      likeCount: null == likeCount
-          ? _value.likeCount
-          : likeCount // ignore: cast_nullable_to_non_nullable
+      commentCount: null == commentCount
+          ? _value.commentCount
+          : commentCount // ignore: cast_nullable_to_non_nullable
               as int,
     ) as $Val);
   }
@@ -123,11 +113,7 @@ abstract class _$$PostDataImplCopyWith<$Res>
       __$$PostDataImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {Post post,
-      Profile? userProfile,
-      List<CommentData> comments,
-      int likeCount});
+  $Res call({Post post, Profile? userProfile, int commentCount});
 
   @override
   $PostCopyWith<$Res> get post;
@@ -150,8 +136,7 @@ class __$$PostDataImplCopyWithImpl<$Res>
   $Res call({
     Object? post = null,
     Object? userProfile = freezed,
-    Object? comments = null,
-    Object? likeCount = null,
+    Object? commentCount = null,
   }) {
     return _then(_$PostDataImpl(
       post: null == post
@@ -162,13 +147,9 @@ class __$$PostDataImplCopyWithImpl<$Res>
           ? _value.userProfile
           : userProfile // ignore: cast_nullable_to_non_nullable
               as Profile?,
-      comments: null == comments
-          ? _value._comments
-          : comments // ignore: cast_nullable_to_non_nullable
-              as List<CommentData>,
-      likeCount: null == likeCount
-          ? _value.likeCount
-          : likeCount // ignore: cast_nullable_to_non_nullable
+      commentCount: null == commentCount
+          ? _value.commentCount
+          : commentCount // ignore: cast_nullable_to_non_nullable
               as int,
     ));
   }
@@ -180,9 +161,7 @@ class _$PostDataImpl implements _PostData {
   const _$PostDataImpl(
       {required this.post,
       required this.userProfile,
-      required final List<CommentData> comments,
-      required this.likeCount})
-      : _comments = comments;
+      required this.commentCount});
 
   factory _$PostDataImpl.fromJson(Map<String, dynamic> json) =>
       _$$PostDataImplFromJson(json);
@@ -191,20 +170,12 @@ class _$PostDataImpl implements _PostData {
   final Post post;
   @override
   final Profile? userProfile;
-  final List<CommentData> _comments;
   @override
-  List<CommentData> get comments {
-    if (_comments is EqualUnmodifiableListView) return _comments;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_comments);
-  }
-
-  @override
-  final int likeCount;
+  final int commentCount;
 
   @override
   String toString() {
-    return 'PostData(post: $post, userProfile: $userProfile, comments: $comments, likeCount: $likeCount)';
+    return 'PostData(post: $post, userProfile: $userProfile, commentCount: $commentCount)';
   }
 
   @override
@@ -215,15 +186,13 @@ class _$PostDataImpl implements _PostData {
             (identical(other.post, post) || other.post == post) &&
             (identical(other.userProfile, userProfile) ||
                 other.userProfile == userProfile) &&
-            const DeepCollectionEquality().equals(other._comments, _comments) &&
-            (identical(other.likeCount, likeCount) ||
-                other.likeCount == likeCount));
+            (identical(other.commentCount, commentCount) ||
+                other.commentCount == commentCount));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, post, userProfile,
-      const DeepCollectionEquality().hash(_comments), likeCount);
+  int get hashCode => Object.hash(runtimeType, post, userProfile, commentCount);
 
   /// Create a copy of PostData
   /// with the given fields replaced by the non-null parameter values.
@@ -245,8 +214,7 @@ abstract class _PostData implements PostData {
   const factory _PostData(
       {required final Post post,
       required final Profile? userProfile,
-      required final List<CommentData> comments,
-      required final int likeCount}) = _$PostDataImpl;
+      required final int commentCount}) = _$PostDataImpl;
 
   factory _PostData.fromJson(Map<String, dynamic> json) =
       _$PostDataImpl.fromJson;
@@ -256,9 +224,7 @@ abstract class _PostData implements PostData {
   @override
   Profile? get userProfile;
   @override
-  List<CommentData> get comments;
-  @override
-  int get likeCount;
+  int get commentCount;
 
   /// Create a copy of PostData
   /// with the given fields replaced by the non-null parameter values.

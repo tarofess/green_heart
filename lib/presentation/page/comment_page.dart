@@ -1,67 +1,165 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/comment_data.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
+import 'package:green_heart/domain/util/date_util.dart';
+import 'package:green_heart/application/state/comment_notifier.dart';
+import 'package:green_heart/application/di/post_di.dart';
+import 'package:green_heart/application/state/my_post_notifier.dart';
+import 'package:green_heart/application/state/timeline_notifier.dart';
+import 'package:green_heart/presentation/page/error_page.dart';
+import 'package:green_heart/presentation/widget/loading_indicator.dart';
 
-class CommentPage extends ConsumerWidget {
-  const CommentPage({super.key, required this.comments});
+class CommentPage extends HookConsumerWidget {
+  const CommentPage({super.key, required this.postId});
 
-  final List<CommentData> comments;
+  final String postId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final comment = ref.watch(commentNotifierProvider(postId));
+    final commentTextController = useTextEditingController();
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('コメント'),
-      ),
-      body: comments.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'コメントはまだありません',
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 16.sp),
-                  Text(
-                    '最初のコメントを追加してみよう。',
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                    ),
-                  ),
-                ],
+      appBar: AppBar(title: const Text('コメント')),
+      body: comment.when(
+        data: (comments) {
+          return Column(
+            children: [
+              Expanded(
+                child: comments.isEmpty
+                    ? _buildEmptyCommentMessage()
+                    : _buildComment(comments),
               ),
-            )
-          : ListView.builder(
-              itemCount: comments.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  leading: CircleAvatar(
-                    radius: 24.r,
-                    backgroundImage: CachedNetworkImageProvider(
-                      comments[index].userProfile?.imageUrl ?? '',
-                    ),
-                  ),
-                  title: Text(
-                    comments[index].userProfile?.name ?? '',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14.sp,
-                    ),
-                  ),
-                  subtitle: Text(
-                    comments[index].comment.content,
-                    style: TextStyle(fontSize: 16.sp),
-                  ),
-                );
-              },
+              const Divider(height: 1),
+              Padding(
+                padding: EdgeInsets.only(top: 8.r, bottom: 8.r, left: 16.r),
+                child: _buildInputForm(ref, commentTextController),
+              ),
+            ],
+          );
+        },
+        loading: () => const LoadingIndicator(),
+        error: (e, st) => ErrorPage(
+          error: e,
+          retry: () => ref.refresh(commentNotifierProvider(postId)),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyCommentMessage() {
+    return Center(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'コメントはまだありません',
+              style: TextStyle(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.bold,
+              ),
             ),
+            SizedBox(height: 16.sp),
+            Text(
+              '最初のコメントを追加してみよう。',
+              style: TextStyle(
+                fontSize: 14.sp,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildComment(List<CommentData> comments) {
+    return ListView.builder(
+      itemCount: comments.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          leading: CircleAvatar(
+            radius: 24.r,
+            backgroundImage: CachedNetworkImageProvider(
+              comments[index].userProfile?.imageUrl ?? '',
+            ),
+          ),
+          title: Row(
+            children: [
+              Text(
+                comments[index].userProfile?.name ?? '',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.sp,
+                ),
+              ),
+            ],
+          ),
+          subtitle: Text(
+            comments[index].comment.content,
+            style: TextStyle(fontSize: 16.sp),
+          ),
+          trailing: Text(
+            DateUtil.formatCommentTime(comments[index].comment.createdAt),
+            style: TextStyle(fontSize: 12.sp),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildInputForm(
+      WidgetRef ref, TextEditingController commentTextController) {
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+            controller: commentTextController,
+            decoration: InputDecoration(
+              hintText: 'コメントを入力...',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.r),
+              ),
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 16.w, vertical: 0),
+            ),
+          ),
+        ),
+        IconButton(
+            icon: Icon(Icons.send, size: 24.sp),
+            onPressed: () async {
+              if (commentTextController.text.isEmpty) {
+                return;
+              }
+              final uid = ref.read(authStateProvider).value?.uid;
+              if (uid == null) {
+                return;
+              }
+
+              final newComment =
+                  await ref.read(commentAddUsecaseProvider).execute(
+                        uid,
+                        postId,
+                        commentTextController.text,
+                      );
+              ref
+                  .read(commentNotifierProvider(postId).notifier)
+                  .addComment(newComment);
+              ref
+                  .read(myPostNotifierProvider.notifier)
+                  .updateCommentCount(postId);
+              ref
+                  .read(timelineNotifierProvider.notifier)
+                  .updateCommentCount(postId);
+
+              commentTextController.clear();
+            }),
+      ],
     );
   }
 }

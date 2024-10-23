@@ -25,11 +25,21 @@ class FirebaseCommentRepository implements CommentRepository {
   }
 
   @override
-  Future<void> addComment(Comment comment) async {
+  Future<Comment> addComment(String uid, String postId, String content) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
-      final docRef = firestore.collection('comments').doc();
+      final docRef = firestore.collection('comment').doc();
+
+      final comment = Comment(
+        id: docRef.id,
+        uid: uid,
+        postId: postId,
+        content: content,
+        createdAt: DateTime.now(),
+      );
+
       await docRef.set(comment.toJson());
+      return comment;
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('コメントの追加に失敗しました。再度お試しください。');

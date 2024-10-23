@@ -5,7 +5,6 @@ import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/domain/type/post.dart';
 import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/domain/type/post_data.dart';
-import 'package:green_heart/domain/type/comment_data.dart';
 
 class MyPostNotifier extends AsyncNotifier<List<PostData>> {
   @override
@@ -21,25 +20,14 @@ class MyPostNotifier extends AsyncNotifier<List<PostData>> {
     for (var post in posts) {
       final profile =
           await ref.read(profileGetUsecaseProvider).execute(post.uid);
-      final comments =
+      final commentCount =
           await ref.read(commentGetUsecaseProvider).execute(post.id);
 
-      final commentDataList = await Future.wait(comments.map((comment) async {
-        final commentUserProfile =
-            await ref.read(profileGetUsecaseProvider).execute(comment.uid);
-        return CommentData(
-          comment: comment,
-          userProfile: commentUserProfile,
-        );
-      }));
-
-      final likeCount = post.likedUserIds.length;
-
       postData.add(PostData(
-          post: post,
-          userProfile: profile,
-          comments: commentDataList,
-          likeCount: likeCount));
+        post: post,
+        userProfile: profile,
+        commentCount: commentCount.length,
+      ));
     }
 
     return postData;
@@ -49,13 +37,13 @@ class MyPostNotifier extends AsyncNotifier<List<PostData>> {
     state.whenData((currentState) {
       final updatedPosts = List<PostData>.from(currentState);
       updatedPosts.insert(
-          0,
-          PostData(
-            post: post,
-            userProfile: null,
-            comments: [],
-            likeCount: 0,
-          ));
+        0,
+        PostData(
+          post: post,
+          userProfile: null,
+          commentCount: 0,
+        ),
+      );
 
       state = AsyncValue.data(updatedPosts);
     });
@@ -79,6 +67,19 @@ class MyPostNotifier extends AsyncNotifier<List<PostData>> {
           return postData.copyWith(
             post: postData.post.copyWith(likedUserIds: updatedLikedUserIds),
           );
+        }
+        return postData;
+      }).toList();
+
+      state = AsyncValue.data(updatedPosts);
+    });
+  }
+
+  void updateCommentCount(String postId) {
+    state.whenData((currentState) {
+      final updatedPosts = currentState.map((postData) {
+        if (postData.post.id == postId) {
+          return postData.copyWith(commentCount: postData.commentCount + 1);
         }
         return postData;
       }).toList();

@@ -12,16 +12,12 @@ _$PostDataImpl _$$PostDataImplFromJson(Map<String, dynamic> json) =>
       userProfile: json['userProfile'] == null
           ? null
           : Profile.fromJson(json['userProfile'] as Map<String, dynamic>),
-      comments: (json['comments'] as List<dynamic>)
-          .map((e) => CommentData.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      likeCount: (json['likeCount'] as num).toInt(),
+      commentCount: (json['commentCount'] as num).toInt(),
     );
 
 Map<String, dynamic> _$$PostDataImplToJson(_$PostDataImpl instance) =>
     <String, dynamic>{
       'post': instance.post,
       'userProfile': instance.userProfile,
-      'comments': instance.comments,
-      'likeCount': instance.likeCount,
+      'commentCount': instance.commentCount,
     };

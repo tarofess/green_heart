@@ -3,7 +3,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/domain/type/post_data.dart';
-import 'package:green_heart/domain/type/comment_data.dart';
 
 class TimelineNotifier extends AsyncNotifier<List<PostData>> {
   @override
@@ -14,25 +13,16 @@ class TimelineNotifier extends AsyncNotifier<List<PostData>> {
     for (var post in posts) {
       final profile =
           await ref.read(profileGetUsecaseProvider).execute(post.uid);
-      final comments =
+      final commentCount =
           await ref.read(commentGetUsecaseProvider).execute(post.id);
 
-      final commentDataList = await Future.wait(comments.map((comment) async {
-        final commentUserProfile =
-            await ref.read(profileGetUsecaseProvider).execute(comment.uid);
-        return CommentData(
-          comment: comment,
-          userProfile: commentUserProfile,
-        );
-      }));
-
-      final likeCount = post.likedUserIds.length;
-
-      postData.add(PostData(
+      postData.add(
+        PostData(
           post: post,
           userProfile: profile,
-          comments: commentDataList,
-          likeCount: likeCount));
+          commentCount: commentCount.length,
+        ),
+      );
     }
 
     return postData;
@@ -52,6 +42,19 @@ class TimelineNotifier extends AsyncNotifier<List<PostData>> {
           return postData.copyWith(
             post: postData.post.copyWith(likedUserIds: updatedLikedUserIds),
           );
+        }
+        return postData;
+      }).toList();
+
+      state = AsyncValue.data(updatedPosts);
+    });
+  }
+
+  void updateCommentCount(String postId) {
+    state.whenData((currentState) {
+      final updatedPosts = currentState.map((postData) {
+        if (postData.post.id == postId) {
+          return postData.copyWith(commentCount: postData.commentCount + 1);
         }
         return postData;
       }).toList();

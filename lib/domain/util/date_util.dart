@@ -30,6 +30,23 @@ class DateUtil {
     return formatter.format(postTime.toLocal());
   }
 
+  static String formatCommentTime(DateTime createdAt) {
+    final now = DateTime.now();
+    final difference = now.difference(createdAt);
+
+    if (difference.inDays > 365) {
+      return '${difference.inDays ~/ 365}年前';
+    } else if (difference.inDays > 30) {
+      return '${difference.inDays ~/ 30}ヶ月前';
+    } else if (difference.inDays > 7) {
+      return '${difference.inDays ~/ 7}週間前';
+    } else if (difference.inDays > 0) {
+      return '${difference.inDays}日前';
+    }
+
+    return '今日';
+  }
+
   static int getAgeFromBirthday(DateTime birthDate) {
     DateTime currentDate = DateTime.now();
     int age = currentDate.year - birthDate.year;
