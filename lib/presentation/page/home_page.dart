@@ -26,7 +26,7 @@ class HomePage extends HookConsumerWidget {
       ),
       body: userPosts.when(
         data: (data) {
-          return UserPage(posts: data.$1, profile: data.$2);
+          return UserPage(posts: data.$1, profile: data.$2, comments: data.$3);
         },
         error: (e, stackTrace) {
           return ErrorPage(

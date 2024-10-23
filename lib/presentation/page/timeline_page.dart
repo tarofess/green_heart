@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:green_heart/domain/type/comment.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/presentation/page/error_page.dart';
@@ -40,7 +41,11 @@ class TimelinePage extends ConsumerWidget {
             child: ListView.builder(
               itemCount: data.$1.length,
               itemBuilder: (context, index) {
-                return PostCard(post: data.$1[index], profile: data.$2[index]);
+                return PostCard(
+                  post: data.$1[index],
+                  profile: data.$2[index],
+                  comments: data.$3[index],
+                );
               },
             ),
           );
@@ -60,7 +65,8 @@ class TimelinePage extends ConsumerWidget {
 }
 
 class PostSearch extends SearchDelegate<String> {
-  final AsyncValue<(List<Post>, List<Profile?>)> timelinePosts;
+  final AsyncValue<(List<Post>, List<Profile?>, List<List<Comment>>)>
+      timelinePosts;
 
   PostSearch({required this.timelinePosts});
 
@@ -106,7 +112,11 @@ class PostSearch extends SearchDelegate<String> {
         return ListView.builder(
           itemCount: results.length,
           itemBuilder: (context, index) {
-            return PostCard(post: results[index], profile: data.$2[index]);
+            return PostCard(
+              post: results[index],
+              profile: data.$2[index],
+              comments: data.$3[index],
+            );
           },
         );
       },

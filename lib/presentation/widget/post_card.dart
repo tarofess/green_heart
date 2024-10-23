@@ -1,22 +1,28 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:green_heart/domain/type/comment.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/presentation/page/comment_page.dart';
 import 'package:green_heart/domain/util/date_util.dart';
-import 'package:green_heart/application/di/like_di.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/state/timeline_notifier.dart';
 import 'package:green_heart/application/state/my_post_notifier.dart';
 import 'package:green_heart/domain/type/post.dart';
 import 'package:green_heart/domain/type/profile.dart';
+import 'package:green_heart/application/di/post_di.dart';
 
 class PostCard extends ConsumerWidget {
-  const PostCard({super.key, required this.post, required this.profile});
+  const PostCard(
+      {super.key,
+      required this.post,
+      required this.profile,
+      required this.comments});
 
   final Post post;
   final Profile? profile;
+  final List<Comment> comments;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -157,7 +163,7 @@ class PostCard extends ConsumerWidget {
         children: [
           const Icon(Icons.comment_outlined),
           SizedBox(width: 8.r),
-          Text(post.commentIds.length.toString()),
+          Text(comments.length.toString()),
         ],
       ),
       onTap: () {

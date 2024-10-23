@@ -8,12 +8,18 @@ import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/presentation/widget/post_card.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/domain/type/post.dart';
+import 'package:green_heart/domain/type/comment.dart';
 
 class UserPage extends ConsumerWidget {
-  const UserPage({super.key, required this.profile, required this.posts});
+  const UserPage(
+      {super.key,
+      required this.profile,
+      required this.posts,
+      required this.comments});
 
   final List<Post> posts;
   final Profile? profile;
+  final List<List<Comment>> comments;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -194,7 +200,11 @@ class UserPage extends ConsumerWidget {
       physics: const NeverScrollableScrollPhysics(),
       itemCount: posts.length,
       itemBuilder: (context, index) {
-        return PostCard(post: posts[index], profile: profile);
+        return PostCard(
+          post: posts[index],
+          profile: profile,
+          comments: comments[index],
+        );
       },
     );
   }
