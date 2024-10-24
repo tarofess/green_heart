@@ -1,3 +1,5 @@
+import 'package:green_heart/application/state/my_post_notifier.dart';
+import 'package:green_heart/application/state/timeline_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/usecase/post_upload_usecase.dart';
@@ -32,7 +34,11 @@ final commentGetUsecaseProvider = Provider(
 );
 
 final commentAddUsecaseProvider = Provider(
-  (ref) => CommentAddUsecase(FirebaseCommentRepository()),
+  (ref) => CommentAddUsecase(
+    FirebaseCommentRepository(),
+    ref.read(myPostNotifierProvider.notifier),
+    ref.read(timelineNotifierProvider.notifier),
+  ),
 );
 
 final commentDeleteUsecaseProvider = Provider(

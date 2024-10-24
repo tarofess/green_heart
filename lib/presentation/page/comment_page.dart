@@ -9,8 +9,6 @@ import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/application/state/comment_notifier.dart';
 import 'package:green_heart/application/di/post_di.dart';
-import 'package:green_heart/application/state/my_post_notifier.dart';
-import 'package:green_heart/application/state/timeline_notifier.dart';
 import 'package:green_heart/presentation/page/error_page.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
@@ -121,9 +119,6 @@ class CommentPage extends HookConsumerWidget {
                   if (!result) return;
 
                   final commentId = comments[index].comment.id;
-                  await ref
-                      .read(commentDeleteUsecaseProvider)
-                      .execute(commentId);
                   ref
                       .read(commentNotifierProvider(postId).notifier)
                       .deleteComment(commentId);
@@ -161,30 +156,17 @@ class CommentPage extends HookConsumerWidget {
         IconButton(
             icon: Icon(Icons.send, size: 24.sp),
             onPressed: () async {
-              if (commentTextController.text.isEmpty) {
-                return;
-              }
               final uid = ref.read(authStateProvider).value?.uid;
-              if (uid == null) {
+              if (uid == null || commentTextController.text.isEmpty) {
                 return;
               }
 
-              final newComment =
-                  await ref.read(commentAddUsecaseProvider).execute(
-                        uid,
-                        postId,
-                        commentTextController.text,
-                      );
-              ref
-                  .read(commentNotifierProvider(postId).notifier)
-                  .addComment(newComment);
-              ref
-                  .read(myPostNotifierProvider.notifier)
-                  .updateCommentCount(postId);
-              ref
-                  .read(timelineNotifierProvider.notifier)
-                  .updateCommentCount(postId);
-
+              await ref.read(commentAddUsecaseProvider).execute(
+                    uid,
+                    postId,
+                    commentTextController.text,
+                    ref.read(commentNotifierProvider(postId).notifier),
+                  );
               commentTextController.clear();
             }),
       ],

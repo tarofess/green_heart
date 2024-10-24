@@ -31,6 +31,8 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
   }
 
   Future<void> deleteComment(String commentId) async {
+    await ref.read(commentDeleteUsecaseProvider).execute(commentId);
+
     state = AsyncValue.data(state.value?.where((commentData) {
           return commentData.comment.id != commentId;
         }).toList() ??
