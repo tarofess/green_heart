@@ -42,7 +42,7 @@ class AccountNotifier extends Notifier<Account> {
         : DateUtil.formatAccountRegistrationTime(regDate);
   }
 
-  void deleteAccount() async {
+  Future<void> deleteAccount() async {
     final profile = ref.read(profileNotifierProvider).value;
     final user = ref.read(authStateProvider).value;
     if (profile == null || user == null) {
@@ -50,11 +50,7 @@ class AccountNotifier extends Notifier<Account> {
     }
 
     await ref.read(accountDeleteUsecaseProvider).execute(user, profile);
-    state = state.copyWith(isActive: false);
-  }
-
-  void activateAccount() {
-    state = state.copyWith(isActive: true);
+    state = state.copyWith(isDeleted: true);
   }
 }
 

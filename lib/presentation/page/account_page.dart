@@ -102,9 +102,10 @@ class AccountPage extends HookConsumerWidget {
 
         try {
           if (context.mounted) {
-            await LoadingOverlay.of(context).during(() async {
-              ref.read(accountNotifierProvider.notifier).deleteAccount();
-            });
+            await LoadingOverlay.of(context).during(
+              () async =>
+                  ref.read(accountNotifierProvider.notifier).deleteAccount(),
+            );
           }
         } catch (e) {
           if (context.mounted) {

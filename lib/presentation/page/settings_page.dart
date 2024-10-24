@@ -6,7 +6,6 @@ import 'package:green_heart/application/di/auth_di.dart';
 import 'package:green_heart/application/di/settings_di.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
-import 'package:green_heart/application/state/profile_notifier.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -33,10 +32,7 @@ class SettingsPage extends ConsumerWidget {
       leading: const Icon(Icons.edit),
       title: const Text('プロフィール編集'),
       onTap: () {
-        context.push(
-          '/profile_edit',
-          extra: {'profile': ref.read(profileNotifierProvider).value},
-        );
+        context.push('/profile_edit');
       },
     );
   }
@@ -90,7 +86,7 @@ class SettingsPage extends ConsumerWidget {
       leading: const Icon(Icons.account_circle),
       title: const Text('アカウント情報'),
       onTap: () {
-        context.push('/account_info');
+        context.push('/account');
       },
     );
   }

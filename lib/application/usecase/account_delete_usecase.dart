@@ -92,11 +92,11 @@ class AccountDeleteUsecase {
 
   Future<void> deleteProfile(User user, Profile? profile) async {
     try {
-      if (profile!.imageUrl != null) {
+      if (profile?.imageUrl != null && profile!.imageUrl!.isNotEmpty) {
         await _profileRepository.deleteImage(profile.imageUrl!);
       }
       await _profileRepository.deleteProfile(user.uid);
-      _profileNotifierProvider.setProfile(null);
+      _profileNotifierProvider.deleteProfile();
     } catch (e) {
       throw AppException(
         'プロフィールの削除に失敗したためアカウントが完全に削除できませんでした。\n'

@@ -12,84 +12,56 @@ import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/presentation/dialog/message_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/presentation/widget/profile_image_action_sheet.dart';
-import 'package:green_heart/application/viewmodel/profile_edit_page_viewmodel.dart';
-import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/domain/util/date_util.dart';
+import 'package:green_heart/application/di/profile_di.dart';
+import 'package:green_heart/application/state/profile_notifier.dart';
+import 'package:green_heart/domain/type/profile.dart';
 
 class ProfileEditPage extends HookConsumerWidget {
-  ProfileEditPage({super.key, this.profile});
+  ProfileEditPage({super.key});
 
-  final Profile? profile;
   final _formKey = GlobalKey<FormState>();
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _bioFocusNode = FocusNode();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final profile = useState<Profile?>(null);
     final imagePath = useState('');
     final nameTextController = useTextEditingController();
     final birthdayTextController = useTextEditingController();
     final bioTextController = useTextEditingController();
+    final showBirthday = useState(false);
+    final savedBirthday = useState('');
 
     useEffect(() {
-      if (profile != null) {
-        imagePath.value = profile!.imageUrl ?? '';
-        nameTextController.text = profile!.name;
-        birthdayTextController.text = DateUtil.convertToJapaneseDate(
-          profile!.birthday,
-        );
-        bioTextController.text = profile!.bio;
+      void setProfile() async {
+        final profileState = await ref.read(profileNotifierProvider.future);
+        profile.value = profileState;
+        imagePath.value = profileState?.imageUrl ?? '';
+        nameTextController.text = profileState?.name ?? '';
+        birthdayTextController.text =
+            DateUtil.convertToJapaneseDate(profileState?.birthday);
+        bioTextController.text = profileState?.bio ?? '';
+        showBirthday.value = profileState?.birthday == null ? false : true;
+        savedBirthday.value = birthdayTextController.text;
       }
+
+      setProfile();
       return null;
     }, []);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('プロフィール編集'),
-          actions: [
-            TextButton(
-              onPressed: () async {
-                try {
-                  if (_formKey.currentState!.validate()) {
-                    await LoadingOverlay.of(context).during(
-                      () async => ref
-                          .read(profileEditPageViewModelProvider)
-                          .saveProfile(
-                            nameTextController.text,
-                            birthdayTextController.text,
-                            bioTextController.text,
-                            imagePath: imagePath.value,
-                            oldImageUrl: profile?.imageUrl,
-                          ),
-                    );
-
-                    if (context.mounted) {
-                      await showMessageDialog(
-                        context: context,
-                        title: '保存完了',
-                        content: 'プロフィールを保存しました。',
-                      );
-                    }
-
-                    if (context.mounted) {
-                      profile == null ? context.go('/') : context.pop();
-                    }
-                  }
-                } catch (e) {
-                  if (context.mounted) {
-                    showErrorDialog(
-                      context: context,
-                      title: '保存失敗',
-                      content: e.toString(),
-                    );
-                  }
-                }
-              },
-              child: const Text('保存'),
-            ),
-          ],
+        appBar: _buildAppBar(
+          context,
+          ref,
+          nameTextController,
+          birthdayTextController,
+          bioTextController,
+          imagePath,
+          profile.value,
         ),
         body: Form(
           key: _formKey,
@@ -98,13 +70,75 @@ class ProfileEditPage extends HookConsumerWidget {
               children: [
                 _buildImageField(context, ref, imagePath),
                 _buildNameField(nameTextController),
-                _buildBirthdayField(context, birthdayTextController),
+                _buildBirthdayField(
+                  context,
+                  birthdayTextController,
+                  profile.value?.birthday,
+                  showBirthday,
+                  savedBirthday,
+                ),
                 _buildBioField(bioTextController),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  AppBar _buildAppBar(
+    BuildContext context,
+    WidgetRef ref,
+    TextEditingController nameTextController,
+    TextEditingController birthdayTextController,
+    TextEditingController bioTextController,
+    ValueNotifier<String> imagePath,
+    Profile? profile,
+  ) {
+    return AppBar(
+      title: const Text('プロフィール編集'),
+      actions: [
+        TextButton(
+          onPressed: () async {
+            try {
+              if (_formKey.currentState!.validate()) {
+                await LoadingOverlay.of(context).during(
+                  () async =>
+                      ref.read(profileNotifierProvider.notifier).saveProfile(
+                            ref.read(profileSaveUsecaseProvider),
+                            nameTextController.text,
+                            birthdayTextController.text,
+                            bioTextController.text,
+                            imagePath: imagePath.value,
+                            oldImageUrl: profile?.imageUrl,
+                          ),
+                );
+
+                if (context.mounted) {
+                  await showMessageDialog(
+                    context: context,
+                    title: '保存完了',
+                    content: 'プロフィールを保存しました。',
+                  );
+                }
+
+                if (context.mounted) {
+                  profile == null ? context.go('/') : context.pop();
+                }
+              }
+            } catch (e) {
+              if (context.mounted) {
+                showErrorDialog(
+                  context: context,
+                  title: '保存失敗',
+                  content: e.toString(),
+                );
+              }
+            }
+          },
+          child: const Text('保存'),
+        ),
+      ],
     );
   }
 
@@ -222,10 +256,10 @@ class ProfileEditPage extends HookConsumerWidget {
   Widget _buildBirthdayField(
     BuildContext context,
     TextEditingController birthdayTextController,
+    DateTime? birthday,
+    ValueNotifier<bool> showBirthday,
+    ValueNotifier<String> savedBirthday,
   ) {
-    final showBirthday = useState(profile?.birthday == null ? false : true);
-    final savedBirthday = useState(birthdayTextController.text);
-
     return Padding(
       padding: EdgeInsets.all(16.r),
       child: Column(

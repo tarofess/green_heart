@@ -19,7 +19,7 @@ mixin _$Account {
   String get providerName => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
   String get registrationDate => throw _privateConstructorUsedError;
-  bool get isActive => throw _privateConstructorUsedError;
+  bool get isDeleted => throw _privateConstructorUsedError;
 
   /// Create a copy of Account
   /// with the given fields replaced by the non-null parameter values.
@@ -36,7 +36,7 @@ abstract class $AccountCopyWith<$Res> {
       {String providerName,
       String email,
       String registrationDate,
-      bool isActive});
+      bool isDeleted});
 }
 
 /// @nodoc
@@ -57,7 +57,7 @@ class _$AccountCopyWithImpl<$Res, $Val extends Account>
     Object? providerName = null,
     Object? email = null,
     Object? registrationDate = null,
-    Object? isActive = null,
+    Object? isDeleted = null,
   }) {
     return _then(_value.copyWith(
       providerName: null == providerName
@@ -72,9 +72,9 @@ class _$AccountCopyWithImpl<$Res, $Val extends Account>
           ? _value.registrationDate
           : registrationDate // ignore: cast_nullable_to_non_nullable
               as String,
-      isActive: null == isActive
-          ? _value.isActive
-          : isActive // ignore: cast_nullable_to_non_nullable
+      isDeleted: null == isDeleted
+          ? _value.isDeleted
+          : isDeleted // ignore: cast_nullable_to_non_nullable
               as bool,
     ) as $Val);
   }
@@ -91,7 +91,7 @@ abstract class _$$AccountImplCopyWith<$Res> implements $AccountCopyWith<$Res> {
       {String providerName,
       String email,
       String registrationDate,
-      bool isActive});
+      bool isDeleted});
 }
 
 /// @nodoc
@@ -110,7 +110,7 @@ class __$$AccountImplCopyWithImpl<$Res>
     Object? providerName = null,
     Object? email = null,
     Object? registrationDate = null,
-    Object? isActive = null,
+    Object? isDeleted = null,
   }) {
     return _then(_$AccountImpl(
       providerName: null == providerName
@@ -125,9 +125,9 @@ class __$$AccountImplCopyWithImpl<$Res>
           ? _value.registrationDate
           : registrationDate // ignore: cast_nullable_to_non_nullable
               as String,
-      isActive: null == isActive
-          ? _value.isActive
-          : isActive // ignore: cast_nullable_to_non_nullable
+      isDeleted: null == isDeleted
+          ? _value.isDeleted
+          : isDeleted // ignore: cast_nullable_to_non_nullable
               as bool,
     ));
   }
@@ -140,7 +140,7 @@ class _$AccountImpl implements _Account {
       {required this.providerName,
       required this.email,
       required this.registrationDate,
-      this.isActive = true});
+      this.isDeleted = false});
 
   @override
   final String providerName;
@@ -150,11 +150,11 @@ class _$AccountImpl implements _Account {
   final String registrationDate;
   @override
   @JsonKey()
-  final bool isActive;
+  final bool isDeleted;
 
   @override
   String toString() {
-    return 'Account(providerName: $providerName, email: $email, registrationDate: $registrationDate, isActive: $isActive)';
+    return 'Account(providerName: $providerName, email: $email, registrationDate: $registrationDate, isDeleted: $isDeleted)';
   }
 
   @override
@@ -167,13 +167,13 @@ class _$AccountImpl implements _Account {
             (identical(other.email, email) || other.email == email) &&
             (identical(other.registrationDate, registrationDate) ||
                 other.registrationDate == registrationDate) &&
-            (identical(other.isActive, isActive) ||
-                other.isActive == isActive));
+            (identical(other.isDeleted, isDeleted) ||
+                other.isDeleted == isDeleted));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, providerName, email, registrationDate, isActive);
+  int get hashCode => Object.hash(
+      runtimeType, providerName, email, registrationDate, isDeleted);
 
   /// Create a copy of Account
   /// with the given fields replaced by the non-null parameter values.
@@ -189,7 +189,7 @@ abstract class _Account implements Account {
       {required final String providerName,
       required final String email,
       required final String registrationDate,
-      final bool isActive}) = _$AccountImpl;
+      final bool isDeleted}) = _$AccountImpl;
 
   @override
   String get providerName;
@@ -198,7 +198,7 @@ abstract class _Account implements Account {
   @override
   String get registrationDate;
   @override
-  bool get isActive;
+  bool get isDeleted;
 
   /// Create a copy of Account
   /// with the given fields replaced by the non-null parameter values.

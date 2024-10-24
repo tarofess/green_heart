@@ -6,17 +6,14 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/presentation/page/tab_page.dart';
 import 'package:green_heart/presentation/page/signin_page.dart';
-import 'package:green_heart/presentation/page/profile_edit_page.dart';
 import 'package:green_heart/presentation/page/account_page.dart';
 import 'package:green_heart/presentation/page/app_info_page.dart';
 import 'package:green_heart/presentation/page/settings_page.dart';
 import 'package:green_heart/application/di/fcm_di.dart';
 import 'package:green_heart/presentation/page/notification_setting_page.dart';
 import 'package:green_heart/presentation/page/post_page.dart';
-import 'package:green_heart/domain/type/profile.dart';
-import 'package:green_heart/presentation/page/account_deleted_page.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
-import 'package:green_heart/application/state/account_notifier.dart';
+import 'package:green_heart/presentation/page/profile_edit_page.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -25,7 +22,6 @@ final routerProvider = Provider<GoRouter>((ref) {
     if (next.value != null) {
       try {
         await ref.read(fcmTokenSaveUsecaeProvider).execute(next.value!.uid);
-        await ref.read(profileNotifierProvider.notifier).build();
       } catch (e) {
         return;
       }
@@ -68,19 +64,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/profile_edit',
-        builder: (context, state) {
-          final Map<String, dynamic>? extra =
-              state.extra as Map<String, dynamic>?;
-          final profile = extra?['profile'] as Profile?;
-          return ProfileEditPage(profile: profile);
-        },
+        builder: (context, state) => ProfileEditPage(),
       ),
       GoRoute(
         path: '/settings',
         builder: (context, state) => const SettingsPage(),
       ),
       GoRoute(
-        path: '/account_info',
+        path: '/account',
         builder: (context, state) => const AccountPage(),
       ),
       GoRoute(
@@ -96,31 +87,16 @@ final routerProvider = Provider<GoRouter>((ref) {
           return AppInfoPage(appInfo: appInfo);
         },
       ),
-      GoRoute(
-        path: '/account_deleted',
-        builder: (context, state) => const AccountDeletedPage(),
-      ),
     ],
-    redirect: (BuildContext context, GoRouterState state) {
+    redirect: (BuildContext context, GoRouterState state) async {
       final isLoggedIn = authState.value != null;
-      final profileState = ref.read(profileNotifierProvider);
-      final isProfileLoaded = profileState is AsyncData;
-      final profile = isProfileLoaded ? profileState.value : null;
-      final accountState = ref.read(accountNotifierProvider);
-
-      if (!accountState.isActive) {
-        return '/account_deleted';
-      }
+      final profile = await ref.read(profileNotifierProvider.future);
 
       if (!isLoggedIn && state.matchedLocation != '/signin') {
         return '/signin';
       }
 
-      if (isLoggedIn && !isProfileLoaded) {
-        return null;
-      }
-
-      if (isLoggedIn && isProfileLoaded && profile == null) {
+      if (isLoggedIn && profile == null) {
         return '/profile_edit';
       }
       return null;

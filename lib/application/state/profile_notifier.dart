@@ -1,14 +1,14 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:green_heart/application/di/shared_pref_di.dart';
 import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/domain/type/profile.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
+import 'package:green_heart/application/usecase/profile_save_usecase.dart';
 
 class ProfileNotifier extends AsyncNotifier<Profile?> {
   @override
   Future<Profile?> build() async {
-    final uid =
-        await ref.read(stringGetSharedPrefUsecaseProvider).execute('uid');
+    final uid = ref.watch(authStateProvider).value?.uid;
     if (uid == null) {
       return null;
     }
@@ -17,8 +17,33 @@ class ProfileNotifier extends AsyncNotifier<Profile?> {
     return profile;
   }
 
-  void setProfile(Profile? profile) {
-    state = AsyncData(profile);
+  Future<void> saveProfile(
+    ProfileSaveUsecase profileSaveUsecase,
+    String name,
+    String birthday,
+    String bio, {
+    required String imagePath,
+    required String? oldImageUrl,
+  }) async {
+    final uid = ref.read(authStateProvider).value?.uid;
+    if (uid == null) {
+      throw Exception('プロフィールが保存できません。アカウントがログアウトされている可能性があります。');
+    }
+
+    final savedProfile = await profileSaveUsecase.execute(
+      uid,
+      name,
+      birthday,
+      bio,
+      imagePath,
+      oldImageUrl,
+    );
+
+    state = AsyncData(savedProfile);
+  }
+
+  void deleteProfile() {
+    state = const AsyncData(null);
   }
 }
 

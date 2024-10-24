@@ -8,6 +8,6 @@ class Account with _$Account {
     required String providerName,
     required String email,
     required String registrationDate,
-    @Default(true) bool isActive,
+    @Default(false) bool isDeleted,
   }) = _Account;
 }
