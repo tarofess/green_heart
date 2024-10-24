@@ -12,7 +12,7 @@ class HomePage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userPosts = ref.watch(myPostNotifierProvider);
+    final userPostState = ref.watch(myPostNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -24,12 +24,15 @@ class HomePage extends HookConsumerWidget {
           ),
         ],
       ),
-      body: userPosts.when(
-        data: (data) {
-          if (data.isEmpty) {
+      body: userPostState.when(
+        data: (userPosts) {
+          if (userPosts.isEmpty) {
             return const Center(child: Text('投稿がありません'));
           }
-          return UserPage(postData: data, profile: data.first.userProfile);
+          return UserPage(
+            postData: userPosts,
+            profile: userPosts.first.userProfile,
+          );
         },
         error: (e, stackTrace) {
           return ErrorPage(

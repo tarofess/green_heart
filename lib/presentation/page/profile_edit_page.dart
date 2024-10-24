@@ -35,7 +35,7 @@ class ProfileEditPage extends HookConsumerWidget {
     final savedBirthday = useState('');
 
     useEffect(() {
-      void setProfile() async {
+      void initializeForm() async {
         final profileState = await ref.read(profileNotifierProvider.future);
         profile.value = profileState;
         imagePath.value = profileState?.imageUrl ?? '';
@@ -47,7 +47,7 @@ class ProfileEditPage extends HookConsumerWidget {
         savedBirthday.value = birthdayTextController.text;
       }
 
-      setProfile();
+      initializeForm();
       return null;
     }, []);
 

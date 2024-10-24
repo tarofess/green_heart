@@ -3,14 +3,14 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:green_heart/presentation/viewmodel/tab_page_viewmodel.dart';
+import 'package:green_heart/application/state/tab_page_provider.dart';
 
 class TabPage extends HookConsumerWidget {
   const TabPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final viewModel = ref.watch(tabPageViewModelProvider);
+    final tabPageState = ref.watch(tabPageProvider);
     final selectedIndex = useState(0);
 
     return Scaffold(
@@ -30,7 +30,7 @@ class TabPage extends HookConsumerWidget {
           selectedIndex.value = index;
         },
       ),
-      body: viewModel.pages[selectedIndex.value],
+      body: tabPageState[selectedIndex.value],
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           context.go('/post');

@@ -12,7 +12,7 @@ class TimelinePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final timeline = ref.watch(timelineNotifierProvider);
+    final timelineState = ref.watch(timelineNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -23,23 +23,23 @@ class TimelinePage extends ConsumerWidget {
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: PostSearch(timelinePosts: timeline),
+                delegate: PostSearch(timelinePosts: timelineState),
               );
             },
           )
         ],
       ),
-      body: timeline.when(
-        data: (data) {
+      body: timelineState.when(
+        data: (timeline) {
           return RefreshIndicator(
             onRefresh: () async {
               // ignore: unused_result
               await ref.refresh(timelineNotifierProvider.future);
             },
             child: ListView.builder(
-              itemCount: data.length,
+              itemCount: timeline.length,
               itemBuilder: (context, index) {
-                return PostCard(postData: data[index]);
+                return PostCard(postData: timeline[index]);
               },
             ),
           );

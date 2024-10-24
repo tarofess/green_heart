@@ -20,12 +20,12 @@ class CommentPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final comment = ref.watch(commentNotifierProvider(postId));
+    final commentState = ref.watch(commentNotifierProvider(postId));
     final commentTextController = useTextEditingController();
 
     return Scaffold(
       appBar: AppBar(title: const Text('コメント')),
-      body: comment.when(
+      body: commentState.when(
         data: (comments) {
           return Column(
             children: [
