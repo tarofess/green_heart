@@ -13,10 +13,10 @@ import 'package:green_heart/presentation/page/settings_page.dart';
 import 'package:green_heart/application/di/fcm_di.dart';
 import 'package:green_heart/presentation/page/notification_setting_page.dart';
 import 'package:green_heart/presentation/page/post_page.dart';
-import 'package:green_heart/application/state/delete_account_state_provider.dart';
 import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/presentation/page/account_deleted_page.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
+import 'package:green_heart/application/state/account_notifier.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -106,9 +106,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       final profileState = ref.read(profileNotifierProvider);
       final isProfileLoaded = profileState is AsyncData;
       final profile = isProfileLoaded ? profileState.value : null;
-      final isAccountDeleted = ref.read(deleteAccountStateProvider);
+      final accountState = ref.read(accountNotifierProvider);
 
-      if (isAccountDeleted) {
+      if (!accountState.isActive) {
         return '/account_deleted';
       }
 

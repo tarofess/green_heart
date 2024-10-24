@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:green_heart/application/state/account_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
-import 'package:green_heart/application/state/delete_account_state_provider.dart';
 
 class AccountDeletedPage extends ConsumerWidget {
   const AccountDeletedPage({super.key});
@@ -31,7 +30,8 @@ class AccountDeletedPage extends ConsumerWidget {
             child: Center(
               child: ElevatedButton(
                 onPressed: () {
-                  ref.read(deleteAccountStateProvider.notifier).state = false;
+                  //アカウント削除後にサインインページにリダイレクトされるようフラグを更新
+                  ref.read(accountNotifierProvider.notifier).activateAccount();
                   context.go('/');
                 },
                 child: Text('閉じる', style: TextStyle(fontSize: 18.sp)),

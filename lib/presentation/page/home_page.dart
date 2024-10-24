@@ -26,6 +26,9 @@ class HomePage extends HookConsumerWidget {
       ),
       body: userPosts.when(
         data: (data) {
+          if (data.isEmpty) {
+            return const Center(child: Text('投稿がありません'));
+          }
           return UserPage(postData: data, profile: data.first.userProfile);
         },
         error: (e, stackTrace) {

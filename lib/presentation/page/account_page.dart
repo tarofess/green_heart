@@ -3,92 +3,68 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
-import 'package:green_heart/application/viewmodel/account_page_viewmodel.dart';
-import 'package:green_heart/domain/util/date_util.dart';
+import 'package:green_heart/application/state/account_notifier.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
-import 'package:green_heart/application/state/delete_account_state_provider.dart';
-import 'package:green_heart/application/state/profile_notifier.dart';
+import 'package:green_heart/domain/type/account.dart';
 
 class AccountPage extends HookConsumerWidget {
   const AccountPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final accountState = ref.watch(accountNotifierProvider);
     final isExpandedList = useState<List<bool>>([false, false, false]);
-    final providerName = useState('');
-    final registrationDate = useState('');
-
-    useEffect(() {
-      void setProviderName() {
-        switch (
-            ref.read(authStateProvider).value?.providerData.first.providerId) {
-          case 'google.com':
-            providerName.value = 'Google';
-            break;
-          case 'apple.com':
-            providerName.value = 'Apple';
-            break;
-          default:
-            providerName.value = '不明';
-            break;
-        }
-      }
-
-      void setRegistrationDate() {
-        final creationTime = ref.read(profileNotifierProvider).value?.createdAt;
-        registrationDate.value =
-            DateUtil.formatAccountRegistrationTime(creationTime);
-      }
-
-      setProviderName();
-      setRegistrationDate();
-      return;
-    });
 
     return Scaffold(
       appBar: AppBar(title: const Text('アカウント情報')),
-      body: SingleChildScrollView(
-        child: ExpansionPanelList(
-          expansionCallback: (int index, bool isExpanded) {
-            isExpandedList.value = isExpandedList.value
-                .asMap()
-                .map((i, value) => MapEntry(i, i == index ? !value : value))
-                .values
-                .toList();
-          },
-          children: [
-            ExpansionPanel(
-              headerBuilder: (BuildContext context, bool isExpanded) {
-                return const ListTile(title: Text('ログイン方法'));
-              },
-              body: ListTile(title: Text('${providerName.value}アカウントでログイン')),
-              isExpanded: isExpandedList.value[0],
-            ),
-            ExpansionPanel(
-              headerBuilder: (BuildContext context, bool isExpanded) {
-                return const ListTile(title: Text('メールアドレス'));
-              },
-              body: ListTile(
-                  title:
-                      Text(ref.read(authStateProvider).value?.email ?? 'なし')),
-              isExpanded: isExpandedList.value[1],
-            ),
-            ExpansionPanel(
-              headerBuilder: (BuildContext context, bool isExpanded) {
-                return const ListTile(title: Text('登録日'));
-              },
-              body: ListTile(title: Text(registrationDate.value)),
-              isExpanded: isExpandedList.value[2],
-            ),
-          ],
-        ),
-      ),
+      body: _buildAccountInfo(context, ref, accountState, isExpandedList),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.only(bottom: 20.r, left: 20.r, right: 20.r),
         child: _buildAccountDeleteButton(context, ref),
+      ),
+    );
+  }
+
+  Widget _buildAccountInfo(
+    BuildContext context,
+    WidgetRef ref,
+    Account account,
+    ValueNotifier<List<bool>> isExpandedList,
+  ) {
+    return SingleChildScrollView(
+      child: ExpansionPanelList(
+        expansionCallback: (int index, bool isExpanded) {
+          isExpandedList.value = isExpandedList.value
+              .asMap()
+              .map((i, value) => MapEntry(i, i == index ? !value : value))
+              .values
+              .toList();
+        },
+        children: [
+          ExpansionPanel(
+            headerBuilder: (BuildContext context, bool isExpanded) {
+              return const ListTile(title: Text('ログイン方法'));
+            },
+            body: ListTile(title: Text('${account.providerName}アカウントでログイン')),
+            isExpanded: isExpandedList.value[0],
+          ),
+          ExpansionPanel(
+            headerBuilder: (BuildContext context, bool isExpanded) {
+              return const ListTile(title: Text('メールアドレス'));
+            },
+            body: ListTile(title: Text(account.email)),
+            isExpanded: isExpandedList.value[1],
+          ),
+          ExpansionPanel(
+            headerBuilder: (BuildContext context, bool isExpanded) {
+              return const ListTile(title: Text('登録日'));
+            },
+            body: ListTile(title: Text(account.registrationDate)),
+            isExpanded: isExpandedList.value[2],
+          ),
+        ],
       ),
     );
   }
@@ -127,8 +103,7 @@ class AccountPage extends HookConsumerWidget {
         try {
           if (context.mounted) {
             await LoadingOverlay.of(context).during(() async {
-              await ref.read(accountPageViewModelProvider).deleteAccount();
-              ref.read(deleteAccountStateProvider.notifier).state = true;
+              ref.read(accountNotifierProvider.notifier).deleteAccount();
             });
           }
         } catch (e) {
