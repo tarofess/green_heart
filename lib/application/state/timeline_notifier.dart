@@ -85,6 +85,19 @@ class TimelineNotifier extends AsyncNotifier<List<PostData>> {
       state = AsyncValue.data(updatedValue);
     });
   }
+
+  void deleteComment(String commentId) {
+    state.whenData((value) {
+      final updatedValue = value.map((post) {
+        final comments = List<CommentData>.from(post.comments);
+        comments
+            .removeWhere((commentData) => commentData.comment.id == commentId);
+        return post.copyWith(comments: comments);
+      }).toList();
+
+      state = AsyncValue.data(updatedValue);
+    });
+  }
 }
 
 final timelineNotifierProvider =

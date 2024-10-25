@@ -116,6 +116,19 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
     });
   }
 
+  void deleteComment(String commentId) {
+    state.whenData((value) {
+      final updatedValue = value.map((post) {
+        final comments = List<CommentData>.from(post.comments);
+        comments
+            .removeWhere((commentData) => commentData.comment.id == commentId);
+        return post.copyWith(comments: comments);
+      }).toList();
+
+      state = AsyncValue.data(updatedValue);
+    });
+  }
+
   Future<void> removeAllPosts() async {
     state = const AsyncValue.data([]);
   }

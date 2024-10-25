@@ -1,3 +1,6 @@
+import 'package:green_heart/application/state/auth_state_provider.dart';
+import 'package:green_heart/application/state/timeline_notifier.dart';
+import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/post_di.dart';
@@ -34,6 +37,11 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
 
   Future<void> deleteComment(String commentId) async {
     await ref.read(commentDeleteUsecaseProvider).execute(commentId);
+    ref
+        .read(userPostNotifierProvider(ref.watch(authStateProvider).value?.uid)
+            .notifier)
+        .deleteComment(commentId);
+    ref.read(timelineNotifierProvider.notifier).deleteComment(commentId);
 
     state = AsyncValue.data(state.value?.where((commentData) {
           return commentData.comment.id != commentId;
