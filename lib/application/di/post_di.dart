@@ -1,3 +1,4 @@
+import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/usecase/post_add_usecase.dart';
@@ -35,7 +36,8 @@ final commentGetUsecaseProvider = Provider(
 final commentAddUsecaseProvider = Provider(
   (ref) => CommentAddUsecase(
     FirebaseCommentRepository(),
-    ref.read(userPostNotifierProvider.notifier),
+    ref.read(userPostNotifierProvider(ref.watch(authStateProvider).value?.uid)
+        .notifier),
   ),
 );
 

@@ -141,10 +141,9 @@ class PostCard extends ConsumerWidget {
         if (uid == null) return;
 
         await ref.read(likeUsecaseProvider).execute(postData.post.id, uid);
-        ref.read(userPostNotifierProvider.notifier).updateLikedUserIds(
-              postData.post.id,
-              uid,
-            );
+        ref
+            .read(userPostNotifierProvider(postData.post.uid).notifier)
+            .updateLikedUserIds(postData.post.id, uid);
       },
     );
   }

@@ -1,3 +1,4 @@
+import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/usecase/account_delete_usecase.dart';
@@ -17,5 +18,6 @@ final accountDeleteUsecaseProvider = Provider((ref) => AccountDeleteUsecase(
       FirebaseNotificationRepository(),
       ref.read(profileNotifierProvider.notifier),
       ref.read(signOutUseCaseProvider),
-      ref.read(userPostNotifierProvider.notifier),
+      ref.read(userPostNotifierProvider(ref.watch(authStateProvider).value?.uid)
+          .notifier),
     ));

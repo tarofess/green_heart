@@ -4,21 +4,22 @@ import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/domain/type/post_data.dart';
+import 'package:green_heart/application/state/profile_notifier.dart';
 
-class UserPostNotifier extends AsyncNotifier<List<PostData>> {
+class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
   @override
-  Future<List<PostData>> build() async {
-    final uid = ref.read(authStateProvider).value?.uid;
-    if (uid == null) {
+  Future<List<PostData>> build(String? arg) async {
+    final myUid = ref.read(authStateProvider).value?.uid;
+    if (myUid == null || arg == null) {
       throw Exception('ユーザーが存在しないので投稿を取得できません。再度お試しください。');
     }
+    final posts = await ref.read(postGetUsecaseProvider).execute(arg);
+    final profile = myUid == arg
+        ? ref.watch(profileNotifierProvider).value
+        : await ref.read(profileGetUsecaseProvider).execute(arg);
 
-    final posts = await ref.read(postGetUsecaseProvider).execute(uid);
     List<PostData> postData = [];
-
     for (var post in posts) {
-      final profile =
-          await ref.read(profileGetUsecaseProvider).execute(post.uid);
       final commentCount =
           await ref.read(commentGetUsecaseProvider).execute(post.id);
 
@@ -96,6 +97,5 @@ class UserPostNotifier extends AsyncNotifier<List<PostData>> {
 }
 
 final userPostNotifierProvider =
-    AsyncNotifierProvider<UserPostNotifier, List<PostData>>(
-  () => UserPostNotifier(),
-);
+    AsyncNotifierProviderFamily<UserPostNotifier, List<PostData>, String?>(
+        UserPostNotifier.new);

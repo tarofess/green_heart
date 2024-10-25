@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/picture_di.dart';
@@ -38,5 +39,6 @@ class PostPageViewModel {
 final postPageViewModel = Provider((ref) => PostPageViewModel(
       ref.read(pickImageUsecaseProvider),
       ref.read(pickMultipleImageUsecaseProvider),
-      ref.read(userPostNotifierProvider.notifier),
+      ref.read(userPostNotifierProvider(ref.watch(authStateProvider).value?.uid)
+          .notifier),
     ));
