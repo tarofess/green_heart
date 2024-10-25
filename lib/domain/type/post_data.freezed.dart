@@ -22,7 +22,8 @@ PostData _$PostDataFromJson(Map<String, dynamic> json) {
 mixin _$PostData {
   Post get post => throw _privateConstructorUsedError;
   Profile? get userProfile => throw _privateConstructorUsedError;
-  int get commentCount => throw _privateConstructorUsedError;
+  List<Like> get likes => throw _privateConstructorUsedError;
+  List<CommentData> get comments => throw _privateConstructorUsedError;
 
   /// Serializes this PostData to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -39,7 +40,11 @@ abstract class $PostDataCopyWith<$Res> {
   factory $PostDataCopyWith(PostData value, $Res Function(PostData) then) =
       _$PostDataCopyWithImpl<$Res, PostData>;
   @useResult
-  $Res call({Post post, Profile? userProfile, int commentCount});
+  $Res call(
+      {Post post,
+      Profile? userProfile,
+      List<Like> likes,
+      List<CommentData> comments});
 
   $PostCopyWith<$Res> get post;
   $ProfileCopyWith<$Res>? get userProfile;
@@ -62,7 +67,8 @@ class _$PostDataCopyWithImpl<$Res, $Val extends PostData>
   $Res call({
     Object? post = null,
     Object? userProfile = freezed,
-    Object? commentCount = null,
+    Object? likes = null,
+    Object? comments = null,
   }) {
     return _then(_value.copyWith(
       post: null == post
@@ -73,10 +79,14 @@ class _$PostDataCopyWithImpl<$Res, $Val extends PostData>
           ? _value.userProfile
           : userProfile // ignore: cast_nullable_to_non_nullable
               as Profile?,
-      commentCount: null == commentCount
-          ? _value.commentCount
-          : commentCount // ignore: cast_nullable_to_non_nullable
-              as int,
+      likes: null == likes
+          ? _value.likes
+          : likes // ignore: cast_nullable_to_non_nullable
+              as List<Like>,
+      comments: null == comments
+          ? _value.comments
+          : comments // ignore: cast_nullable_to_non_nullable
+              as List<CommentData>,
     ) as $Val);
   }
 
@@ -113,7 +123,11 @@ abstract class _$$PostDataImplCopyWith<$Res>
       __$$PostDataImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Post post, Profile? userProfile, int commentCount});
+  $Res call(
+      {Post post,
+      Profile? userProfile,
+      List<Like> likes,
+      List<CommentData> comments});
 
   @override
   $PostCopyWith<$Res> get post;
@@ -136,7 +150,8 @@ class __$$PostDataImplCopyWithImpl<$Res>
   $Res call({
     Object? post = null,
     Object? userProfile = freezed,
-    Object? commentCount = null,
+    Object? likes = null,
+    Object? comments = null,
   }) {
     return _then(_$PostDataImpl(
       post: null == post
@@ -147,10 +162,14 @@ class __$$PostDataImplCopyWithImpl<$Res>
           ? _value.userProfile
           : userProfile // ignore: cast_nullable_to_non_nullable
               as Profile?,
-      commentCount: null == commentCount
-          ? _value.commentCount
-          : commentCount // ignore: cast_nullable_to_non_nullable
-              as int,
+      likes: null == likes
+          ? _value._likes
+          : likes // ignore: cast_nullable_to_non_nullable
+              as List<Like>,
+      comments: null == comments
+          ? _value._comments
+          : comments // ignore: cast_nullable_to_non_nullable
+              as List<CommentData>,
     ));
   }
 }
@@ -161,7 +180,10 @@ class _$PostDataImpl implements _PostData {
   const _$PostDataImpl(
       {required this.post,
       required this.userProfile,
-      required this.commentCount});
+      required final List<Like> likes,
+      required final List<CommentData> comments})
+      : _likes = likes,
+        _comments = comments;
 
   factory _$PostDataImpl.fromJson(Map<String, dynamic> json) =>
       _$$PostDataImplFromJson(json);
@@ -170,12 +192,25 @@ class _$PostDataImpl implements _PostData {
   final Post post;
   @override
   final Profile? userProfile;
+  final List<Like> _likes;
   @override
-  final int commentCount;
+  List<Like> get likes {
+    if (_likes is EqualUnmodifiableListView) return _likes;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_likes);
+  }
+
+  final List<CommentData> _comments;
+  @override
+  List<CommentData> get comments {
+    if (_comments is EqualUnmodifiableListView) return _comments;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_comments);
+  }
 
   @override
   String toString() {
-    return 'PostData(post: $post, userProfile: $userProfile, commentCount: $commentCount)';
+    return 'PostData(post: $post, userProfile: $userProfile, likes: $likes, comments: $comments)';
   }
 
   @override
@@ -186,13 +221,18 @@ class _$PostDataImpl implements _PostData {
             (identical(other.post, post) || other.post == post) &&
             (identical(other.userProfile, userProfile) ||
                 other.userProfile == userProfile) &&
-            (identical(other.commentCount, commentCount) ||
-                other.commentCount == commentCount));
+            const DeepCollectionEquality().equals(other._likes, _likes) &&
+            const DeepCollectionEquality().equals(other._comments, _comments));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, post, userProfile, commentCount);
+  int get hashCode => Object.hash(
+      runtimeType,
+      post,
+      userProfile,
+      const DeepCollectionEquality().hash(_likes),
+      const DeepCollectionEquality().hash(_comments));
 
   /// Create a copy of PostData
   /// with the given fields replaced by the non-null parameter values.
@@ -214,7 +254,8 @@ abstract class _PostData implements PostData {
   const factory _PostData(
       {required final Post post,
       required final Profile? userProfile,
-      required final int commentCount}) = _$PostDataImpl;
+      required final List<Like> likes,
+      required final List<CommentData> comments}) = _$PostDataImpl;
 
   factory _PostData.fromJson(Map<String, dynamic> json) =
       _$PostDataImpl.fromJson;
@@ -224,7 +265,9 @@ abstract class _PostData implements PostData {
   @override
   Profile? get userProfile;
   @override
-  int get commentCount;
+  List<Like> get likes;
+  @override
+  List<CommentData> get comments;
 
   /// Create a copy of PostData
   /// with the given fields replaced by the non-null parameter values.

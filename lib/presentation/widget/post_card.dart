@@ -10,6 +10,7 @@ import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/domain/type/post_data.dart';
+import 'package:green_heart/application/state/timeline_notifier.dart';
 
 class PostCard extends ConsumerWidget {
   const PostCard({super.key, required this.postData});
@@ -131,27 +132,32 @@ class PostCard extends ConsumerWidget {
       child: Row(
         children: [
           Icon(
-            postData.post.likedUserIds
-                    .contains(ref.read(authStateProvider).value?.uid)
+            postData.likes.any((like) =>
+                    like.uid == ref.watch(authStateProvider).value?.uid)
                 ? Icons.favorite
                 : Icons.favorite_border,
-            color: postData.post.likedUserIds
-                    .contains(ref.read(authStateProvider).value?.uid)
+            color: postData.likes.any((like) =>
+                    like.uid == ref.watch(authStateProvider).value?.uid)
                 ? Colors.red
                 : null,
           ),
           SizedBox(width: 8.r),
-          Text(postData.post.likedUserIds.length.toString()),
+          Text(postData.likes.length.toString()),
         ],
       ),
       onTap: () async {
         final uid = ref.read(authStateProvider).value?.uid;
         if (uid == null) return;
 
-        await ref.read(likeUsecaseProvider).execute(postData.post.id, uid);
+        await ref
+            .read(likeToggleUsecaseProvider)
+            .execute(postData.post.id, uid);
         ref
             .read(userPostNotifierProvider(postData.post.uid).notifier)
-            .updateLikedUserIds(postData.post.id, uid);
+            .toggleLike(postData.post.id, uid);
+        ref
+            .read(timelineNotifierProvider.notifier)
+            .toggleLike(postData.post.id, uid);
       },
     );
   }
@@ -162,7 +168,7 @@ class PostCard extends ConsumerWidget {
         children: [
           const Icon(Icons.comment_outlined),
           SizedBox(width: 8.r),
-          Text(postData.commentCount.toString()),
+          Text(postData.comments.length.toString()),
         ],
       ),
       onTap: () {

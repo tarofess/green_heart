@@ -10,7 +10,7 @@ part 'comment_data.g.dart';
 class CommentData with _$CommentData {
   const factory CommentData({
     required Comment comment,
-    required Profile? userProfile,
+    required Profile? profile,
   }) = _CommentData;
 
   factory CommentData.fromJson(Map<String, dynamic> json) =>

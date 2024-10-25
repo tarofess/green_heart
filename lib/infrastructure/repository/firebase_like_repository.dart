@@ -1,36 +1,48 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:green_heart/application/exception/app_exception.dart';
 
 import 'package:green_heart/application/interface/like_repository.dart';
+import 'package:green_heart/domain/type/like.dart';
 import 'package:green_heart/infrastructure/exception/exception_handler.dart';
+import 'package:green_heart/application/exception/app_exception.dart';
 
 class FirebaseLikeRepository implements LikeRepository {
   @override
-  Future<void> toggleLike(String postId, String userId) async {
+  Future<List<Like>> getLikes(String postId) async {
     try {
       final firestore = FirebaseFirestore.instance;
-      final postRef = firestore.collection('post').doc(postId);
-      final likeRef = firestore.collection('like').doc('${postId}_$userId');
+      final docRef = firestore
+          .collection('like')
+          .where('postId', isEqualTo: postId)
+          .orderBy('createdAt', descending: true);
+      final docSnapshot = await docRef.get();
+      final likes =
+          docSnapshot.docs.map((doc) => Like.fromJson(doc.data())).toList();
 
-      return firestore.runTransaction((transaction) async {
-        final likeDoc = await transaction.get(likeRef);
+      return likes;
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('いいねの取得に失敗しました。再度お試しください。');
+    }
+  }
 
-        if (likeDoc.exists) {
-          transaction.delete(likeRef);
-          transaction.update(postRef, {
-            'likedUserIds': FieldValue.arrayRemove([userId])
-          });
-        } else {
-          transaction.set(likeRef, {
-            'postId': postId,
-            'userId': userId,
-            'createdAt': FieldValue.serverTimestamp(),
-          });
-          transaction.update(postRef, {
-            'likedUserIds': FieldValue.arrayUnion([userId])
-          });
-        }
-      });
+  @override
+  Future<void> toggleLike(String postId, String uid) async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+      final ref = firestore.collection('like').doc('${postId}_$uid');
+      final docSnapshot = await ref.get();
+
+      if (docSnapshot.exists) {
+        await ref.delete();
+      } else {
+        final like = Like(
+          postId: postId,
+          uid: uid,
+          createdAt: DateTime.now(),
+        );
+
+        await ref.set(like.toJson());
+      }
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('いいねに失敗しました。再度お試しください。');

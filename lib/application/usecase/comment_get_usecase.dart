@@ -6,7 +6,7 @@ class CommentGetUsecase {
 
   CommentGetUsecase(this._commentRepository);
 
-  Future<List<Comment>> execute(String postId) {
-    return _commentRepository.getComments(postId);
+  Future<List<Comment>> execute(String postId) async {
+    return await _commentRepository.getComments(postId);
   }
 }

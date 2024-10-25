@@ -5,6 +5,9 @@ import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/domain/type/post_data.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
+import 'package:green_heart/domain/type/comment_data.dart';
+import 'package:green_heart/domain/type/like.dart';
+import 'package:green_heart/domain/type/comment.dart';
 
 class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
   @override
@@ -14,19 +17,32 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
       throw Exception('ユーザーが存在しないので投稿を取得できません。再度お試しください。');
     }
     final posts = await ref.read(postGetUsecaseProvider).execute(arg);
-    final profile = myUid == arg
-        ? ref.watch(profileNotifierProvider).value
-        : await ref.read(profileGetUsecaseProvider).execute(arg);
 
     List<PostData> postData = [];
     for (var post in posts) {
-      final commentCount =
+      final profile = myUid == arg
+          ? ref.watch(profileNotifierProvider).value
+          : await ref.read(profileGetUsecaseProvider).execute(arg);
+      final likes = await ref.read(likeGetUsecaseProvider).execute(post.id);
+      final comments =
           await ref.read(commentGetUsecaseProvider).execute(post.id);
+
+      List<CommentData> commentData = [];
+      for (var comment in comments) {
+        final profile = await ref.read(profileGetUsecaseProvider).execute(
+              comment.uid,
+            );
+        commentData.add(CommentData(
+          comment: comment,
+          profile: profile,
+        ));
+      }
 
       postData.add(PostData(
         post: post,
         userProfile: profile,
-        commentCount: commentCount.length,
+        likes: likes,
+        comments: commentData,
       ));
     }
 
@@ -50,44 +66,53 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
     final newPostData = PostData(
       post: addedPost,
       userProfile: profile,
-      commentCount: 0,
+      likes: [],
+      comments: [],
     );
 
     state = state.whenData((posts) => [newPostData, ...posts]);
   }
 
-  Future<void> updateLikedUserIds(String postId, String userId) async {
-    state.whenData((currentState) {
-      final updatedPosts = currentState.map((postData) {
-        if (postData.post.id == postId) {
-          final updatedLikedUserIds =
-              List<String>.from(postData.post.likedUserIds);
-          if (updatedLikedUserIds.contains(userId)) {
-            updatedLikedUserIds.remove(userId);
+  void toggleLike(String postId, String uid) {
+    state.whenData((value) {
+      final updatedValue = value.map((post) {
+        if (post.post.id == postId) {
+          final likes = List<Like>.from(post.likes);
+          final isLiked = likes.any((element) => element.uid == uid);
+          if (isLiked) {
+            likes.removeWhere((element) => element.uid == uid);
           } else {
-            updatedLikedUserIds.add(userId);
+            likes.add(Like(
+              uid: uid,
+              postId: postId,
+              createdAt: DateTime.now(),
+            ));
           }
-          return postData.copyWith(
-            post: postData.post.copyWith(likedUserIds: updatedLikedUserIds),
-          );
+          return post.copyWith(likes: likes);
         }
-        return postData;
+        return post;
       }).toList();
 
-      state = AsyncValue.data(updatedPosts);
+      state = AsyncValue.data(updatedValue);
     });
   }
 
-  Future<void> updateCommentCount(String postId) async {
-    state.whenData((currentState) {
-      final updatedPosts = currentState.map((postData) {
-        if (postData.post.id == postId) {
-          return postData.copyWith(commentCount: postData.commentCount + 1);
+  void addComment(Comment comment) {
+    state.whenData((value) {
+      final updatedValue = value.map((post) {
+        if (post.post.id == comment.postId) {
+          final comments = List<CommentData>.from(post.comments);
+          final profile = ref.read(profileNotifierProvider).value;
+          comments.add(CommentData(
+            comment: comment,
+            profile: profile,
+          ));
+          return post.copyWith(comments: comments);
         }
-        return postData;
+        return post;
       }).toList();
 
-      state = AsyncValue.data(updatedPosts);
+      state = AsyncValue.data(updatedValue);
     });
   }
 

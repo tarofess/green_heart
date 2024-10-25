@@ -85,13 +85,13 @@ class CommentPage extends HookConsumerWidget {
           leading: CircleAvatar(
             radius: 24.r,
             backgroundImage: CachedNetworkImageProvider(
-              comments[index].userProfile?.imageUrl ?? '',
+              comments[index].profile?.imageUrl ?? '',
             ),
           ),
           title: Row(
             children: [
               Text(
-                comments[index].userProfile?.name ?? '',
+                comments[index].profile?.name ?? '',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14.sp,

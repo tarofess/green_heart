@@ -24,7 +24,6 @@ mixin _$Post {
   String get uid => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
   List<String> get imageUrls => throw _privateConstructorUsedError;
-  List<String> get likedUserIds => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
@@ -47,7 +46,6 @@ abstract class $PostCopyWith<$Res> {
       String uid,
       String content,
       List<String> imageUrls,
-      List<String> likedUserIds,
       DateTime createdAt,
       DateTime updatedAt});
 }
@@ -71,7 +69,6 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
     Object? uid = null,
     Object? content = null,
     Object? imageUrls = null,
-    Object? likedUserIds = null,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -91,10 +88,6 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
       imageUrls: null == imageUrls
           ? _value.imageUrls
           : imageUrls // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      likedUserIds: null == likedUserIds
-          ? _value.likedUserIds
-          : likedUserIds // ignore: cast_nullable_to_non_nullable
               as List<String>,
       createdAt: null == createdAt
           ? _value.createdAt
@@ -120,7 +113,6 @@ abstract class _$$PostImplCopyWith<$Res> implements $PostCopyWith<$Res> {
       String uid,
       String content,
       List<String> imageUrls,
-      List<String> likedUserIds,
       DateTime createdAt,
       DateTime updatedAt});
 }
@@ -141,7 +133,6 @@ class __$$PostImplCopyWithImpl<$Res>
     Object? uid = null,
     Object? content = null,
     Object? imageUrls = null,
-    Object? likedUserIds = null,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -161,10 +152,6 @@ class __$$PostImplCopyWithImpl<$Res>
       imageUrls: null == imageUrls
           ? _value._imageUrls
           : imageUrls // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      likedUserIds: null == likedUserIds
-          ? _value._likedUserIds
-          : likedUserIds // ignore: cast_nullable_to_non_nullable
               as List<String>,
       createdAt: null == createdAt
           ? _value.createdAt
@@ -186,11 +173,9 @@ class _$PostImpl implements _Post {
       required this.uid,
       required this.content,
       final List<String> imageUrls = const [],
-      final List<String> likedUserIds = const [],
       required this.createdAt,
       required this.updatedAt})
-      : _imageUrls = imageUrls,
-        _likedUserIds = likedUserIds;
+      : _imageUrls = imageUrls;
 
   factory _$PostImpl.fromJson(Map<String, dynamic> json) =>
       _$$PostImplFromJson(json);
@@ -210,15 +195,6 @@ class _$PostImpl implements _Post {
     return EqualUnmodifiableListView(_imageUrls);
   }
 
-  final List<String> _likedUserIds;
-  @override
-  @JsonKey()
-  List<String> get likedUserIds {
-    if (_likedUserIds is EqualUnmodifiableListView) return _likedUserIds;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_likedUserIds);
-  }
-
   @override
   final DateTime createdAt;
   @override
@@ -226,7 +202,7 @@ class _$PostImpl implements _Post {
 
   @override
   String toString() {
-    return 'Post(id: $id, uid: $uid, content: $content, imageUrls: $imageUrls, likedUserIds: $likedUserIds, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Post(id: $id, uid: $uid, content: $content, imageUrls: $imageUrls, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -239,8 +215,6 @@ class _$PostImpl implements _Post {
             (identical(other.content, content) || other.content == content) &&
             const DeepCollectionEquality()
                 .equals(other._imageUrls, _imageUrls) &&
-            const DeepCollectionEquality()
-                .equals(other._likedUserIds, _likedUserIds) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -249,15 +223,8 @@ class _$PostImpl implements _Post {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      uid,
-      content,
-      const DeepCollectionEquality().hash(_imageUrls),
-      const DeepCollectionEquality().hash(_likedUserIds),
-      createdAt,
-      updatedAt);
+  int get hashCode => Object.hash(runtimeType, id, uid, content,
+      const DeepCollectionEquality().hash(_imageUrls), createdAt, updatedAt);
 
   /// Create a copy of Post
   /// with the given fields replaced by the non-null parameter values.
@@ -281,7 +248,6 @@ abstract class _Post implements Post {
       required final String uid,
       required final String content,
       final List<String> imageUrls,
-      final List<String> likedUserIds,
       required final DateTime createdAt,
       required final DateTime updatedAt}) = _$PostImpl;
 
@@ -295,8 +261,6 @@ abstract class _Post implements Post {
   String get content;
   @override
   List<String> get imageUrls;
-  @override
-  List<String> get likedUserIds;
   @override
   DateTime get createdAt;
   @override

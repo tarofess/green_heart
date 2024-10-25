@@ -21,7 +21,7 @@ CommentData _$CommentDataFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$CommentData {
   Comment get comment => throw _privateConstructorUsedError;
-  Profile? get userProfile => throw _privateConstructorUsedError;
+  Profile? get profile => throw _privateConstructorUsedError;
 
   /// Serializes this CommentData to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -39,10 +39,10 @@ abstract class $CommentDataCopyWith<$Res> {
           CommentData value, $Res Function(CommentData) then) =
       _$CommentDataCopyWithImpl<$Res, CommentData>;
   @useResult
-  $Res call({Comment comment, Profile? userProfile});
+  $Res call({Comment comment, Profile? profile});
 
   $CommentCopyWith<$Res> get comment;
-  $ProfileCopyWith<$Res>? get userProfile;
+  $ProfileCopyWith<$Res>? get profile;
 }
 
 /// @nodoc
@@ -61,16 +61,16 @@ class _$CommentDataCopyWithImpl<$Res, $Val extends CommentData>
   @override
   $Res call({
     Object? comment = null,
-    Object? userProfile = freezed,
+    Object? profile = freezed,
   }) {
     return _then(_value.copyWith(
       comment: null == comment
           ? _value.comment
           : comment // ignore: cast_nullable_to_non_nullable
               as Comment,
-      userProfile: freezed == userProfile
-          ? _value.userProfile
-          : userProfile // ignore: cast_nullable_to_non_nullable
+      profile: freezed == profile
+          ? _value.profile
+          : profile // ignore: cast_nullable_to_non_nullable
               as Profile?,
     ) as $Val);
   }
@@ -89,13 +89,13 @@ class _$CommentDataCopyWithImpl<$Res, $Val extends CommentData>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $ProfileCopyWith<$Res>? get userProfile {
-    if (_value.userProfile == null) {
+  $ProfileCopyWith<$Res>? get profile {
+    if (_value.profile == null) {
       return null;
     }
 
-    return $ProfileCopyWith<$Res>(_value.userProfile!, (value) {
-      return _then(_value.copyWith(userProfile: value) as $Val);
+    return $ProfileCopyWith<$Res>(_value.profile!, (value) {
+      return _then(_value.copyWith(profile: value) as $Val);
     });
   }
 }
@@ -108,12 +108,12 @@ abstract class _$$CommentDataImplCopyWith<$Res>
       __$$CommentDataImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Comment comment, Profile? userProfile});
+  $Res call({Comment comment, Profile? profile});
 
   @override
   $CommentCopyWith<$Res> get comment;
   @override
-  $ProfileCopyWith<$Res>? get userProfile;
+  $ProfileCopyWith<$Res>? get profile;
 }
 
 /// @nodoc
@@ -130,16 +130,16 @@ class __$$CommentDataImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? comment = null,
-    Object? userProfile = freezed,
+    Object? profile = freezed,
   }) {
     return _then(_$CommentDataImpl(
       comment: null == comment
           ? _value.comment
           : comment // ignore: cast_nullable_to_non_nullable
               as Comment,
-      userProfile: freezed == userProfile
-          ? _value.userProfile
-          : userProfile // ignore: cast_nullable_to_non_nullable
+      profile: freezed == profile
+          ? _value.profile
+          : profile // ignore: cast_nullable_to_non_nullable
               as Profile?,
     ));
   }
@@ -148,7 +148,7 @@ class __$$CommentDataImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$CommentDataImpl implements _CommentData {
-  const _$CommentDataImpl({required this.comment, required this.userProfile});
+  const _$CommentDataImpl({required this.comment, required this.profile});
 
   factory _$CommentDataImpl.fromJson(Map<String, dynamic> json) =>
       _$$CommentDataImplFromJson(json);
@@ -156,11 +156,11 @@ class _$CommentDataImpl implements _CommentData {
   @override
   final Comment comment;
   @override
-  final Profile? userProfile;
+  final Profile? profile;
 
   @override
   String toString() {
-    return 'CommentData(comment: $comment, userProfile: $userProfile)';
+    return 'CommentData(comment: $comment, profile: $profile)';
   }
 
   @override
@@ -169,13 +169,12 @@ class _$CommentDataImpl implements _CommentData {
         (other.runtimeType == runtimeType &&
             other is _$CommentDataImpl &&
             (identical(other.comment, comment) || other.comment == comment) &&
-            (identical(other.userProfile, userProfile) ||
-                other.userProfile == userProfile));
+            (identical(other.profile, profile) || other.profile == profile));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, comment, userProfile);
+  int get hashCode => Object.hash(runtimeType, comment, profile);
 
   /// Create a copy of CommentData
   /// with the given fields replaced by the non-null parameter values.
@@ -196,7 +195,7 @@ class _$CommentDataImpl implements _CommentData {
 abstract class _CommentData implements CommentData {
   const factory _CommentData(
       {required final Comment comment,
-      required final Profile? userProfile}) = _$CommentDataImpl;
+      required final Profile? profile}) = _$CommentDataImpl;
 
   factory _CommentData.fromJson(Map<String, dynamic> json) =
       _$CommentDataImpl.fromJson;
@@ -204,7 +203,7 @@ abstract class _CommentData implements CommentData {
   @override
   Comment get comment;
   @override
-  Profile? get userProfile;
+  Profile? get profile;
 
   /// Create a copy of CommentData
   /// with the given fields replaced by the non-null parameter values.

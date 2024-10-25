@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/profile.dart';
@@ -10,8 +10,12 @@ import 'package:green_heart/presentation/widget/post_card.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/domain/type/post_data.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
+import 'package:green_heart/presentation/page/error_page.dart';
+import 'package:green_heart/presentation/widget/loading_indicator.dart';
+import 'package:green_heart/application/di/profile_di.dart';
 
-class UserPage extends ConsumerWidget {
+class UserPage extends HookConsumerWidget {
   const UserPage({super.key, required this.uid});
 
   final String? uid;
@@ -19,6 +23,17 @@ class UserPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userPostState = ref.watch(userPostNotifierProvider(uid));
+    final profile = useState<Profile?>(null);
+
+    useEffect(() {
+      void setProfile() async {
+        if (uid == null) return;
+        profile.value = await ref.read(profileGetUsecaseProvider).execute(uid!);
+      }
+
+      setProfile();
+      return;
+    });
 
     return Scaffold(
       appBar: uid == ref.watch(authStateProvider).value?.uid
@@ -41,7 +56,7 @@ class UserPage extends ConsumerWidget {
                           _buildUserImage(
                             context,
                             ref,
-                            userPosts.firstOrNull?.userProfile?.imageUrl,
+                            profile.value?.imageUrl,
                           ),
                           Expanded(child: _buildUserStats()),
                         ],
@@ -76,17 +91,23 @@ class UserPage extends ConsumerWidget {
           );
         },
         loading: () {
-          return const Center(child: CircularProgressIndicator());
+          return const LoadingIndicator();
         },
-        error: (error, _) {
-          return Center(child: Text('エラーが発生しました: $error'));
+        error: (e, _) {
+          return ErrorPage(
+            error: e,
+            retry: () => ref.refresh(userPostNotifierProvider(uid)),
+          );
         },
       ),
     );
   }
 
   Widget _buildUserImage(
-      BuildContext context, WidgetRef ref, String? imageUrl) {
+    BuildContext context,
+    WidgetRef ref,
+    String? imageUrl,
+  ) {
     return imageUrl == null
         ? const SizedBox()
         : Column(
@@ -228,13 +249,15 @@ class UserPage extends ConsumerWidget {
     WidgetRef ref,
     List<PostData> userPosts,
   ) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: userPosts.length,
-      itemBuilder: (context, index) {
-        return PostCard(postData: userPosts[index]);
-      },
-    );
+    return userPosts.isEmpty
+        ? const Center(child: Text('投稿はまだありません。'))
+        : ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: userPosts.length,
+            itemBuilder: (context, index) {
+              return PostCard(postData: userPosts[index]);
+            },
+          );
   }
 }
