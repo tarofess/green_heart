@@ -7,7 +7,7 @@ import 'package:green_heart/presentation/page/comment_page.dart';
 import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/state/timeline_notifier.dart';
-import 'package:green_heart/application/state/my_post_notifier.dart';
+import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/domain/type/post_data.dart';
 
@@ -146,7 +146,7 @@ class PostCard extends ConsumerWidget {
               postData.post.id,
               uid,
             );
-        ref.read(myPostNotifierProvider.notifier).updateLikedUserIds(
+        ref.read(userPostNotifierProvider.notifier).updateLikedUserIds(
               postData.post.id,
               uid,
             );

@@ -1,10 +1,10 @@
 import 'package:green_heart/application/interface/post_repository.dart';
 import 'package:green_heart/domain/type/post.dart';
 
-class PostUploadUsecase {
+class PostAddUsecase {
   final PostRepository _postRepository;
 
-  PostUploadUsecase(this._postRepository);
+  PostAddUsecase(this._postRepository);
 
   Future<Post> execute(
     String uid,

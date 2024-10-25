@@ -1,11 +1,11 @@
 import 'package:green_heart/application/interface/comment_repository.dart';
 import 'package:green_heart/application/state/comment_notifier.dart';
-import 'package:green_heart/application/state/my_post_notifier.dart';
+import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/state/timeline_notifier.dart';
 
 class CommentAddUsecase {
   final CommentRepository _commentRepository;
-  final MyPostNotifier _myPostNotifier;
+  final UserPostNotifier _myPostNotifier;
   final TimelineNotifier _timelineNotifier;
 
   CommentAddUsecase(

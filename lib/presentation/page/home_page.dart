@@ -5,14 +5,14 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:green_heart/presentation/page/user_page.dart';
 import 'package:green_heart/presentation/page/error_page.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
-import 'package:green_heart/application/state/my_post_notifier.dart';
+import 'package:green_heart/application/state/user_post_notifier.dart';
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userPostState = ref.watch(myPostNotifierProvider);
+    final userPostState = ref.watch(userPostNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -37,7 +37,7 @@ class HomePage extends HookConsumerWidget {
         error: (e, stackTrace) {
           return ErrorPage(
             error: e,
-            retry: () => ref.refresh(myPostNotifierProvider),
+            retry: () => ref.refresh(userPostNotifierProvider),
           );
         },
         loading: () {

@@ -5,7 +5,7 @@ import 'package:green_heart/application/interface/account_repository.dart';
 import 'package:green_heart/application/interface/notification_repository.dart';
 import 'package:green_heart/application/interface/post_repository.dart';
 import 'package:green_heart/application/interface/profile_repository.dart';
-import 'package:green_heart/application/state/my_post_notifier.dart';
+import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/application/usecase/signout_usecase.dart';
 import 'package:green_heart/infrastructure/service/firebase_auth_service.dart';
@@ -19,7 +19,7 @@ class AccountDeleteUsecase {
   final NotificationRepository _notificationRepository;
   final ProfileNotifier _profileNotifierProvider;
   final SignOutUseCase _signOutUseCase;
-  final MyPostNotifier _postNotifierProvider;
+  final UserPostNotifier _postNotifierProvider;
 
   AccountDeleteUsecase(
     this._authService,

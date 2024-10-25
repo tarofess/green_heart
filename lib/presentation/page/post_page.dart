@@ -11,7 +11,7 @@ import 'package:green_heart/presentation/viewmodel/post_page_viewmodel.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/presentation/dialog/message_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
-import 'package:green_heart/application/state/profile_notifier.dart';
+import 'package:green_heart/application/state/user_post_notifier.dart';
 
 class PostPage extends HookConsumerWidget {
   const PostPage({super.key});
@@ -102,10 +102,9 @@ class PostPage extends HookConsumerWidget {
               ? () async {
                   try {
                     await LoadingOverlay.of(context).during(
-                      () => ref.read(postPageViewModel).uploadPost(
+                      () => ref.read(userPostNotifierProvider.notifier).addPost(
                             postTextController.text,
-                            selectedImages,
-                            ref.read(profileNotifierProvider).value,
+                            selectedImages.value,
                           ),
                     );
 
