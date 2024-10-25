@@ -1,11 +1,10 @@
-import 'package:green_heart/application/state/base_post_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/domain/type/post_data.dart';
 
-class TimelineNotifier extends BasePostNotifier {
+class TimelineNotifier extends AsyncNotifier<List<PostData>> {
   @override
   Future<List<PostData>> build() async {
     final posts = await ref.read(timelineGetUsecaseProvider).execute();

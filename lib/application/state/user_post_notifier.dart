@@ -4,9 +4,8 @@ import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/domain/type/post_data.dart';
-import 'package:green_heart/application/state/base_post_notifier.dart';
 
-class UserPostNotifier extends BasePostNotifier {
+class UserPostNotifier extends AsyncNotifier<List<PostData>> {
   @override
   Future<List<PostData>> build() async {
     final uid = ref.read(authStateProvider).value?.uid;
@@ -56,7 +55,42 @@ class UserPostNotifier extends BasePostNotifier {
     state = state.whenData((posts) => [newPostData, ...posts]);
   }
 
-  void removeAllPosts() {
+  Future<void> updateLikedUserIds(String postId, String userId) async {
+    state.whenData((currentState) {
+      final updatedPosts = currentState.map((postData) {
+        if (postData.post.id == postId) {
+          final updatedLikedUserIds =
+              List<String>.from(postData.post.likedUserIds);
+          if (updatedLikedUserIds.contains(userId)) {
+            updatedLikedUserIds.remove(userId);
+          } else {
+            updatedLikedUserIds.add(userId);
+          }
+          return postData.copyWith(
+            post: postData.post.copyWith(likedUserIds: updatedLikedUserIds),
+          );
+        }
+        return postData;
+      }).toList();
+
+      state = AsyncValue.data(updatedPosts);
+    });
+  }
+
+  Future<void> updateCommentCount(String postId) async {
+    state.whenData((currentState) {
+      final updatedPosts = currentState.map((postData) {
+        if (postData.post.id == postId) {
+          return postData.copyWith(commentCount: postData.commentCount + 1);
+        }
+        return postData;
+      }).toList();
+
+      state = AsyncValue.data(updatedPosts);
+    });
+  }
+
+  Future<void> removeAllPosts() async {
     state = const AsyncValue.data([]);
   }
 }
