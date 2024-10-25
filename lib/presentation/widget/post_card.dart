@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/presentation/page/comment_page.dart';
@@ -24,7 +25,7 @@ class PostCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildUserInfo(),
+            _buildUserInfo(context, ref),
             SizedBox(height: 16.r),
             _buildTextContent(),
             SizedBox(height: 16.r),
@@ -37,15 +38,22 @@ class PostCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildUserInfo() {
+  Widget _buildUserInfo(BuildContext context, WidgetRef ref) {
     return Row(
       children: [
-        CircleAvatar(
-          radius: 24.r,
-          backgroundImage: CachedNetworkImageProvider(
-            postData.userProfile?.imageUrl ?? '',
-          ),
-        ),
+        GestureDetector(
+            child: CircleAvatar(
+              radius: 24.r,
+              backgroundImage: CachedNetworkImageProvider(
+                postData.userProfile?.imageUrl ?? '',
+              ),
+            ),
+            onTap: () {
+              if (postData.post.uid !=
+                  ref.watch(authStateProvider).value?.uid) {
+                context.push('/user', extra: {'uid': postData.post.uid});
+              }
+            }),
         SizedBox(width: 8.r),
         Text(
           postData.userProfile?.name ?? '',

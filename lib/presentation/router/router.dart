@@ -14,6 +14,7 @@ import 'package:green_heart/presentation/page/notification_setting_page.dart';
 import 'package:green_heart/presentation/page/post_page.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/presentation/page/profile_edit_page.dart';
+import 'package:green_heart/presentation/page/user_page.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -65,6 +66,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/profile_edit',
         builder: (context, state) => ProfileEditPage(),
+      ),
+      GoRoute(
+        path: '/user',
+        builder: (context, state) {
+          final Map<String, dynamic> extra =
+              state.extra as Map<String, dynamic>;
+          final uid = extra['uid'] as String?;
+          return UserPage(uid: uid);
+        },
       ),
       GoRoute(
         path: '/settings',

@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/profile.dart';
@@ -8,63 +9,96 @@ import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/presentation/widget/post_card.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/domain/type/post_data.dart';
+import 'package:green_heart/application/state/user_post_notifier.dart';
 
 class UserPage extends ConsumerWidget {
-  const UserPage({super.key, required this.profile, required this.postData});
+  const UserPage({super.key, required this.uid});
 
-  final List<PostData> postData;
-  final Profile? profile;
+  final String? uid;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.only(left: 16.r, right: 16.r),
+    final userPostState = ref.watch(userPostNotifierProvider(uid));
+
+    return Scaffold(
+      appBar: uid == ref.watch(authStateProvider).value?.uid
+          ? null
+          : AppBar(
+              title: const Text(''),
+            ),
+      body: userPostState.when(
+        data: (userPosts) {
+          return SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    _buildUserImage(context, ref, profile?.imageUrl ?? ''),
-                    Expanded(child: _buildUserStats()),
-                  ],
+                Padding(
+                  padding: EdgeInsets.only(left: 16.r, right: 16.r),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          _buildUserImage(
+                            context,
+                            ref,
+                            userPosts.firstOrNull?.userProfile?.imageUrl,
+                          ),
+                          Expanded(child: _buildUserStats()),
+                        ],
+                      ),
+                      SizedBox(height: 16.r),
+                      _buildUserName(context, ref),
+                      SizedBox(height: 8.r),
+                      _buildBirthDate(
+                        context,
+                        ref,
+                        userPosts.firstOrNull?.userProfile,
+                      ),
+                      SizedBox(height: 16.r),
+                      _buildUserBio(
+                        context,
+                        ref,
+                        userPosts.firstOrNull?.userProfile,
+                      ),
+                      SizedBox(height: 16.r),
+                      _buildFollowButton(context, ref),
+                    ],
+                  ),
                 ),
-                SizedBox(height: 16.r),
-                _buildUserName(context, ref),
                 SizedBox(height: 8.r),
-                _buildBirthDate(context, ref),
-                SizedBox(height: 16.r),
-                _buildUserBio(context, ref),
-                SizedBox(height: 16.r),
-                _buildFollowButton(context, ref),
+                const Divider(),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: _buildUserPosts(context, ref, userPosts),
+                ),
               ],
             ),
-          ),
-          SizedBox(height: 8.r),
-          const Divider(),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: _buildUserPosts(context, ref),
-          ),
-        ],
+          );
+        },
+        loading: () {
+          return const Center(child: CircularProgressIndicator());
+        },
+        error: (error, _) {
+          return Center(child: Text('エラーが発生しました: $error'));
+        },
       ),
     );
   }
 
   Widget _buildUserImage(
       BuildContext context, WidgetRef ref, String? imageUrl) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Center(
-          child: imageUrl == '' || imageUrl == null
-              ? _buildEmptyImage()
-              : _buildFirebaseImage(imageUrl),
-        ),
-      ],
-    );
+    return imageUrl == null
+        ? const SizedBox()
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: imageUrl == ''
+                    ? _buildEmptyImage()
+                    : _buildFirebaseImage(imageUrl),
+              ),
+            ],
+          );
   }
 
   Widget _buildEmptyImage() {
@@ -165,13 +199,14 @@ class UserPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildBirthDate(BuildContext context, WidgetRef ref) {
+  Widget _buildBirthDate(
+      BuildContext context, WidgetRef ref, Profile? profile) {
     return profile?.birthday == null
         ? const SizedBox()
         : Text('${DateUtil.convertToJapaneseDate(profile?.birthday!)}生まれ');
   }
 
-  Widget _buildUserBio(BuildContext context, WidgetRef ref) {
+  Widget _buildUserBio(BuildContext context, WidgetRef ref, Profile? profile) {
     final bio = profile?.bio;
     return bio == null || bio.isEmpty ? const SizedBox() : Text(bio);
   }
@@ -188,13 +223,17 @@ class UserPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildUserPosts(BuildContext context, WidgetRef ref) {
+  Widget _buildUserPosts(
+    BuildContext context,
+    WidgetRef ref,
+    List<PostData> userPosts,
+  ) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: postData.length,
+      itemCount: userPosts.length,
       itemBuilder: (context, index) {
-        return PostCard(postData: postData[index]);
+        return PostCard(postData: userPosts[index]);
       },
     );
   }
