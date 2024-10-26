@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,12 +5,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/comment_data.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
-import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/application/state/comment_notifier.dart';
 import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/presentation/page/error_page.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
-import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
+import 'package:green_heart/presentation/widget/comment_card.dart';
 
 class CommentPage extends HookConsumerWidget {
   const CommentPage({super.key, required this.postId});
@@ -81,57 +79,7 @@ class CommentPage extends HookConsumerWidget {
     return ListView.builder(
       itemCount: comments.length,
       itemBuilder: (context, index) {
-        return ListTile(
-          leading: CircleAvatar(
-            radius: 24.r,
-            backgroundImage: CachedNetworkImageProvider(
-              comments[index].profile?.imageUrl ?? '',
-            ),
-          ),
-          title: Row(
-            children: [
-              Text(
-                comments[index].profile?.name ?? '',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14.sp,
-                ),
-              ),
-            ],
-          ),
-          subtitle: Text(
-            comments[index].comment.content,
-            style: TextStyle(fontSize: 16.sp),
-          ),
-          trailing: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              GestureDetector(
-                child: Icon(Icons.delete_outline, size: 20.sp),
-                onTap: () async {
-                  final result = await showConfirmationDialog(
-                    context: context,
-                    title: '確認',
-                    content: 'コメントを削除しますか？',
-                    positiveButtonText: '削除する',
-                    negativeButtonText: 'キャンセル',
-                  );
-                  if (!result) return;
-
-                  final commentId = comments[index].comment.id;
-                  ref
-                      .read(commentNotifierProvider(postId).notifier)
-                      .deleteComment(commentId);
-                },
-              ),
-              const SizedBox(height: 4),
-              Text(
-                DateUtil.formatCommentTime(comments[index].comment.createdAt),
-                style: TextStyle(fontSize: 12.sp),
-              ),
-            ],
-          ),
-        );
+        return CommentCard(commentData: comments[index], postId: postId);
       },
     );
   }
