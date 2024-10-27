@@ -16,12 +16,14 @@ class CommentCard extends HookConsumerWidget {
     required this.postId,
     required this.isReplaying,
     required this.parentCommentId,
+    required this.focusNode,
   });
 
   final CommentData commentData;
   final String postId;
   final ValueNotifier<bool> isReplaying;
   final ValueNotifier<String?> parentCommentId;
+  final FocusNode focusNode;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -164,6 +166,7 @@ class CommentCard extends HookConsumerWidget {
         TextButton(
           onPressed: () {
             isReplaying.value = true;
+            focusNode.requestFocus();
             parentCommentId.value = commentData.comment.id;
           },
           child: const Text('返信する'),

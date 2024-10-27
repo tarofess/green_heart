@@ -12,10 +12,10 @@ import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/presentation/widget/comment_card.dart';
 
 class CommentPage extends HookConsumerWidget {
-  CommentPage({super.key, required this.postId});
+  const CommentPage({super.key, required this.postId, required this.focusNode});
 
   final String postId;
-  final FocusNode _focusNode = FocusNode();
+  final FocusNode focusNode;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,10 +23,6 @@ class CommentPage extends HookConsumerWidget {
     final commentTextController = useTextEditingController();
     final isReplaying = useState(false);
     final parentCommentId = useState<String?>(null);
-
-    if (isReplaying.value) {
-      _focusNode.requestFocus();
-    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('コメント')),
@@ -42,6 +38,7 @@ class CommentPage extends HookConsumerWidget {
                         comments,
                         isReplaying,
                         parentCommentId,
+                        focusNode,
                       ),
               ),
               const Divider(height: 1),
@@ -101,6 +98,7 @@ class CommentPage extends HookConsumerWidget {
     List<CommentData> comments,
     ValueNotifier<bool> isReplaying,
     ValueNotifier<String?> parentCommentId,
+    FocusNode focusNode,
   ) {
     return ListView.builder(
       itemCount: comments.length,
@@ -110,6 +108,7 @@ class CommentPage extends HookConsumerWidget {
           postId: postId,
           isReplaying: isReplaying,
           parentCommentId: parentCommentId,
+          focusNode: focusNode,
         );
       },
     );
@@ -125,7 +124,7 @@ class CommentPage extends HookConsumerWidget {
       children: [
         Expanded(
           child: TextField(
-            focusNode: _focusNode,
+            focusNode: focusNode,
             controller: commentTextController,
             decoration: InputDecoration(
               hintText: isReplaying.value ? '返信中...' : 'コメントを入力...',

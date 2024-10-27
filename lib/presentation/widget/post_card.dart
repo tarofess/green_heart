@@ -13,9 +13,10 @@ import 'package:green_heart/domain/type/post_data.dart';
 import 'package:green_heart/application/state/timeline_notifier.dart';
 
 class PostCard extends ConsumerWidget {
-  const PostCard({super.key, required this.postData});
+  PostCard({super.key, required this.postData});
 
   final PostData postData;
+  final FocusNode focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -192,7 +193,10 @@ class PostCard extends ConsumerWidget {
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(20),
                   ),
-                  child: CommentPage(postId: postData.post.id),
+                  child: CommentPage(
+                    postId: postData.post.id,
+                    focusNode: focusNode,
+                  ),
                 );
               },
             );
