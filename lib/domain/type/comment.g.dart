@@ -13,6 +13,7 @@ _$CommentImpl _$$CommentImplFromJson(Map<String, dynamic> json) =>
       postId: json['postId'] as String,
       content: json['content'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
+      parentCommentId: json['parentCommentId'] as String?,
     );
 
 Map<String, dynamic> _$$CommentImplToJson(_$CommentImpl instance) =>
@@ -22,4 +23,5 @@ Map<String, dynamic> _$$CommentImplToJson(_$CommentImpl instance) =>
       'postId': instance.postId,
       'content': instance.content,
       'createdAt': instance.createdAt.toIso8601String(),
+      'parentCommentId': instance.parentCommentId,
     };

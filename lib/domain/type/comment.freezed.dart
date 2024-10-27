@@ -25,6 +25,7 @@ mixin _$Comment {
   String get postId => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
+  String? get parentCommentId => throw _privateConstructorUsedError;
 
   /// Serializes this Comment to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -45,7 +46,8 @@ abstract class $CommentCopyWith<$Res> {
       String uid,
       String postId,
       String content,
-      DateTime createdAt});
+      DateTime createdAt,
+      String? parentCommentId});
 }
 
 /// @nodoc
@@ -68,6 +70,7 @@ class _$CommentCopyWithImpl<$Res, $Val extends Comment>
     Object? postId = null,
     Object? content = null,
     Object? createdAt = null,
+    Object? parentCommentId = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -90,6 +93,10 @@ class _$CommentCopyWithImpl<$Res, $Val extends Comment>
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      parentCommentId: freezed == parentCommentId
+          ? _value.parentCommentId
+          : parentCommentId // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -106,7 +113,8 @@ abstract class _$$CommentImplCopyWith<$Res> implements $CommentCopyWith<$Res> {
       String uid,
       String postId,
       String content,
-      DateTime createdAt});
+      DateTime createdAt,
+      String? parentCommentId});
 }
 
 /// @nodoc
@@ -127,6 +135,7 @@ class __$$CommentImplCopyWithImpl<$Res>
     Object? postId = null,
     Object? content = null,
     Object? createdAt = null,
+    Object? parentCommentId = freezed,
   }) {
     return _then(_$CommentImpl(
       id: null == id
@@ -149,6 +158,10 @@ class __$$CommentImplCopyWithImpl<$Res>
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      parentCommentId: freezed == parentCommentId
+          ? _value.parentCommentId
+          : parentCommentId // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -161,7 +174,8 @@ class _$CommentImpl implements _Comment {
       required this.uid,
       required this.postId,
       required this.content,
-      required this.createdAt});
+      required this.createdAt,
+      this.parentCommentId});
 
   factory _$CommentImpl.fromJson(Map<String, dynamic> json) =>
       _$$CommentImplFromJson(json);
@@ -176,10 +190,12 @@ class _$CommentImpl implements _Comment {
   final String content;
   @override
   final DateTime createdAt;
+  @override
+  final String? parentCommentId;
 
   @override
   String toString() {
-    return 'Comment(id: $id, uid: $uid, postId: $postId, content: $content, createdAt: $createdAt)';
+    return 'Comment(id: $id, uid: $uid, postId: $postId, content: $content, createdAt: $createdAt, parentCommentId: $parentCommentId)';
   }
 
   @override
@@ -192,13 +208,15 @@ class _$CommentImpl implements _Comment {
             (identical(other.postId, postId) || other.postId == postId) &&
             (identical(other.content, content) || other.content == content) &&
             (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt));
+                other.createdAt == createdAt) &&
+            (identical(other.parentCommentId, parentCommentId) ||
+                other.parentCommentId == parentCommentId));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, uid, postId, content, createdAt);
+  int get hashCode => Object.hash(
+      runtimeType, id, uid, postId, content, createdAt, parentCommentId);
 
   /// Create a copy of Comment
   /// with the given fields replaced by the non-null parameter values.
@@ -222,7 +240,8 @@ abstract class _Comment implements Comment {
       required final String uid,
       required final String postId,
       required final String content,
-      required final DateTime createdAt}) = _$CommentImpl;
+      required final DateTime createdAt,
+      final String? parentCommentId}) = _$CommentImpl;
 
   factory _Comment.fromJson(Map<String, dynamic> json) = _$CommentImpl.fromJson;
 
@@ -236,6 +255,8 @@ abstract class _Comment implements Comment {
   String get content;
   @override
   DateTime get createdAt;
+  @override
+  String? get parentCommentId;
 
   /// Create a copy of Comment
   /// with the given fields replaced by the non-null parameter values.

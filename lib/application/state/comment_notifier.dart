@@ -1,12 +1,12 @@
-import 'package:green_heart/application/state/auth_state_provider.dart';
-import 'package:green_heart/application/state/timeline_notifier.dart';
-import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/domain/type/comment_data.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
+import 'package:green_heart/application/state/timeline_notifier.dart';
+import 'package:green_heart/application/state/user_post_notifier.dart';
 
 class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
   @override
@@ -14,25 +14,52 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
     final comments = await ref.read(commentGetUsecaseProvider).execute(arg);
     final commentDataList = <CommentData>[];
     for (final comment in comments) {
+      if (comment.parentCommentId != null) {
+        continue;
+      }
       final profile = await ref.read(profileGetUsecaseProvider).execute(
             comment.uid,
           );
+      final replyComments =
+          await ref.read(commentGetReplyUsecaseProvider).execute(comment.id);
+
       commentDataList.add(CommentData(
         comment: comment,
         profile: profile,
+        replyComments: replyComments,
       ));
     }
     return commentDataList;
   }
 
-  Future<void> addComment(Comment newComment) async {
+  Future<void> addComment(Comment newComment, String? parentCommentId) async {
     final userProfile =
         await ref.read(profileGetUsecaseProvider).execute(newComment.uid);
-    final newCommentData = CommentData(
-      comment: newComment,
-      profile: userProfile,
-    );
-    state = AsyncValue.data([newCommentData, ...state.value ?? []]);
+
+    if (parentCommentId == null) {
+      final newCommentData = CommentData(
+        comment: newComment,
+        profile: userProfile,
+        replyComments: [],
+      );
+      state = AsyncValue.data([newCommentData, ...state.value ?? []]);
+    } else {
+      final updatedComment = newComment.copyWith(
+        parentCommentId: parentCommentId,
+      );
+      state = AsyncValue.data(state.value?.map((commentData) {
+            if (commentData.comment.id == parentCommentId) {
+              return commentData.copyWith(
+                replyComments: [
+                  ...commentData.replyComments,
+                  updatedComment,
+                ],
+              );
+            }
+            return commentData;
+          }).toList() ??
+          []);
+    }
   }
 
   Future<void> deleteComment(String commentId) async {

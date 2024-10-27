@@ -11,6 +11,7 @@ class CommentData with _$CommentData {
   const factory CommentData({
     required Comment comment,
     required Profile? profile,
+    @Default([]) List<Comment> replyComments,
   }) = _CommentData;
 
   factory CommentData.fromJson(Map<String, dynamic> json) =>

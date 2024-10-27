@@ -14,12 +14,21 @@ class CommentAddUsecase {
     this._timelineNotifier,
   );
 
-  Future<void> execute(String uid, String postId, String content,
-      CommentNotifier commentNotifier) async {
-    final newComment =
-        await _commentRepository.addComment(uid, postId, content);
+  Future<void> execute(
+    String uid,
+    String postId,
+    String content,
+    String? parentCommentId,
+    CommentNotifier commentNotifier,
+  ) async {
+    final newComment = await _commentRepository.addComment(
+      uid,
+      postId,
+      content,
+      parentCommentId,
+    );
 
-    commentNotifier.addComment(newComment);
+    commentNotifier.addComment(newComment, parentCommentId);
     _userPostNotifier.addComment(newComment);
     _timelineNotifier.addComment(newComment);
   }

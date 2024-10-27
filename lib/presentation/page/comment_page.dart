@@ -12,14 +12,21 @@ import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/presentation/widget/comment_card.dart';
 
 class CommentPage extends HookConsumerWidget {
-  const CommentPage({super.key, required this.postId});
+  CommentPage({super.key, required this.postId});
 
   final String postId;
+  final FocusNode _focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final commentState = ref.watch(commentNotifierProvider(postId));
     final commentTextController = useTextEditingController();
+    final isReplaying = useState(false);
+    final parentCommentId = useState<String?>(null);
+
+    if (isReplaying.value) {
+      _focusNode.requestFocus();
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('コメント')),
@@ -30,21 +37,35 @@ class CommentPage extends HookConsumerWidget {
               Expanded(
                 child: comments.isEmpty
                     ? _buildEmptyCommentMessage()
-                    : _buildComment(ref, comments),
+                    : _buildComment(
+                        ref,
+                        comments,
+                        isReplaying,
+                        parentCommentId,
+                      ),
               ),
               const Divider(height: 1),
               Padding(
                 padding: EdgeInsets.only(top: 8.r, bottom: 8.r, left: 16.r),
-                child: _buildInputForm(ref, commentTextController),
+                child: _buildInputForm(
+                  ref,
+                  commentTextController,
+                  isReplaying,
+                  parentCommentId,
+                ),
               ),
             ],
           );
         },
-        loading: () => const LoadingIndicator(),
-        error: (e, st) => ErrorPage(
-          error: e,
-          retry: () => ref.refresh(commentNotifierProvider(postId)),
-        ),
+        loading: () {
+          return const LoadingIndicator();
+        },
+        error: (e, ststackTrace) {
+          return ErrorPage(
+            error: e,
+            retry: () => ref.refresh(commentNotifierProvider(postId)),
+          );
+        },
       ),
     );
   }
@@ -75,24 +96,39 @@ class CommentPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildComment(WidgetRef ref, List<CommentData> comments) {
+  Widget _buildComment(
+    WidgetRef ref,
+    List<CommentData> comments,
+    ValueNotifier<bool> isReplaying,
+    ValueNotifier<String?> parentCommentId,
+  ) {
     return ListView.builder(
       itemCount: comments.length,
       itemBuilder: (context, index) {
-        return CommentCard(commentData: comments[index], postId: postId);
+        return CommentCard(
+          commentData: comments[index],
+          postId: postId,
+          isReplaying: isReplaying,
+          parentCommentId: parentCommentId,
+        );
       },
     );
   }
 
   Widget _buildInputForm(
-      WidgetRef ref, TextEditingController commentTextController) {
+    WidgetRef ref,
+    TextEditingController commentTextController,
+    ValueNotifier<bool> isReplaying,
+    ValueNotifier<String?> parentCommentId,
+  ) {
     return Row(
       children: [
         Expanded(
           child: TextField(
+            focusNode: _focusNode,
             controller: commentTextController,
             decoration: InputDecoration(
-              hintText: 'コメントを入力...',
+              hintText: isReplaying.value ? '返信中...' : 'コメントを入力...',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20.r),
               ),
@@ -113,6 +149,7 @@ class CommentPage extends HookConsumerWidget {
                     uid,
                     postId,
                     commentTextController.text,
+                    parentCommentId.value,
                     ref.read(commentNotifierProvider(postId).notifier),
                   );
               commentTextController.clear();

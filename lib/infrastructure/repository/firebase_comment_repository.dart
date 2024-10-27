@@ -25,7 +25,30 @@ class FirebaseCommentRepository implements CommentRepository {
   }
 
   @override
-  Future<Comment> addComment(String uid, String postId, String content) async {
+  Future<List<Comment>> getReplyComments(String parentCommentId) async {
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      final docRef = firestore
+          .collection('comment')
+          .where('parentCommentId', isEqualTo: parentCommentId)
+          .orderBy('createdAt', descending: false);
+      final docSnapshot = await docRef.get();
+      return docSnapshot.docs
+          .map((doc) => Comment.fromJson(doc.data()))
+          .toList();
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('コメントの取得に失敗しました。再度お試しください。');
+    }
+  }
+
+  @override
+  Future<Comment> addComment(
+    String uid,
+    String postId,
+    String content,
+    String? parentCommentId,
+  ) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
       final docRef = firestore.collection('comment').doc();
@@ -36,6 +59,7 @@ class FirebaseCommentRepository implements CommentRepository {
         postId: postId,
         content: content,
         createdAt: DateTime.now(),
+        parentCommentId: parentCommentId,
       );
 
       await docRef.set(comment.toJson());

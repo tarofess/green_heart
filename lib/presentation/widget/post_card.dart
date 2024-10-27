@@ -181,14 +181,20 @@ class PostCard extends ConsumerWidget {
             ),
           ),
           builder: (BuildContext context) {
-            return ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(20),
-              ),
-              child: FractionallySizedBox(
-                heightFactor: 0.6,
-                child: CommentPage(postId: postData.post.id),
-              ),
+            return DraggableScrollableSheet(
+              initialChildSize: 0.9,
+              minChildSize: 0.5,
+              maxChildSize: 0.9,
+              expand: false,
+              builder:
+                  (BuildContext context, ScrollController scrollController) {
+                return ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(20),
+                  ),
+                  child: CommentPage(postId: postData.post.id),
+                );
+              },
             );
           },
         );

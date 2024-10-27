@@ -11,6 +11,7 @@ class Comment with _$Comment {
     required String postId,
     required String content,
     required DateTime createdAt,
+    String? parentCommentId,
   }) = _Comment;
 
   factory Comment.fromJson(Map<String, dynamic> json) =>
