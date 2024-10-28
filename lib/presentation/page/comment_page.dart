@@ -145,6 +145,7 @@ class CommentPage extends HookConsumerWidget {
                       commentPageState.parentCommentId,
                       ref.read(commentNotifierProvider(postId).notifier),
                     );
+
                 commentTextController.clear();
                 focusNode.unfocus();
                 ref.read(commentPageNotifierProvider.notifier).cancelReply();

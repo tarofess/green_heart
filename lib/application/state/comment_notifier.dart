@@ -70,10 +70,26 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
         .deleteComment(commentId);
     ref.read(timelineNotifierProvider.notifier).deleteComment(commentId);
 
-    state = AsyncValue.data(state.value?.where((commentData) {
-          return commentData.comment.id != commentId;
-        }).toList() ??
-        []);
+    state = AsyncValue.data(
+      state.value
+              ?.map((commentData) {
+                if (commentData.comment.id == commentId) {
+                  return null;
+                }
+                final updatedReplies = commentData.replyComments
+                    .where((reply) => reply.id != commentId)
+                    .toList();
+
+                if (updatedReplies.length != commentData.replyComments.length) {
+                  return commentData.copyWith(replyComments: updatedReplies);
+                }
+                return commentData;
+              })
+              .where((commentData) => commentData != null)
+              .map((commentData) => commentData!)
+              .toList() ??
+          [],
+    );
   }
 }
 

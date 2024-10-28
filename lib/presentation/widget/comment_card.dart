@@ -70,7 +70,7 @@ class CommentCard extends HookConsumerWidget {
   Widget _buildChildComment(
       BuildContext context, WidgetRef ref, Comment replyComment) {
     return Padding(
-      padding: EdgeInsets.only(left: 16.w),
+      padding: EdgeInsets.only(left: 24.w),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -91,7 +91,7 @@ class CommentCard extends HookConsumerWidget {
                 SizedBox(height: 4.h),
                 _buildReplyComment(ref, replyComment),
                 SizedBox(height: 8.h),
-                _buildActions(context, ref),
+                _buildActions(context, ref, replyComment: replyComment),
               ],
             ),
           ),
@@ -157,7 +157,11 @@ class CommentCard extends HookConsumerWidget {
     );
   }
 
-  Widget _buildActions(BuildContext context, WidgetRef ref) {
+  Widget _buildActions(
+    BuildContext context,
+    WidgetRef ref, {
+    Comment? replyComment,
+  }) {
     return Row(
       children: [
         TextButton(
@@ -182,7 +186,11 @@ class CommentCard extends HookConsumerWidget {
 
             await ref
                 .read(commentNotifierProvider(postId).notifier)
-                .deleteComment(commentData.comment.id);
+                .deleteComment(
+                  replyComment == null
+                      ? commentData.comment.id
+                      : replyComment.id,
+                );
           },
           child: const Text('削除'),
         ),
