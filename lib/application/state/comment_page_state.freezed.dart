@@ -18,6 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$CommentPageState {
   bool get isReplying => throw _privateConstructorUsedError;
   String? get parentCommentId => throw _privateConstructorUsedError;
+  String? get parentUserName => throw _privateConstructorUsedError;
 
   /// Create a copy of CommentPageState
   /// with the given fields replaced by the non-null parameter values.
@@ -32,7 +33,7 @@ abstract class $CommentPageStateCopyWith<$Res> {
           CommentPageState value, $Res Function(CommentPageState) then) =
       _$CommentPageStateCopyWithImpl<$Res, CommentPageState>;
   @useResult
-  $Res call({bool isReplying, String? parentCommentId});
+  $Res call({bool isReplying, String? parentCommentId, String? parentUserName});
 }
 
 /// @nodoc
@@ -52,6 +53,7 @@ class _$CommentPageStateCopyWithImpl<$Res, $Val extends CommentPageState>
   $Res call({
     Object? isReplying = null,
     Object? parentCommentId = freezed,
+    Object? parentUserName = freezed,
   }) {
     return _then(_value.copyWith(
       isReplying: null == isReplying
@@ -61,6 +63,10 @@ class _$CommentPageStateCopyWithImpl<$Res, $Val extends CommentPageState>
       parentCommentId: freezed == parentCommentId
           ? _value.parentCommentId
           : parentCommentId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      parentUserName: freezed == parentUserName
+          ? _value.parentUserName
+          : parentUserName // ignore: cast_nullable_to_non_nullable
               as String?,
     ) as $Val);
   }
@@ -74,7 +80,7 @@ abstract class _$$CommentPageStateImplCopyWith<$Res>
       __$$CommentPageStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({bool isReplying, String? parentCommentId});
+  $Res call({bool isReplying, String? parentCommentId, String? parentUserName});
 }
 
 /// @nodoc
@@ -92,6 +98,7 @@ class __$$CommentPageStateImplCopyWithImpl<$Res>
   $Res call({
     Object? isReplying = null,
     Object? parentCommentId = freezed,
+    Object? parentUserName = freezed,
   }) {
     return _then(_$CommentPageStateImpl(
       isReplying: null == isReplying
@@ -102,6 +109,10 @@ class __$$CommentPageStateImplCopyWithImpl<$Res>
           ? _value.parentCommentId
           : parentCommentId // ignore: cast_nullable_to_non_nullable
               as String?,
+      parentUserName: freezed == parentUserName
+          ? _value.parentUserName
+          : parentUserName // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -109,17 +120,20 @@ class __$$CommentPageStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$CommentPageStateImpl implements _CommentPageState {
-  const _$CommentPageStateImpl({this.isReplying = false, this.parentCommentId});
+  const _$CommentPageStateImpl(
+      {this.isReplying = false, this.parentCommentId, this.parentUserName});
 
   @override
   @JsonKey()
   final bool isReplying;
   @override
   final String? parentCommentId;
+  @override
+  final String? parentUserName;
 
   @override
   String toString() {
-    return 'CommentPageState(isReplying: $isReplying, parentCommentId: $parentCommentId)';
+    return 'CommentPageState(isReplying: $isReplying, parentCommentId: $parentCommentId, parentUserName: $parentUserName)';
   }
 
   @override
@@ -130,11 +144,14 @@ class _$CommentPageStateImpl implements _CommentPageState {
             (identical(other.isReplying, isReplying) ||
                 other.isReplying == isReplying) &&
             (identical(other.parentCommentId, parentCommentId) ||
-                other.parentCommentId == parentCommentId));
+                other.parentCommentId == parentCommentId) &&
+            (identical(other.parentUserName, parentUserName) ||
+                other.parentUserName == parentUserName));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, isReplying, parentCommentId);
+  int get hashCode =>
+      Object.hash(runtimeType, isReplying, parentCommentId, parentUserName);
 
   /// Create a copy of CommentPageState
   /// with the given fields replaced by the non-null parameter values.
@@ -149,12 +166,15 @@ class _$CommentPageStateImpl implements _CommentPageState {
 abstract class _CommentPageState implements CommentPageState {
   const factory _CommentPageState(
       {final bool isReplying,
-      final String? parentCommentId}) = _$CommentPageStateImpl;
+      final String? parentCommentId,
+      final String? parentUserName}) = _$CommentPageStateImpl;
 
   @override
   bool get isReplying;
   @override
   String? get parentCommentId;
+  @override
+  String? get parentUserName;
 
   /// Create a copy of CommentPageState
   /// with the given fields replaced by the non-null parameter values.

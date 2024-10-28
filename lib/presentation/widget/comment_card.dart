@@ -168,6 +168,7 @@ class CommentCard extends HookConsumerWidget {
           onPressed: () {
             ref.read(commentPageNotifierProvider.notifier).startReply(
                   commentData.comment.id,
+                  commentData.profile?.name,
                 );
             focusNode.requestFocus();
           },

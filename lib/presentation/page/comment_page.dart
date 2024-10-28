@@ -4,9 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/comment_data.dart';
-import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/state/comment_notifier.dart';
-import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/presentation/page/error_page.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/presentation/widget/comment_card.dart';
@@ -25,6 +23,10 @@ class CommentPage extends HookConsumerWidget {
     final commentState = ref.watch(commentNotifierProvider(postId));
     final commentPageState = ref.watch(commentPageNotifierProvider);
     final commentTextController = useTextEditingController();
+
+    useEffect(() {
+      return ref.read(commentPageNotifierProvider.notifier).cancelReply;
+    }, const []);
 
     return Scaffold(
       appBar: AppBar(title: const Text('コメント')),
@@ -113,53 +115,78 @@ class CommentPage extends HookConsumerWidget {
     CommentPageState commentPageState,
     TextEditingController commentTextController,
   ) {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: TextField(
-            focusNode: focusNode,
-            controller: commentTextController,
-            decoration: InputDecoration(
-              hintText: commentPageState.isReplying ? '返信中...' : 'コメントを入力...',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20.r),
+        commentPageState.isReplying
+            ? _buildReplyingMessage(ref, commentPageState)
+            : const SizedBox(),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                focusNode: focusNode,
+                controller: commentTextController,
+                decoration: InputDecoration(
+                  hintText:
+                      commentPageState.isReplying ? '返信中...' : 'コメントを入力...',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.r),
+                  ),
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 0),
+                ),
               ),
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 16.w, vertical: 0),
+            ),
+            IconButton(
+                icon: Icon(Icons.send, size: 24.sp),
+                onPressed: () async {
+                  try {
+                    await ref
+                        .read(commentPageNotifierProvider.notifier)
+                        .submitComment(
+                          commentTextController,
+                          focusNode,
+                          postId,
+                        );
+                  } catch (e) {
+                    if (context.mounted) {
+                      showErrorDialog(
+                        context: context,
+                        title: 'コメントの投稿に失敗しました',
+                        content: e.toString(),
+                      );
+                    }
+                  }
+                }),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildReplyingMessage(
+    WidgetRef ref,
+    CommentPageState commentPageState,
+  ) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 8.r),
+      child: Row(
+        children: [
+          Text(
+            '${commentPageState.parentUserName}に返信中...',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.bold,
             ),
           ),
-        ),
-        IconButton(
-            icon: Icon(Icons.send, size: 24.sp),
-            onPressed: () async {
-              try {
-                final uid = ref.read(authStateProvider).value?.uid;
-                if (uid == null || commentTextController.text.isEmpty) {
-                  return;
-                }
-
-                await ref.read(commentAddUsecaseProvider).execute(
-                      uid,
-                      postId,
-                      commentTextController.text,
-                      commentPageState.parentCommentId,
-                      ref.read(commentNotifierProvider(postId).notifier),
-                    );
-
-                commentTextController.clear();
-                focusNode.unfocus();
-                ref.read(commentPageNotifierProvider.notifier).cancelReply();
-              } catch (e) {
-                if (context.mounted) {
-                  showErrorDialog(
-                    context: context,
-                    title: 'コメントの投稿に失敗しました',
-                    content: e.toString(),
-                  );
-                }
-              }
-            }),
-      ],
+          IconButton(
+            icon: Icon(Icons.close, size: 24.sp),
+            onPressed: () {
+              ref.read(commentPageNotifierProvider.notifier).cancelReply();
+            },
+          ),
+        ],
+      ),
     );
   }
 }
