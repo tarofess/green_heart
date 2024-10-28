@@ -13,7 +13,7 @@ class FirebaseCommentRepository implements CommentRepository {
       final docRef = firestore
           .collection('comment')
           .where('postId', isEqualTo: postId)
-          .orderBy('createdAt', descending: true);
+          .orderBy('createdAt', descending: false);
       final docSnapshot = await docRef.get();
       return docSnapshot.docs
           .map((doc) => Comment.fromJson(doc.data()))

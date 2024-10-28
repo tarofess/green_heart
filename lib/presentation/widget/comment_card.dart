@@ -8,21 +8,18 @@ import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/application/state/comment_notifier.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/domain/type/comment.dart';
+import 'package:green_heart/application/state/comment_page_notifier.dart';
 
 class CommentCard extends HookConsumerWidget {
   const CommentCard({
     super.key,
     required this.commentData,
     required this.postId,
-    required this.isReplaying,
-    required this.parentCommentId,
     required this.focusNode,
   });
 
   final CommentData commentData;
   final String postId;
-  final ValueNotifier<bool> isReplaying;
-  final ValueNotifier<String?> parentCommentId;
   final FocusNode focusNode;
 
   @override
@@ -165,9 +162,10 @@ class CommentCard extends HookConsumerWidget {
       children: [
         TextButton(
           onPressed: () {
-            isReplaying.value = true;
+            ref.read(commentPageNotifierProvider.notifier).startReply(
+                  commentData.comment.id,
+                );
             focusNode.requestFocus();
-            parentCommentId.value = commentData.comment.id;
           },
           child: const Text('返信する'),
         ),

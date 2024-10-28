@@ -42,7 +42,7 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
         profile: userProfile,
         replyComments: [],
       );
-      state = AsyncValue.data([newCommentData, ...state.value ?? []]);
+      state = AsyncValue.data([...state.value ?? [], newCommentData]);
     } else {
       final updatedComment = newComment.copyWith(
         parentCommentId: parentCommentId,

@@ -256,7 +256,10 @@ class UserPage extends HookConsumerWidget {
             physics: const NeverScrollableScrollPhysics(),
             itemCount: userPosts.length,
             itemBuilder: (context, index) {
-              return PostCard(postData: userPosts[index]);
+              return PostCard(
+                key: ValueKey(userPosts[index]),
+                postData: userPosts[index],
+              );
             },
           );
   }

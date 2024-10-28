@@ -10,6 +10,9 @@ import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/presentation/page/error_page.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/presentation/widget/comment_card.dart';
+import 'package:green_heart/application/state/comment_page_notifier.dart';
+import 'package:green_heart/presentation/dialog/error_dialog.dart';
+import 'package:green_heart/application/state/comment_page_state.dart';
 
 class CommentPage extends HookConsumerWidget {
   const CommentPage({super.key, required this.postId, required this.focusNode});
@@ -20,9 +23,8 @@ class CommentPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final commentState = ref.watch(commentNotifierProvider(postId));
+    final commentPageState = ref.watch(commentPageNotifierProvider);
     final commentTextController = useTextEditingController();
-    final isReplaying = useState(false);
-    final parentCommentId = useState<String?>(null);
 
     return Scaffold(
       appBar: AppBar(title: const Text('コメント')),
@@ -33,22 +35,16 @@ class CommentPage extends HookConsumerWidget {
               Expanded(
                 child: comments.isEmpty
                     ? _buildEmptyCommentMessage()
-                    : _buildComment(
-                        ref,
-                        comments,
-                        isReplaying,
-                        parentCommentId,
-                        focusNode,
-                      ),
+                    : _buildComment(ref, comments, focusNode),
               ),
               const Divider(height: 1),
               Padding(
                 padding: EdgeInsets.only(top: 8.r, bottom: 8.r, left: 16.r),
                 child: _buildInputForm(
+                  context,
                   ref,
+                  commentPageState,
                   commentTextController,
-                  isReplaying,
-                  parentCommentId,
                 ),
               ),
             ],
@@ -96,18 +92,15 @@ class CommentPage extends HookConsumerWidget {
   Widget _buildComment(
     WidgetRef ref,
     List<CommentData> comments,
-    ValueNotifier<bool> isReplaying,
-    ValueNotifier<String?> parentCommentId,
     FocusNode focusNode,
   ) {
     return ListView.builder(
       itemCount: comments.length,
       itemBuilder: (context, index) {
         return CommentCard(
+          key: ValueKey(comments[index].comment.id),
           commentData: comments[index],
           postId: postId,
-          isReplaying: isReplaying,
-          parentCommentId: parentCommentId,
           focusNode: focusNode,
         );
       },
@@ -115,10 +108,10 @@ class CommentPage extends HookConsumerWidget {
   }
 
   Widget _buildInputForm(
+    BuildContext context,
     WidgetRef ref,
+    CommentPageState commentPageState,
     TextEditingController commentTextController,
-    ValueNotifier<bool> isReplaying,
-    ValueNotifier<String?> parentCommentId,
   ) {
     return Row(
       children: [
@@ -127,7 +120,7 @@ class CommentPage extends HookConsumerWidget {
             focusNode: focusNode,
             controller: commentTextController,
             decoration: InputDecoration(
-              hintText: isReplaying.value ? '返信中...' : 'コメントを入力...',
+              hintText: commentPageState.isReplying ? '返信中...' : 'コメントを入力...',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20.r),
               ),
@@ -139,19 +132,31 @@ class CommentPage extends HookConsumerWidget {
         IconButton(
             icon: Icon(Icons.send, size: 24.sp),
             onPressed: () async {
-              final uid = ref.read(authStateProvider).value?.uid;
-              if (uid == null || commentTextController.text.isEmpty) {
-                return;
-              }
+              try {
+                final uid = ref.read(authStateProvider).value?.uid;
+                if (uid == null || commentTextController.text.isEmpty) {
+                  return;
+                }
 
-              await ref.read(commentAddUsecaseProvider).execute(
-                    uid,
-                    postId,
-                    commentTextController.text,
-                    parentCommentId.value,
-                    ref.read(commentNotifierProvider(postId).notifier),
+                await ref.read(commentAddUsecaseProvider).execute(
+                      uid,
+                      postId,
+                      commentTextController.text,
+                      commentPageState.parentCommentId,
+                      ref.read(commentNotifierProvider(postId).notifier),
+                    );
+                commentTextController.clear();
+                focusNode.unfocus();
+                ref.read(commentPageNotifierProvider.notifier).cancelReply();
+              } catch (e) {
+                if (context.mounted) {
+                  showErrorDialog(
+                    context: context,
+                    title: 'コメントの投稿に失敗しました',
+                    content: e.toString(),
                   );
-              commentTextController.clear();
+                }
+              }
             }),
       ],
     );
