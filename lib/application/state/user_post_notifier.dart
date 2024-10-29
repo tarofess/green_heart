@@ -12,17 +12,21 @@ import 'package:green_heart/domain/type/comment.dart';
 class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
   @override
   Future<List<PostData>> build(String? arg) async {
-    final myUid = ref.read(authStateProvider).value?.uid;
-    if (myUid == null || arg == null) {
+    if (arg == null) {
       throw Exception('ユーザーが存在しないので投稿を取得できません。再度お試しください。');
     }
-    final posts = await ref.read(postGetUsecaseProvider).execute(arg);
 
+    final postData = await _createPostDataList(arg);
+    return postData;
+  }
+
+  Future<List<PostData>> _createPostDataList(String userUid) async {
     List<PostData> postData = [];
+
+    final posts = await ref.read(postGetUsecaseProvider).execute(userUid);
     for (var post in posts) {
-      final profile = myUid == arg
-          ? ref.watch(profileNotifierProvider).value
-          : await ref.read(profileGetUsecaseProvider).execute(arg);
+      final profile =
+          await ref.read(profileGetUsecaseProvider).execute(userUid);
       final likes = await ref.read(likeGetUsecaseProvider).execute(post.id);
       final comments =
           await ref.read(commentGetUsecaseProvider).execute(post.id);

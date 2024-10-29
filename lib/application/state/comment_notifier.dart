@@ -11,8 +11,14 @@ import 'package:green_heart/application/state/comment_page_notifier.dart';
 class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
   @override
   Future<List<CommentData>> build(String arg) async {
-    final comments = await ref.read(commentGetUsecaseProvider).execute(arg);
+    final commentDataList = await createCommentDataList(arg);
+    return commentDataList;
+  }
+
+  Future<List<CommentData>> createCommentDataList(String postId) async {
     final commentDataList = <CommentData>[];
+
+    final comments = await ref.read(commentGetUsecaseProvider).execute(postId);
     for (final comment in comments) {
       if (comment.parentCommentId != null) {
         continue;
@@ -29,6 +35,7 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
         replyComments: replyComments,
       ));
     }
+
     return commentDataList;
   }
 

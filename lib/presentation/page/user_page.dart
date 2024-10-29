@@ -7,7 +7,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/presentation/widget/post_card.dart';
-import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/domain/type/post_data.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
@@ -33,7 +32,7 @@ class UserPage extends HookConsumerWidget {
 
       setProfile();
       return;
-    });
+    }, []);
 
     return Scaffold(
       appBar: uid == ref.watch(authStateProvider).value?.uid
@@ -62,19 +61,11 @@ class UserPage extends HookConsumerWidget {
                         ],
                       ),
                       SizedBox(height: 16.r),
-                      _buildUserName(context, ref),
+                      _buildUserName(context, ref, profile.value),
                       SizedBox(height: 8.r),
-                      _buildBirthDate(
-                        context,
-                        ref,
-                        userPosts.firstOrNull?.userProfile,
-                      ),
+                      _buildBirthDate(context, ref, profile.value),
                       SizedBox(height: 16.r),
-                      _buildUserBio(
-                        context,
-                        ref,
-                        userPosts.firstOrNull?.userProfile,
-                      ),
+                      _buildUserBio(context, ref, profile.value),
                       SizedBox(height: 16.r),
                       _buildFollowButton(context, ref),
                     ],
@@ -209,8 +200,7 @@ class UserPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildUserName(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(profileNotifierProvider).value;
+  Widget _buildUserName(BuildContext context, WidgetRef ref, Profile? profile) {
     return Text(
       profile?.name ?? '',
       style: TextStyle(

@@ -11,6 +11,7 @@ import 'package:green_heart/presentation/widget/comment_card.dart';
 import 'package:green_heart/application/state/comment_page_notifier.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/application/state/comment_page_state.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
 
 class CommentPage extends HookConsumerWidget {
   const CommentPage({super.key, required this.postId, required this.focusNode});
@@ -141,13 +142,20 @@ class CommentPage extends HookConsumerWidget {
                 icon: Icon(Icons.send, size: 24.sp),
                 onPressed: () async {
                   try {
+                    final uid = ref.read(authStateProvider).value?.uid;
+                    if (uid == null || commentTextController.text.isEmpty) {
+                      return;
+                    }
+
                     await ref
-                        .read(commentPageNotifierProvider.notifier)
-                        .submitComment(
-                          commentTextController,
-                          focusNode,
+                        .read(commentNotifierProvider(postId).notifier)
+                        .addComment(
+                          uid,
                           postId,
+                          commentTextController.text,
+                          ref.read(commentPageNotifierProvider).parentCommentId,
                         );
+                    clearReply(ref, commentTextController);
                   } catch (e) {
                     if (context.mounted) {
                       showErrorDialog(
@@ -188,5 +196,11 @@ class CommentPage extends HookConsumerWidget {
         ],
       ),
     );
+  }
+
+  void clearReply(WidgetRef ref, TextEditingController commentTextController) {
+    commentTextController.clear();
+    focusNode.unfocus();
+    ref.read(commentPageNotifierProvider.notifier).cancelReply();
   }
 }

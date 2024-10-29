@@ -11,9 +11,14 @@ import 'package:green_heart/domain/type/comment.dart';
 class TimelineNotifier extends AsyncNotifier<List<PostData>> {
   @override
   Future<List<PostData>> build() async {
-    final posts = await ref.read(timelineGetUsecaseProvider).execute();
+    final postData = await _createPostDataList();
+    return postData;
+  }
+
+  Future<List<PostData>> _createPostDataList() async {
     List<PostData> postData = [];
 
+    final posts = await ref.read(timelineGetUsecaseProvider).execute();
     for (var post in posts) {
       final profile =
           await ref.read(profileGetUsecaseProvider).execute(post.uid);

@@ -6,7 +6,7 @@ class PostGetUsecase {
 
   PostGetUsecase(this._postRepository);
 
-  Future<List<Post>> execute(String id) {
-    return _postRepository.getPostsByUid(id);
+  Future<List<Post>> execute(String uid) {
+    return _postRepository.getPostsByUid(uid);
   }
 }
