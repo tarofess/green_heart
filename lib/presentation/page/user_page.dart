@@ -13,6 +13,7 @@ import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/presentation/page/error_page.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/application/di/profile_di.dart';
+import 'package:green_heart/application/state/profile_notifier.dart';
 
 class UserPage extends HookConsumerWidget {
   const UserPage({super.key, required this.uid});
@@ -27,12 +28,16 @@ class UserPage extends HookConsumerWidget {
     useEffect(() {
       void setProfile() async {
         if (uid == null) return;
-        profile.value = await ref.read(profileGetUsecaseProvider).execute(uid!);
+
+        uid == ref.watch(authStateProvider).value?.uid
+            ? profile.value = ref.read(profileNotifierProvider).value
+            : profile.value =
+                await ref.read(profileGetUsecaseProvider).execute(uid!);
       }
 
       setProfile();
       return;
-    }, []);
+    }, [ref.watch(profileNotifierProvider).value]);
 
     return Scaffold(
       appBar: uid == ref.watch(authStateProvider).value?.uid
