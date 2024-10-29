@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/presentation/page/comment_page.dart';
@@ -207,10 +208,32 @@ class PostCard extends ConsumerWidget {
   }
 
   Widget _buildDeletePostButton(BuildContext context, WidgetRef ref) {
-    return GestureDetector(
-      child: const Icon(Icons.delete_outlined),
-      onTap: () async {},
-    );
+    final myUid = ref.watch(authStateProvider).value?.uid;
+    return postData.post.uid == myUid
+        ? GestureDetector(
+            child: const Icon(Icons.delete_outlined),
+            onTap: () async {
+              final result = await showConfirmationDialog(
+                context: context,
+                title: '投稿の削除',
+                content: 'この投稿を削除しますか？',
+                positiveButtonText: '削除',
+                negativeButtonText: 'キャンセル',
+              );
+              if (!result) return;
+
+              await ref
+                  .read(postDeleteUsecaseProvider)
+                  .execute(postData.post.id);
+              ref
+                  .read(userPostNotifierProvider(myUid).notifier)
+                  .deletePost(postData.post.id);
+              ref
+                  .read(timelineNotifierProvider.notifier)
+                  .deletePost(postData.post.id);
+            },
+          )
+        : const SizedBox();
   }
 
   void _showFullScreenImage(BuildContext context, String imageUrl) {

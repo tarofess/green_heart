@@ -77,6 +77,14 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
     state = state.whenData((posts) => [newPostData, ...posts]);
   }
 
+  Future<void> deletePost(String postId) async {
+    state.whenData((value) {
+      final updatedValue =
+          value.where((post) => post.post.id != postId).toList();
+      state = AsyncValue.data(updatedValue);
+    });
+  }
+
   void toggleLike(String postId, String uid) {
     state.whenData((value) {
       final updatedValue = value.map((post) {

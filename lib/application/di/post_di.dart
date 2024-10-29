@@ -12,6 +12,7 @@ import 'package:green_heart/application/usecase/comment_add_usecase.dart';
 import 'package:green_heart/application/usecase/comment_delete_usecase.dart';
 import 'package:green_heart/application/usecase/like_get_usecase.dart';
 import 'package:green_heart/application/usecase/comment_get_reply_usecase.dart';
+import 'package:green_heart/application/usecase/post_delete_usecase.dart';
 
 final postAddUsecaseProvider = Provider(
   (ref) => PostAddUsecase(FirebasePostRepository()),
@@ -19,6 +20,10 @@ final postAddUsecaseProvider = Provider(
 
 final postGetUsecaseProvider = Provider(
   (ref) => PostGetUsecase(FirebasePostRepository()),
+);
+
+final postDeleteUsecaseProvider = Provider(
+  (ref) => PostDeleteUsecase(FirebasePostRepository()),
 );
 
 final timelineGetUsecaseProvider = Provider(
