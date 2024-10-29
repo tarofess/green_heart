@@ -228,15 +228,17 @@ class UserPage extends HookConsumerWidget {
   }
 
   Widget _buildFollowButton(BuildContext context, WidgetRef ref) {
-    return Center(
-      child: SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: () async {},
-          child: const Text('フォローする'),
-        ),
-      ),
-    );
+    return uid == ref.watch(authStateProvider).value?.uid
+        ? const SizedBox()
+        : Center(
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () async {},
+                child: const Text('フォローする'),
+              ),
+            ),
+          );
   }
 
   Widget _buildUserPosts(
