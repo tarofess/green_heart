@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/comment_page_state.dart';
-import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/state/comment_notifier.dart';
 
@@ -38,12 +37,11 @@ class CommentPageNotifier extends Notifier<CommentPageState> {
       return;
     }
 
-    await ref.read(commentAddUsecaseProvider).execute(
+    await ref.read(commentNotifierProvider(postId).notifier).addComment(
           uid,
           postId,
           commentTextController.text,
           ref.read(commentPageNotifierProvider.notifier).state.parentCommentId,
-          ref.read(commentNotifierProvider(postId).notifier),
         );
 
     commentTextController.clear();

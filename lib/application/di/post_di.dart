@@ -1,4 +1,3 @@
-import 'package:green_heart/application/usecase/comment_get_reply_usecase.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/usecase/post_add_usecase.dart';
@@ -12,9 +11,7 @@ import 'package:green_heart/infrastructure/repository/firebase_like_repository.d
 import 'package:green_heart/application/usecase/comment_add_usecase.dart';
 import 'package:green_heart/application/usecase/comment_delete_usecase.dart';
 import 'package:green_heart/application/usecase/like_get_usecase.dart';
-import 'package:green_heart/application/state/auth_state_provider.dart';
-import 'package:green_heart/application/state/timeline_notifier.dart';
-import 'package:green_heart/application/state/user_post_notifier.dart';
+import 'package:green_heart/application/usecase/comment_get_reply_usecase.dart';
 
 final postAddUsecaseProvider = Provider(
   (ref) => PostAddUsecase(FirebasePostRepository()),
@@ -41,12 +38,7 @@ final commentGetUsecaseProvider = Provider(
 );
 
 final commentAddUsecaseProvider = Provider(
-  (ref) => CommentAddUsecase(
-    FirebaseCommentRepository(),
-    ref.read(userPostNotifierProvider(ref.watch(authStateProvider).value?.uid)
-        .notifier),
-    ref.read(timelineNotifierProvider.notifier),
-  ),
+  (ref) => CommentAddUsecase(FirebaseCommentRepository()),
 );
 
 final commentDeleteUsecaseProvider = Provider(

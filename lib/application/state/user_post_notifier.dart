@@ -120,8 +120,9 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
     state.whenData((value) {
       final updatedValue = value.map((post) {
         final comments = List<CommentData>.from(post.comments);
-        comments
-            .removeWhere((commentData) => commentData.comment.id == commentId);
+        comments.removeWhere((element) =>
+            element.comment.id == commentId ||
+            element.comment.parentCommentId == commentId);
         return post.copyWith(comments: comments);
       }).toList();
 

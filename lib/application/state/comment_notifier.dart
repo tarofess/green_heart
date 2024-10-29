@@ -2,11 +2,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/application/di/profile_di.dart';
-import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/domain/type/comment_data.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/state/timeline_notifier.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
+import 'package:green_heart/application/state/comment_page_notifier.dart';
 
 class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
   @override
@@ -32,7 +32,19 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
     return commentDataList;
   }
 
-  Future<void> addComment(Comment newComment, String? parentCommentId) async {
+  Future<void> addComment(
+    String uid,
+    String postId,
+    String comment,
+    String? parentCommentId,
+  ) async {
+    final newComment = await ref.read(commentAddUsecaseProvider).execute(
+          uid,
+          postId,
+          comment,
+          ref.read(commentPageNotifierProvider).parentCommentId,
+        );
+
     final userProfile =
         await ref.read(profileGetUsecaseProvider).execute(newComment.uid);
 
@@ -60,15 +72,16 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
           }).toList() ??
           []);
     }
+
+    ref
+        .read(userPostNotifierProvider(ref.watch(authStateProvider).value?.uid)
+            .notifier)
+        .addComment(newComment);
+    ref.read(timelineNotifierProvider.notifier).addComment(newComment);
   }
 
   Future<void> deleteComment(String commentId) async {
     await ref.read(commentDeleteUsecaseProvider).execute(commentId);
-    ref
-        .read(userPostNotifierProvider(ref.watch(authStateProvider).value?.uid)
-            .notifier)
-        .deleteComment(commentId);
-    ref.read(timelineNotifierProvider.notifier).deleteComment(commentId);
 
     state = AsyncValue.data(
       state.value
@@ -76,20 +89,22 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
                 if (commentData.comment.id == commentId) {
                   return null;
                 }
+
                 final updatedReplies = commentData.replyComments
                     .where((reply) => reply.id != commentId)
                     .toList();
-
-                if (updatedReplies.length != commentData.replyComments.length) {
-                  return commentData.copyWith(replyComments: updatedReplies);
-                }
-                return commentData;
+                return commentData.copyWith(replyComments: updatedReplies);
               })
-              .where((commentData) => commentData != null)
-              .map((commentData) => commentData!)
+              .whereType<CommentData>()
               .toList() ??
           [],
     );
+
+    ref
+        .read(userPostNotifierProvider(ref.watch(authStateProvider).value?.uid)
+            .notifier)
+        .deleteComment(commentId);
+    ref.read(timelineNotifierProvider.notifier).deleteComment(commentId);
   }
 }
 

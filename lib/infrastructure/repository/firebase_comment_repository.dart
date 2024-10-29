@@ -76,6 +76,10 @@ class FirebaseCommentRepository implements CommentRepository {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
       final docRef = firestore.collection('comment').doc(commentId);
       await docRef.delete();
+
+      for (final replyComment in await getReplyComments(commentId)) {
+        await deleteComment(replyComment.id);
+      }
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('コメントの削除に失敗しました。再度お試しください。');
