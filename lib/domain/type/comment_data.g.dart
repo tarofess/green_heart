@@ -13,7 +13,7 @@ _$CommentDataImpl _$$CommentDataImplFromJson(Map<String, dynamic> json) =>
           ? null
           : Profile.fromJson(json['profile'] as Map<String, dynamic>),
       replyComments: (json['replyComments'] as List<dynamic>?)
-              ?.map((e) => Comment.fromJson(e as Map<String, dynamic>))
+              ?.map((e) => CommentData.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
     );

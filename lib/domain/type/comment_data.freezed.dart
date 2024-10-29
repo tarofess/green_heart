@@ -22,7 +22,7 @@ CommentData _$CommentDataFromJson(Map<String, dynamic> json) {
 mixin _$CommentData {
   Comment get comment => throw _privateConstructorUsedError;
   Profile? get profile => throw _privateConstructorUsedError;
-  List<Comment> get replyComments => throw _privateConstructorUsedError;
+  List<CommentData> get replyComments => throw _privateConstructorUsedError;
 
   /// Serializes this CommentData to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -40,7 +40,8 @@ abstract class $CommentDataCopyWith<$Res> {
           CommentData value, $Res Function(CommentData) then) =
       _$CommentDataCopyWithImpl<$Res, CommentData>;
   @useResult
-  $Res call({Comment comment, Profile? profile, List<Comment> replyComments});
+  $Res call(
+      {Comment comment, Profile? profile, List<CommentData> replyComments});
 
   $CommentCopyWith<$Res> get comment;
   $ProfileCopyWith<$Res>? get profile;
@@ -77,7 +78,7 @@ class _$CommentDataCopyWithImpl<$Res, $Val extends CommentData>
       replyComments: null == replyComments
           ? _value.replyComments
           : replyComments // ignore: cast_nullable_to_non_nullable
-              as List<Comment>,
+              as List<CommentData>,
     ) as $Val);
   }
 
@@ -114,7 +115,8 @@ abstract class _$$CommentDataImplCopyWith<$Res>
       __$$CommentDataImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Comment comment, Profile? profile, List<Comment> replyComments});
+  $Res call(
+      {Comment comment, Profile? profile, List<CommentData> replyComments});
 
   @override
   $CommentCopyWith<$Res> get comment;
@@ -151,7 +153,7 @@ class __$$CommentDataImplCopyWithImpl<$Res>
       replyComments: null == replyComments
           ? _value._replyComments
           : replyComments // ignore: cast_nullable_to_non_nullable
-              as List<Comment>,
+              as List<CommentData>,
     ));
   }
 }
@@ -162,7 +164,7 @@ class _$CommentDataImpl implements _CommentData {
   const _$CommentDataImpl(
       {required this.comment,
       required this.profile,
-      final List<Comment> replyComments = const []})
+      final List<CommentData> replyComments = const []})
       : _replyComments = replyComments;
 
   factory _$CommentDataImpl.fromJson(Map<String, dynamic> json) =>
@@ -172,10 +174,10 @@ class _$CommentDataImpl implements _CommentData {
   final Comment comment;
   @override
   final Profile? profile;
-  final List<Comment> _replyComments;
+  final List<CommentData> _replyComments;
   @override
   @JsonKey()
-  List<Comment> get replyComments {
+  List<CommentData> get replyComments {
     if (_replyComments is EqualUnmodifiableListView) return _replyComments;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_replyComments);
@@ -222,7 +224,7 @@ abstract class _CommentData implements CommentData {
   const factory _CommentData(
       {required final Comment comment,
       required final Profile? profile,
-      final List<Comment> replyComments}) = _$CommentDataImpl;
+      final List<CommentData> replyComments}) = _$CommentDataImpl;
 
   factory _CommentData.fromJson(Map<String, dynamic> json) =
       _$CommentDataImpl.fromJson;
@@ -232,7 +234,7 @@ abstract class _CommentData implements CommentData {
   @override
   Profile? get profile;
   @override
-  List<Comment> get replyComments;
+  List<CommentData> get replyComments;
 
   /// Create a copy of CommentData
   /// with the given fields replaced by the non-null parameter values.

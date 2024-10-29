@@ -7,7 +7,6 @@ import 'package:green_heart/domain/type/comment_data.dart';
 import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/application/state/comment_notifier.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
-import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/application/state/comment_page_notifier.dart';
 
 class CommentCard extends HookConsumerWidget {
@@ -57,7 +56,10 @@ class CommentCard extends HookConsumerWidget {
                 ],
               ),
               SizedBox(height: 4.h),
-              _buildComment(),
+              Text(
+                commentData.comment.content,
+                style: TextStyle(fontSize: 14.sp),
+              ),
               SizedBox(height: 8.h),
               _buildActions(context, ref),
             ],
@@ -68,13 +70,13 @@ class CommentCard extends HookConsumerWidget {
   }
 
   Widget _buildChildComment(
-      BuildContext context, WidgetRef ref, Comment replyComment) {
+      BuildContext context, WidgetRef ref, CommentData replyComment) {
     return Padding(
       padding: EdgeInsets.only(left: 24.w),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildUserImage(),
+          _buildUserImage(replyComment),
           SizedBox(width: 12.w),
           Expanded(
             child: Column(
@@ -83,9 +85,9 @@ class CommentCard extends HookConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildUserName(),
+                    _buildUserName(replyComment),
                     SizedBox(width: 8.w),
-                    _buildCommentedDate(),
+                    _buildCommentedDate(replyComment),
                   ],
                 ),
                 SizedBox(height: 4.h),
@@ -100,18 +102,22 @@ class CommentCard extends HookConsumerWidget {
     );
   }
 
-  Widget _buildUserImage() {
+  Widget _buildUserImage([CommentData? replyComment]) {
     return CircleAvatar(
       radius: 24.r,
       backgroundImage: CachedNetworkImageProvider(
-        commentData.profile?.imageUrl ?? '',
+        replyComment == null
+            ? commentData.profile?.imageUrl ?? ''
+            : replyComment.profile?.imageUrl ?? '',
       ),
     );
   }
 
-  Widget _buildUserName() {
+  Widget _buildUserName([CommentData? replyComment]) {
     return Text(
-      commentData.profile?.name ?? '',
+      replyComment == null
+          ? commentData.profile?.name ?? ''
+          : replyComment.profile?.name ?? '',
       style: TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 16.sp,
@@ -119,9 +125,13 @@ class CommentCard extends HookConsumerWidget {
     );
   }
 
-  Widget _buildCommentedDate() {
+  Widget _buildCommentedDate([CommentData? replyComment]) {
     return Text(
-      DateUtil.formatCommentTime(commentData.comment.createdAt),
+      DateUtil.formatCommentTime(
+        replyComment == null
+            ? commentData.comment.createdAt
+            : replyComment.comment.createdAt,
+      ),
       style: TextStyle(
         color: Colors.grey,
         fontSize: 14.sp,
@@ -129,16 +139,7 @@ class CommentCard extends HookConsumerWidget {
     );
   }
 
-  Widget _buildComment() {
-    return Text(
-      commentData.comment.content,
-      style: TextStyle(
-        fontSize: 14.sp,
-      ),
-    );
-  }
-
-  Widget _buildReplyComment(WidgetRef ref, Comment replyComment) {
+  Widget _buildReplyComment(WidgetRef ref, CommentData replyComment) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -146,7 +147,7 @@ class CommentCard extends HookConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              replyComment.content,
+              replyComment.comment.content,
               style: TextStyle(
                 fontSize: 14.sp,
               ),
@@ -160,7 +161,7 @@ class CommentCard extends HookConsumerWidget {
   Widget _buildActions(
     BuildContext context,
     WidgetRef ref, {
-    Comment? replyComment,
+    CommentData? replyComment,
   }) {
     return Row(
       children: [
@@ -190,7 +191,7 @@ class CommentCard extends HookConsumerWidget {
                 .deleteComment(
                   replyComment == null
                       ? commentData.comment.id
-                      : replyComment.id,
+                      : replyComment.comment.id,
                 );
           },
           child: const Text('削除'),

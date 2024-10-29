@@ -29,10 +29,22 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
       final replyComments =
           await ref.read(commentGetReplyUsecaseProvider).execute(comment.id);
 
+      final replyCommentData = <CommentData>[];
+      for (final relpyComment in replyComments) {
+        final replyProfile = await ref.read(profileGetUsecaseProvider).execute(
+              relpyComment.uid,
+            );
+        replyCommentData.add(CommentData(
+          comment: relpyComment,
+          profile: replyProfile,
+          replyComments: [],
+        ));
+      }
+
       commentDataList.add(CommentData(
         comment: comment,
         profile: profile,
-        replyComments: replyComments,
+        replyComments: replyCommentData,
       ));
     }
 
@@ -66,12 +78,17 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
       final updatedComment = newComment.copyWith(
         parentCommentId: parentCommentId,
       );
+      final updatedCommentData = CommentData(
+        comment: updatedComment,
+        profile: userProfile,
+        replyComments: [],
+      );
       state = AsyncValue.data(state.value?.map((commentData) {
             if (commentData.comment.id == parentCommentId) {
               return commentData.copyWith(
                 replyComments: [
                   ...commentData.replyComments,
-                  updatedComment,
+                  updatedCommentData,
                 ],
               );
             }
@@ -98,7 +115,7 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
                 }
 
                 final updatedReplies = commentData.replyComments
-                    .where((reply) => reply.id != commentId)
+                    .where((reply) => reply.comment.id != commentId)
                     .toList();
                 return commentData.copyWith(replyComments: updatedReplies);
               })

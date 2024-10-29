@@ -142,7 +142,7 @@ class CommentPage extends HookConsumerWidget {
                 icon: Icon(Icons.send, size: 24.sp),
                 onPressed: () async {
                   try {
-                    final uid = ref.read(authStateProvider).value?.uid;
+                    final uid = ref.watch(authStateProvider).value?.uid;
                     if (uid == null || commentTextController.text.isEmpty) {
                       return;
                     }
