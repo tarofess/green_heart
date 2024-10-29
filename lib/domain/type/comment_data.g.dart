@@ -16,6 +16,7 @@ _$CommentDataImpl _$$CommentDataImplFromJson(Map<String, dynamic> json) =>
               ?.map((e) => CommentData.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      isMe: json['isMe'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$CommentDataImplToJson(_$CommentDataImpl instance) =>
@@ -23,4 +24,5 @@ Map<String, dynamic> _$$CommentDataImplToJson(_$CommentDataImpl instance) =>
       'comment': instance.comment,
       'profile': instance.profile,
       'replyComments': instance.replyComments,
+      'isMe': instance.isMe,
     };

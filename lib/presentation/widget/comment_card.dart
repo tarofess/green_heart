@@ -61,7 +61,7 @@ class CommentCard extends HookConsumerWidget {
                 style: TextStyle(fontSize: 14.sp),
               ),
               SizedBox(height: 8.h),
-              _buildActions(context, ref),
+              _buildActions(context, ref, CommentType.comment),
             ],
           ),
         ),
@@ -93,7 +93,12 @@ class CommentCard extends HookConsumerWidget {
                 SizedBox(height: 4.h),
                 _buildReplyComment(ref, replyComment),
                 SizedBox(height: 8.h),
-                _buildActions(context, ref, replyComment: replyComment),
+                _buildActions(
+                  context,
+                  ref,
+                  CommentType.reply,
+                  replyComment: replyComment,
+                ),
               ],
             ),
           ),
@@ -160,7 +165,8 @@ class CommentCard extends HookConsumerWidget {
 
   Widget _buildActions(
     BuildContext context,
-    WidgetRef ref, {
+    WidgetRef ref,
+    CommentType commentType, {
     CommentData? replyComment,
   }) {
     return Row(
@@ -175,28 +181,44 @@ class CommentCard extends HookConsumerWidget {
           },
           child: const Text('返信する'),
         ),
-        TextButton(
-          onPressed: () async {
-            final result = await showConfirmationDialog(
-              context: context,
-              title: '確認',
-              content: 'コメントを削除しますか？',
-              positiveButtonText: '削除する',
-              negativeButtonText: 'キャンセル',
-            );
-            if (!result) return;
-
-            await ref
-                .read(commentNotifierProvider(postId).notifier)
-                .deleteComment(
-                  replyComment == null
-                      ? commentData.comment.id
-                      : replyComment.comment.id,
-                );
-          },
-          child: const Text('削除'),
-        ),
+        if (commentType == CommentType.comment && commentData.isMe)
+          _buildDeleteButton(context, ref)
+        else if (commentType == CommentType.reply && replyComment!.isMe)
+          _buildDeleteButton(context, ref, replyComment)
+        else
+          const SizedBox(),
       ],
     );
   }
+
+  Widget _buildDeleteButton(
+    BuildContext context,
+    WidgetRef ref, [
+    CommentData? replyComment,
+  ]) {
+    return TextButton(
+      onPressed: () async {
+        final result = await showConfirmationDialog(
+          context: context,
+          title: '確認',
+          content: 'コメントを削除しますか？',
+          positiveButtonText: '削除する',
+          negativeButtonText: 'キャンセル',
+        );
+        if (!result) return;
+
+        await ref.read(commentNotifierProvider(postId).notifier).deleteComment(
+              replyComment == null
+                  ? commentData.comment.id
+                  : replyComment.comment.id,
+            );
+      },
+      child: const Text('削除'),
+    );
+  }
+}
+
+enum CommentType {
+  comment,
+  reply,
 }

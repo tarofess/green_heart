@@ -23,6 +23,7 @@ mixin _$CommentData {
   Comment get comment => throw _privateConstructorUsedError;
   Profile? get profile => throw _privateConstructorUsedError;
   List<CommentData> get replyComments => throw _privateConstructorUsedError;
+  bool get isMe => throw _privateConstructorUsedError;
 
   /// Serializes this CommentData to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -41,7 +42,10 @@ abstract class $CommentDataCopyWith<$Res> {
       _$CommentDataCopyWithImpl<$Res, CommentData>;
   @useResult
   $Res call(
-      {Comment comment, Profile? profile, List<CommentData> replyComments});
+      {Comment comment,
+      Profile? profile,
+      List<CommentData> replyComments,
+      bool isMe});
 
   $CommentCopyWith<$Res> get comment;
   $ProfileCopyWith<$Res>? get profile;
@@ -65,6 +69,7 @@ class _$CommentDataCopyWithImpl<$Res, $Val extends CommentData>
     Object? comment = null,
     Object? profile = freezed,
     Object? replyComments = null,
+    Object? isMe = null,
   }) {
     return _then(_value.copyWith(
       comment: null == comment
@@ -79,6 +84,10 @@ class _$CommentDataCopyWithImpl<$Res, $Val extends CommentData>
           ? _value.replyComments
           : replyComments // ignore: cast_nullable_to_non_nullable
               as List<CommentData>,
+      isMe: null == isMe
+          ? _value.isMe
+          : isMe // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 
@@ -116,7 +125,10 @@ abstract class _$$CommentDataImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {Comment comment, Profile? profile, List<CommentData> replyComments});
+      {Comment comment,
+      Profile? profile,
+      List<CommentData> replyComments,
+      bool isMe});
 
   @override
   $CommentCopyWith<$Res> get comment;
@@ -140,6 +152,7 @@ class __$$CommentDataImplCopyWithImpl<$Res>
     Object? comment = null,
     Object? profile = freezed,
     Object? replyComments = null,
+    Object? isMe = null,
   }) {
     return _then(_$CommentDataImpl(
       comment: null == comment
@@ -154,6 +167,10 @@ class __$$CommentDataImplCopyWithImpl<$Res>
           ? _value._replyComments
           : replyComments // ignore: cast_nullable_to_non_nullable
               as List<CommentData>,
+      isMe: null == isMe
+          ? _value.isMe
+          : isMe // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -164,7 +181,8 @@ class _$CommentDataImpl implements _CommentData {
   const _$CommentDataImpl(
       {required this.comment,
       required this.profile,
-      final List<CommentData> replyComments = const []})
+      final List<CommentData> replyComments = const [],
+      this.isMe = false})
       : _replyComments = replyComments;
 
   factory _$CommentDataImpl.fromJson(Map<String, dynamic> json) =>
@@ -184,8 +202,12 @@ class _$CommentDataImpl implements _CommentData {
   }
 
   @override
+  @JsonKey()
+  final bool isMe;
+
+  @override
   String toString() {
-    return 'CommentData(comment: $comment, profile: $profile, replyComments: $replyComments)';
+    return 'CommentData(comment: $comment, profile: $profile, replyComments: $replyComments, isMe: $isMe)';
   }
 
   @override
@@ -196,13 +218,14 @@ class _$CommentDataImpl implements _CommentData {
             (identical(other.comment, comment) || other.comment == comment) &&
             (identical(other.profile, profile) || other.profile == profile) &&
             const DeepCollectionEquality()
-                .equals(other._replyComments, _replyComments));
+                .equals(other._replyComments, _replyComments) &&
+            (identical(other.isMe, isMe) || other.isMe == isMe));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, comment, profile,
-      const DeepCollectionEquality().hash(_replyComments));
+      const DeepCollectionEquality().hash(_replyComments), isMe);
 
   /// Create a copy of CommentData
   /// with the given fields replaced by the non-null parameter values.
@@ -224,7 +247,8 @@ abstract class _CommentData implements CommentData {
   const factory _CommentData(
       {required final Comment comment,
       required final Profile? profile,
-      final List<CommentData> replyComments}) = _$CommentDataImpl;
+      final List<CommentData> replyComments,
+      final bool isMe}) = _$CommentDataImpl;
 
   factory _CommentData.fromJson(Map<String, dynamic> json) =
       _$CommentDataImpl.fromJson;
@@ -235,6 +259,8 @@ abstract class _CommentData implements CommentData {
   Profile? get profile;
   @override
   List<CommentData> get replyComments;
+  @override
+  bool get isMe;
 
   /// Create a copy of CommentData
   /// with the given fields replaced by the non-null parameter values.

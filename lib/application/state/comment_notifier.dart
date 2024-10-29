@@ -26,6 +26,7 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
       final profile = await ref.read(profileGetUsecaseProvider).execute(
             comment.uid,
           );
+      final isMe = ref.watch(authStateProvider).value?.uid == comment.uid;
       final replyComments =
           await ref.read(commentGetReplyUsecaseProvider).execute(comment.id);
 
@@ -34,10 +35,13 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
         final replyProfile = await ref.read(profileGetUsecaseProvider).execute(
               relpyComment.uid,
             );
+        final isMe =
+            ref.watch(authStateProvider).value?.uid == relpyComment.uid;
         replyCommentData.add(CommentData(
           comment: relpyComment,
           profile: replyProfile,
           replyComments: [],
+          isMe: isMe,
         ));
       }
 
@@ -45,6 +49,7 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
         comment: comment,
         profile: profile,
         replyComments: replyCommentData,
+        isMe: isMe,
       ));
     }
 

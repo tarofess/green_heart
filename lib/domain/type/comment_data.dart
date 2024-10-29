@@ -12,6 +12,7 @@ class CommentData with _$CommentData {
     required Comment comment,
     required Profile? profile,
     @Default([]) List<CommentData> replyComments,
+    @Default(false) bool isMe,
   }) = _CommentData;
 
   factory CommentData.fromJson(Map<String, dynamic> json) =>
