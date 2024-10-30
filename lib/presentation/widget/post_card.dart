@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
+import 'package:green_heart/presentation/dialog/error_dialog.dart';
+import 'package:green_heart/presentation/dialog/report_dialog.dart';
+import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/presentation/page/comment_page.dart';
@@ -109,6 +112,7 @@ class PostCard extends ConsumerWidget {
   }
 
   Widget _buildActionButtons(BuildContext context, WidgetRef ref) {
+    final myUid = ref.watch(authStateProvider).value?.uid;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -117,8 +121,10 @@ class PostCard extends ConsumerWidget {
             _buildLikeWidget(ref),
             SizedBox(width: 16.r),
             _buildCommentWidget(context, ref),
-            SizedBox(width: 16.r),
-            _buildDeletePostButton(context, ref),
+            SizedBox(width: 24.r),
+            postData.post.uid == myUid
+                ? _buildDeletePostButton(context, ref, myUid)
+                : _buildReportButton(context, ref),
           ],
         ),
         Text(
@@ -207,33 +213,73 @@ class PostCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildDeletePostButton(BuildContext context, WidgetRef ref) {
-    final myUid = ref.watch(authStateProvider).value?.uid;
-    return postData.post.uid == myUid
-        ? GestureDetector(
-            child: const Icon(Icons.delete_outlined),
-            onTap: () async {
-              final result = await showConfirmationDialog(
-                context: context,
-                title: '投稿の削除',
-                content: 'この投稿を削除しますか？',
-                positiveButtonText: '削除',
-                negativeButtonText: 'キャンセル',
-              );
-              if (!result) return;
+  Widget _buildDeletePostButton(
+    BuildContext context,
+    WidgetRef ref,
+    String? myUid,
+  ) {
+    return GestureDetector(
+      child: const Icon(Icons.delete_outlined),
+      onTap: () async {
+        final result = await showConfirmationDialog(
+          context: context,
+          title: '投稿の削除',
+          content: 'この投稿を削除しますか？',
+          positiveButtonText: '削除',
+          negativeButtonText: 'キャンセル',
+        );
+        if (!result) return;
 
-              await ref
-                  .read(postDeleteUsecaseProvider)
-                  .execute(postData.post.id);
-              ref
-                  .read(userPostNotifierProvider(myUid).notifier)
-                  .deletePost(postData.post.id);
-              ref
-                  .read(timelineNotifierProvider.notifier)
-                  .deletePost(postData.post.id);
-            },
-          )
-        : const SizedBox();
+        await ref.read(postDeleteUsecaseProvider).execute(postData.post.id);
+        ref
+            .read(userPostNotifierProvider(myUid).notifier)
+            .deletePost(postData.post.id);
+        ref
+            .read(timelineNotifierProvider.notifier)
+            .deletePost(postData.post.id);
+      },
+    );
+  }
+
+  Widget _buildReportButton(BuildContext context, WidgetRef ref) {
+    return GestureDetector(
+      child: const Icon(Icons.flag_outlined),
+      onTap: () async {
+        try {
+          final reportText = await showReportDialog(context);
+          if (reportText == null) return;
+
+          final uid = ref.watch(authStateProvider).value?.uid;
+          if (uid == null) return;
+
+          if (context.mounted) {
+            await LoadingOverlay.of(context).during(
+              () => ref.read(reportAddUsecaseProvider).execute(
+                    postData.post.id,
+                    uid,
+                    reportText,
+                  ),
+            );
+          }
+
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('投稿を通報しました。'),
+              ),
+            );
+          }
+        } catch (e) {
+          if (context.mounted) {
+            showErrorDialog(
+              context: context,
+              title: '報告エラー',
+              content: e.toString(),
+            );
+          }
+        }
+      },
+    );
   }
 
   void _showFullScreenImage(BuildContext context, String imageUrl) {
