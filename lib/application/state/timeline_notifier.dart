@@ -7,18 +7,19 @@ import 'package:green_heart/domain/type/comment_data.dart';
 import 'package:green_heart/domain/type/like.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/domain/type/comment.dart';
+import 'package:green_heart/domain/type/post.dart';
 
 class TimelineNotifier extends AsyncNotifier<List<PostData>> {
   @override
   Future<List<PostData>> build() async {
-    final postData = await _createPostDataList();
+    final posts = await ref.read(timelineGetUsecaseProvider).execute();
+    final postData = await _createPostDataList(posts);
     return postData;
   }
 
-  Future<List<PostData>> _createPostDataList() async {
+  Future<List<PostData>> _createPostDataList(List<Post> posts) async {
     List<PostData> postData = [];
 
-    final posts = await ref.read(timelineGetUsecaseProvider).execute();
     for (var post in posts) {
       final profile =
           await ref.read(profileGetUsecaseProvider).execute(post.uid);
@@ -49,18 +50,18 @@ class TimelineNotifier extends AsyncNotifier<List<PostData>> {
   }
 
   Future<void> deletePost(String postId) async {
-    state.whenData((value) {
-      final updatedValue =
-          value.where((post) => post.post.id != postId).toList();
-      state = AsyncValue.data(updatedValue);
+    state.whenData((postData) {
+      final updatedPostData =
+          postData.where((postData) => postData.post.id != postId).toList();
+      state = AsyncValue.data(updatedPostData);
     });
   }
 
   void toggleLike(String postId, String uid) {
-    state.whenData((value) {
-      final updatedValue = value.map((post) {
-        if (post.post.id == postId) {
-          final likes = List<Like>.from(post.likes);
+    state.whenData((postDataList) {
+      final updatedPostData = postDataList.map((postData) {
+        if (postData.post.id == postId) {
+          final likes = List<Like>.from(postData.likes);
           final isLiked = likes.any((element) => element.uid == uid);
           if (isLiked) {
             likes.removeWhere((element) => element.uid == uid);
@@ -71,45 +72,45 @@ class TimelineNotifier extends AsyncNotifier<List<PostData>> {
               createdAt: DateTime.now(),
             ));
           }
-          return post.copyWith(likes: likes);
+          return postData.copyWith(likes: likes);
         }
-        return post;
+        return postData;
       }).toList();
 
-      state = AsyncValue.data(updatedValue);
+      state = AsyncValue.data(updatedPostData);
     });
   }
 
   void addComment(Comment comment) {
-    state.whenData((value) {
-      final updatedValue = value.map((post) {
-        if (post.post.id == comment.postId) {
-          final comments = List<CommentData>.from(post.comments);
+    state.whenData((postDataList) {
+      final updatedPostData = postDataList.map((postData) {
+        if (postData.post.id == comment.postId) {
+          final comments = List<CommentData>.from(postData.comments);
           final profile = ref.read(profileNotifierProvider).value;
           comments.add(CommentData(
             comment: comment,
             profile: profile,
           ));
-          return post.copyWith(comments: comments);
+          return postData.copyWith(comments: comments);
         }
-        return post;
+        return postData;
       }).toList();
 
-      state = AsyncValue.data(updatedValue);
+      state = AsyncValue.data(updatedPostData);
     });
   }
 
   void deleteComment(String commentId) {
-    state.whenData((value) {
-      final updatedValue = value.map((post) {
-        final comments = List<CommentData>.from(post.comments);
-        comments.removeWhere((element) =>
-            element.comment.id == commentId ||
-            element.comment.parentCommentId == commentId);
-        return post.copyWith(comments: comments);
+    state.whenData((postDataList) {
+      final updatedPostData = postDataList.map((postData) {
+        final comments = List<CommentData>.from(postData.comments);
+        comments.removeWhere((commentData) =>
+            commentData.comment.id == commentId ||
+            commentData.comment.parentCommentId == commentId);
+        return postData.copyWith(comments: comments);
       }).toList();
 
-      state = AsyncValue.data(updatedValue);
+      state = AsyncValue.data(updatedPostData);
     });
   }
 }

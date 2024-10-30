@@ -7,18 +7,20 @@ import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/state/timeline_notifier.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/state/comment_page_notifier.dart';
+import 'package:green_heart/domain/type/comment.dart';
 
 class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
   @override
   Future<List<CommentData>> build(String arg) async {
-    final commentDataList = await createCommentDataList(arg);
+    final comments = await ref.read(commentGetUsecaseProvider).execute(arg);
+    final commentDataList = await createCommentDataList(comments);
     return commentDataList;
   }
 
-  Future<List<CommentData>> createCommentDataList(String postId) async {
+  Future<List<CommentData>> createCommentDataList(
+      List<Comment> comments) async {
     final commentDataList = <CommentData>[];
 
-    final comments = await ref.read(commentGetUsecaseProvider).execute(postId);
     for (final comment in comments) {
       if (comment.parentCommentId != null) {
         continue;
@@ -73,13 +75,17 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
         await ref.read(profileGetUsecaseProvider).execute(newComment.uid);
 
     if (parentCommentId == null) {
+      // 新規コメント
       final newCommentData = CommentData(
         comment: newComment,
         profile: userProfile,
         replyComments: [],
       );
-      state = AsyncValue.data([...state.value ?? [], newCommentData]);
+      state.whenData((comments) {
+        state = AsyncValue.data([...comments, newCommentData]);
+      });
     } else {
+      // 返信コメント
       final updatedComment = newComment.copyWith(
         parentCommentId: parentCommentId,
       );
@@ -88,18 +94,21 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
         profile: userProfile,
         replyComments: [],
       );
-      state = AsyncValue.data(state.value?.map((commentData) {
-            if (commentData.comment.id == parentCommentId) {
-              return commentData.copyWith(
-                replyComments: [
-                  ...commentData.replyComments,
-                  updatedCommentData,
-                ],
-              );
-            }
-            return commentData;
-          }).toList() ??
-          []);
+      state.whenData((comments) {
+        final updatedComment = comments.map((commentData) {
+          if (commentData.comment.id == parentCommentId) {
+            return commentData.copyWith(
+              replyComments: [
+                ...commentData.replyComments,
+                updatedCommentData,
+              ],
+            );
+          }
+          return commentData;
+        }).toList();
+
+        state = AsyncValue.data(updatedComment);
+      });
     }
 
     ref
@@ -112,22 +121,22 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
   Future<void> deleteComment(String commentId) async {
     await ref.read(commentDeleteUsecaseProvider).execute(commentId);
 
-    state = AsyncValue.data(
-      state.value
-              ?.map((commentData) {
-                if (commentData.comment.id == commentId) {
-                  return null;
-                }
+    state.whenData((comments) {
+      final updatedCommentData = comments
+          .map((commentData) {
+            if (commentData.comment.id == commentId) {
+              return null;
+            }
 
-                final updatedReplies = commentData.replyComments
-                    .where((reply) => reply.comment.id != commentId)
-                    .toList();
-                return commentData.copyWith(replyComments: updatedReplies);
-              })
-              .whereType<CommentData>()
-              .toList() ??
-          [],
-    );
+            final updatedReplies = commentData.replyComments
+                .where((reply) => reply.comment.id != commentId)
+                .toList();
+            return commentData.copyWith(replyComments: updatedReplies);
+          })
+          .whereType<CommentData>()
+          .toList();
+      state = AsyncValue.data(updatedCommentData);
+    });
 
     ref
         .read(userPostNotifierProvider(ref.watch(authStateProvider).value?.uid)
