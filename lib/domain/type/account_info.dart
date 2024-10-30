@@ -1,13 +1,12 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'account.freezed.dart';
+part 'account_info.freezed.dart';
 
 @freezed
-class Account with _$Account {
-  const factory Account({
+class AccountInfo with _$AccountInfo {
+  const factory AccountInfo({
     required String providerName,
     required String email,
     required String registrationDate,
-    @Default(false) bool isDeleted,
-  }) = _Account;
+  }) = _AccountInfo;
 }

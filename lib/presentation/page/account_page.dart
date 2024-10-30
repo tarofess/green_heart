@@ -5,9 +5,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
-import 'package:green_heart/application/state/account_notifier.dart';
+import 'package:green_heart/application/state/account_info_notifier.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
-import 'package:green_heart/domain/type/account.dart';
+import 'package:green_heart/domain/type/account_info.dart';
+import 'package:green_heart/application/state/account_state_notifier.dart';
 
 class AccountPage extends HookConsumerWidget {
   const AccountPage({super.key});
@@ -30,7 +31,7 @@ class AccountPage extends HookConsumerWidget {
   Widget _buildAccountInfo(
     BuildContext context,
     WidgetRef ref,
-    Account account,
+    AccountInfo accountInfo,
     ValueNotifier<List<bool>> isExpandedList,
   ) {
     return SingleChildScrollView(
@@ -47,21 +48,22 @@ class AccountPage extends HookConsumerWidget {
             headerBuilder: (BuildContext context, bool isExpanded) {
               return const ListTile(title: Text('ログイン方法'));
             },
-            body: ListTile(title: Text('${account.providerName}アカウントでログイン')),
+            body:
+                ListTile(title: Text('${accountInfo.providerName}アカウントでログイン')),
             isExpanded: isExpandedList.value[0],
           ),
           ExpansionPanel(
             headerBuilder: (BuildContext context, bool isExpanded) {
               return const ListTile(title: Text('メールアドレス'));
             },
-            body: ListTile(title: Text(account.email)),
+            body: ListTile(title: Text(accountInfo.email)),
             isExpanded: isExpandedList.value[1],
           ),
           ExpansionPanel(
             headerBuilder: (BuildContext context, bool isExpanded) {
               return const ListTile(title: Text('登録日'));
             },
-            body: ListTile(title: Text(account.registrationDate)),
+            body: ListTile(title: Text(accountInfo.registrationDate)),
             isExpanded: isExpandedList.value[2],
           ),
         ],
@@ -102,10 +104,12 @@ class AccountPage extends HookConsumerWidget {
 
         try {
           if (context.mounted) {
-            await LoadingOverlay.of(context).during(
-              () async =>
-                  ref.read(accountNotifierProvider.notifier).deleteAccount(),
-            );
+            await LoadingOverlay.of(context).during(() async {
+              await ref.read(accountNotifierProvider.notifier).deleteAccount();
+              ref
+                  .read(accountStateNotifierProvider.notifier)
+                  .setAccountDeletedState(true);
+            });
           }
         } catch (e) {
           if (context.mounted) {

@@ -7,6 +7,7 @@ import 'package:green_heart/application/interface/post_repository.dart';
 import 'package:green_heart/application/interface/profile_repository.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
+import 'package:green_heart/application/usecase/shared_pref_delete_usecase.dart';
 import 'package:green_heart/application/usecase/signout_usecase.dart';
 import 'package:green_heart/infrastructure/service/firebase_auth_service.dart';
 import 'package:green_heart/domain/type/profile.dart';
@@ -20,6 +21,7 @@ class AccountDeleteUsecase {
   final ProfileNotifier _profileNotifierProvider;
   final SignOutUseCase _signOutUseCase;
   final UserPostNotifier _postNotifierProvider;
+  final SharedPrefDeleteUsecase _sharedPrefDeleteUsecase;
 
   AccountDeleteUsecase(
     this._authService,
@@ -30,6 +32,7 @@ class AccountDeleteUsecase {
     this._profileNotifierProvider,
     this._signOutUseCase,
     this._postNotifierProvider,
+    this._sharedPrefDeleteUsecase,
   );
 
   Future<void> execute(User user, Profile? profile) async {
@@ -41,6 +44,7 @@ class AccountDeleteUsecase {
     await deleteNotificationToken(user);
     await deletePosts(user);
     await deleteProfile(user, profile);
+    await deleteSharedPref();
     await deleteAccount(user);
   }
 
@@ -101,6 +105,19 @@ class AccountDeleteUsecase {
       throw AppException(
         'プロフィールの削除に失敗したためアカウントが完全に削除できませんでした。\n'
         '現在投稿データは全て削除されています。\n'
+        '完全にアカウントを削除するために後ほどもう一度お試しください。',
+        e,
+      );
+    }
+  }
+
+  Future<void> deleteSharedPref() async {
+    try {
+      await _sharedPrefDeleteUsecase.execute('uid');
+    } catch (e) {
+      throw AppException(
+        'アプリ内データの削除に失敗したためアカウントが完全に削除できませんでした。\n'
+        '現在投稿データとプロフィールは全て削除されています。\n'
         '完全にアカウントを削除するために後ほどもう一度お試しください。',
         e,
       );

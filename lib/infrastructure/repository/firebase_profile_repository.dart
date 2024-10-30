@@ -98,6 +98,7 @@ class FirebaseProfileRepository implements ProfileRepository {
     }
   }
 
+  @override
   Future<bool> checkImageExists(String imageUrl) async {
     final ref = FirebaseStorage.instance.refFromURL(imageUrl);
     try {

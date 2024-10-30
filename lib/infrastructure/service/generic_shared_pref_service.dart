@@ -26,4 +26,15 @@ class GenericSharedPrefService implements SharedPrefService {
       throw exception ?? AppException('端末に文字列を保存する時にエラーが発生しました。');
     }
   }
+
+  @override
+  Future<void> deleteString(String key) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(key);
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('端末に保存された文字列の削除に失敗しました。');
+    }
+  }
 }

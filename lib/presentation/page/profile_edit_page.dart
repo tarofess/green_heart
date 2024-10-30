@@ -16,6 +16,9 @@ import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/domain/type/profile.dart';
+import 'package:green_heart/application/di/shared_pref_di.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
+import 'package:green_heart/application/state/account_state_notifier.dart';
 
 class ProfileEditPage extends HookConsumerWidget {
   ProfileEditPage({super.key});
@@ -102,17 +105,23 @@ class ProfileEditPage extends HookConsumerWidget {
           onPressed: () async {
             try {
               if (_formKey.currentState!.validate()) {
-                await LoadingOverlay.of(context).during(
-                  () async =>
-                      ref.read(profileNotifierProvider.notifier).saveProfile(
-                            ref.read(profileSaveUsecaseProvider),
-                            nameTextController.text,
-                            birthdayTextController.text,
-                            bioTextController.text,
-                            imagePath: imagePath.value,
-                            oldImageUrl: profile?.imageUrl,
-                          ),
-                );
+                await LoadingOverlay.of(context).during(() async {
+                  await ref.read(profileNotifierProvider.notifier).saveProfile(
+                        ref.read(profileSaveUsecaseProvider),
+                        nameTextController.text,
+                        birthdayTextController.text,
+                        bioTextController.text,
+                        imagePath: imagePath.value,
+                        oldImageUrl: profile?.imageUrl,
+                      );
+                  await ref.read(sharedPrefSaveUsecaseProvider).execute(
+                        'uid',
+                        ref.watch(authStateProvider).value?.uid ?? '',
+                      );
+                  ref
+                      .read(accountStateNotifierProvider.notifier)
+                      .setRegisteredState(true);
+                });
 
                 if (context.mounted) {
                   await showMessageDialog(

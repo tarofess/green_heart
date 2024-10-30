@@ -7,7 +7,7 @@ import 'package:green_heart/infrastructure/repository/firebase_notification_repo
 final fcmTokenSaveUsecaeProvider = Provider(
   (ref) => FcmTokenSaveUsecase(
     FirebaseNotificationRepository(),
-    ref.read(stringGetSharedPrefUsecaseProvider),
-    ref.read(stringSaveSharedPrefUsecaseProvider),
+    ref.read(sharedPrefGetUsecaseProvider),
+    ref.read(sharedPrefSaveUsecaseProvider),
   ),
 );

@@ -1,13 +1,13 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:green_heart/application/interface/notification_repository.dart';
-import 'package:green_heart/application/usecase/string_get_shared_pref_usecase.dart';
-import 'package:green_heart/application/usecase/string_save_shared_pref_usecase.dart';
+import 'package:green_heart/application/usecase/shared_pref_get_usecase.dart';
+import 'package:green_heart/application/usecase/shared_pref_save_usecase.dart';
 
 class FcmTokenSaveUsecase {
   final NotificationRepository _notificationRepository;
-  final StringGetSharedPrefUsecase _getSharedPreferences;
-  final StringSaveSharedPrefUsecase _saveSharedPreferences;
+  final SharedPrefGetUsecase _getSharedPreferences;
+  final SharedPrefSaveUsecase _saveSharedPreferences;
 
   FcmTokenSaveUsecase(
     this._notificationRepository,

@@ -1,14 +1,18 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:green_heart/application/usecase/string_save_shared_pref_usecase.dart';
-import 'package:green_heart/application/usecase/string_get_shared_pref_usecase.dart';
+import 'package:green_heart/application/usecase/shared_pref_save_usecase.dart';
+import 'package:green_heart/application/usecase/shared_pref_get_usecase.dart';
 import 'package:green_heart/infrastructure/service/generic_shared_pref_service.dart';
+import 'package:green_heart/application/usecase/shared_pref_delete_usecase.dart';
 
-final stringSaveSharedPrefUsecaseProvider =
-    Provider<StringSaveSharedPrefUsecase>(
-  (ref) => StringSaveSharedPrefUsecase(GenericSharedPrefService()),
+final sharedPrefSaveUsecaseProvider = Provider<SharedPrefSaveUsecase>(
+  (ref) => SharedPrefSaveUsecase(GenericSharedPrefService()),
 );
 
-final stringGetSharedPrefUsecaseProvider = Provider<StringGetSharedPrefUsecase>(
-  (ref) => StringGetSharedPrefUsecase(GenericSharedPrefService()),
+final sharedPrefGetUsecaseProvider = Provider<SharedPrefGetUsecase>(
+  (ref) => SharedPrefGetUsecase(GenericSharedPrefService()),
+);
+
+final sharedPrefDeleteUsecaseProvider = Provider<SharedPrefDeleteUsecase>(
+  (ref) => SharedPrefDeleteUsecase(GenericSharedPrefService()),
 );

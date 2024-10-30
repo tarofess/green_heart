@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'account.dart';
+part of 'account_info.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -15,41 +15,38 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
-mixin _$Account {
+mixin _$AccountInfo {
   String get providerName => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
   String get registrationDate => throw _privateConstructorUsedError;
-  bool get isDeleted => throw _privateConstructorUsedError;
 
-  /// Create a copy of Account
+  /// Create a copy of AccountInfo
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $AccountCopyWith<Account> get copyWith => throw _privateConstructorUsedError;
+  $AccountInfoCopyWith<AccountInfo> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $AccountCopyWith<$Res> {
-  factory $AccountCopyWith(Account value, $Res Function(Account) then) =
-      _$AccountCopyWithImpl<$Res, Account>;
+abstract class $AccountInfoCopyWith<$Res> {
+  factory $AccountInfoCopyWith(
+          AccountInfo value, $Res Function(AccountInfo) then) =
+      _$AccountInfoCopyWithImpl<$Res, AccountInfo>;
   @useResult
-  $Res call(
-      {String providerName,
-      String email,
-      String registrationDate,
-      bool isDeleted});
+  $Res call({String providerName, String email, String registrationDate});
 }
 
 /// @nodoc
-class _$AccountCopyWithImpl<$Res, $Val extends Account>
-    implements $AccountCopyWith<$Res> {
-  _$AccountCopyWithImpl(this._value, this._then);
+class _$AccountInfoCopyWithImpl<$Res, $Val extends AccountInfo>
+    implements $AccountInfoCopyWith<$Res> {
+  _$AccountInfoCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Account
+  /// Create a copy of AccountInfo
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -57,7 +54,6 @@ class _$AccountCopyWithImpl<$Res, $Val extends Account>
     Object? providerName = null,
     Object? email = null,
     Object? registrationDate = null,
-    Object? isDeleted = null,
   }) {
     return _then(_value.copyWith(
       providerName: null == providerName
@@ -72,37 +68,30 @@ class _$AccountCopyWithImpl<$Res, $Val extends Account>
           ? _value.registrationDate
           : registrationDate // ignore: cast_nullable_to_non_nullable
               as String,
-      isDeleted: null == isDeleted
-          ? _value.isDeleted
-          : isDeleted // ignore: cast_nullable_to_non_nullable
-              as bool,
     ) as $Val);
   }
 }
 
 /// @nodoc
-abstract class _$$AccountImplCopyWith<$Res> implements $AccountCopyWith<$Res> {
-  factory _$$AccountImplCopyWith(
-          _$AccountImpl value, $Res Function(_$AccountImpl) then) =
-      __$$AccountImplCopyWithImpl<$Res>;
+abstract class _$$AccountInfoImplCopyWith<$Res>
+    implements $AccountInfoCopyWith<$Res> {
+  factory _$$AccountInfoImplCopyWith(
+          _$AccountInfoImpl value, $Res Function(_$AccountInfoImpl) then) =
+      __$$AccountInfoImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String providerName,
-      String email,
-      String registrationDate,
-      bool isDeleted});
+  $Res call({String providerName, String email, String registrationDate});
 }
 
 /// @nodoc
-class __$$AccountImplCopyWithImpl<$Res>
-    extends _$AccountCopyWithImpl<$Res, _$AccountImpl>
-    implements _$$AccountImplCopyWith<$Res> {
-  __$$AccountImplCopyWithImpl(
-      _$AccountImpl _value, $Res Function(_$AccountImpl) _then)
+class __$$AccountInfoImplCopyWithImpl<$Res>
+    extends _$AccountInfoCopyWithImpl<$Res, _$AccountInfoImpl>
+    implements _$$AccountInfoImplCopyWith<$Res> {
+  __$$AccountInfoImplCopyWithImpl(
+      _$AccountInfoImpl _value, $Res Function(_$AccountInfoImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of Account
+  /// Create a copy of AccountInfo
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -110,9 +99,8 @@ class __$$AccountImplCopyWithImpl<$Res>
     Object? providerName = null,
     Object? email = null,
     Object? registrationDate = null,
-    Object? isDeleted = null,
   }) {
-    return _then(_$AccountImpl(
+    return _then(_$AccountInfoImpl(
       providerName: null == providerName
           ? _value.providerName
           : providerName // ignore: cast_nullable_to_non_nullable
@@ -125,22 +113,17 @@ class __$$AccountImplCopyWithImpl<$Res>
           ? _value.registrationDate
           : registrationDate // ignore: cast_nullable_to_non_nullable
               as String,
-      isDeleted: null == isDeleted
-          ? _value.isDeleted
-          : isDeleted // ignore: cast_nullable_to_non_nullable
-              as bool,
     ));
   }
 }
 
 /// @nodoc
 
-class _$AccountImpl implements _Account {
-  const _$AccountImpl(
+class _$AccountInfoImpl implements _AccountInfo {
+  const _$AccountInfoImpl(
       {required this.providerName,
       required this.email,
-      required this.registrationDate,
-      this.isDeleted = false});
+      required this.registrationDate});
 
   @override
   final String providerName;
@@ -148,48 +131,42 @@ class _$AccountImpl implements _Account {
   final String email;
   @override
   final String registrationDate;
-  @override
-  @JsonKey()
-  final bool isDeleted;
 
   @override
   String toString() {
-    return 'Account(providerName: $providerName, email: $email, registrationDate: $registrationDate, isDeleted: $isDeleted)';
+    return 'AccountInfo(providerName: $providerName, email: $email, registrationDate: $registrationDate)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$AccountImpl &&
+            other is _$AccountInfoImpl &&
             (identical(other.providerName, providerName) ||
                 other.providerName == providerName) &&
             (identical(other.email, email) || other.email == email) &&
             (identical(other.registrationDate, registrationDate) ||
-                other.registrationDate == registrationDate) &&
-            (identical(other.isDeleted, isDeleted) ||
-                other.isDeleted == isDeleted));
+                other.registrationDate == registrationDate));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, providerName, email, registrationDate, isDeleted);
+  int get hashCode =>
+      Object.hash(runtimeType, providerName, email, registrationDate);
 
-  /// Create a copy of Account
+  /// Create a copy of AccountInfo
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$AccountImplCopyWith<_$AccountImpl> get copyWith =>
-      __$$AccountImplCopyWithImpl<_$AccountImpl>(this, _$identity);
+  _$$AccountInfoImplCopyWith<_$AccountInfoImpl> get copyWith =>
+      __$$AccountInfoImplCopyWithImpl<_$AccountInfoImpl>(this, _$identity);
 }
 
-abstract class _Account implements Account {
-  const factory _Account(
+abstract class _AccountInfo implements AccountInfo {
+  const factory _AccountInfo(
       {required final String providerName,
       required final String email,
-      required final String registrationDate,
-      final bool isDeleted}) = _$AccountImpl;
+      required final String registrationDate}) = _$AccountInfoImpl;
 
   @override
   String get providerName;
@@ -197,13 +174,11 @@ abstract class _Account implements Account {
   String get email;
   @override
   String get registrationDate;
-  @override
-  bool get isDeleted;
 
-  /// Create a copy of Account
+  /// Create a copy of AccountInfo
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$AccountImplCopyWith<_$AccountImpl> get copyWith =>
+  _$$AccountInfoImplCopyWith<_$AccountInfoImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

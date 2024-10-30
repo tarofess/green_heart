@@ -3,17 +3,17 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/application/di/account_di.dart';
-import 'package:green_heart/domain/type/account.dart';
+import 'package:green_heart/domain/type/account_info.dart';
 import 'package:green_heart/domain/util/date_util.dart';
 
-class AccountNotifier extends Notifier<Account> {
+class AccountNotifier extends Notifier<AccountInfo> {
   @override
-  Account build() {
+  AccountInfo build() {
     final providerName = getProviderName();
     final email = getEmail();
     final creationTime = getRegistrationDate();
 
-    return Account(
+    return AccountInfo(
       providerName: providerName,
       email: email,
       registrationDate: creationTime,
@@ -50,10 +50,9 @@ class AccountNotifier extends Notifier<Account> {
     }
 
     await ref.read(accountDeleteUsecaseProvider).execute(user, profile);
-    state = state.copyWith(isDeleted: true);
   }
 }
 
-final accountNotifierProvider = NotifierProvider<AccountNotifier, Account>(
+final accountNotifierProvider = NotifierProvider<AccountNotifier, AccountInfo>(
   () => AccountNotifier(),
 );

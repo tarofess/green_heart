@@ -1,3 +1,4 @@
+import 'package:green_heart/application/di/shared_pref_di.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -20,4 +21,5 @@ final accountDeleteUsecaseProvider = Provider((ref) => AccountDeleteUsecase(
       ref.read(signOutUseCaseProvider),
       ref.read(userPostNotifierProvider(ref.watch(authStateProvider).value?.uid)
           .notifier),
+      ref.read(sharedPrefDeleteUsecaseProvider),
     ));

@@ -12,9 +12,10 @@ import 'package:green_heart/presentation/page/settings_page.dart';
 import 'package:green_heart/application/di/fcm_di.dart';
 import 'package:green_heart/presentation/page/notification_setting_page.dart';
 import 'package:green_heart/presentation/page/post_page.dart';
-import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/presentation/page/profile_edit_page.dart';
 import 'package:green_heart/presentation/page/user_page.dart';
+import 'package:green_heart/application/state/account_state_notifier.dart';
+import 'package:green_heart/presentation/page/account_deleted_page.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -85,6 +86,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const AccountPage(),
       ),
       GoRoute(
+        path: '/account_deleted',
+        builder: (context, state) => const AccountDeletedPage(),
+      ),
+      GoRoute(
         path: '/notification_setting',
         builder: (context, state) => const NotificationSettingPage(),
       ),
@@ -98,17 +103,24 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
     ],
-    redirect: (BuildContext context, GoRouterState state) async {
+    redirect: (BuildContext context, GoRouterState state) {
       final isLoggedIn = authState.value != null;
-      final profile = await ref.read(profileNotifierProvider.future);
+      final isAccountRegistered =
+          ref.read(accountStateNotifierProvider).isRegistered;
+      final isAccountDeleted = ref.read(accountStateNotifierProvider).isDeleted;
+
+      if (isAccountDeleted && !isLoggedIn) {
+        return '/account_deleted';
+      }
 
       if (!isLoggedIn && state.matchedLocation != '/signin') {
         return '/signin';
       }
 
-      if (isLoggedIn && profile == null) {
+      if (isLoggedIn && !isAccountRegistered) {
         return '/profile_edit';
       }
+
       return null;
     },
   );
