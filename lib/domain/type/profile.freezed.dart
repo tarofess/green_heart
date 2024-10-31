@@ -20,6 +20,7 @@ Profile _$ProfileFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Profile {
+  String get uid => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   DateTime? get birthday => throw _privateConstructorUsedError;
   String get bio => throw _privateConstructorUsedError;
@@ -43,7 +44,8 @@ abstract class $ProfileCopyWith<$Res> {
       _$ProfileCopyWithImpl<$Res, Profile>;
   @useResult
   $Res call(
-      {String name,
+      {String uid,
+      String name,
       DateTime? birthday,
       String bio,
       String? imageUrl,
@@ -67,6 +69,7 @@ class _$ProfileCopyWithImpl<$Res, $Val extends Profile>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? uid = null,
     Object? name = null,
     Object? birthday = freezed,
     Object? bio = null,
@@ -76,6 +79,10 @@ class _$ProfileCopyWithImpl<$Res, $Val extends Profile>
     Object? updatedAt = null,
   }) {
     return _then(_value.copyWith(
+      uid: null == uid
+          ? _value.uid
+          : uid // ignore: cast_nullable_to_non_nullable
+              as String,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -116,7 +123,8 @@ abstract class _$$ProfileImplCopyWith<$Res> implements $ProfileCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {String name,
+      {String uid,
+      String name,
       DateTime? birthday,
       String bio,
       String? imageUrl,
@@ -138,6 +146,7 @@ class __$$ProfileImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? uid = null,
     Object? name = null,
     Object? birthday = freezed,
     Object? bio = null,
@@ -147,6 +156,10 @@ class __$$ProfileImplCopyWithImpl<$Res>
     Object? updatedAt = null,
   }) {
     return _then(_$ProfileImpl(
+      uid: null == uid
+          ? _value.uid
+          : uid // ignore: cast_nullable_to_non_nullable
+              as String,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -183,7 +196,8 @@ class __$$ProfileImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ProfileImpl implements _Profile {
   const _$ProfileImpl(
-      {required this.name,
+      {required this.uid,
+      required this.name,
       required this.birthday,
       required this.bio,
       this.imageUrl,
@@ -194,6 +208,8 @@ class _$ProfileImpl implements _Profile {
   factory _$ProfileImpl.fromJson(Map<String, dynamic> json) =>
       _$$ProfileImplFromJson(json);
 
+  @override
+  final String uid;
   @override
   final String name;
   @override
@@ -212,7 +228,7 @@ class _$ProfileImpl implements _Profile {
 
   @override
   String toString() {
-    return 'Profile(name: $name, birthday: $birthday, bio: $bio, imageUrl: $imageUrl, status: $status, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Profile(uid: $uid, name: $name, birthday: $birthday, bio: $bio, imageUrl: $imageUrl, status: $status, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -220,6 +236,7 @@ class _$ProfileImpl implements _Profile {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ProfileImpl &&
+            (identical(other.uid, uid) || other.uid == uid) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.birthday, birthday) ||
                 other.birthday == birthday) &&
@@ -235,8 +252,8 @@ class _$ProfileImpl implements _Profile {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, name, birthday, bio, imageUrl, status, createdAt, updatedAt);
+  int get hashCode => Object.hash(runtimeType, uid, name, birthday, bio,
+      imageUrl, status, createdAt, updatedAt);
 
   /// Create a copy of Profile
   /// with the given fields replaced by the non-null parameter values.
@@ -256,7 +273,8 @@ class _$ProfileImpl implements _Profile {
 
 abstract class _Profile implements Profile {
   const factory _Profile(
-      {required final String name,
+      {required final String uid,
+      required final String name,
       required final DateTime? birthday,
       required final String bio,
       final String? imageUrl,
@@ -266,6 +284,8 @@ abstract class _Profile implements Profile {
 
   factory _Profile.fromJson(Map<String, dynamic> json) = _$ProfileImpl.fromJson;
 
+  @override
+  String get uid;
   @override
   String get name;
   @override

@@ -33,7 +33,7 @@ Future<void> showProfileImageActionSheet(
               onTap: () async {
                 if (await PermissionUtil.requestCameraPermission(context)) {
                   imagePath.value =
-                      await ref.read(takePhotoUsecaseProvider).execute() ?? '';
+                      await ref.read(takePhotoUsecaseProvider).execute();
                 }
                 if (context.mounted) Navigator.pop(context);
               },
@@ -44,7 +44,7 @@ Future<void> showProfileImageActionSheet(
               onTap: () async {
                 if (await PermissionUtil.requestStoragePermission(context)) {
                   imagePath.value =
-                      await ref.read(pickImageUsecaseProvider).execute() ?? '';
+                      await ref.read(pickImageUsecaseProvider).execute();
                 }
                 if (context.mounted) Navigator.pop(context);
               },

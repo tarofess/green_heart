@@ -37,6 +37,7 @@ class FirebaseProfileRepository implements ProfileRepository {
   ) async {
     try {
       final profile = Profile(
+        uid: uid,
         name: name,
         birthday: DateUtil.convertToDateTime(birthday),
         bio: bio,

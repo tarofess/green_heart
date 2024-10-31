@@ -1,3 +1,4 @@
+import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/profile_di.dart';
@@ -38,6 +39,10 @@ class ProfileNotifier extends AsyncNotifier<Profile?> {
       imagePath,
       oldImageUrl,
     );
+
+    ref
+        .read(userPostNotifierProvider(uid).notifier)
+        .updateProfileImage(uid, savedProfile.imageUrl);
 
     state = AsyncData(savedProfile);
   }

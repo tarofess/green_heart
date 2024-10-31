@@ -144,6 +144,21 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
     });
   }
 
+  void updateProfileImage(String uid, String? imageUrl) {
+    state.whenData((postDataList) {
+      final updatedPostData = postDataList.map((postData) {
+        if (postData.userProfile?.uid == uid) {
+          final updatedProfile =
+              postData.userProfile?.copyWith(imageUrl: imageUrl);
+          return postData.copyWith(userProfile: updatedProfile);
+        }
+        return postData;
+      }).toList();
+
+      state = AsyncValue.data(updatedPostData);
+    });
+  }
+
   Future<void> removeAllPosts() async {
     state = const AsyncValue.data([]);
   }

@@ -8,6 +8,7 @@ part of 'profile.dart';
 
 _$ProfileImpl _$$ProfileImplFromJson(Map<String, dynamic> json) =>
     _$ProfileImpl(
+      uid: json['uid'] as String,
       name: json['name'] as String,
       birthday: json['birthday'] == null
           ? null
@@ -21,6 +22,7 @@ _$ProfileImpl _$$ProfileImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$ProfileImplToJson(_$ProfileImpl instance) =>
     <String, dynamic>{
+      'uid': instance.uid,
       'name': instance.name,
       'birthday': instance.birthday?.toIso8601String(),
       'bio': instance.bio,
