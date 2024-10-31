@@ -22,7 +22,7 @@ class ProfileNotifier extends AsyncNotifier<Profile?> {
     String name,
     String birthday,
     String bio, {
-    required String imagePath,
+    required String? imagePath,
     required String? oldImageUrl,
   }) async {
     final uid = ref.read(authStateProvider).value?.uid;

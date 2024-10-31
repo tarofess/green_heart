@@ -56,8 +56,9 @@ class FirebaseProfileRepository implements ProfileRepository {
   }
 
   @override
-  Future<String> uploadImage(String uid, String path) async {
+  Future<String?> uploadImage(String uid, String? path) async {
     try {
+      if (path == null) return null;
       File file = File(path);
       String fileName = DateTime.now().millisecondsSinceEpoch.toString();
       String extension = path.split('.').last;

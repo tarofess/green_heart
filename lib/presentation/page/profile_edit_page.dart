@@ -30,7 +30,7 @@ class ProfileEditPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = useState<Profile?>(null);
-    final imagePath = useState('');
+    final imagePath = useState<String?>(null);
     final nameTextController = useTextEditingController();
     final birthdayTextController = useTextEditingController();
     final bioTextController = useTextEditingController();
@@ -41,7 +41,7 @@ class ProfileEditPage extends HookConsumerWidget {
       void initializeForm() async {
         final profileState = await ref.read(profileNotifierProvider.future);
         profile.value = profileState;
-        imagePath.value = profileState?.imageUrl ?? '';
+        imagePath.value = profileState?.imageUrl;
         nameTextController.text = profileState?.name ?? '';
         birthdayTextController.text =
             DateUtil.convertToJapaneseDate(profileState?.birthday);
@@ -95,7 +95,7 @@ class ProfileEditPage extends HookConsumerWidget {
     TextEditingController nameTextController,
     TextEditingController birthdayTextController,
     TextEditingController bioTextController,
-    ValueNotifier<String> imagePath,
+    ValueNotifier<String?> imagePath,
     Profile? profile,
   ) {
     return AppBar(
@@ -152,7 +152,7 @@ class ProfileEditPage extends HookConsumerWidget {
   }
 
   Widget _buildImageField(
-      BuildContext context, WidgetRef ref, ValueNotifier<String> imagePath) {
+      BuildContext context, WidgetRef ref, ValueNotifier<String?> imagePath) {
     return Padding(
       padding: EdgeInsets.all(16.r),
       child: Column(
@@ -160,14 +160,14 @@ class ProfileEditPage extends HookConsumerWidget {
         children: [
           Center(
             child: GestureDetector(
-              child: imagePath.value == ''
+              child: imagePath.value == null
                   ? _buildEmptyImage()
-                  : imagePath.value.startsWith('http')
-                      ? _buildFirebaseImage(imagePath.value)
+                  : imagePath.value!.startsWith('http')
+                      ? _buildFirebaseImage(imagePath.value!)
                       : ClipRRect(
                           borderRadius: BorderRadius.circular(100.r),
                           child: Image.file(
-                            File(imagePath.value),
+                            File(imagePath.value!),
                             width: 200.r,
                             height: 200.r,
                             fit: BoxFit.cover,

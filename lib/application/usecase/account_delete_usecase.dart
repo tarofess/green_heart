@@ -42,6 +42,7 @@ class AccountDeleteUsecase {
 
     await reauthenticate(user);
     await deleteNotificationToken(user);
+    await deleteComments(user);
     await deletePosts(user);
     await deleteProfile(user, profile);
     await deleteSharedPref();
@@ -74,6 +75,8 @@ class AccountDeleteUsecase {
       );
     }
   }
+
+  Future<void> deleteComments(User user) async {}
 
   Future<void> deletePosts(User user) async {
     try {

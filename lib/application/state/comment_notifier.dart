@@ -82,6 +82,7 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
         comment: newComment,
         profile: userProfile,
         replyComments: [],
+        isMe: true,
       );
       state.whenData((comments) {
         state = AsyncValue.data([...comments, newCommentData]);
@@ -95,6 +96,7 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
         comment: updatedComment,
         profile: userProfile,
         replyComments: [],
+        isMe: true,
       );
       state.whenData((comments) {
         final updatedComment = comments.map((commentData) {

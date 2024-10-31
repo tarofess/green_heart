@@ -57,11 +57,7 @@ class UserPage extends HookConsumerWidget {
                     children: [
                       Row(
                         children: [
-                          _buildUserImage(
-                            context,
-                            ref,
-                            profile.value?.imageUrl,
-                          ),
+                          _buildUserImage(context, ref, profile),
                           Expanded(child: _buildUserStats()),
                         ],
                       ),
@@ -102,20 +98,11 @@ class UserPage extends HookConsumerWidget {
   Widget _buildUserImage(
     BuildContext context,
     WidgetRef ref,
-    String? imageUrl,
+    ValueNotifier<Profile?> profile,
   ) {
-    return imageUrl == null
-        ? const SizedBox()
-        : Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: imageUrl == ''
-                    ? _buildEmptyImage()
-                    : _buildFirebaseImage(imageUrl),
-              ),
-            ],
-          );
+    return profile.value?.imageUrl == null
+        ? _buildEmptyImage()
+        : _buildFirebaseImage(profile);
   }
 
   Widget _buildEmptyImage() {
@@ -130,7 +117,7 @@ class UserPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildFirebaseImage(String imageUrl) {
+  Widget _buildFirebaseImage(ValueNotifier<Profile?> profile) {
     return Container(
       width: 120.r,
       height: 120.r,
@@ -138,12 +125,11 @@ class UserPage extends HookConsumerWidget {
         shape: BoxShape.circle,
         image: DecorationImage(
           fit: BoxFit.cover,
-          image: CachedNetworkImageProvider(imageUrl),
+          image: CachedNetworkImageProvider(profile.value?.imageUrl ?? ''),
         ),
       ),
       child: CachedNetworkImage(
-        key: ValueKey(imageUrl),
-        imageUrl: imageUrl,
+        imageUrl: profile.value?.imageUrl ?? '',
         imageBuilder: (context, imageProvider) => Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,

@@ -48,12 +48,14 @@ class PostCard extends ConsumerWidget {
     return Row(
       children: [
         GestureDetector(
-            child: CircleAvatar(
-              radius: 24.r,
-              backgroundImage: CachedNetworkImageProvider(
-                postData.userProfile?.imageUrl ?? '',
-              ),
-            ),
+            child: postData.userProfile?.imageUrl == null
+                ? _buildEmptyImage()
+                : CircleAvatar(
+                    radius: 24.r,
+                    backgroundImage: CachedNetworkImageProvider(
+                      postData.userProfile?.imageUrl ?? '',
+                    ),
+                  ),
             onTap: () {
               if (postData.post.uid !=
                   ref.watch(authStateProvider).value?.uid) {
@@ -66,6 +68,18 @@ class PostCard extends ConsumerWidget {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ],
+    );
+  }
+
+  Widget _buildEmptyImage() {
+    return CircleAvatar(
+      radius: 24.r,
+      backgroundColor: Colors.grey[200],
+      child: Icon(
+        Icons.person,
+        size: 24.r,
+        color: Colors.grey[500],
+      ),
     );
   }
 

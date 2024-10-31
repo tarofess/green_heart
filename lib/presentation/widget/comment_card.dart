@@ -41,7 +41,7 @@ class CommentCard extends HookConsumerWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildUserImage(),
+        _buildUserImage(CommentType.comment),
         SizedBox(width: 12.w),
         Expanded(
           child: Column(
@@ -76,7 +76,7 @@ class CommentCard extends HookConsumerWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildUserImage(replyComment),
+          _buildUserImage(CommentType.reply, replyComment),
           SizedBox(width: 12.w),
           Expanded(
             child: Column(
@@ -107,13 +107,36 @@ class CommentCard extends HookConsumerWidget {
     );
   }
 
-  Widget _buildUserImage([CommentData? replyComment]) {
+  Widget _buildUserImage(CommentType commentType, [CommentData? replyComment]) {
+    if (commentType == CommentType.comment) {
+      return commentData.profile?.imageUrl == null
+          ? _buildEmptyImage()
+          : CircleAvatar(
+              radius: 24.r,
+              backgroundImage: CachedNetworkImageProvider(
+                commentData.profile?.imageUrl ?? '',
+              ),
+            );
+    } else {
+      return replyComment!.profile?.imageUrl == null
+          ? _buildEmptyImage()
+          : CircleAvatar(
+              radius: 24.r,
+              backgroundImage: CachedNetworkImageProvider(
+                commentData.profile?.imageUrl ?? '',
+              ),
+            );
+    }
+  }
+
+  Widget _buildEmptyImage() {
     return CircleAvatar(
       radius: 24.r,
-      backgroundImage: CachedNetworkImageProvider(
-        replyComment == null
-            ? commentData.profile?.imageUrl ?? ''
-            : replyComment.profile?.imageUrl ?? '',
+      backgroundColor: Colors.grey[200],
+      child: Icon(
+        Icons.person,
+        size: 24.r,
+        color: Colors.grey[500],
       ),
     );
   }

@@ -8,7 +8,7 @@ import 'package:green_heart/infrastructure/util/permission_util.dart';
 Future<void> showProfileImageActionSheet(
   BuildContext context,
   WidgetRef ref,
-  ValueNotifier<String> imagePath,
+  ValueNotifier<String?> imagePath,
 ) async {
   await showModalBottomSheet(
     context: context,
@@ -53,7 +53,7 @@ Future<void> showProfileImageActionSheet(
               leading: Icon(Icons.cancel, size: 24.r),
               title: Text('画像を削除する', style: TextStyle(fontSize: 14.sp)),
               onTap: () {
-                imagePath.value = '';
+                imagePath.value = null;
                 Navigator.pop(context);
               },
             ),

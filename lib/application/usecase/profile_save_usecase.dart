@@ -13,7 +13,7 @@ class ProfileSaveUsecase {
     String name,
     String birthday,
     String bio,
-    String imagePath,
+    String? imagePath,
     String? oldImageUrl,
   ) async {
     final firebaseStorePath = await processImage(uid, imagePath, oldImageUrl);
@@ -30,7 +30,7 @@ class ProfileSaveUsecase {
 
   Future<String?> processImage(
     String uid,
-    String imagePath,
+    String? imagePath,
     String? oldImageUrl,
   ) async {
     String? firebaseStorePath;
@@ -38,7 +38,7 @@ class ProfileSaveUsecase {
       firebaseStorePath = await _profileRepository.uploadImage(uid, imagePath);
       await deleteOldProfileImage(oldImageUrl);
     } else if (isImageDeleted(imagePath, oldImageUrl)) {
-      firebaseStorePath = '';
+      firebaseStorePath = null;
       await deleteOldProfileImage(oldImageUrl);
     } else {
       firebaseStorePath = oldImageUrl;
@@ -52,11 +52,11 @@ class ProfileSaveUsecase {
     }
   }
 
-  bool isImageChanged(String imagePath, String? oldImageUrl) {
-    return imagePath.isNotEmpty && imagePath != oldImageUrl;
+  bool isImageChanged(String? imagePath, String? oldImageUrl) {
+    return imagePath != null && imagePath != oldImageUrl;
   }
 
-  bool isImageDeleted(String imagePath, String? oldImageUrl) {
-    return imagePath.isEmpty && imagePath != oldImageUrl;
+  bool isImageDeleted(String? imagePath, String? oldImageUrl) {
+    return imagePath == null && imagePath != oldImageUrl;
   }
 }
