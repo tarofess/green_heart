@@ -7,54 +7,56 @@ import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/state/timeline_notifier.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/state/comment_page_notifier.dart';
+import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/domain/type/comment.dart';
 
 class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
   @override
   Future<List<CommentData>> build(String arg) async {
     final comments = await ref.read(commentGetUsecaseProvider).execute(arg);
-    final commentDataList = await createCommentDataList(comments);
+    final commentDataList = await _createCommentDataList(comments);
     return commentDataList;
   }
 
-  Future<List<CommentData>> createCommentDataList(
-      List<Comment> comments) async {
-    final commentDataList = <CommentData>[];
+  Future<List<CommentData>> _createCommentDataList(
+    List<Comment> comments,
+  ) async {
+    List<CommentData> commentDataList = [];
 
-    for (final comment in comments) {
-      if (comment.parentCommentId != null) {
-        continue;
-      }
-      final profile = await ref.read(profileGetUsecaseProvider).execute(
-            comment.uid,
-          );
+    final commentFutures = comments
+        .where((comment) => comment.parentCommentId == null)
+        .map((comment) async {
+      final results = await Future.wait([
+        ref.read(profileGetUsecaseProvider).execute(comment.uid),
+        ref.read(commentGetReplyUsecaseProvider).execute(comment.id),
+      ]);
+      final profile = results[0] as Profile?;
+      final replyComments = results[1] as List<Comment>;
       final isMe = ref.watch(authStateProvider).value?.uid == comment.uid;
-      final replyComments =
-          await ref.read(commentGetReplyUsecaseProvider).execute(comment.id);
 
-      final replyCommentData = <CommentData>[];
-      for (final relpyComment in replyComments) {
-        final replyProfile = await ref.read(profileGetUsecaseProvider).execute(
-              relpyComment.uid,
-            );
+      final replyCommentFuture = replyComments.map((relpyComment) async {
+        final replyProfile =
+            await ref.read(profileGetUsecaseProvider).execute(relpyComment.uid);
         final isMe =
             ref.watch(authStateProvider).value?.uid == relpyComment.uid;
-        replyCommentData.add(CommentData(
+        return CommentData(
           comment: relpyComment,
           profile: replyProfile,
           replyComments: [],
           isMe: isMe,
-        ));
-      }
+        );
+      });
 
-      commentDataList.add(CommentData(
+      final replyCommentData = await Future.wait(replyCommentFuture);
+      return CommentData(
         comment: comment,
         profile: profile,
         replyComments: replyCommentData,
         isMe: isMe,
-      ));
-    }
+      );
+    });
 
+    commentDataList = await Future.wait(commentFutures);
     return commentDataList;
   }
 

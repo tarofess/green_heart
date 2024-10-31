@@ -9,6 +9,7 @@ import 'package:green_heart/domain/type/comment_data.dart';
 import 'package:green_heart/domain/type/like.dart';
 import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/domain/type/post.dart';
+import 'package:green_heart/domain/type/profile.dart';
 
 class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
   @override
@@ -25,32 +26,32 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
   Future<List<PostData>> _createPostDataList(List<Post> posts) async {
     List<PostData> postData = [];
 
-    for (var post in posts) {
-      final profile =
-          await ref.read(profileGetUsecaseProvider).execute(post.uid);
-      final likes = await ref.read(likeGetUsecaseProvider).execute(post.id);
-      final comments =
-          await ref.read(commentGetUsecaseProvider).execute(post.id);
+    final postDataFutures = posts.map((post) async {
+      final results = await Future.wait([
+        ref.read(profileGetUsecaseProvider).execute(post.uid),
+        ref.read(likeGetUsecaseProvider).execute(post.id),
+        ref.read(commentGetUsecaseProvider).execute(post.id),
+      ]);
+      final profile = results[0] as Profile;
+      final likes = results[1] as List<Like>;
+      final comments = results[2] as List<Comment>;
 
-      List<CommentData> commentData = [];
-      for (var comment in comments) {
-        final profile = await ref.read(profileGetUsecaseProvider).execute(
-              comment.uid,
-            );
-        commentData.add(CommentData(
-          comment: comment,
-          profile: profile,
-        ));
-      }
+      final commentDataFutures = comments.map((comment) async {
+        final profile =
+            await ref.read(profileGetUsecaseProvider).execute(comment.uid);
+        return CommentData(comment: comment, profile: profile);
+      });
 
-      postData.add(PostData(
+      final commentData = await Future.wait(commentDataFutures);
+      return PostData(
         post: post,
         userProfile: profile,
         likes: likes,
         comments: commentData,
-      ));
-    }
+      );
+    });
 
+    postData = await Future.wait(postDataFutures);
     return postData;
   }
 
