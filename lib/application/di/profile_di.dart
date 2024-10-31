@@ -1,3 +1,4 @@
+import 'package:green_heart/application/usecase/profile_delete_usecase.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/usecase/profile_get_usecase.dart';
@@ -10,4 +11,8 @@ final profileSaveUsecaseProvider = Provider(
 
 final profileGetUsecaseProvider = Provider(
   (ref) => ProfileGetUsecase(FirebaseProfileRepository()),
+);
+
+final profileDeleteUsecaseProvider = Provider(
+  (ref) => ProfileDeleteUsecase(FirebaseProfileRepository()),
 );

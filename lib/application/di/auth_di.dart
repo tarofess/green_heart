@@ -1,3 +1,4 @@
+import 'package:green_heart/application/usecase/account_reauth_usecase.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/usecase/apple_signin_usecase.dart';
@@ -19,4 +20,8 @@ final appleSignInUseCaseProvider = Provider<AppleSignInUseCase>(
 
 final signOutUseCaseProvider = Provider<SignOutUseCase>(
   (ref) => SignOutUseCase(FirebaseAuthService()),
+);
+
+final accountReauthUsecaseProvider = Provider<AccountReauthUsecase>(
+  (ref) => AccountReauthUsecase(FirebaseAuthService()),
 );

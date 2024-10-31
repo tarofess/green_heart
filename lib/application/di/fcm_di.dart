@@ -1,3 +1,4 @@
+import 'package:green_heart/application/usecase/fcm_token_delete_usecase.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/shared_pref_di.dart';
@@ -10,4 +11,8 @@ final fcmTokenSaveUsecaeProvider = Provider(
     ref.read(sharedPrefGetUsecaseProvider),
     ref.read(sharedPrefSaveUsecaseProvider),
   ),
+);
+
+final fcmTokenDeleteUsecaseProvider = Provider(
+  (ref) => FcmTokenDeleteUsecase(FirebaseNotificationRepository()),
 );

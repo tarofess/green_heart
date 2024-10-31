@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/post_di.dart';
@@ -87,6 +88,11 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
     });
   }
 
+  Future<void> deleteAllPosts(User user) async {
+    await ref.read(postDeleteAllUsecaseProvider).execute(user);
+    state = const AsyncValue.data([]);
+  }
+
   void toggleLike(String postId, String uid) {
     state.whenData((postDataList) {
       final updatedPostData = postDataList.map((postData) {
@@ -157,10 +163,6 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
 
       state = AsyncValue.data(updatedPostData);
     });
-  }
-
-  Future<void> removeAllPosts() async {
-    state = const AsyncValue.data([]);
   }
 }
 

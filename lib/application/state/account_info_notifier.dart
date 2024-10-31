@@ -1,10 +1,14 @@
+import 'package:green_heart/application/di/account_di.dart';
+import 'package:green_heart/application/di/fcm_di.dart';
+import 'package:green_heart/application/di/shared_pref_di.dart';
+import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
-import 'package:green_heart/application/di/account_di.dart';
 import 'package:green_heart/domain/type/account_info.dart';
 import 'package:green_heart/domain/util/date_util.dart';
+import 'package:green_heart/application/di/auth_di.dart';
 
 class AccountNotifier extends Notifier<AccountInfo> {
   @override
@@ -49,7 +53,19 @@ class AccountNotifier extends Notifier<AccountInfo> {
       throw Exception('現在アカウント情報が取得できないためアカウントを削除できません。のちほどお試しください。');
     }
 
-    await ref.read(accountDeleteUsecaseProvider).execute(user, profile);
+    await ref.read(accountReauthUsecaseProvider).execute(user);
+
+    final deleteTasks = Future.wait([
+      ref.read(fcmTokenDeleteUsecaseProvider).execute(user),
+      ref
+          .read(userPostNotifierProvider(user.uid).notifier)
+          .deleteAllPosts(user),
+      ref.read(profileNotifierProvider.notifier).deleteProfile(user, profile),
+      ref.read(sharedPrefDeleteUsecaseProvider).execute('uid'),
+    ]);
+
+    await deleteTasks;
+    await ref.read(accountDeleteUsecaseProvider).execute(user);
   }
 }
 

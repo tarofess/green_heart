@@ -1,3 +1,4 @@
+import 'package:green_heart/application/usecase/post_delete_all_usecase.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/usecase/post_add_usecase.dart';
@@ -26,6 +27,10 @@ final postGetUsecaseProvider = Provider(
 
 final postDeleteUsecaseProvider = Provider(
   (ref) => PostDeleteUsecase(FirebasePostRepository()),
+);
+
+final postDeleteAllUsecaseProvider = Provider(
+  (ref) => PostDeleteAllUsecase(FirebasePostRepository()),
 );
 
 final timelineGetUsecaseProvider = Provider(
