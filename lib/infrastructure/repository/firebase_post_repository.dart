@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:uuid/uuid.dart';
 
 import 'package:green_heart/application/exception/app_exception.dart';
 import 'package:green_heart/application/interface/post_repository.dart';
@@ -73,17 +74,17 @@ class FirebasePostRepository implements PostRepository {
   @override
   Future<List<String>> uploadImages(String uid, List<String> paths) async {
     try {
-      List<String> urls = [];
-      for (final path in paths) {
+      final uploadTasks = paths.map((path) async {
         File file = File(path);
-        String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+        String fileName = const Uuid().v4();
         Reference ref = FirebaseStorage.instance
             .ref()
             .child('image/post/$uid/$fileName.jpg');
         await ref.putFile(file);
-        final url = await ref.getDownloadURL();
-        urls.add(url);
-      }
+        return await ref.getDownloadURL();
+      });
+
+      final urls = await Future.wait(uploadTasks);
       return urls;
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
