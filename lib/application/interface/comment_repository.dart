@@ -6,4 +6,5 @@ abstract class CommentRepository {
   Future<Comment> addComment(
       String uid, String postId, String content, String? parentCommentId);
   Future<void> deleteComment(String commentId);
+  Future<void> deleteAllCommentByUid(String uid);
 }

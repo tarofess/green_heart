@@ -1,3 +1,5 @@
+import 'package:green_heart/application/usecase/comment_delete_all_usecase.dart';
+import 'package:green_heart/application/usecase/like_delete_all_usecase.dart';
 import 'package:green_heart/application/usecase/post_delete_all_usecase.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -45,6 +47,10 @@ final likeToggleUsecaseProvider = Provider<LikeToggleUsecase>(
   (ref) => LikeToggleUsecase(FirebaseLikeRepository()),
 );
 
+final likeDeleteAllUsecaseProvider = Provider(
+  (ref) => LikeDeleteAllUsecase(FirebaseLikeRepository()),
+);
+
 final commentGetUsecaseProvider = Provider(
   (ref) => CommentGetUsecase(FirebaseCommentRepository()),
 );
@@ -59,6 +65,10 @@ final commentDeleteUsecaseProvider = Provider(
 
 final commentGetReplyUsecaseProvider = Provider(
   (ref) => CommentGetReplyUsecase(FirebaseCommentRepository()),
+);
+
+final commentDeleteAllUsecaseProvider = Provider(
+  (ref) => CommentDeleteAllUsecase(FirebaseCommentRepository()),
 );
 
 final reportAddUsecaseProvider = Provider(

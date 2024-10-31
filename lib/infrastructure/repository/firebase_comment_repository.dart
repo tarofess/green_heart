@@ -85,4 +85,20 @@ class FirebaseCommentRepository implements CommentRepository {
       throw exception ?? AppException('コメントの削除に失敗しました。再度お試しください。');
     }
   }
+
+  @override
+  Future<void> deleteAllCommentByUid(String uid) async {
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      final docRef =
+          firestore.collection('comment').where('uid', isEqualTo: uid);
+      final docSnapshot = await docRef.get();
+      for (final doc in docSnapshot.docs) {
+        await deleteComment(doc.id);
+      }
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('コメントの削除に失敗しました。再度お試しください。');
+    }
+  }
 }
