@@ -123,7 +123,7 @@ class CommentCard extends HookConsumerWidget {
           : CircleAvatar(
               radius: 24.r,
               backgroundImage: CachedNetworkImageProvider(
-                commentData.profile?.imageUrl ?? '',
+                replyComment.profile?.imageUrl ?? '',
               ),
             );
     }

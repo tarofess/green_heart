@@ -36,9 +36,12 @@ class CommentPage extends HookConsumerWidget {
           return Column(
             children: [
               Expanded(
-                child: comments.isEmpty
-                    ? _buildEmptyCommentMessage()
-                    : _buildComment(ref, comments, focusNode),
+                child: RefreshIndicator(
+                  onRefresh: () => _refreshComments(ref),
+                  child: comments.isEmpty
+                      ? _buildEmptyCommentMessage()
+                      : _buildComment(ref, comments, focusNode),
+                ),
               ),
               const Divider(height: 1),
               Padding(
@@ -56,7 +59,7 @@ class CommentPage extends HookConsumerWidget {
         loading: () {
           return const LoadingIndicator();
         },
-        error: (e, ststackTrace) {
+        error: (e, stackTrace) {
           return ErrorPage(
             error: e,
             retry: () => ref.refresh(commentNotifierProvider(postId)),
@@ -64,6 +67,11 @@ class CommentPage extends HookConsumerWidget {
         },
       ),
     );
+  }
+
+  Future<void> _refreshComments(WidgetRef ref) async {
+    // ignore: unused_result
+    await ref.refresh(commentNotifierProvider(postId).future);
   }
 
   Widget _buildEmptyCommentMessage() {
