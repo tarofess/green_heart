@@ -25,12 +25,10 @@ class FirebaseBlockRepository implements BlockRepository {
   }
 
   @override
-  Future<List<Block>> getBlockByUid(String blockedUid) async {
+  Future<List<Block>> getBlockByUid(String uid) async {
     try {
       final firestore = FirebaseFirestore.instance;
-      final docRef = firestore
-          .collection('block')
-          .where('blockedUid', isEqualTo: blockedUid);
+      final docRef = firestore.collection('block').where('uid', isEqualTo: uid);
       final docSnapshot = await docRef.get();
       return docSnapshot.docs.map((doc) => Block.fromJson(doc.data())).toList();
     } catch (e, stackTrace) {
@@ -55,5 +53,16 @@ class FirebaseBlockRepository implements BlockRepository {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('ブロックリストの削除に失敗しました。再度お試しください。');
     }
+  }
+
+  @override
+  Future<bool> checkIfBlocked(String currentUserId, String targetUserId) async {
+    final firestore = FirebaseFirestore.instance;
+    final query = firestore
+        .collection('block')
+        .where('uid', isEqualTo: currentUserId)
+        .where('blockedUid', isEqualTo: targetUserId);
+    final snapshot = await query.get();
+    return snapshot.docs.isNotEmpty;
   }
 }

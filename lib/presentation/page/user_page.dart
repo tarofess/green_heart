@@ -17,6 +17,7 @@ import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/application/state/block_notifier.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
+import 'package:green_heart/application/di/block_di.dart';
 
 class UserPage extends HookConsumerWidget {
   const UserPage({super.key, required this.uid});
@@ -26,9 +27,8 @@ class UserPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userPostState = ref.watch(userPostNotifierProvider(uid));
-    final blockState = ref.watch(blockNotifierProvider(uid));
     final profile = useState<Profile?>(null);
-    final blocked = useState(false);
+    final isBlocked = useState(false);
 
     useEffect(() {
       void setProfile() async {
@@ -36,37 +36,28 @@ class UserPage extends HookConsumerWidget {
         profile.value = await ref.read(profileGetUsecaseProvider).execute(uid!);
       }
 
+      void setBlockState() async {
+        if (uid == null) return;
+
+        isBlocked.value = await ref
+            .read(blockCheckUsecaseProvider)
+            .execute(ref.watch(authStateProvider).value?.uid, uid!);
+      }
+
       setProfile();
+      setBlockState();
       return;
     }, [ref.watch(profileNotifierProvider).value]);
 
     return Scaffold(
       appBar: uid == ref.watch(authStateProvider).value?.uid
           ? null
-          : _buildAppBar(context, ref, profile, blocked),
-      body: blockState.when(
-        data: (blocks) {
-          for (var block in blocks) {
-            if (block.uid == ref.watch(authStateProvider).value?.uid) {
-              blocked.value = true;
-            }
-          }
-          return userPostState.when(
-            data: (userPosts) {
-              return blocked.value
-                  ? _buildBlockedBody(context, ref, profile)
-                  : _buildBody(context, ref, profile, userPosts);
-            },
-            loading: () {
-              return const LoadingIndicator();
-            },
-            error: (e, _) {
-              return ErrorPage(
-                error: e,
-                retry: () => ref.refresh(userPostNotifierProvider(uid)),
-              );
-            },
-          );
+          : _buildAppBar(context, ref, profile, isBlocked),
+      body: userPostState.when(
+        data: (userPosts) {
+          return isBlocked.value
+              ? _buildBlockedBody(context, ref, profile)
+              : _buildBody(context, ref, profile, userPosts);
         },
         loading: () {
           return const LoadingIndicator();
@@ -74,7 +65,7 @@ class UserPage extends HookConsumerWidget {
         error: (e, _) {
           return ErrorPage(
             error: e,
-            retry: () => ref.refresh(blockNotifierProvider(uid)),
+            retry: () => ref.refresh(userPostNotifierProvider(uid)),
           );
         },
       ),
@@ -85,7 +76,7 @@ class UserPage extends HookConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     ValueNotifier<Profile?> profile,
-    ValueNotifier<bool> blocked,
+    ValueNotifier<bool> isBlocked,
   ) {
     return AppBar(
       title: const Text(''),
@@ -98,7 +89,7 @@ class UserPage extends HookConsumerWidget {
                 return;
               }
 
-              if (blocked.value) {
+              if (isBlocked.value) {
                 final result = await showConfirmationDialog(
                   context: context,
                   title: 'ブロック解除',
@@ -108,10 +99,9 @@ class UserPage extends HookConsumerWidget {
                 );
                 if (!result) return;
 
-                await ref.read(blockNotifierProvider(uid).notifier).deleteBlock(
-                      ref.watch(authStateProvider).value!.uid,
-                      uid!,
-                    );
+                await ref
+                    .read(blockNotifierProvider.notifier)
+                    .deleteBlock(uid!);
 
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -121,7 +111,7 @@ class UserPage extends HookConsumerWidget {
                   );
                 }
 
-                blocked.value = false;
+                isBlocked.value = false;
               } else {
                 final result = await showConfirmationDialog(
                   context: context,
@@ -132,10 +122,7 @@ class UserPage extends HookConsumerWidget {
                 );
                 if (!result) return;
 
-                await ref.read(blockNotifierProvider(uid).notifier).addBlock(
-                      ref.watch(authStateProvider).value!.uid,
-                      uid!,
-                    );
+                await ref.read(blockNotifierProvider.notifier).addBlock(uid!);
 
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -144,6 +131,8 @@ class UserPage extends HookConsumerWidget {
                     ),
                   );
                 }
+
+                isBlocked.value = true;
               }
             } catch (e) {
               if (context.mounted) {

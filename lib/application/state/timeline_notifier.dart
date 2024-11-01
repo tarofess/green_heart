@@ -9,13 +9,17 @@ import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/domain/type/post.dart';
 import 'package:green_heart/domain/type/profile.dart';
+import 'package:green_heart/application/state/block_notifier.dart';
+import 'package:green_heart/domain/type/block.dart';
 
 class TimelineNotifier extends AsyncNotifier<List<PostData>> {
   @override
   Future<List<PostData>> build() async {
+    final blockList = await ref.read(blockNotifierProvider.future);
     final posts = await ref.read(timelineGetUsecaseProvider).execute();
     final postData = await _createPostDataList(posts);
-    return postData;
+    final postDataFilteredByBlock = _filterePostDataList(postData, blockList);
+    return postDataFilteredByBlock;
   }
 
   Future<List<PostData>> _createPostDataList(List<Post> posts) async {
@@ -48,6 +52,19 @@ class TimelineNotifier extends AsyncNotifier<List<PostData>> {
 
     postData = await Future.wait(postDataFutures);
     return postData;
+  }
+
+  List<PostData> _filterePostDataList(
+    List<PostData> postData,
+    List<Block> blockList,
+  ) {
+    return postData.where(
+      (postData) {
+        final isBlocked =
+            blockList.any((block) => block.blockedUid == postData.post.uid);
+        return !isBlocked;
+      },
+    ).toList();
   }
 
   Future<void> deletePost(String postId) async {

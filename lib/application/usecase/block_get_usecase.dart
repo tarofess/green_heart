@@ -6,7 +6,7 @@ class BlockGetUsecase {
 
   BlockGetUsecase(this._blockRepository);
 
-  Future<List<Block>> execute(String blockedUid) {
-    return _blockRepository.getBlockByUid(blockedUid);
+  Future<List<Block>> execute(String uid) {
+    return _blockRepository.getBlockByUid(uid);
   }
 }
