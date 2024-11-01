@@ -14,6 +14,9 @@ import 'package:green_heart/presentation/page/error_page.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
+import 'package:green_heart/application/state/block_notifier.dart';
+import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
+import 'package:green_heart/presentation/dialog/error_dialog.dart';
 
 class UserPage extends HookConsumerWidget {
   const UserPage({super.key, required this.uid});
@@ -23,16 +26,14 @@ class UserPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userPostState = ref.watch(userPostNotifierProvider(uid));
+    final blockState = ref.watch(blockNotifierProvider(uid));
     final profile = useState<Profile?>(null);
+    final blocked = useState(false);
 
     useEffect(() {
       void setProfile() async {
         if (uid == null) return;
-
-        uid == ref.watch(authStateProvider).value?.uid
-            ? profile.value = ref.read(profileNotifierProvider).value
-            : profile.value =
-                await ref.read(profileGetUsecaseProvider).execute(uid!);
+        profile.value = await ref.read(profileGetUsecaseProvider).execute(uid!);
       }
 
       setProfile();
@@ -42,44 +43,29 @@ class UserPage extends HookConsumerWidget {
     return Scaffold(
       appBar: uid == ref.watch(authStateProvider).value?.uid
           ? null
-          : AppBar(
-              title: const Text(''),
-            ),
-      body: userPostState.when(
-        data: (userPosts) {
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(left: 16.r, right: 16.r),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          _buildUserImage(context, ref, profile),
-                          Expanded(child: _buildUserStats()),
-                        ],
-                      ),
-                      SizedBox(height: 16.r),
-                      _buildUserName(context, ref, profile.value),
-                      SizedBox(height: 8.r),
-                      _buildBirthDate(context, ref, profile.value),
-                      SizedBox(height: 16.r),
-                      _buildUserBio(context, ref, profile.value),
-                      SizedBox(height: 16.r),
-                      _buildFollowButton(context, ref),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 8.r),
-                const Divider(),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: _buildUserPosts(context, ref, userPosts),
-                ),
-              ],
-            ),
+          : _buildAppBar(context, ref, profile, blocked),
+      body: blockState.when(
+        data: (blocks) {
+          for (var block in blocks) {
+            if (block.uid == ref.watch(authStateProvider).value?.uid) {
+              blocked.value = true;
+            }
+          }
+          return userPostState.when(
+            data: (userPosts) {
+              return blocked.value
+                  ? _buildBlockedBody(context, ref, profile)
+                  : _buildBody(context, ref, profile, userPosts);
+            },
+            loading: () {
+              return const LoadingIndicator();
+            },
+            error: (e, _) {
+              return ErrorPage(
+                error: e,
+                retry: () => ref.refresh(userPostNotifierProvider(uid)),
+              );
+            },
           );
         },
         loading: () {
@@ -88,9 +74,130 @@ class UserPage extends HookConsumerWidget {
         error: (e, _) {
           return ErrorPage(
             error: e,
-            retry: () => ref.refresh(userPostNotifierProvider(uid)),
+            retry: () => ref.refresh(blockNotifierProvider(uid)),
           );
         },
+      ),
+    );
+  }
+
+  AppBar _buildAppBar(
+    BuildContext context,
+    WidgetRef ref,
+    ValueNotifier<Profile?> profile,
+    ValueNotifier<bool> blocked,
+  ) {
+    return AppBar(
+      title: const Text(''),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.block),
+          onPressed: () async {
+            try {
+              if (ref.watch(authStateProvider).value == null && uid == null) {
+                return;
+              }
+
+              if (blocked.value) {
+                final result = await showConfirmationDialog(
+                  context: context,
+                  title: 'ブロック解除',
+                  content: 'このユーザーのブロックを解除しますか？',
+                  positiveButtonText: 'ブロック解除',
+                  negativeButtonText: 'キャンセル',
+                );
+                if (!result) return;
+
+                await ref.read(blockNotifierProvider(uid).notifier).deleteBlock(
+                      ref.watch(authStateProvider).value!.uid,
+                      uid!,
+                    );
+
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('${profile.value?.name}のブロックを解除しました。'),
+                    ),
+                  );
+                }
+
+                blocked.value = false;
+              } else {
+                final result = await showConfirmationDialog(
+                  context: context,
+                  title: 'ブロック',
+                  content: 'このユーザーをブロックしますか？',
+                  positiveButtonText: 'ブロックする',
+                  negativeButtonText: 'キャンセル',
+                );
+                if (!result) return;
+
+                await ref.read(blockNotifierProvider(uid).notifier).addBlock(
+                      ref.watch(authStateProvider).value!.uid,
+                      uid!,
+                    );
+
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('${profile.value?.name}をブロックしました。'),
+                    ),
+                  );
+                }
+              }
+            } catch (e) {
+              if (context.mounted) {
+                showErrorDialog(
+                  context: context,
+                  title: 'ブロックエラー',
+                  content: 'ブロックに失敗しました。再度お試しください。',
+                );
+              }
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBody(
+    BuildContext context,
+    WidgetRef ref,
+    ValueNotifier<Profile?> profile,
+    List<PostData> userPosts,
+  ) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 16.r, right: 16.r),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    _buildUserImage(context, ref, profile),
+                    Expanded(child: _buildUserStats()),
+                  ],
+                ),
+                SizedBox(height: 16.r),
+                _buildUserName(context, ref, profile.value),
+                SizedBox(height: 8.r),
+                _buildBirthDate(context, ref, profile.value),
+                SizedBox(height: 16.r),
+                _buildUserBio(context, ref, profile.value),
+                SizedBox(height: 16.r),
+                _buildFollowButton(context, ref),
+              ],
+            ),
+          ),
+          SizedBox(height: 8.r),
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: _buildUserPosts(context, ref, userPosts),
+          ),
+        ],
       ),
     );
   }
@@ -245,5 +352,31 @@ class UserPage extends HookConsumerWidget {
               );
             },
           );
+  }
+
+  Widget _buildBlockedBody(
+    BuildContext context,
+    WidgetRef ref,
+    ValueNotifier<Profile?> profile,
+  ) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.only(left: 32, right: 32, bottom: 52),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildUserImage(context, ref, profile),
+            const SizedBox(height: 32),
+            Text(
+              'あなたは${profile.value?.name}をブロックしています。',
+              style: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
