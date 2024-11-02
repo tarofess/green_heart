@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:green_heart/presentation/page/block_list_page.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/auth_state_provider.dart';
@@ -92,6 +93,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/notification_setting',
         builder: (context, state) => const NotificationSettingPage(),
+      ),
+      GoRoute(
+        path: '/block_list',
+        builder: (context, state) => const BlockListPage(),
       ),
       GoRoute(
         path: '/app_info',

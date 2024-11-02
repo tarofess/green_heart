@@ -18,6 +18,7 @@ class SettingsPage extends ConsumerWidget {
         children: [
           _buildEditProfileItem(context, ref),
           _buildNotificationItem(context, ref),
+          _buildBlockItem(context, ref),
           _buildContactItem(context, ref),
           _buildAppInfoItem(context, ref),
           _buildAccountItem(context, ref),
@@ -43,6 +44,16 @@ class SettingsPage extends ConsumerWidget {
       title: const Text('通知設定'),
       onTap: () {
         context.push('/notification_setting');
+      },
+    );
+  }
+
+  Widget _buildBlockItem(BuildContext context, WidgetRef ref) {
+    return ListTile(
+      leading: const Icon(Icons.block),
+      title: const Text('ブロックリスト'),
+      onTap: () {
+        context.push('/block_list');
       },
     );
   }
@@ -84,7 +95,7 @@ class SettingsPage extends ConsumerWidget {
   Widget _buildAccountItem(BuildContext context, WidgetRef ref) {
     return ListTile(
       leading: const Icon(Icons.account_circle),
-      title: const Text('アカウント情報'),
+      title: const Text('アカウントの情報'),
       onTap: () {
         context.push('/account');
       },

@@ -10,7 +10,7 @@ import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/domain/type/post.dart';
 import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/application/state/block_notifier.dart';
-import 'package:green_heart/domain/type/block.dart';
+import 'package:green_heart/domain/type/block_data.dart';
 
 class TimelineNotifier extends AsyncNotifier<List<PostData>> {
   @override
@@ -56,12 +56,13 @@ class TimelineNotifier extends AsyncNotifier<List<PostData>> {
 
   List<PostData> _filterePostDataList(
     List<PostData> postData,
-    List<Block> blockList,
+    List<BlockData> blockList,
   ) {
     return postData.where(
       (postData) {
-        final isBlocked =
-            blockList.any((block) => block.blockedUid == postData.post.uid);
+        final isBlocked = blockList.any(
+          (blockData) => blockData.block.blockedUid == postData.post.uid,
+        );
         return !isBlocked;
       },
     ).toList();
