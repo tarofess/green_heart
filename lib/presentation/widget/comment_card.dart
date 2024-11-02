@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:green_heart/application/di/post_di.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
+import 'package:green_heart/presentation/dialog/error_dialog.dart';
+import 'package:green_heart/presentation/dialog/report_dialog.dart';
+import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -209,7 +214,7 @@ class CommentCard extends HookConsumerWidget {
         else if (commentType == CommentType.reply && replyComment!.isMe)
           _buildDeleteButton(context, ref, replyComment)
         else
-          const SizedBox(),
+          _buildReportButton(context, ref),
       ],
     );
   }
@@ -237,6 +242,49 @@ class CommentCard extends HookConsumerWidget {
             );
       },
       child: const Text('削除'),
+    );
+  }
+
+  Widget _buildReportButton(BuildContext context, WidgetRef ref) {
+    return TextButton(
+      child: const Text('通報'),
+      onPressed: () async {
+        try {
+          final reportText = await showReportDialog(context);
+          if (reportText == null) return;
+
+          final uid = ref.watch(authStateProvider).value?.uid;
+          if (uid == null) return;
+
+          if (context.mounted) {
+            await LoadingOverlay.of(context).during(
+              () => ref.read(reportAddUsecaseProvider).execute(
+                    uid,
+                    reportText,
+                    reportedPostId: null,
+                    reportedCommentId: commentData.comment.id,
+                    reportedUserId: null,
+                  ),
+            );
+          }
+
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('投稿を通報しました。'),
+              ),
+            );
+          }
+        } catch (e) {
+          if (context.mounted) {
+            showErrorDialog(
+              context: context,
+              title: '報告エラー',
+              content: e.toString(),
+            );
+          }
+        }
+      },
     );
   }
 }

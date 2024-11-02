@@ -6,10 +6,18 @@ class ReportAddUsecase {
   ReportAddUsecase(this._reportRepository);
 
   Future<void> execute(
-    String reportedPostId,
     String reporterUid,
-    String reason,
-  ) async {
-    await _reportRepository.addReport(reportedPostId, reporterUid, reason);
+    String reason, {
+    required String? reportedPostId,
+    required String? reportedCommentId,
+    required String? reportedUserId,
+  }) async {
+    await _reportRepository.addReport(
+      reporterUid,
+      reason,
+      reportedPostId: reportedPostId,
+      reportedCommentId: reportedCommentId,
+      reportedUserId: reportedUserId,
+    );
   }
 }

@@ -20,9 +20,11 @@ Report _$ReportFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Report {
-  String get reportedPostId => throw _privateConstructorUsedError;
   String get reporterUid => throw _privateConstructorUsedError;
   String get reason => throw _privateConstructorUsedError;
+  String? get reportedPostId => throw _privateConstructorUsedError;
+  String? get reportedCommentId => throw _privateConstructorUsedError;
+  String? get reportedUserId => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   int get status => throw _privateConstructorUsedError;
 
@@ -41,9 +43,11 @@ abstract class $ReportCopyWith<$Res> {
       _$ReportCopyWithImpl<$Res, Report>;
   @useResult
   $Res call(
-      {String reportedPostId,
-      String reporterUid,
+      {String reporterUid,
       String reason,
+      String? reportedPostId,
+      String? reportedCommentId,
+      String? reportedUserId,
       DateTime createdAt,
       int status});
 }
@@ -63,17 +67,15 @@ class _$ReportCopyWithImpl<$Res, $Val extends Report>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? reportedPostId = null,
     Object? reporterUid = null,
     Object? reason = null,
+    Object? reportedPostId = freezed,
+    Object? reportedCommentId = freezed,
+    Object? reportedUserId = freezed,
     Object? createdAt = null,
     Object? status = null,
   }) {
     return _then(_value.copyWith(
-      reportedPostId: null == reportedPostId
-          ? _value.reportedPostId
-          : reportedPostId // ignore: cast_nullable_to_non_nullable
-              as String,
       reporterUid: null == reporterUid
           ? _value.reporterUid
           : reporterUid // ignore: cast_nullable_to_non_nullable
@@ -82,6 +84,18 @@ class _$ReportCopyWithImpl<$Res, $Val extends Report>
           ? _value.reason
           : reason // ignore: cast_nullable_to_non_nullable
               as String,
+      reportedPostId: freezed == reportedPostId
+          ? _value.reportedPostId
+          : reportedPostId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      reportedCommentId: freezed == reportedCommentId
+          ? _value.reportedCommentId
+          : reportedCommentId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      reportedUserId: freezed == reportedUserId
+          ? _value.reportedUserId
+          : reportedUserId // ignore: cast_nullable_to_non_nullable
+              as String?,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -102,9 +116,11 @@ abstract class _$$ReportImplCopyWith<$Res> implements $ReportCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {String reportedPostId,
-      String reporterUid,
+      {String reporterUid,
       String reason,
+      String? reportedPostId,
+      String? reportedCommentId,
+      String? reportedUserId,
       DateTime createdAt,
       int status});
 }
@@ -122,17 +138,15 @@ class __$$ReportImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? reportedPostId = null,
     Object? reporterUid = null,
     Object? reason = null,
+    Object? reportedPostId = freezed,
+    Object? reportedCommentId = freezed,
+    Object? reportedUserId = freezed,
     Object? createdAt = null,
     Object? status = null,
   }) {
     return _then(_$ReportImpl(
-      reportedPostId: null == reportedPostId
-          ? _value.reportedPostId
-          : reportedPostId // ignore: cast_nullable_to_non_nullable
-              as String,
       reporterUid: null == reporterUid
           ? _value.reporterUid
           : reporterUid // ignore: cast_nullable_to_non_nullable
@@ -141,6 +155,18 @@ class __$$ReportImplCopyWithImpl<$Res>
           ? _value.reason
           : reason // ignore: cast_nullable_to_non_nullable
               as String,
+      reportedPostId: freezed == reportedPostId
+          ? _value.reportedPostId
+          : reportedPostId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      reportedCommentId: freezed == reportedCommentId
+          ? _value.reportedCommentId
+          : reportedCommentId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      reportedUserId: freezed == reportedUserId
+          ? _value.reportedUserId
+          : reportedUserId // ignore: cast_nullable_to_non_nullable
+              as String?,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -157,9 +183,11 @@ class __$$ReportImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ReportImpl implements _Report {
   const _$ReportImpl(
-      {required this.reportedPostId,
-      required this.reporterUid,
+      {required this.reporterUid,
       required this.reason,
+      required this.reportedPostId,
+      required this.reportedCommentId,
+      required this.reportedUserId,
       required this.createdAt,
       this.status = 0});
 
@@ -167,11 +195,15 @@ class _$ReportImpl implements _Report {
       _$$ReportImplFromJson(json);
 
   @override
-  final String reportedPostId;
-  @override
   final String reporterUid;
   @override
   final String reason;
+  @override
+  final String? reportedPostId;
+  @override
+  final String? reportedCommentId;
+  @override
+  final String? reportedUserId;
   @override
   final DateTime createdAt;
   @override
@@ -180,7 +212,7 @@ class _$ReportImpl implements _Report {
 
   @override
   String toString() {
-    return 'Report(reportedPostId: $reportedPostId, reporterUid: $reporterUid, reason: $reason, createdAt: $createdAt, status: $status)';
+    return 'Report(reporterUid: $reporterUid, reason: $reason, reportedPostId: $reportedPostId, reportedCommentId: $reportedCommentId, reportedUserId: $reportedUserId, createdAt: $createdAt, status: $status)';
   }
 
   @override
@@ -188,11 +220,15 @@ class _$ReportImpl implements _Report {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ReportImpl &&
-            (identical(other.reportedPostId, reportedPostId) ||
-                other.reportedPostId == reportedPostId) &&
             (identical(other.reporterUid, reporterUid) ||
                 other.reporterUid == reporterUid) &&
             (identical(other.reason, reason) || other.reason == reason) &&
+            (identical(other.reportedPostId, reportedPostId) ||
+                other.reportedPostId == reportedPostId) &&
+            (identical(other.reportedCommentId, reportedCommentId) ||
+                other.reportedCommentId == reportedCommentId) &&
+            (identical(other.reportedUserId, reportedUserId) ||
+                other.reportedUserId == reportedUserId) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.status, status) || other.status == status));
@@ -200,8 +236,8 @@ class _$ReportImpl implements _Report {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, reportedPostId, reporterUid, reason, createdAt, status);
+  int get hashCode => Object.hash(runtimeType, reporterUid, reason,
+      reportedPostId, reportedCommentId, reportedUserId, createdAt, status);
 
   /// Create a copy of Report
   /// with the given fields replaced by the non-null parameter values.
@@ -221,20 +257,26 @@ class _$ReportImpl implements _Report {
 
 abstract class _Report implements Report {
   const factory _Report(
-      {required final String reportedPostId,
-      required final String reporterUid,
+      {required final String reporterUid,
       required final String reason,
+      required final String? reportedPostId,
+      required final String? reportedCommentId,
+      required final String? reportedUserId,
       required final DateTime createdAt,
       final int status}) = _$ReportImpl;
 
   factory _Report.fromJson(Map<String, dynamic> json) = _$ReportImpl.fromJson;
 
   @override
-  String get reportedPostId;
-  @override
   String get reporterUid;
   @override
   String get reason;
+  @override
+  String? get reportedPostId;
+  @override
+  String? get reportedCommentId;
+  @override
+  String? get reportedUserId;
   @override
   DateTime get createdAt;
   @override

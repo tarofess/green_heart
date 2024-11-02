@@ -1,7 +1,9 @@
 abstract class ReportRepository {
   Future<void> addReport(
-    String reportedPostId,
     String reporterUid,
-    String reason,
-  );
+    String reason, {
+    required String? reportedPostId,
+    required String? reportedCommentId,
+    required String? reportedUserId,
+  });
 }

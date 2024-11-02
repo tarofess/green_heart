@@ -7,15 +7,19 @@ import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 class FirebaseReportRepository implements ReportRepository {
   @override
   Future<void> addReport(
-    String reportedPostId,
     String reporterUid,
-    String reason,
-  ) async {
+    String reason, {
+    required String? reportedPostId,
+    required String? reportedCommentId,
+    required String? reportedUserId,
+  }) async {
     try {
       final report = Report(
-        reportedPostId: reportedPostId,
         reporterUid: reporterUid,
         reason: reason,
+        reportedPostId: reportedPostId,
+        reportedCommentId: reportedCommentId,
+        reportedUserId: reportedUserId,
         createdAt: DateTime.now(),
       );
 

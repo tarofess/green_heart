@@ -271,9 +271,11 @@ class PostCard extends ConsumerWidget {
           if (context.mounted) {
             await LoadingOverlay.of(context).during(
               () => ref.read(reportAddUsecaseProvider).execute(
-                    postData.post.id,
                     uid,
                     reportText,
+                    reportedPostId: postData.post.id,
+                    reportedCommentId: null,
+                    reportedUserId: null,
                   ),
             );
           }
