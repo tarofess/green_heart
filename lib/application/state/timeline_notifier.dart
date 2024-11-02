@@ -9,16 +9,15 @@ import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/domain/type/post.dart';
 import 'package:green_heart/domain/type/profile.dart';
-import 'package:green_heart/application/state/block_notifier.dart';
-import 'package:green_heart/domain/type/block_data.dart';
+import 'package:green_heart/application/di/block_di.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
 
 class TimelineNotifier extends AsyncNotifier<List<PostData>> {
   @override
   Future<List<PostData>> build() async {
-    final blockList = await ref.read(blockNotifierProvider.future);
     final posts = await ref.read(timelineGetUsecaseProvider).execute();
     final postData = await _createPostDataList(posts);
-    final postDataFilteredByBlock = _filterePostDataList(postData, blockList);
+    final postDataFilteredByBlock = _filterByBlock(postData);
     return postDataFilteredByBlock;
   }
 
@@ -54,18 +53,29 @@ class TimelineNotifier extends AsyncNotifier<List<PostData>> {
     return postData;
   }
 
-  List<PostData> _filterePostDataList(
-    List<PostData> postData,
-    List<BlockData> blockList,
-  ) {
-    return postData.where(
-      (postData) {
-        final isBlocked = blockList.any(
-          (blockData) => blockData.block.blockedUid == postData.post.uid,
-        );
-        return !isBlocked;
-      },
-    ).toList();
+  Future<List<PostData>> _filterByBlock(List<PostData> postData) async {
+    final uid = ref.watch(authStateProvider).value?.uid;
+    if (uid == null) {
+      throw Exception('ユーザーが存在しないので投稿を取得できません。再度お試しください。');
+    }
+
+    final blockedByCurrentUser =
+        await ref.read(blockGetUsecaseProvider).execute(uid);
+    final blockedUids =
+        blockedByCurrentUser.map((block) => block.blockedUid).toSet();
+
+    List<PostData> filteredPostData = [];
+    for (var post in postData) {
+      final blockedByPostOwner =
+          await ref.read(blockGetUsecaseProvider).execute(post.post.uid);
+      final isBlockedByPostOwner =
+          blockedByPostOwner.any((block) => block.blockedUid == uid);
+      if (!blockedUids.contains(post.post.uid) && !isBlockedByPostOwner) {
+        filteredPostData.add(post);
+      }
+    }
+
+    return filteredPostData;
   }
 
   Future<void> deletePost(String postId) async {
