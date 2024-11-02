@@ -6,7 +6,6 @@ import 'package:green_heart/domain/type/account_info.dart';
 import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/application/di/auth_di.dart';
 import 'package:green_heart/application/di/account_di.dart';
-import 'package:green_heart/application/di/fcm_di.dart';
 import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/application/di/shared_pref_di.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
@@ -57,7 +56,6 @@ class AccountNotifier extends Notifier<AccountInfo> {
     await ref.read(accountReauthUsecaseProvider).execute(user);
 
     final deleteTasks = Future.wait([
-      ref.read(fcmTokenDeleteUsecaseProvider).execute(user),
       ref.read(likeDeleteAllUsecaseProvider).execute(user),
       ref.read(commentDeleteAllUsecaseProvider).execute(user),
       ref

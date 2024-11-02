@@ -20,7 +20,6 @@ class FirebaseInitService implements InitService {
     try {
       await initFirebase();
       await setupCrashlytics();
-      await setupMessaging();
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException(e.toString());

@@ -6,6 +6,7 @@ import 'package:green_heart/application/di/auth_di.dart';
 import 'package:green_heart/application/di/settings_di.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
+import 'package:green_heart/application/state/timeline_scroll_state_notifier.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -17,7 +18,6 @@ class SettingsPage extends ConsumerWidget {
       body: ListView(
         children: [
           _buildEditProfileItem(context, ref),
-          _buildNotificationItem(context, ref),
           _buildBlockItem(context, ref),
           _buildContactItem(context, ref),
           _buildAppInfoItem(context, ref),
@@ -34,16 +34,6 @@ class SettingsPage extends ConsumerWidget {
       title: const Text('プロフィール編集'),
       onTap: () {
         context.push('/profile_edit');
-      },
-    );
-  }
-
-  Widget _buildNotificationItem(BuildContext context, WidgetRef ref) {
-    return ListTile(
-      leading: const Icon(Icons.notifications),
-      title: const Text('通知設定'),
-      onTap: () {
-        context.push('/notification_setting');
       },
     );
   }
@@ -121,6 +111,9 @@ class SettingsPage extends ConsumerWidget {
           if (!result) return;
 
           await ref.read(signOutUseCaseProvider).execute();
+          ref.read(timelineScrollStateNotifierProvider.notifier)
+            ..updateLastDocument(null)
+            ..updateHasMore(true);
         } catch (e) {
           if (context.mounted) {
             showErrorDialog(
