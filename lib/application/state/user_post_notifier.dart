@@ -150,6 +150,20 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
     });
   }
 
+  void updateProfileName(String uid, String name) {
+    state.whenData((postDataList) {
+      final updatedPostData = postDataList.map((postData) {
+        if (postData.userProfile?.uid == uid) {
+          final updatedProfile = postData.userProfile?.copyWith(name: name);
+          return postData.copyWith(userProfile: updatedProfile);
+        }
+        return postData;
+      }).toList();
+
+      state = AsyncValue.data(updatedPostData);
+    });
+  }
+
   void updateProfileImage(String uid, String? imageUrl) {
     state.whenData((postDataList) {
       final updatedPostData = postDataList.map((postData) {
