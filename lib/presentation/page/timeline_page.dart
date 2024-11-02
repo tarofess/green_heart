@@ -66,7 +66,7 @@ class _TimelinePageState extends ConsumerState<TimelinePage> {
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: PostSearch(),
+                delegate: PostSearch(postSearchType: PostSearchType.timeline),
               );
             },
           )

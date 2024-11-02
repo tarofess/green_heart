@@ -4,8 +4,14 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/presentation/widget/post_card.dart';
 import 'package:green_heart/application/state/timeline_notifier.dart';
+import 'package:green_heart/application/state/user_post_notifier.dart';
 
 class PostSearch extends SearchDelegate<String> {
+  PostSearch({required this.postSearchType, this.uid});
+
+  final PostSearchType postSearchType;
+  final String? uid;
+
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
@@ -41,7 +47,9 @@ class PostSearch extends SearchDelegate<String> {
   Widget _buildSearchResults() {
     return Consumer(
       builder: (context, ref, child) {
-        final timelineState = ref.watch(timelineNotifierProvider);
+        final timelineState = postSearchType == PostSearchType.user
+            ? ref.watch(userPostNotifierProvider(uid))
+            : ref.watch(timelineNotifierProvider);
         return timelineState.when(
           data: (postDataList) {
             final results = postDataList
@@ -65,4 +73,9 @@ class PostSearch extends SearchDelegate<String> {
       },
     );
   }
+}
+
+enum PostSearchType {
+  user,
+  timeline,
 }
