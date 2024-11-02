@@ -291,7 +291,7 @@ class PostCard extends ConsumerWidget {
           if (context.mounted) {
             showErrorDialog(
               context: context,
-              title: '報告エラー',
+              title: '通報エラー',
               content: e.toString(),
             );
           }

@@ -9,11 +9,11 @@ Future<String?> showReportDialog(BuildContext context) async {
       return StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
-            title: const Text('不適切な投稿を報告'),
+            title: const Text('不適切な内容を通報'),
             content: TextField(
               controller: reportTextController,
               decoration: const InputDecoration(
-                hintText: '報告の理由を入力してください',
+                hintText: '通報の理由を入力してください',
               ),
               maxLines: null,
               onChanged: (value) {
@@ -33,7 +33,7 @@ Future<String?> showReportDialog(BuildContext context) async {
                         Navigator.of(context).pop(reportTextController.text);
                       }
                     : null,
-                child: const Text('報告'),
+                child: const Text('通報'),
               ),
             ],
           );

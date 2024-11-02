@@ -271,7 +271,7 @@ class CommentCard extends HookConsumerWidget {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('投稿を通報しました。'),
+                content: Text('コメントを通報しました。'),
               ),
             );
           }
@@ -279,7 +279,7 @@ class CommentCard extends HookConsumerWidget {
           if (context.mounted) {
             showErrorDialog(
               context: context,
-              title: '報告エラー',
+              title: '通報エラー',
               content: e.toString(),
             );
           }
