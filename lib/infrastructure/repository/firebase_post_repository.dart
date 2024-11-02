@@ -9,19 +9,43 @@ import 'package:green_heart/domain/type/post.dart';
 import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 import 'package:green_heart/application/state/timeline_scroll_state_notifier.dart';
 import 'package:green_heart/domain/type/timeline_scroll_state.dart';
+import 'package:green_heart/application/state/user_post_scroll_state_notifier.dart';
+import 'package:green_heart/domain/type/user_post_scroll_state.dart';
 
 class FirebasePostRepository implements PostRepository {
   @override
-  Future<List<Post>> getPostsByUid(String uid) async {
+  Future<List<Post>> getPostsByUid(
+    String uid,
+    UserPostScrollState userPostScrollState,
+    UserPostScrollStateNotifier userPostScrollStateNotifier,
+  ) async {
+    const int pageSize = 20;
+
     try {
+      if (!userPostScrollState.hasMore) return [];
+
       final firestore = FirebaseFirestore.instance;
-      final querySnapshot = await firestore
+      Query query = firestore
           .collection('post')
           .where('uid', isEqualTo: uid)
           .orderBy('createdAt', descending: true)
-          .get();
+          .limit(pageSize);
+
+      if (userPostScrollState.lastDocument != null) {
+        query = query.startAfterDocument(userPostScrollState.lastDocument!);
+      }
+
+      final querySnapshot = await query.get();
+      if (querySnapshot.docs.isEmpty || querySnapshot.docs.length < pageSize) {
+        userPostScrollStateNotifier.updateHasMore(false);
+      }
+
+      if (querySnapshot.docs.isNotEmpty) {
+        userPostScrollStateNotifier.updateLastDocument(querySnapshot.docs.last);
+      }
+
       return querySnapshot.docs
-          .map((doc) => Post.fromJson(doc.data()))
+          .map((doc) => Post.fromJson(doc.data() as Map<String, dynamic>))
           .toList();
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);

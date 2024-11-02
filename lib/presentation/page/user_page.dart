@@ -19,29 +19,73 @@ import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/application/di/block_di.dart';
 
-class UserPage extends HookConsumerWidget {
+class UserPage extends StatefulHookConsumerWidget {
   const UserPage({super.key, required this.uid});
-
   final String? uid;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final userPostState = ref.watch(userPostNotifierProvider(uid));
+  ConsumerState<UserPage> createState() => _UserPageState();
+}
+
+class _UserPageState extends ConsumerState<UserPage> {
+  final ScrollController _scrollController = ScrollController();
+  bool _isLoadingMore = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_isLoadingMore) return;
+
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent * 0.9) {
+      _loadMore();
+    }
+  }
+
+  Future<void> _loadMore() async {
+    if (_isLoadingMore) return;
+
+    setState(() {
+      _isLoadingMore = true;
+    });
+
+    await ref.read(userPostNotifierProvider(widget.uid).notifier).loadMore();
+
+    setState(() {
+      _isLoadingMore = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final userPostState = ref.watch(userPostNotifierProvider(widget.uid));
     final profile = useState<Profile?>(null);
     final isBlocked = useState(false);
 
     useEffect(() {
       void setProfile() async {
-        if (uid == null) return;
-        profile.value = await ref.read(profileGetUsecaseProvider).execute(uid!);
+        if (widget.uid == null) return;
+        profile.value =
+            await ref.read(profileGetUsecaseProvider).execute(widget.uid!);
       }
 
       void setBlockState() async {
-        if (uid == null) return;
+        if (widget.uid == null) return;
 
         isBlocked.value = await ref
             .read(blockCheckUsecaseProvider)
-            .execute(ref.watch(authStateProvider).value?.uid, uid!);
+            .execute(ref.watch(authStateProvider).value?.uid, widget.uid!);
       }
 
       setProfile();
@@ -50,7 +94,7 @@ class UserPage extends HookConsumerWidget {
     }, [ref.watch(profileNotifierProvider).value]);
 
     return Scaffold(
-      appBar: uid == ref.watch(authStateProvider).value?.uid
+      appBar: widget.uid == ref.watch(authStateProvider).value?.uid
           ? null
           : _buildAppBar(context, ref, profile, isBlocked),
       body: userPostState.when(
@@ -59,15 +103,11 @@ class UserPage extends HookConsumerWidget {
               ? _buildBlockedBody(context, ref, profile)
               : _buildBody(context, ref, profile, userPosts);
         },
-        loading: () {
-          return const LoadingIndicator();
-        },
-        error: (e, _) {
-          return ErrorPage(
-            error: e,
-            retry: () => ref.refresh(userPostNotifierProvider(uid)),
-          );
-        },
+        loading: () => const LoadingIndicator(),
+        error: (e, _) => ErrorPage(
+          error: e,
+          retry: () => ref.refresh(userPostNotifierProvider(widget.uid)),
+        ),
       ),
     );
   }
@@ -85,7 +125,8 @@ class UserPage extends HookConsumerWidget {
           icon: const Icon(Icons.block),
           onPressed: () async {
             try {
-              if (ref.watch(authStateProvider).value == null && uid == null) {
+              if (ref.watch(authStateProvider).value == null &&
+                  widget.uid == null) {
                 return;
               }
 
@@ -101,7 +142,7 @@ class UserPage extends HookConsumerWidget {
 
                 await ref
                     .read(blockNotifierProvider.notifier)
-                    .deleteBlock(uid!);
+                    .deleteBlock(widget.uid!);
 
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -122,7 +163,9 @@ class UserPage extends HookConsumerWidget {
                 );
                 if (!result) return;
 
-                await ref.read(blockNotifierProvider.notifier).addBlock(uid!);
+                await ref
+                    .read(blockNotifierProvider.notifier)
+                    .addBlock(widget.uid!);
 
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -155,36 +198,46 @@ class UserPage extends HookConsumerWidget {
     ValueNotifier<Profile?> profile,
     List<PostData> userPosts,
   ) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.only(left: 16.r, right: 16.r),
+    return RefreshIndicator(
+      onRefresh: () async {
+        await ref.read(userPostNotifierProvider(widget.uid).notifier).refresh();
+      },
+      child: CustomScrollView(
+        controller: _scrollController,
+        slivers: [
+          SliverToBoxAdapter(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    _buildUserImage(context, ref, profile),
-                    Expanded(child: _buildUserStats()),
-                  ],
+                Padding(
+                  padding: EdgeInsets.only(left: 16.r, right: 16.r),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          _buildUserImage(context, ref, profile),
+                          Expanded(child: _buildUserStats()),
+                        ],
+                      ),
+                      SizedBox(height: 16.r),
+                      _buildUserName(context, ref, profile.value),
+                      SizedBox(height: 8.r),
+                      _buildBirthDate(context, ref, profile.value),
+                      SizedBox(height: 16.r),
+                      _buildUserBio(context, ref, profile.value),
+                      SizedBox(height: 16.r),
+                      _buildFollowButton(context, ref),
+                    ],
+                  ),
                 ),
-                SizedBox(height: 16.r),
-                _buildUserName(context, ref, profile.value),
                 SizedBox(height: 8.r),
-                _buildBirthDate(context, ref, profile.value),
-                SizedBox(height: 16.r),
-                _buildUserBio(context, ref, profile.value),
-                SizedBox(height: 16.r),
-                _buildFollowButton(context, ref),
+                const Divider(),
               ],
             ),
           ),
-          SizedBox(height: 8.r),
-          const Divider(),
-          Padding(
+          SliverPadding(
             padding: const EdgeInsets.all(8.0),
-            child: _buildUserPosts(context, ref, userPosts),
+            sliver: _buildUserPosts(context, ref, userPosts),
           ),
         ],
       ),
@@ -310,7 +363,7 @@ class UserPage extends HookConsumerWidget {
   }
 
   Widget _buildFollowButton(BuildContext context, WidgetRef ref) {
-    return uid == ref.watch(authStateProvider).value?.uid
+    return widget.uid == ref.watch(authStateProvider).value?.uid
         ? const SizedBox()
         : Center(
             child: SizedBox(
@@ -329,17 +382,25 @@ class UserPage extends HookConsumerWidget {
     List<PostData> userPosts,
   ) {
     return userPosts.isEmpty
-        ? const Center(child: Text('投稿はまだありません。'))
-        : ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: userPosts.length,
-            itemBuilder: (context, index) {
-              return PostCard(
-                key: ValueKey(userPosts[index]),
-                postData: userPosts[index],
-              );
-            },
+        ? const SliverToBoxAdapter(child: Center(child: Text('投稿はまだありません。')))
+        : SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                if (index == userPosts.length) {
+                  return _isLoadingMore
+                      ? const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Center(child: CircularProgressIndicator()),
+                        )
+                      : const SizedBox.shrink();
+                }
+                return PostCard(
+                  key: ValueKey(userPosts[index]),
+                  postData: userPosts[index],
+                );
+              },
+              childCount: userPosts.length + 1,
+            ),
           );
   }
 

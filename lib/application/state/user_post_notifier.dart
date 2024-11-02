@@ -11,17 +11,60 @@ import 'package:green_heart/domain/type/like.dart';
 import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/domain/type/post.dart';
 import 'package:green_heart/domain/type/profile.dart';
+import 'package:green_heart/application/state/user_post_scroll_state_notifier.dart';
 
 class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
+  late String _uid;
+
   @override
   Future<List<PostData>> build(String? arg) async {
     if (arg == null) {
-      throw Exception('ユーザーが存在しないので投稿を取得できません。再度お試しください。');
+      throw Exception('ユーザーの投稿を取得できません。再度お試しください。');
     }
-
-    final posts = await ref.read(postGetUsecaseProvider).execute(arg);
+    _uid = arg;
+    final posts = await _fetchNextBatch();
     final postData = await _createPostDataList(posts);
     return postData;
+  }
+
+  Future<List<Post>> _fetchNextBatch() async {
+    final userPostScrollState = ref.read(userPostScrollStateNotifierProvider);
+    if (!userPostScrollState.hasMore) return [];
+
+    final posts = await ref.read(postGetUsecaseProvider).execute(
+          _uid,
+          userPostScrollState,
+          ref.read(userPostScrollStateNotifierProvider.notifier),
+        );
+    return posts;
+  }
+
+  Future<void> loadMore() async {
+    final userPostScrollState = ref.read(userPostScrollStateNotifierProvider);
+    if (!userPostScrollState.hasMore) return;
+
+    state.whenData((currentPosts) async {
+      try {
+        final newPosts = await _fetchNextBatch();
+        final newPostData = await _createPostDataList(newPosts);
+
+        final updatedPosts = [...currentPosts, ...newPostData];
+        state = AsyncValue.data(updatedPosts);
+      } catch (e) {
+        state = AsyncError(e, StackTrace.current);
+      }
+    });
+  }
+
+  Future<void> refresh() async {
+    ref.read(userPostScrollStateNotifierProvider.notifier)
+      ..updateLastDocument(null)
+      ..updateHasMore(true);
+    state = await AsyncValue.guard(() async {
+      final posts = await _fetchNextBatch();
+      final postData = await _createPostDataList(posts);
+      return postData;
+    });
   }
 
   Future<List<PostData>> _createPostDataList(List<Post> posts) async {
