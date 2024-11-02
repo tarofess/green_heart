@@ -66,7 +66,7 @@ class _TimelinePageState extends ConsumerState<TimelinePage> {
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: PostSearch(posts: timelineState),
+                delegate: PostSearch(),
               );
             },
           )
@@ -90,7 +90,10 @@ class _TimelinePageState extends ConsumerState<TimelinePage> {
                         )
                       : const SizedBox.shrink();
                 }
-                return PostCard(postData: timeline[index]);
+                return PostCard(
+                  key: ValueKey(timeline[index].post.id),
+                  postData: timeline[index],
+                );
               },
             ),
           );
