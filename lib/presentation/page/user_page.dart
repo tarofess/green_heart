@@ -130,15 +130,17 @@ class _UserPageState extends ConsumerState<UserPage> {
     return AppBar(
       title: const Text(''),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.search),
-          onPressed: () {
-            showSearch(
-              context: context,
-              delegate: PostSearch(),
-            );
-          },
-        ),
+        isBlocked.value
+            ? const SizedBox()
+            : IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: () {
+                  showSearch(
+                    context: context,
+                    delegate: PostSearch(),
+                  );
+                },
+              ),
         IconButton(
           icon: const Icon(Icons.block),
           onPressed: () async {
