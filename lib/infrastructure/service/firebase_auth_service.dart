@@ -7,6 +7,7 @@ import 'package:green_heart/application/interface/auth_service.dart';
 import 'package:green_heart/infrastructure/util/auth_utils.dart';
 import 'package:green_heart/application/exception/app_exception.dart';
 import 'package:green_heart/infrastructure/exception/exception_handler.dart';
+import 'package:green_heart/application/exception/google_signin_cancel_exception.dart';
 
 class FirebaseAuthService implements AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -24,18 +25,23 @@ class FirebaseAuthService implements AuthService {
       final GoogleSignInAccount? googleSignInAccount =
           await googleSignIn.signIn();
 
-      if (googleSignInAccount != null) {
-        final GoogleSignInAuthentication googleSignInAuthentication =
-            await googleSignInAccount.authentication;
-
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          accessToken: googleSignInAuthentication.accessToken,
-          idToken: googleSignInAuthentication.idToken,
-        );
-
-        await _auth.signInWithCredential(credential);
+      if (googleSignInAccount == null) {
+        throw GoogleSigninCancelException('Googleログインがキャンセルされました。');
       }
+
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
+
+      await _auth.signInWithCredential(credential);
     } catch (e, stackTrace) {
+      if (e is GoogleSigninCancelException) {
+        rethrow;
+      }
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('ログインに失敗しました。再度お試しください。');
     }
