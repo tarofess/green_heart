@@ -43,7 +43,11 @@ class TimelineNotifier extends AsyncNotifier<List<PostData>> {
         final newPostData = await _createPostDataList(newPosts);
         final filteredNewPostData = await _filterByBlock(newPostData);
 
-        final updatedPosts = [...currentPosts, ...filteredNewPostData];
+        final updatedPosts = [
+          ...currentPosts,
+          ...filteredNewPostData.where((newPost) => !currentPosts
+              .any((currentPost) => currentPost.post.id == newPost.post.id))
+        ];
         state = AsyncValue.data(updatedPosts);
       } catch (e) {
         state = AsyncError(e, StackTrace.current);

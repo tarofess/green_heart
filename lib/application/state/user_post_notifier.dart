@@ -48,7 +48,11 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
         final newPosts = await _fetchNextBatch();
         final newPostData = await _createPostDataList(newPosts);
 
-        final updatedPosts = [...currentPosts, ...newPostData];
+        final updatedPosts = [
+          ...currentPosts,
+          ...newPostData.where((newPost) => !currentPosts
+              .any((currentPost) => currentPost.post.id == newPost.post.id))
+        ];
         state = AsyncValue.data(updatedPosts);
       } catch (e) {
         state = AsyncError(e, StackTrace.current);
