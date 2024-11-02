@@ -11,14 +11,56 @@ import 'package:green_heart/domain/type/post.dart';
 import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/application/di/block_di.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
+import 'package:green_heart/application/state/timeline_scroll_state_notifier.dart';
 
 class TimelineNotifier extends AsyncNotifier<List<PostData>> {
   @override
   Future<List<PostData>> build() async {
-    final posts = await ref.read(timelineGetUsecaseProvider).execute();
+    final posts = await _fetchNextBatch();
     final postData = await _createPostDataList(posts);
-    final postDataFilteredByBlock = _filterByBlock(postData);
+    final postDataFilteredByBlock = await _filterByBlock(postData);
     return postDataFilteredByBlock;
+  }
+
+  Future<List<Post>> _fetchNextBatch() async {
+    final timeLineScrollState = ref.read(timelineScrollStateNotifierProvider);
+    if (!timeLineScrollState.hasMore) return [];
+
+    final posts = await ref.read(timelineGetUsecaseProvider).execute(
+          timeLineScrollState,
+          ref.read(timelineScrollStateNotifierProvider.notifier),
+        );
+    return posts;
+  }
+
+  Future<void> loadMore() async {
+    final timeLineScrollState = ref.read(timelineScrollStateNotifierProvider);
+    if (!timeLineScrollState.hasMore) return;
+
+    state.whenData((currentPosts) async {
+      try {
+        final newPosts = await _fetchNextBatch();
+        final newPostData = await _createPostDataList(newPosts);
+        final filteredNewPostData = await _filterByBlock(newPostData);
+
+        final updatedPosts = [...currentPosts, ...filteredNewPostData];
+        state = AsyncValue.data(updatedPosts);
+      } catch (e) {
+        state = AsyncError(e, StackTrace.current);
+      }
+    });
+  }
+
+  Future<void> refresh() async {
+    ref.read(timelineScrollStateNotifierProvider.notifier)
+      ..updateLastDocument(null)
+      ..updateHasMore(true);
+
+    state = await AsyncValue.guard(() async {
+      final posts = await _fetchNextBatch();
+      final postData = await _createPostDataList(posts);
+      return _filterByBlock(postData);
+    });
   }
 
   Future<List<PostData>> _createPostDataList(List<Post> posts) async {

@@ -7,6 +7,8 @@ import 'package:green_heart/application/exception/app_exception.dart';
 import 'package:green_heart/application/interface/post_repository.dart';
 import 'package:green_heart/domain/type/post.dart';
 import 'package:green_heart/infrastructure/exception/exception_handler.dart';
+import 'package:green_heart/application/state/timeline_scroll_state_notifier.dart';
+import 'package:green_heart/domain/type/timeline_scroll_state.dart';
 
 class FirebasePostRepository implements PostRepository {
   @override
@@ -28,15 +30,36 @@ class FirebasePostRepository implements PostRepository {
   }
 
   @override
-  Future<List<Post>> getAllPosts() async {
+  Future<List<Post>> getTimelinePosts(
+    TimeLineScrollState timeLineScrollState,
+    TimelineScrollStateNotifier timelineScrollStateNotifier,
+  ) async {
+    const int pageSize = 20;
+
     try {
+      if (!timeLineScrollState.hasMore) return [];
+
       final firestore = FirebaseFirestore.instance;
-      final querySnapshot = await firestore
+      Query query = firestore
           .collection('post')
           .orderBy('createdAt', descending: true)
-          .get();
+          .limit(pageSize);
+
+      if (timeLineScrollState.lastDocument != null) {
+        query = query.startAfterDocument(timeLineScrollState.lastDocument!);
+      }
+
+      final querySnapshot = await query.get();
+      if (querySnapshot.docs.isEmpty || querySnapshot.docs.length < pageSize) {
+        timelineScrollStateNotifier.updateHasMore(false);
+      }
+
+      if (querySnapshot.docs.isNotEmpty) {
+        timelineScrollStateNotifier.updateLastDocument(querySnapshot.docs.last);
+      }
+
       return querySnapshot.docs
-          .map((doc) => Post.fromJson(doc.data()))
+          .map((doc) => Post.fromJson(doc.data() as Map<String, dynamic>))
           .toList();
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
