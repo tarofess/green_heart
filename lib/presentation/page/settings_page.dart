@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:green_heart/application/state/user_post_scroll_state_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/auth_di.dart';
@@ -112,12 +111,7 @@ class SettingsPage extends ConsumerWidget {
           if (!result) return;
 
           await ref.read(signOutUseCaseProvider).execute();
-          ref.read(timelineScrollStateNotifierProvider.notifier)
-            ..updateLastDocument(null)
-            ..updateHasMore(true);
-          ref.read(userPostScrollStateNotifierProvider.notifier)
-            ..updateLastDocument(null)
-            ..updateHasMore(true);
+          ref.read(timelineScrollStateNotifierProvider.notifier).reset();
         } catch (e) {
           if (context.mounted) {
             showErrorDialog(

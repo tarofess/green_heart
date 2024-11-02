@@ -16,6 +16,10 @@ class UserPostScrollStateNotifier extends Notifier<UserPostScrollState> {
   void updateHasMore(bool hasMore) {
     state = state.copyWith(hasMore: hasMore);
   }
+
+  void reset() {
+    state = state.copyWith(lastDocument: null, hasMore: true);
+  }
 }
 
 final userPostScrollStateNotifierProvider =

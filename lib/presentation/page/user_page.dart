@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:green_heart/application/state/user_post_scroll_state_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/profile.dart';
@@ -18,6 +19,7 @@ import 'package:green_heart/application/state/block_notifier.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/application/di/block_di.dart';
+import 'package:green_heart/presentation/widget/post_search.dart';
 
 class UserPage extends StatefulHookConsumerWidget {
   const UserPage({super.key, required this.uid});
@@ -68,7 +70,9 @@ class _UserPageState extends ConsumerState<UserPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     final userPostState = ref.watch(userPostNotifierProvider(widget.uid));
     final profile = useState<Profile?>(null);
     final isBlocked = useState(false);
@@ -88,6 +92,10 @@ class _UserPageState extends ConsumerState<UserPage> {
             .execute(ref.watch(authStateProvider).value?.uid, widget.uid!);
       }
 
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(userPostScrollStateNotifierProvider.notifier).reset();
+      });
+
       setProfile();
       setBlockState();
       return;
@@ -96,7 +104,7 @@ class _UserPageState extends ConsumerState<UserPage> {
     return Scaffold(
       appBar: widget.uid == ref.watch(authStateProvider).value?.uid
           ? null
-          : _buildAppBar(context, ref, profile, isBlocked),
+          : _buildAppBar(context, ref, userPostState, profile, isBlocked),
       body: userPostState.when(
         data: (userPosts) {
           return isBlocked.value
@@ -115,12 +123,22 @@ class _UserPageState extends ConsumerState<UserPage> {
   AppBar _buildAppBar(
     BuildContext context,
     WidgetRef ref,
+    AsyncValue<List<PostData>> userPostState,
     ValueNotifier<Profile?> profile,
     ValueNotifier<bool> isBlocked,
   ) {
     return AppBar(
       title: const Text(''),
       actions: [
+        IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: () {
+            showSearch(
+              context: context,
+              delegate: PostSearch(posts: userPostState),
+            );
+          },
+        ),
         IconButton(
           icon: const Icon(Icons.block),
           onPressed: () async {
