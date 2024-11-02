@@ -415,6 +415,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                 return PostCard(
                   key: ValueKey(userPosts[index]),
                   postData: userPosts[index],
+                  uidInPreviosPage: widget.uid,
                 );
               },
               childCount: userPosts.length + 1,

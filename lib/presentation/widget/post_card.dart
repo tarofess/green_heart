@@ -2,10 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
-import 'package:green_heart/presentation/dialog/error_dialog.dart';
-import 'package:green_heart/presentation/dialog/report_dialog.dart';
-import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/presentation/page/comment_page.dart';
@@ -15,12 +11,17 @@ import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/domain/type/post_data.dart';
 import 'package:green_heart/application/state/timeline_notifier.dart';
+import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
+import 'package:green_heart/presentation/dialog/error_dialog.dart';
+import 'package:green_heart/presentation/dialog/report_dialog.dart';
+import 'package:green_heart/presentation/widget/loading_overlay.dart';
 
 class PostCard extends ConsumerWidget {
-  PostCard({super.key, required this.postData});
+  PostCard({super.key, required this.postData, this.uidInPreviosPage});
 
   final PostData postData;
   final FocusNode focusNode = FocusNode();
+  final String? uidInPreviosPage;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -57,8 +58,9 @@ class PostCard extends ConsumerWidget {
                     ),
                   ),
             onTap: () {
-              if (postData.post.uid !=
-                  ref.watch(authStateProvider).value?.uid) {
+              final uid = ref.watch(authStateProvider).value?.uid;
+              if (postData.post.uid != uid &&
+                  uidInPreviosPage != postData.post.uid) {
                 context.push('/user', extra: {'uid': postData.post.uid});
               }
             }),
