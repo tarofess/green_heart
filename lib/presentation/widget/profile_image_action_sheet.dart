@@ -32,8 +32,11 @@ Future<void> showProfileImageActionSheet(
               title: Text('写真を撮る', style: TextStyle(fontSize: 14.sp)),
               onTap: () async {
                 if (await PermissionUtil.requestCameraPermission(context)) {
-                  imagePath.value =
+                  final picture =
                       await ref.read(takePhotoUsecaseProvider).execute();
+                  if (picture == null) return;
+
+                  imagePath.value = picture;
                 }
                 if (context.mounted) Navigator.pop(context);
               },
@@ -43,8 +46,11 @@ Future<void> showProfileImageActionSheet(
               title: Text('カメラフォルダから選択する', style: TextStyle(fontSize: 14.sp)),
               onTap: () async {
                 if (await PermissionUtil.requestStoragePermission(context)) {
-                  imagePath.value =
+                  final picture =
                       await ref.read(pickImageUsecaseProvider).execute();
+                  if (picture == null) return;
+
+                  imagePath.value = picture;
                 }
                 if (context.mounted) Navigator.pop(context);
               },
