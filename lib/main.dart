@@ -40,7 +40,7 @@ class MyApp extends ConsumerWidget {
           loading: () => const MaterialApp(
             debugShowCheckedModeBanner: false,
             home: Scaffold(
-              body: LoadingIndicator(),
+              body: LoadingIndicator(message: '初期化中'),
             ),
           ),
           error: (e, _) => MaterialApp(

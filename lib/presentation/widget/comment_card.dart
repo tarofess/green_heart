@@ -226,20 +226,40 @@ class CommentCard extends HookConsumerWidget {
   ]) {
     return TextButton(
       onPressed: () async {
-        final result = await showConfirmationDialog(
-          context: context,
-          title: '確認',
-          content: 'コメントを削除しますか？',
-          positiveButtonText: '削除する',
-          negativeButtonText: 'キャンセル',
-        );
-        if (!result) return;
+        try {
+          final result = await showConfirmationDialog(
+            context: context,
+            title: '確認',
+            content: 'コメントを削除しますか？',
+            positiveButtonText: '削除する',
+            negativeButtonText: 'キャンセル',
+          );
+          if (!result) return;
 
-        await ref.read(commentNotifierProvider(postId).notifier).deleteComment(
-              replyComment == null
-                  ? commentData.comment.id
-                  : replyComment.comment.id,
+          if (context.mounted) {
+            await LoadingOverlay.of(
+              context,
+              message: '削除中',
+              backgroundColor: Colors.white10,
+            ).during(
+              () => ref
+                  .read(commentNotifierProvider(postId).notifier)
+                  .deleteComment(
+                    replyComment == null
+                        ? commentData.comment.id
+                        : replyComment.comment.id,
+                  ),
             );
+          }
+        } catch (e) {
+          if (context.mounted) {
+            showErrorDialog(
+              context: context,
+              title: 'コメント削除エラー',
+              content: e.toString(),
+            );
+          }
+        }
       },
       child: const Text('削除'),
     );
@@ -257,7 +277,11 @@ class CommentCard extends HookConsumerWidget {
           if (uid == null) return;
 
           if (context.mounted) {
-            await LoadingOverlay.of(context).during(
+            await LoadingOverlay.of(
+              context,
+              message: '通報中',
+              backgroundColor: Colors.white10,
+            ).during(
               () => ref.read(reportAddUsecaseProvider).execute(
                     uid,
                     reportText,

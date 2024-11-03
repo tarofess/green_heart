@@ -136,7 +136,7 @@ class PostCard extends ConsumerWidget {
       children: [
         Row(
           children: [
-            _buildLikeWidget(ref),
+            _buildLikeWidget(context, ref),
             SizedBox(width: 16.r),
             _buildCommentWidget(context, ref),
             SizedBox(width: 24.r),
@@ -153,7 +153,7 @@ class PostCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildLikeWidget(WidgetRef ref) {
+  Widget _buildLikeWidget(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       child: Row(
         children: [
@@ -175,9 +175,25 @@ class PostCard extends ConsumerWidget {
         final uid = ref.read(authStateProvider).value?.uid;
         if (uid == null) return;
 
-        await ref
-            .read(likeToggleUsecaseProvider)
-            .execute(postData.post.id, uid);
+        try {
+          await LoadingOverlay.of(
+            context,
+            message: 'いいね中',
+            backgroundColor: Colors.white10,
+          ).during(
+            () => ref
+                .read(likeToggleUsecaseProvider)
+                .execute(postData.post.id, uid),
+          );
+        } catch (e) {
+          if (context.mounted) {
+            showErrorDialog(
+              context: context,
+              title: 'いいねエラー',
+              content: e.toString(),
+            );
+          }
+        }
         ref
             .read(userPostNotifierProvider(postData.post.uid).notifier)
             .toggleLike(postData.post.id, uid);
@@ -248,7 +264,26 @@ class PostCard extends ConsumerWidget {
         );
         if (!result) return;
 
-        await ref.read(postDeleteUsecaseProvider).execute(postData.post.id);
+        try {
+          if (context.mounted) {
+            await LoadingOverlay.of(
+              context,
+              message: '削除中',
+              backgroundColor: Colors.white10,
+            ).during(
+              () =>
+                  ref.read(postDeleteUsecaseProvider).execute(postData.post.id),
+            );
+          }
+        } catch (e) {
+          if (context.mounted) {
+            showErrorDialog(
+              context: context,
+              title: '削除エラー',
+              content: e.toString(),
+            );
+          }
+        }
         ref
             .read(userPostNotifierProvider(myUid).notifier)
             .deletePost(postData.post.id);
@@ -271,7 +306,11 @@ class PostCard extends ConsumerWidget {
           if (uid == null) return;
 
           if (context.mounted) {
-            await LoadingOverlay.of(context).during(
+            await LoadingOverlay.of(
+              context,
+              message: '通報中',
+              backgroundColor: Colors.white10,
+            ).during(
               () => ref.read(reportAddUsecaseProvider).execute(
                     uid,
                     reportText,

@@ -67,7 +67,7 @@ class PostSearch extends SearchDelegate<String> {
               },
             );
           },
-          loading: () => const LoadingIndicator(),
+          loading: () => const LoadingIndicator(message: '読み込み中'),
           error: (_, __) => const Center(child: Text('エラーが発生しました')),
         );
       },

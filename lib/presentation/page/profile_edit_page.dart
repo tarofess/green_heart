@@ -105,7 +105,11 @@ class ProfileEditPage extends HookConsumerWidget {
           onPressed: () async {
             try {
               if (_formKey.currentState!.validate()) {
-                await LoadingOverlay.of(context).during(() async {
+                await LoadingOverlay.of(
+                  context,
+                  message: '保存中',
+                  backgroundColor: Colors.white10,
+                ).during(() async {
                   await ref.read(profileNotifierProvider.notifier).saveProfile(
                         ref.read(profileSaveUsecaseProvider),
                         nameTextController.text,

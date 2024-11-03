@@ -114,7 +114,7 @@ class _UserPageState extends ConsumerState<UserPage> {
               ? _buildBlockedBody(context, ref, profile)
               : _buildBody(context, ref, profile, userPosts);
         },
-        loading: () => const LoadingIndicator(),
+        loading: () => const LoadingIndicator(message: '読み込み中'),
         error: (e, _) => ErrorPage(
           error: e,
           retry: () => ref.refresh(userPostNotifierProvider(widget.uid)),
@@ -160,9 +160,17 @@ class _UserPageState extends ConsumerState<UserPage> {
                     );
                     if (!result) return;
 
-                    await ref
-                        .read(blockNotifierProvider.notifier)
-                        .deleteBlock(widget.uid!);
+                    if (context.mounted) {
+                      await LoadingOverlay.of(
+                        context,
+                        message: 'ブロック解除中',
+                        backgroundColor: Colors.white10,
+                      ).during(
+                        () => ref
+                            .read(blockNotifierProvider.notifier)
+                            .deleteBlock(widget.uid!),
+                      );
+                    }
 
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -177,7 +185,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                     if (context.mounted) {
                       showErrorDialog(
                         context: context,
-                        title: 'ブロックエラー',
+                        title: 'ブロック解除エラー',
                         content: e.toString(),
                       );
                     }
@@ -198,7 +206,11 @@ class _UserPageState extends ConsumerState<UserPage> {
                         if (reporterIid == null) return;
 
                         if (context.mounted) {
-                          await LoadingOverlay.of(context).during(
+                          await LoadingOverlay.of(
+                            context,
+                            message: '通報中',
+                            backgroundColor: Colors.white10,
+                          ).during(
                             () => ref.read(reportAddUsecaseProvider).execute(
                                   reporterIid,
                                   reportText,
@@ -242,9 +254,17 @@ class _UserPageState extends ConsumerState<UserPage> {
                         );
                         if (!result) return;
 
-                        await ref
-                            .read(blockNotifierProvider.notifier)
-                            .addBlock(widget.uid!);
+                        if (context.mounted) {
+                          await LoadingOverlay.of(
+                            context,
+                            message: 'ブロック中',
+                            backgroundColor: Colors.white10,
+                          ).during(
+                            () => ref
+                                .read(blockNotifierProvider.notifier)
+                                .addBlock(widget.uid!),
+                          );
+                        }
 
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(

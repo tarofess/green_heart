@@ -6,18 +6,29 @@ class LoadingOverlay {
   final BuildContext _context;
   OverlayEntry? _overlay;
   bool _isLoading = false;
+  String _message;
+  final Color? backgroundColor;
 
-  LoadingOverlay._private(this._context);
+  LoadingOverlay._private(this._context,
+      [this._message = '処理中', this.backgroundColor]);
 
-  factory LoadingOverlay.of(BuildContext context) {
-    return LoadingOverlay._private(context);
+  factory LoadingOverlay.of(
+    BuildContext context, {
+    String message = '処理中',
+    Color? backgroundColor,
+  }) {
+    return LoadingOverlay._private(context, message, backgroundColor);
   }
 
-  void show() {
+  void show({String? message}) {
     if (!_isLoading) {
       _isLoading = true;
+      _message = message ?? _message;
       _overlay = OverlayEntry(
-        builder: (context) => const LoadingIndicator(),
+        builder: (context) => LoadingIndicator(
+          message: _message,
+          backgroundColor: backgroundColor,
+        ),
       );
       Overlay.of(_context).insert(_overlay!);
     }

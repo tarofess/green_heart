@@ -102,16 +102,19 @@ class PostPage extends HookConsumerWidget {
           postTextController.text.isNotEmpty || selectedImages.value.isNotEmpty
               ? () async {
                   try {
-                    await LoadingOverlay.of(context).during(
-                      () => ref
-                          .read(userPostNotifierProvider(
-                                  ref.watch(authStateProvider).value?.uid)
-                              .notifier)
+                    await LoadingOverlay.of(
+                      context,
+                      message: '投稿中',
+                      backgroundColor: Colors.white10,
+                    ).during(() async {
+                      final uid = ref.watch(authStateProvider).value?.uid;
+                      await ref
+                          .read(userPostNotifierProvider(uid).notifier)
                           .addPost(
                             postTextController.text,
                             selectedImages.value,
-                          ),
-                    );
+                          );
+                    });
 
                     if (context.mounted) {
                       await showMessageDialog(
@@ -229,8 +232,18 @@ class PostPage extends HookConsumerWidget {
           ? () async {
               try {
                 if (await PermissionUtil.requestStoragePermission(context)) {
-                  if (context.mounted) FocusScope.of(context).unfocus();
-                  await ref.read(postPageViewModel).pickImages(selectedImages);
+                  if (context.mounted) {
+                    FocusScope.of(context).unfocus();
+                    await LoadingOverlay.of(
+                      context,
+                      message: '写真選択中',
+                      backgroundColor: Colors.white10,
+                    ).during(
+                      () => ref
+                          .read(postPageViewModel)
+                          .pickImages(selectedImages),
+                    );
+                  }
                 }
               } catch (e) {
                 if (context.mounted) {

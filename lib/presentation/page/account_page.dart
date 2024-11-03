@@ -104,7 +104,8 @@ class AccountPage extends HookConsumerWidget {
 
         try {
           if (context.mounted) {
-            await LoadingOverlay.of(context).during(() async {
+            await LoadingOverlay.of(context, message: 'アカウント削除中')
+                .during(() async {
               await ref.read(accountNotifierProvider.notifier).deleteAccount();
               ref
                   .read(accountStateNotifierProvider.notifier)

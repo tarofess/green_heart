@@ -105,7 +105,7 @@ class _TimelinePageState extends ConsumerState<TimelinePage> {
           );
         },
         loading: () {
-          return const LoadingIndicator();
+          return const LoadingIndicator(message: '読み込み中');
         },
       ),
     );

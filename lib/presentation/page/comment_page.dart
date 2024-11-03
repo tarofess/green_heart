@@ -12,6 +12,7 @@ import 'package:green_heart/application/state/comment_page_notifier.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/application/state/comment_page_state.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
+import 'package:green_heart/presentation/widget/loading_overlay.dart';
 
 class CommentPage extends HookConsumerWidget {
   const CommentPage({super.key, required this.postId, required this.focusNode});
@@ -57,7 +58,10 @@ class CommentPage extends HookConsumerWidget {
           );
         },
         loading: () {
-          return const LoadingIndicator();
+          return const LoadingIndicator(
+            message: 'コメント取得中',
+            backgroundColor: Colors.white10,
+          );
         },
         error: (e, stackTrace) {
           return ErrorPage(
@@ -155,14 +159,21 @@ class CommentPage extends HookConsumerWidget {
                       return;
                     }
 
-                    await ref
-                        .read(commentNotifierProvider(postId).notifier)
-                        .addComment(
-                          uid,
-                          postId,
-                          commentTextController.text,
-                          ref.read(commentPageNotifierProvider).parentCommentId,
-                        );
+                    await LoadingOverlay.of(
+                      context,
+                      message: 'コメント投稿中',
+                      backgroundColor: Colors.white10,
+                    ).during(
+                      () async => ref
+                          .read(commentNotifierProvider(postId).notifier)
+                          .addComment(
+                            uid,
+                            postId,
+                            commentTextController.text,
+                            commentPageState.parentCommentId,
+                          ),
+                    );
+
                     clearReply(ref, commentTextController);
                   } catch (e) {
                     if (context.mounted) {

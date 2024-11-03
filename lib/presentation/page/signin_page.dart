@@ -46,7 +46,7 @@ class SignInPage extends ConsumerWidget {
         ),
         onPressed: () async {
           try {
-            await LoadingOverlay.of(context).during(
+            await LoadingOverlay.of(context, message: 'ログイン中').during(
               () => ref.read(googleSignInUseCaseProvider).execute(),
             );
           } catch (e) {
@@ -82,7 +82,7 @@ class SignInPage extends ConsumerWidget {
         ),
         onPressed: () async {
           try {
-            await LoadingOverlay.of(context).during(
+            await LoadingOverlay.of(context, message: 'ログイン中').during(
               () => ref.read(appleSignInUseCaseProvider).execute(),
             );
           } catch (e) {

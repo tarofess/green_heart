@@ -2,7 +2,14 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 class LoadingIndicator extends StatefulWidget {
-  const LoadingIndicator({super.key});
+  final String message;
+  final Color? backgroundColor;
+
+  const LoadingIndicator({
+    super.key,
+    required this.message,
+    this.backgroundColor,
+  });
 
   @override
   LoadingIndicatorState createState() => LoadingIndicatorState();
@@ -41,7 +48,7 @@ class LoadingIndicatorState extends State<LoadingIndicator> {
     return Stack(
       children: [
         Container(
-          color: Colors.black.withOpacity(0.5),
+          color: widget.backgroundColor ?? Colors.lightGreen[300],
           width: double.infinity,
           height: double.infinity,
         ),
@@ -64,9 +71,9 @@ class LoadingIndicatorState extends State<LoadingIndicator> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 20),
+                    padding: const EdgeInsets.only(left: 32),
                     child: Text(
-                      '処理中です',
+                      widget.message,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Colors.white,
                             decoration: TextDecoration.none,
