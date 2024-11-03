@@ -12,15 +12,15 @@ class ErrorPage extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Padding(
-          padding: EdgeInsets.all(24.r),
+          padding: EdgeInsets.all(24.w),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('$error', style: TextStyle(fontSize: 14.sp)),
-              SizedBox(height: 16.r),
+              Text('$error', style: TextStyle(fontSize: 16.sp)),
+              SizedBox(height: 16.h),
               ElevatedButton(
                 onPressed: retry,
-                child: const Text('リトライ'),
+                child: Text('リトライ', style: TextStyle(fontSize: 16.sp)),
               ),
             ],
           ),

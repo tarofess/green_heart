@@ -132,11 +132,12 @@ class _UserPageState extends ConsumerState<UserPage> {
   ) {
     return AppBar(
       title: const Text(''),
+      toolbarHeight: 58.h,
       actions: [
         isBlocked.value
             ? const SizedBox()
             : IconButton(
-                icon: const Icon(Icons.search),
+                icon: Icon(Icons.search, size: 24.r),
                 onPressed: () {
                   showSearch(
                     context: context,
@@ -149,6 +150,7 @@ class _UserPageState extends ConsumerState<UserPage> {
               ),
         isBlocked.value
             ? IconButton(
+                icon: Icon(Icons.block, size: 24.sp),
                 onPressed: () async {
                   try {
                     final result = await showConfirmationDialog(
@@ -175,7 +177,10 @@ class _UserPageState extends ConsumerState<UserPage> {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('${profile.value?.name}のブロックを解除しました。'),
+                          content: Text(
+                            '${profile.value?.name}のブロックを解除しました。',
+                            style: TextStyle(fontSize: 16.sp),
+                          ),
                         ),
                       );
                     }
@@ -191,9 +196,9 @@ class _UserPageState extends ConsumerState<UserPage> {
                     }
                   }
                 },
-                icon: const Icon(Icons.block))
+              )
             : PopupMenuButton<String>(
-                icon: const Icon(Icons.more_horiz),
+                icon: Icon(Icons.more_horiz, size: 24.r),
                 onSelected: (String result) async {
                   switch (result) {
                     case 'report':
@@ -269,7 +274,10 @@ class _UserPageState extends ConsumerState<UserPage> {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('${profile.value?.name}をブロックしました。'),
+                              content: Text(
+                                '${profile.value?.name}をブロックしました。',
+                                style: TextStyle(fontSize: 16.sp),
+                              ),
                             ),
                           );
                         }
@@ -288,13 +296,19 @@ class _UserPageState extends ConsumerState<UserPage> {
                   }
                 },
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                  const PopupMenuItem<String>(
+                  PopupMenuItem<String>(
                     value: 'report',
-                    child: Text('通報する'),
+                    child: Text(
+                      '通報する',
+                      style: TextStyle(fontSize: 14.sp),
+                    ),
                   ),
-                  const PopupMenuItem<String>(
+                  PopupMenuItem<String>(
                     value: 'block',
-                    child: Text('ブロックする'),
+                    child: Text(
+                      'ブロックする',
+                      style: TextStyle(fontSize: 14.sp),
+                    ),
                   ),
                 ],
               )
@@ -319,7 +333,7 @@ class _UserPageState extends ConsumerState<UserPage> {
             child: Column(
               children: [
                 Padding(
-                  padding: EdgeInsets.only(left: 16.r, right: 16.r),
+                  padding: EdgeInsets.only(left: 16.w, right: 16.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -329,24 +343,24 @@ class _UserPageState extends ConsumerState<UserPage> {
                           Expanded(child: _buildUserStats()),
                         ],
                       ),
-                      SizedBox(height: 16.r),
+                      SizedBox(height: 16.h),
                       _buildUserName(context, ref, profile.value),
-                      SizedBox(height: 8.r),
+                      SizedBox(height: 8.h),
                       _buildBirthDate(context, ref, profile.value),
-                      SizedBox(height: 16.r),
+                      SizedBox(height: 16.h),
                       _buildUserBio(context, ref, profile.value),
-                      SizedBox(height: 16.r),
+                      SizedBox(height: 16.h),
                       _buildFollowButton(context, ref),
                     ],
                   ),
                 ),
-                SizedBox(height: 8.r),
+                SizedBox(height: 8.h),
                 const Divider(),
               ],
             ),
           ),
           SliverPadding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(8.w),
             sliver: _buildUserPosts(context, ref, userPosts),
           ),
         ],
@@ -378,8 +392,8 @@ class _UserPageState extends ConsumerState<UserPage> {
 
   Widget _buildFirebaseImage(ValueNotifier<Profile?> profile) {
     return Container(
-      width: 120.r,
-      height: 120.r,
+      width: 120.w,
+      height: 120.h,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         image: DecorationImage(
@@ -406,7 +420,7 @@ class _UserPageState extends ConsumerState<UserPage> {
 
   Widget _buildUserStats() {
     return SizedBox(
-      height: 120.r,
+      height: 120.h,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -455,7 +469,7 @@ class _UserPageState extends ConsumerState<UserPage> {
       profile?.name ?? '',
       style: TextStyle(
         fontWeight: FontWeight.bold,
-        fontSize: 16.sp,
+        fontSize: 18.sp,
       ),
     );
   }
@@ -464,12 +478,20 @@ class _UserPageState extends ConsumerState<UserPage> {
       BuildContext context, WidgetRef ref, Profile? profile) {
     return profile?.birthday == null
         ? const SizedBox()
-        : Text('${DateUtil.convertToJapaneseDate(profile?.birthday!)}生まれ');
+        : Text(
+            '${DateUtil.convertToJapaneseDate(profile?.birthday!)}生まれ',
+            style: TextStyle(fontSize: 13.sp),
+          );
   }
 
   Widget _buildUserBio(BuildContext context, WidgetRef ref, Profile? profile) {
     final bio = profile?.bio;
-    return bio == null || bio.isEmpty ? const SizedBox() : Text(bio);
+    return bio == null || bio.isEmpty
+        ? const SizedBox()
+        : Text(
+            bio,
+            style: TextStyle(fontSize: 16.sp),
+          );
   }
 
   Widget _buildFollowButton(BuildContext context, WidgetRef ref) {
@@ -480,7 +502,7 @@ class _UserPageState extends ConsumerState<UserPage> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {},
-                child: const Text('フォローする'),
+                child: Text('フォローする', style: TextStyle(fontSize: 14.sp)),
               ),
             ),
           );
@@ -492,15 +514,24 @@ class _UserPageState extends ConsumerState<UserPage> {
     List<PostData> userPosts,
   ) {
     return userPosts.isEmpty
-        ? const SliverToBoxAdapter(child: Center(child: Text('投稿はまだありません。')))
+        ? SliverToBoxAdapter(
+            child: Center(
+              child: Text(
+                '投稿はまだありません',
+                style: TextStyle(fontSize: 16.sp),
+              ),
+            ),
+          )
         : SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
                 if (index == userPosts.length) {
                   return _isLoadingMore
-                      ? const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Center(child: CircularProgressIndicator()),
+                      ? Padding(
+                          padding: EdgeInsets.all(8.w),
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
                         )
                       : const SizedBox.shrink();
                 }
@@ -522,12 +553,12 @@ class _UserPageState extends ConsumerState<UserPage> {
   ) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.only(left: 32, right: 32, bottom: 52),
+        padding: EdgeInsets.only(left: 32.w, right: 32.w, bottom: 52.h),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _buildUserImage(context, ref, profile),
-            const SizedBox(height: 32),
+            SizedBox(height: 32.h),
             Text(
               'あなたは${profile.value?.name}をブロックしています。',
               style: TextStyle(

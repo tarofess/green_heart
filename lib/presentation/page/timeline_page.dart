@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/presentation/page/error_page.dart';
@@ -59,10 +60,14 @@ class _TimelinePageState extends ConsumerState<TimelinePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('みんなの投稿'),
+        title: Text(
+          'みんなの投稿',
+          style: TextStyle(fontSize: 21.sp),
+        ),
+        toolbarHeight: 58.h,
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: Icon(Icons.search, size: 24.r),
             onPressed: () {
               showSearch(
                 context: context,

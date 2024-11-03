@@ -19,7 +19,7 @@ Future<void> showProfileImageActionSheet(
     ),
     builder: (BuildContext context) {
       return Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16.w),
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),

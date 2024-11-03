@@ -37,7 +37,10 @@ Future<bool> showConfirmationDialog({
                   onPressed: () => Navigator.of(context).pop(false),
                   child: Text(
                     negativeButtonText,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16.sp,
+                    ),
                   ),
                 ),
               ),

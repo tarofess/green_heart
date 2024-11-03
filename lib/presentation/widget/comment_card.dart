@@ -207,7 +207,10 @@ class CommentCard extends HookConsumerWidget {
                 );
             focusNode.requestFocus();
           },
-          child: const Text('返信する'),
+          child: Text(
+            '返信する',
+            style: TextStyle(fontSize: 14.sp),
+          ),
         ),
         if (commentType == CommentType.comment && commentData.isMe)
           _buildDeleteButton(context, ref)
@@ -261,13 +264,15 @@ class CommentCard extends HookConsumerWidget {
           }
         }
       },
-      child: const Text('削除'),
+      child: Text(
+        '削除',
+        style: TextStyle(fontSize: 14.sp),
+      ),
     );
   }
 
   Widget _buildReportButton(BuildContext context, WidgetRef ref) {
     return TextButton(
-      child: const Text('通報'),
       onPressed: () async {
         try {
           final reportText = await showReportDialog(context);
@@ -309,6 +314,7 @@ class CommentCard extends HookConsumerWidget {
           }
         }
       },
+      child: Text('通報', style: TextStyle(fontSize: 14.sp)),
     );
   }
 }

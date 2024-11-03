@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -15,13 +16,13 @@ class TabPage extends HookConsumerWidget {
 
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
+            icon: Icon(Icons.home_outlined, size: 24.r),
             label: 'ホーム',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.feed_outlined),
+            icon: Icon(Icons.feed_outlined, size: 24.r),
             label: 'みんなの投稿',
           ),
         ],
@@ -31,12 +32,17 @@ class TabPage extends HookConsumerWidget {
         },
       ),
       body: tabPageState[selectedIndex.value],
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.go('/post');
-        },
-        child: const ImageIcon(
-          AssetImage('assets/images/post_floating_action_icon.png'),
+      floatingActionButton: SizedBox(
+        width: 58.r,
+        height: 58.r,
+        child: FloatingActionButton(
+          onPressed: () {
+            context.go('/post');
+          },
+          child: ImageIcon(
+            const AssetImage('assets/images/post_floating_action_icon.png'),
+            size: 28.r,
+          ),
         ),
       ),
     );

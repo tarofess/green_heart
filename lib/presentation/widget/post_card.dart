@@ -28,18 +28,18 @@ class PostCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Card(
-      elevation: 2.0,
+      elevation: 2.r,
       child: Padding(
-        padding: EdgeInsets.all(16.r),
+        padding: EdgeInsets.all(16.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildUserInfo(context, ref),
-            SizedBox(height: 16.r),
+            SizedBox(height: 16.h),
             _buildTextContent(),
-            SizedBox(height: 16.r),
+            SizedBox(height: 16.h),
             _buildImage(postData.post.imageUrls),
-            SizedBox(height: 8.r),
+            SizedBox(height: 8.h),
             _buildActionButtons(context, ref),
           ],
         ),
@@ -66,10 +66,13 @@ class PostCard extends ConsumerWidget {
                 context.push('/user', extra: {'uid': postData.post.uid});
               }
             }),
-        SizedBox(width: 8.r),
+        SizedBox(width: 8.h),
         Text(
           postData.userProfile?.name ?? '',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 14.sp,
+          ),
         ),
       ],
     );
@@ -90,7 +93,7 @@ class PostCard extends ConsumerWidget {
   Widget _buildTextContent() {
     return postData.post.content.isEmpty
         ? const SizedBox()
-        : Text(postData.post.content);
+        : Text(postData.post.content, style: TextStyle(fontSize: 14.sp));
   }
 
   Widget _buildImage(List<String> postImages) {
@@ -102,7 +105,7 @@ class PostCard extends ConsumerWidget {
               itemCount: postImages.length,
               itemBuilder: (context, index) {
                 return Padding(
-                  padding: EdgeInsets.all(6.r),
+                  padding: EdgeInsets.all(6.w),
                   child: GestureDetector(
                     onTap: () {
                       _showFullScreenImage(context, postImages[index]);
@@ -112,8 +115,8 @@ class PostCard extends ConsumerWidget {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(12.r),
                           child: CachedNetworkImage(
-                            width: 240.r,
-                            height: 240.r,
+                            width: 240.w,
+                            height: 240.h,
                             key: ValueKey(postImages[index]),
                             imageUrl: postImages[index],
                             fit: BoxFit.cover,
@@ -137,9 +140,9 @@ class PostCard extends ConsumerWidget {
         Row(
           children: [
             _buildLikeWidget(context, ref),
-            SizedBox(width: 16.r),
+            SizedBox(width: 16.w),
             _buildCommentWidget(context, ref),
-            SizedBox(width: 24.r),
+            SizedBox(width: 24.w),
             postData.post.uid == myUid
                 ? _buildDeletePostButton(context, ref, myUid)
                 : _buildReportButton(context, ref),
@@ -158,6 +161,7 @@ class PostCard extends ConsumerWidget {
       child: Row(
         children: [
           Icon(
+            size: 24.r,
             postData.likes.any((like) =>
                     like.uid == ref.watch(authStateProvider).value?.uid)
                 ? Icons.favorite
@@ -167,8 +171,11 @@ class PostCard extends ConsumerWidget {
                 ? Colors.red
                 : null,
           ),
-          SizedBox(width: 8.r),
-          Text(postData.likes.length.toString()),
+          SizedBox(width: 8.w),
+          Text(
+            postData.likes.length.toString(),
+            style: TextStyle(fontSize: 14.sp),
+          ),
         ],
       ),
       onTap: () async {
@@ -208,18 +215,24 @@ class PostCard extends ConsumerWidget {
     return GestureDetector(
       child: Row(
         children: [
-          const Icon(Icons.comment_outlined),
-          SizedBox(width: 8.r),
-          Text(postData.comments.length.toString()),
+          Icon(
+            Icons.comment_outlined,
+            size: 24.r,
+          ),
+          SizedBox(width: 8.w),
+          Text(
+            postData.comments.length.toString(),
+            style: TextStyle(fontSize: 14.sp),
+          ),
         ],
       ),
       onTap: () {
         showModalBottomSheet(
           context: context,
           isScrollControlled: true,
-          shape: const RoundedRectangleBorder(
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(
-              top: Radius.circular(20),
+              top: Radius.circular(20.r),
             ),
           ),
           builder: (BuildContext context) {
@@ -231,8 +244,8 @@ class PostCard extends ConsumerWidget {
               builder:
                   (BuildContext context, ScrollController scrollController) {
                 return ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(20),
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(20.r),
                   ),
                   child: CommentPage(
                     postId: postData.post.id,
@@ -253,7 +266,10 @@ class PostCard extends ConsumerWidget {
     String? myUid,
   ) {
     return GestureDetector(
-      child: const Icon(Icons.delete_outlined),
+      child: Icon(
+        Icons.delete_outlined,
+        size: 24.r,
+      ),
       onTap: () async {
         final result = await showConfirmationDialog(
           context: context,
@@ -296,7 +312,10 @@ class PostCard extends ConsumerWidget {
 
   Widget _buildReportButton(BuildContext context, WidgetRef ref) {
     return GestureDetector(
-      child: const Icon(Icons.flag_outlined),
+      child: Icon(
+        Icons.flag_outlined,
+        size: 24.r,
+      ),
       onTap: () async {
         try {
           final reportText = await showReportDialog(context);
@@ -323,8 +342,11 @@ class PostCard extends ConsumerWidget {
 
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('投稿を通報しました。'),
+              SnackBar(
+                content: Text(
+                  '投稿を通報しました。',
+                  style: TextStyle(fontSize: 16.sp),
+                ),
               ),
             );
           }
@@ -360,7 +382,7 @@ class PostCard extends ConsumerWidget {
                     builder: (context, constraints) {
                       return InteractiveViewer(
                         panEnabled: true,
-                        boundaryMargin: EdgeInsets.all(20.r),
+                        boundaryMargin: EdgeInsets.all(20.w),
                         minScale: 0.5,
                         maxScale: 4,
                         child: Center(
@@ -375,10 +397,14 @@ class PostCard extends ConsumerWidget {
                     },
                   ),
                   Positioned(
-                    top: 10.r,
-                    left: 0.r,
+                    top: 10.h,
+                    left: 0.w,
                     child: IconButton(
-                      icon: const Icon(Icons.close, color: Colors.white),
+                      icon: Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 23.r,
+                      ),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                   ),

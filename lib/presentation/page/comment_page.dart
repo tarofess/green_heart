@@ -31,7 +31,13 @@ class CommentPage extends HookConsumerWidget {
     }, const []);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('コメント')),
+      appBar: AppBar(
+        title: Text(
+          'コメント',
+          style: TextStyle(fontSize: 21.sp),
+        ),
+        toolbarHeight: 58.h,
+      ),
       body: commentState.when(
         data: (comments) {
           return Column(
@@ -46,7 +52,7 @@ class CommentPage extends HookConsumerWidget {
               ),
               const Divider(height: 1),
               Padding(
-                padding: EdgeInsets.only(top: 8.r, bottom: 8.r, left: 16.r),
+                padding: EdgeInsets.only(top: 8.h, bottom: 8.h, left: 16.w),
                 child: _buildInputForm(
                   context,
                   ref,
@@ -87,15 +93,15 @@ class CommentPage extends HookConsumerWidget {
             Text(
               'コメントはまだありません',
               style: TextStyle(
-                fontSize: 18.sp,
+                fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
               ),
             ),
             SizedBox(height: 16.sp),
             Text(
-              '最初のコメントを追加してみよう。',
+              '最初のコメントを追加してみよう',
               style: TextStyle(
-                fontSize: 14.sp,
+                fontSize: 16.sp,
               ),
             ),
           ],
@@ -137,6 +143,7 @@ class CommentPage extends HookConsumerWidget {
           children: [
             Expanded(
               child: TextField(
+                style: TextStyle(fontSize: 16.sp),
                 focusNode: focusNode,
                 controller: commentTextController,
                 decoration: InputDecoration(
@@ -196,13 +203,13 @@ class CommentPage extends HookConsumerWidget {
     CommentPageState commentPageState,
   ) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 8.r),
+      padding: EdgeInsets.only(bottom: 8.w),
       child: Row(
         children: [
           Text(
             '${commentPageState.parentUserName}に返信中...',
             style: TextStyle(
-              fontSize: 14.sp,
+              fontSize: 16.sp,
               fontWeight: FontWeight.bold,
             ),
           ),

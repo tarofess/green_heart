@@ -33,9 +33,13 @@ class PostPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('投稿'),
+        title: Text(
+          '投稿',
+          style: TextStyle(fontSize: 21.sp),
+        ),
+        toolbarHeight: 58.h,
         leading: IconButton(
-          icon: const Icon(Icons.cancel_outlined),
+          icon: Icon(Icons.cancel_outlined, size: 24.r),
           onPressed: () async {
             if (postTextController.text.isEmpty &&
                 selectedImages.value.isEmpty) {
@@ -71,12 +75,13 @@ class PostPage extends HookConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   TextField(
+                    style: TextStyle(fontSize: 16.sp),
                     controller: postTextController,
                     focusNode: focusNode,
                     maxLines: null,
                     decoration: InputDecoration(
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.all(16.r),
+                      contentPadding: EdgeInsets.all(16.w),
                     ),
                   ),
                   _buildPickedImageArea(selectedImages),
@@ -97,7 +102,7 @@ class PostPage extends HookConsumerWidget {
     ValueNotifier<List<String>> selectedImages,
   ) {
     return IconButton(
-      icon: const Icon(Icons.upload),
+      icon: Icon(Icons.upload, size: 24.r),
       onPressed:
           postTextController.text.isNotEmpty || selectedImages.value.isNotEmpty
               ? () async {
@@ -141,7 +146,7 @@ class PostPage extends HookConsumerWidget {
   Widget _buildPickedImageArea(ValueNotifier<List<String>> selectedImages) {
     return selectedImages.value.isNotEmpty
         ? Padding(
-            padding: EdgeInsets.only(left: 16.r, right: 16.r, bottom: 16.r),
+            padding: EdgeInsets.only(left: 16.w, right: 16.w, bottom: 16.h),
             child: SizedBox(
               height: 240.r,
               child: ListView.builder(
@@ -149,21 +154,21 @@ class PostPage extends HookConsumerWidget {
                 itemCount: selectedImages.value.length,
                 itemBuilder: (context, index) {
                   return Padding(
-                    padding: EdgeInsets.all(6.r),
+                    padding: EdgeInsets.all(6.w),
                     child: Stack(
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(12.r),
                           child: Image.file(
                             File(selectedImages.value[index]),
-                            width: 240.r,
-                            height: 240.r,
+                            width: 240.w,
+                            height: 240.h,
                             fit: BoxFit.cover,
                           ),
                         ),
                         Positioned(
-                          top: 8.r,
-                          right: 8.r,
+                          top: 8.h,
+                          right: 8.w,
                           child: GestureDetector(
                             onTap: () {
                               selectedImages.value =
@@ -171,7 +176,7 @@ class PostPage extends HookConsumerWidget {
                                     ..removeAt(index);
                             },
                             child: Container(
-                              padding: EdgeInsets.all(4.r),
+                              padding: EdgeInsets.all(4.w),
                               decoration: BoxDecoration(
                                 color: Colors.black.withOpacity(0.5),
                                 shape: BoxShape.circle,
@@ -179,7 +184,7 @@ class PostPage extends HookConsumerWidget {
                               child: Icon(
                                 Icons.close,
                                 color: Colors.white,
-                                size: 20.r,
+                                size: 24.r,
                               ),
                             ),
                           ),
@@ -208,7 +213,11 @@ class PostPage extends HookConsumerWidget {
           _buildImageIconButton(context, ref, selectedImages),
           const Spacer(),
           IconButton(
-            icon: const Icon(Icons.keyboard_arrow_down, color: Colors.green),
+            icon: Icon(
+              Icons.keyboard_arrow_down,
+              color: Colors.green,
+              size: 24.r,
+            ),
             onPressed: () {
               FocusManager.instance.primaryFocus?.unfocus();
             },
@@ -227,6 +236,7 @@ class PostPage extends HookConsumerWidget {
       icon: Icon(
         Icons.image,
         color: selectedImages.value.length < 4 ? Colors.green : Colors.grey,
+        size: 24.r,
       ),
       onPressed: selectedImages.value.length < 4
           ? () async {
