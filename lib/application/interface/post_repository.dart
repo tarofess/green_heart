@@ -5,6 +5,7 @@ import 'package:green_heart/domain/type/timeline_scroll_state.dart';
 import 'package:green_heart/domain/type/user_post_scroll_state.dart';
 
 abstract class PostRepository {
+  Future<Post> addPost(String uid, String content, List<String> imageUrls);
   Future<List<Post>> getPostsByUid(
     String uid,
     UserPostScrollState userPostScrollState,
@@ -14,7 +15,6 @@ abstract class PostRepository {
     TimeLineScrollState timeLineScrollState,
     TimelineScrollStateNotifier timelineScrollStateNotifier,
   );
-  Future<Post> uploadPost(String uid, String content, List<String> imageUrls);
   Future<List<String>> uploadImages(String uid, List<String> paths);
   Future<void> deletePost(String postId);
   Future<void> deleteAllPostsByUid(String uid);

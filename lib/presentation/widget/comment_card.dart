@@ -1,9 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:green_heart/application/di/post_di.dart';
-import 'package:green_heart/application/state/auth_state_provider.dart';
-import 'package:green_heart/presentation/dialog/error_dialog.dart';
-import 'package:green_heart/presentation/dialog/report_dialog.dart';
-import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,6 +8,11 @@ import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/application/state/comment_notifier.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/application/state/comment_page_notifier.dart';
+import 'package:green_heart/application/di/report_di.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
+import 'package:green_heart/presentation/dialog/error_dialog.dart';
+import 'package:green_heart/presentation/dialog/report_dialog.dart';
+import 'package:green_heart/presentation/widget/loading_overlay.dart';
 
 class CommentCard extends HookConsumerWidget {
   const CommentCard({

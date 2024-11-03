@@ -15,6 +15,8 @@ import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/presentation/dialog/report_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
+import 'package:green_heart/application/di/like_di.dart';
+import 'package:green_heart/application/di/report_di.dart';
 
 class PostCard extends ConsumerWidget {
   PostCard({super.key, required this.postData, this.uidInPreviosPage});

@@ -7,25 +7,6 @@ import 'package:green_heart/application/exception/app_exception.dart';
 
 class FirebaseLikeRepository implements LikeRepository {
   @override
-  Future<List<Like>> getLikes(String postId) async {
-    try {
-      final firestore = FirebaseFirestore.instance;
-      final docRef = firestore
-          .collection('like')
-          .where('postId', isEqualTo: postId)
-          .orderBy('createdAt', descending: true);
-      final docSnapshot = await docRef.get();
-      final likes =
-          docSnapshot.docs.map((doc) => Like.fromJson(doc.data())).toList();
-
-      return likes;
-    } catch (e, stackTrace) {
-      final exception = await ExceptionHandler.handleException(e, stackTrace);
-      throw exception ?? AppException('いいねの取得に失敗しました。再度お試しください。');
-    }
-  }
-
-  @override
   Future<void> toggleLike(String postId, String uid) async {
     try {
       final firestore = FirebaseFirestore.instance;
@@ -46,6 +27,25 @@ class FirebaseLikeRepository implements LikeRepository {
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('いいねに失敗しました。再度お試しください。');
+    }
+  }
+
+  @override
+  Future<List<Like>> getLikes(String postId) async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+      final docRef = firestore
+          .collection('like')
+          .where('postId', isEqualTo: postId)
+          .orderBy('createdAt', descending: true);
+      final docSnapshot = await docRef.get();
+      final likes =
+          docSnapshot.docs.map((doc) => Like.fromJson(doc.data())).toList();
+
+      return likes;
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('いいねの取得に失敗しました。再度お試しください。');
     }
   }
 

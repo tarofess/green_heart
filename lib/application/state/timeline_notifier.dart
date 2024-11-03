@@ -12,6 +12,8 @@ import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/application/di/block_di.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/state/timeline_scroll_state_notifier.dart';
+import 'package:green_heart/application/di/comment_di.dart';
+import 'package:green_heart/application/di/like_di.dart';
 
 class TimelineNotifier extends AsyncNotifier<List<PostData>> {
   @override

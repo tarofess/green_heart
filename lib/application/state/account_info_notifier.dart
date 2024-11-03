@@ -6,9 +6,10 @@ import 'package:green_heart/domain/type/account_info.dart';
 import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/application/di/auth_di.dart';
 import 'package:green_heart/application/di/account_di.dart';
-import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/application/di/shared_pref_di.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
+import 'package:green_heart/application/di/comment_di.dart';
+import 'package:green_heart/application/di/like_di.dart';
 
 class AccountNotifier extends Notifier<AccountInfo> {
   @override

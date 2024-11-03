@@ -11,23 +11,6 @@ import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 
 class FirebaseProfileRepository implements ProfileRepository {
   @override
-  Future<Profile?> getProfile(String uid) async {
-    try {
-      final firestore = FirebaseFirestore.instance;
-      final docRef = firestore.collection('profile').doc(uid);
-      final docSnapshot = await docRef.get();
-      if (docSnapshot.exists) {
-        return Profile.fromJson(docSnapshot.data()!);
-      } else {
-        return null;
-      }
-    } catch (e, stackTrace) {
-      final exception = await ExceptionHandler.handleException(e, stackTrace);
-      throw exception ?? AppException('プロフィールの取得に失敗しました。再度お試しください。');
-    }
-  }
-
-  @override
   Future<Profile> saveProfile(
     String uid,
     String name,
@@ -53,6 +36,23 @@ class FirebaseProfileRepository implements ProfileRepository {
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('プロフィールの保存に失敗しました。再度お試しください。');
+    }
+  }
+
+  @override
+  Future<Profile?> getProfile(String uid) async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+      final docRef = firestore.collection('profile').doc(uid);
+      final docSnapshot = await docRef.get();
+      if (docSnapshot.exists) {
+        return Profile.fromJson(docSnapshot.data()!);
+      } else {
+        return null;
+      }
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('プロフィールの取得に失敗しました。再度お試しください。');
     }
   }
 

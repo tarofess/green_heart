@@ -14,19 +14,12 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
-CommentData _$CommentDataFromJson(Map<String, dynamic> json) {
-  return _CommentData.fromJson(json);
-}
-
 /// @nodoc
 mixin _$CommentData {
   Comment get comment => throw _privateConstructorUsedError;
   Profile? get profile => throw _privateConstructorUsedError;
   List<CommentData> get replyComments => throw _privateConstructorUsedError;
   bool get isMe => throw _privateConstructorUsedError;
-
-  /// Serializes this CommentData to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of CommentData
   /// with the given fields replaced by the non-null parameter values.
@@ -176,7 +169,7 @@ class __$$CommentDataImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
+
 class _$CommentDataImpl implements _CommentData {
   const _$CommentDataImpl(
       {required this.comment,
@@ -184,9 +177,6 @@ class _$CommentDataImpl implements _CommentData {
       final List<CommentData> replyComments = const [],
       this.isMe = false})
       : _replyComments = replyComments;
-
-  factory _$CommentDataImpl.fromJson(Map<String, dynamic> json) =>
-      _$$CommentDataImplFromJson(json);
 
   @override
   final Comment comment;
@@ -222,7 +212,6 @@ class _$CommentDataImpl implements _CommentData {
             (identical(other.isMe, isMe) || other.isMe == isMe));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, comment, profile,
       const DeepCollectionEquality().hash(_replyComments), isMe);
@@ -234,13 +223,6 @@ class _$CommentDataImpl implements _CommentData {
   @pragma('vm:prefer-inline')
   _$$CommentDataImplCopyWith<_$CommentDataImpl> get copyWith =>
       __$$CommentDataImplCopyWithImpl<_$CommentDataImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$CommentDataImplToJson(
-      this,
-    );
-  }
 }
 
 abstract class _CommentData implements CommentData {
@@ -249,9 +231,6 @@ abstract class _CommentData implements CommentData {
       required final Profile? profile,
       final List<CommentData> replyComments,
       final bool isMe}) = _$CommentDataImpl;
-
-  factory _CommentData.fromJson(Map<String, dynamic> json) =
-      _$CommentDataImpl.fromJson;
 
   @override
   Comment get comment;

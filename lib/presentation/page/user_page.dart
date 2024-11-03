@@ -20,7 +20,7 @@ import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/application/di/block_di.dart';
 import 'package:green_heart/presentation/widget/post_search.dart';
 import 'package:green_heart/application/state/user_post_scroll_state_notifier.dart';
-import 'package:green_heart/application/di/post_di.dart';
+import 'package:green_heart/application/di/report_di.dart';
 import 'package:green_heart/presentation/dialog/report_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 

@@ -12,7 +12,7 @@ class PostAddUsecase {
     List<String> paths,
   ) async {
     final imageUrls = await _postRepository.uploadImages(uid, paths);
-    final post = await _postRepository.uploadPost(uid, content, imageUrls);
+    final post = await _postRepository.addPost(uid, content, imageUrls);
     return post;
   }
 }

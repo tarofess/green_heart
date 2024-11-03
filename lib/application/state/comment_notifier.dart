@@ -1,12 +1,12 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/domain/type/comment_data.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/state/timeline_notifier.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/state/comment_page_notifier.dart';
+import 'package:green_heart/application/di/comment_di.dart';
 import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/domain/type/comment.dart';
 

@@ -14,19 +14,12 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
-PostData _$PostDataFromJson(Map<String, dynamic> json) {
-  return _PostData.fromJson(json);
-}
-
 /// @nodoc
 mixin _$PostData {
   Post get post => throw _privateConstructorUsedError;
   Profile? get userProfile => throw _privateConstructorUsedError;
   List<Like> get likes => throw _privateConstructorUsedError;
   List<CommentData> get comments => throw _privateConstructorUsedError;
-
-  /// Serializes this PostData to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of PostData
   /// with the given fields replaced by the non-null parameter values.
@@ -175,7 +168,7 @@ class __$$PostDataImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
+
 class _$PostDataImpl implements _PostData {
   const _$PostDataImpl(
       {required this.post,
@@ -184,9 +177,6 @@ class _$PostDataImpl implements _PostData {
       required final List<CommentData> comments})
       : _likes = likes,
         _comments = comments;
-
-  factory _$PostDataImpl.fromJson(Map<String, dynamic> json) =>
-      _$$PostDataImplFromJson(json);
 
   @override
   final Post post;
@@ -225,7 +215,6 @@ class _$PostDataImpl implements _PostData {
             const DeepCollectionEquality().equals(other._comments, _comments));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -241,13 +230,6 @@ class _$PostDataImpl implements _PostData {
   @pragma('vm:prefer-inline')
   _$$PostDataImplCopyWith<_$PostDataImpl> get copyWith =>
       __$$PostDataImplCopyWithImpl<_$PostDataImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$PostDataImplToJson(
-      this,
-    );
-  }
 }
 
 abstract class _PostData implements PostData {
@@ -256,9 +238,6 @@ abstract class _PostData implements PostData {
       required final Profile? userProfile,
       required final List<Like> likes,
       required final List<CommentData> comments}) = _$PostDataImpl;
-
-  factory _PostData.fromJson(Map<String, dynamic> json) =
-      _$PostDataImpl.fromJson;
 
   @override
   Post get post;

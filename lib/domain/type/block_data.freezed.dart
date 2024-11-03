@@ -14,17 +14,10 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
-BlockData _$BlockDataFromJson(Map<String, dynamic> json) {
-  return _BlockData.fromJson(json);
-}
-
 /// @nodoc
 mixin _$BlockData {
   Block get block => throw _privateConstructorUsedError;
   Profile? get profile => throw _privateConstructorUsedError;
-
-  /// Serializes this BlockData to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of BlockData
   /// with the given fields replaced by the non-null parameter values.
@@ -145,12 +138,9 @@ class __$$BlockDataImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
+
 class _$BlockDataImpl implements _BlockData {
   const _$BlockDataImpl({required this.block, required this.profile});
-
-  factory _$BlockDataImpl.fromJson(Map<String, dynamic> json) =>
-      _$$BlockDataImplFromJson(json);
 
   @override
   final Block block;
@@ -171,7 +161,6 @@ class _$BlockDataImpl implements _BlockData {
             (identical(other.profile, profile) || other.profile == profile));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, block, profile);
 
@@ -182,22 +171,12 @@ class _$BlockDataImpl implements _BlockData {
   @pragma('vm:prefer-inline')
   _$$BlockDataImplCopyWith<_$BlockDataImpl> get copyWith =>
       __$$BlockDataImplCopyWithImpl<_$BlockDataImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$BlockDataImplToJson(
-      this,
-    );
-  }
 }
 
 abstract class _BlockData implements BlockData {
   const factory _BlockData(
       {required final Block block,
       required final Profile? profile}) = _$BlockDataImpl;
-
-  factory _BlockData.fromJson(Map<String, dynamic> json) =
-      _$BlockDataImpl.fromJson;
 
   @override
   Block get block;

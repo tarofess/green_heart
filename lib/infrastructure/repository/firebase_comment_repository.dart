@@ -7,6 +7,34 @@ import 'package:green_heart/application/exception/app_exception.dart';
 
 class FirebaseCommentRepository implements CommentRepository {
   @override
+  Future<Comment> addComment(
+    String uid,
+    String postId,
+    String content,
+    String? parentCommentId,
+  ) async {
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      final docRef = firestore.collection('comment').doc();
+
+      final comment = Comment(
+        id: docRef.id,
+        uid: uid,
+        postId: postId,
+        content: content,
+        createdAt: DateTime.now(),
+        parentCommentId: parentCommentId,
+      );
+
+      await docRef.set(comment.toJson());
+      return comment;
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('コメントの追加に失敗しました。再度お試しください。');
+    }
+  }
+
+  @override
   Future<List<Comment>> getComments(String postId) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -39,34 +67,6 @@ class FirebaseCommentRepository implements CommentRepository {
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('コメントの取得に失敗しました。再度お試しください。');
-    }
-  }
-
-  @override
-  Future<Comment> addComment(
-    String uid,
-    String postId,
-    String content,
-    String? parentCommentId,
-  ) async {
-    try {
-      final FirebaseFirestore firestore = FirebaseFirestore.instance;
-      final docRef = firestore.collection('comment').doc();
-
-      final comment = Comment(
-        id: docRef.id,
-        uid: uid,
-        postId: postId,
-        content: content,
-        createdAt: DateTime.now(),
-        parentCommentId: parentCommentId,
-      );
-
-      await docRef.set(comment.toJson());
-      return comment;
-    } catch (e, stackTrace) {
-      final exception = await ExceptionHandler.handleException(e, stackTrace);
-      throw exception ?? AppException('コメントの追加に失敗しました。再度お試しください。');
     }
   }
 

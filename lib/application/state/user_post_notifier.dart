@@ -12,6 +12,8 @@ import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/domain/type/post.dart';
 import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/application/state/user_post_scroll_state_notifier.dart';
+import 'package:green_heart/application/di/comment_di.dart';
+import 'package:green_heart/application/di/like_di.dart';
 
 class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
   late String _uid;

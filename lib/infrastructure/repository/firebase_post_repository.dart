@@ -14,6 +14,33 @@ import 'package:green_heart/domain/type/user_post_scroll_state.dart';
 
 class FirebasePostRepository implements PostRepository {
   @override
+  Future<Post> addPost(
+    String uid,
+    String content,
+    List<String> imageUrls,
+  ) async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+      final docRef = firestore.collection('post').doc();
+
+      final post = Post(
+        id: docRef.id,
+        uid: uid,
+        content: content,
+        imageUrls: imageUrls,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      await docRef.set(post.toJson());
+      return post;
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('投稿に失敗しました。再度お試しください。');
+    }
+  }
+
+  @override
   Future<List<Post>> getPostsByUid(
     String uid,
     UserPostScrollState userPostScrollState,
@@ -88,33 +115,6 @@ class FirebasePostRepository implements PostRepository {
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('投稿の取得に失敗しました。再度お試しください。');
-    }
-  }
-
-  @override
-  Future<Post> uploadPost(
-    String uid,
-    String content,
-    List<String> imageUrls,
-  ) async {
-    try {
-      final firestore = FirebaseFirestore.instance;
-      final docRef = firestore.collection('post').doc();
-
-      final post = Post(
-        id: docRef.id,
-        uid: uid,
-        content: content,
-        imageUrls: imageUrls,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      );
-
-      await docRef.set(post.toJson());
-      return post;
-    } catch (e, stackTrace) {
-      final exception = await ExceptionHandler.handleException(e, stackTrace);
-      throw exception ?? AppException('投稿に失敗しました。再度お試しください。');
     }
   }
 
