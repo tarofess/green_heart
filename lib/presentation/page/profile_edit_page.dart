@@ -99,7 +99,11 @@ class ProfileEditPage extends HookConsumerWidget {
     Profile? profile,
   ) {
     return AppBar(
-      title: const Text('プロフィール編集'),
+      title: Text(
+        'プロフィール編集',
+        style: TextStyle(fontSize: 21.sp),
+      ),
+      toolbarHeight: 58.h,
       actions: [
         TextButton(
           onPressed: () async {
@@ -149,7 +153,10 @@ class ProfileEditPage extends HookConsumerWidget {
               }
             }
           },
-          child: const Text('保存'),
+          child: Text(
+            '保存',
+            style: TextStyle(fontSize: 16.sp),
+          ),
         ),
       ],
     );
@@ -158,7 +165,7 @@ class ProfileEditPage extends HookConsumerWidget {
   Widget _buildImageField(
       BuildContext context, WidgetRef ref, ValueNotifier<String?> imagePath) {
     return Padding(
-      padding: EdgeInsets.all(16.r),
+      padding: EdgeInsets.all(16.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -172,8 +179,8 @@ class ProfileEditPage extends HookConsumerWidget {
                           borderRadius: BorderRadius.circular(100.r),
                           child: Image.file(
                             File(imagePath.value!),
-                            width: 200.r,
-                            height: 200.r,
+                            width: 200.w,
+                            height: 200.h,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -183,10 +190,10 @@ class ProfileEditPage extends HookConsumerWidget {
               },
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 12.h),
           Center(
             child: TextButton(
-              child: const Text('プロフィール画像を編集'),
+              child: Text('プロフィール画像を編集', style: TextStyle(fontSize: 16.sp)),
               onPressed: () async {
                 await showProfileImageActionSheet(context, ref, imagePath);
                 _unfocusAllKeyboard();
@@ -212,8 +219,8 @@ class ProfileEditPage extends HookConsumerWidget {
 
   Widget _buildFirebaseImage(String imageUrl) {
     return Container(
-      width: 200,
-      height: 200,
+      width: 200.w,
+      height: 200.h,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         image: DecorationImage(
@@ -241,19 +248,23 @@ class ProfileEditPage extends HookConsumerWidget {
 
   Widget _buildNameField(TextEditingController nameTextController) {
     return Padding(
-      padding: EdgeInsets.all(16.r),
+      padding: EdgeInsets.all(16.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.only(left: 8.r),
-            child: const Text(
+            padding: EdgeInsets.only(left: 8.w),
+            child: Text(
               'ユーザー名',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16.sp,
+              ),
             ),
           ),
           SizedBox(height: 8.r),
           TextFormField(
+            style: TextStyle(fontSize: 16.sp),
             focusNode: _nameFocusNode,
             controller: nameTextController,
             decoration: _buildInputDecoration('名前を入力してください'),
@@ -274,17 +285,20 @@ class ProfileEditPage extends HookConsumerWidget {
     ValueNotifier<String> savedBirthday,
   ) {
     return Padding(
-      padding: EdgeInsets.all(16.r),
+      padding: EdgeInsets.all(16.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Padding(
-                padding: EdgeInsets.only(left: 8.r),
-                child: const Text(
+                padding: EdgeInsets.only(left: 8.w),
+                child: Text(
                   '生年月日',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.sp,
+                  ),
                 ),
               ),
               const Spacer(),
@@ -300,7 +314,7 @@ class ProfileEditPage extends HookConsumerWidget {
                       }
                     },
                   ),
-                  const Text('表示'),
+                  Text('表示', style: TextStyle(fontSize: 16.sp)),
                   Radio<bool>(
                     value: false,
                     groupValue: showBirthday.value,
@@ -312,14 +326,15 @@ class ProfileEditPage extends HookConsumerWidget {
                       }
                     },
                   ),
-                  const Text('非表示'),
+                  Text('非表示', style: TextStyle(fontSize: 16.sp)),
                 ],
               ),
             ],
           ),
-          SizedBox(height: 8.r),
+          SizedBox(height: 8.h),
           if (showBirthday.value)
             TextFormField(
+              style: TextStyle(fontSize: 16.sp),
               controller: birthdayTextController,
               decoration: _buildInputDecoration('生年月日を選択してください'),
               readOnly: true,
@@ -334,19 +349,23 @@ class ProfileEditPage extends HookConsumerWidget {
 
   Widget _buildBioField(TextEditingController bioTextController) {
     return Padding(
-      padding: EdgeInsets.all(16.r),
+      padding: EdgeInsets.all(16.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.only(left: 8.r),
-            child: const Text(
+            padding: EdgeInsets.only(left: 8.w),
+            child: Text(
               '自己紹介',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16.sp,
+              ),
             ),
           ),
-          SizedBox(height: 8.r),
+          SizedBox(height: 8.h),
           TextFormField(
+            style: TextStyle(fontSize: 16.sp),
             focusNode: _bioFocusNode,
             controller: bioTextController,
             decoration: _buildInputDecoration('自己紹介文を200文字以内で入力してください'),
@@ -374,7 +393,7 @@ class ProfileEditPage extends HookConsumerWidget {
         borderRadius: BorderRadius.circular(16.r),
         borderSide: const BorderSide(color: Colors.green),
       ),
-      contentPadding: EdgeInsets.symmetric(horizontal: 16.r, vertical: 12.r),
+      contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
     );
   }
 

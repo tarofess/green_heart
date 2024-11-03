@@ -19,10 +19,16 @@ class AccountPage extends HookConsumerWidget {
     final isExpandedList = useState<List<bool>>([false, false, false]);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('アカウント情報')),
+      appBar: AppBar(
+        title: Text(
+          'アカウント情報',
+          style: TextStyle(fontSize: 21.sp),
+        ),
+        toolbarHeight: 58.h,
+      ),
       body: _buildAccountInfo(context, ref, accountState, isExpandedList),
       bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(bottom: 20.r, left: 20.r, right: 20.r),
+        padding: EdgeInsets.only(bottom: 20.h, left: 20.w, right: 20.w),
         child: _buildAccountDeleteButton(context, ref),
       ),
     );
@@ -46,24 +52,53 @@ class AccountPage extends HookConsumerWidget {
         children: [
           ExpansionPanel(
             headerBuilder: (BuildContext context, bool isExpanded) {
-              return const ListTile(title: Text('ログイン方法'));
+              return ListTile(
+                title: Text(
+                  'ログインサービス',
+                  style: TextStyle(fontSize: 16.sp),
+                ),
+              );
             },
-            body:
-                ListTile(title: Text('${accountInfo.providerName}アカウントでログイン')),
+            body: ListTile(
+              title: Text(
+                '${accountInfo.providerName}アカウントでログイン',
+                style: TextStyle(fontSize: 16.sp),
+              ),
+            ),
             isExpanded: isExpandedList.value[0],
           ),
           ExpansionPanel(
             headerBuilder: (BuildContext context, bool isExpanded) {
-              return const ListTile(title: Text('メールアドレス'));
+              return ListTile(
+                title: Text(
+                  'メールアドレス',
+                  style: TextStyle(fontSize: 16.sp),
+                ),
+              );
             },
-            body: ListTile(title: Text(accountInfo.email)),
+            body: ListTile(
+              title: Text(
+                accountInfo.email,
+                style: TextStyle(fontSize: 16.sp),
+              ),
+            ),
             isExpanded: isExpandedList.value[1],
           ),
           ExpansionPanel(
             headerBuilder: (BuildContext context, bool isExpanded) {
-              return const ListTile(title: Text('登録日'));
+              return ListTile(
+                title: Text(
+                  '登録日',
+                  style: TextStyle(fontSize: 16.sp),
+                ),
+              );
             },
-            body: ListTile(title: Text(accountInfo.registrationDate)),
+            body: ListTile(
+              title: Text(
+                accountInfo.registrationDate,
+                style: TextStyle(fontSize: 16.sp),
+              ),
+            ),
             isExpanded: isExpandedList.value[2],
           ),
         ],
@@ -73,11 +108,12 @@ class AccountPage extends HookConsumerWidget {
 
   Widget _buildAccountDeleteButton(BuildContext context, WidgetRef ref) {
     return ElevatedButton(
-      child: const Text(
+      child: Text(
         'アカウントを削除する',
         style: TextStyle(
           color: Colors.red,
           fontWeight: FontWeight.bold,
+          fontSize: 16.sp,
         ),
       ),
       onPressed: () async {

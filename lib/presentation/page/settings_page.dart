@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -14,7 +15,13 @@ class SettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: const Text('設定')),
+      appBar: AppBar(
+        title: Text(
+          '設定',
+          style: TextStyle(fontSize: 21.sp),
+        ),
+        toolbarHeight: 58.h,
+      ),
       body: ListView(
         children: [
           _buildEditProfileItem(context, ref),
@@ -30,8 +37,14 @@ class SettingsPage extends ConsumerWidget {
 
   Widget _buildEditProfileItem(BuildContext context, WidgetRef ref) {
     return ListTile(
-      leading: const Icon(Icons.edit),
-      title: const Text('プロフィール編集'),
+      leading: Icon(
+        Icons.edit,
+        size: 24.r,
+      ),
+      title: Text(
+        'プロフィール編集',
+        style: TextStyle(fontSize: 16.sp),
+      ),
       onTap: () {
         context.push('/profile_edit');
       },
@@ -40,8 +53,14 @@ class SettingsPage extends ConsumerWidget {
 
   Widget _buildBlockItem(BuildContext context, WidgetRef ref) {
     return ListTile(
-      leading: const Icon(Icons.block),
-      title: const Text('ブロックリスト'),
+      leading: Icon(
+        Icons.block,
+        size: 24.r,
+      ),
+      title: Text(
+        'ブロックリスト',
+        style: TextStyle(fontSize: 16.sp),
+      ),
       onTap: () {
         context.push('/block_list');
       },
@@ -50,8 +69,14 @@ class SettingsPage extends ConsumerWidget {
 
   Widget _buildContactItem(BuildContext context, WidgetRef ref) {
     return ListTile(
-      leading: const Icon(Icons.mail),
-      title: const Text('お問い合わせ'),
+      leading: Icon(
+        Icons.mail,
+        size: 24.r,
+      ),
+      title: Text(
+        'お問い合わせ',
+        style: TextStyle(fontSize: 16.sp),
+      ),
       onTap: () async {
         await ref.read(emailSendUsecaseProvider).execute();
       },
@@ -60,8 +85,14 @@ class SettingsPage extends ConsumerWidget {
 
   Widget _buildAppInfoItem(BuildContext context, WidgetRef ref) {
     return ListTile(
-      leading: const Icon(Icons.info),
-      title: const Text('アプリの情報'),
+      leading: Icon(
+        Icons.info,
+        size: 24.r,
+      ),
+      title: Text(
+        'アプリの情報',
+        style: TextStyle(fontSize: 16.sp),
+      ),
       onTap: () async {
         try {
           final appInfo =
@@ -84,8 +115,14 @@ class SettingsPage extends ConsumerWidget {
 
   Widget _buildAccountItem(BuildContext context, WidgetRef ref) {
     return ListTile(
-      leading: const Icon(Icons.account_circle),
-      title: const Text('アカウントの情報'),
+      leading: Icon(
+        Icons.account_circle,
+        size: 24.r,
+      ),
+      title: Text(
+        'アカウントの情報',
+        style: TextStyle(fontSize: 16.sp),
+      ),
       onTap: () {
         context.push('/account');
       },
@@ -94,10 +131,17 @@ class SettingsPage extends ConsumerWidget {
 
   Widget _buildLogoutItem(BuildContext context, WidgetRef ref) {
     return ListTile(
-      leading: const Icon(Icons.logout),
-      title: const Text(
+      leading: Icon(
+        Icons.logout,
+        size: 24.r,
+      ),
+      title: Text(
         'ログアウト',
-        style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          color: Colors.red,
+          fontWeight: FontWeight.bold,
+          fontSize: 16.sp,
+        ),
       ),
       onTap: () async {
         try {

@@ -25,9 +25,9 @@ class SignInPage extends HookConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildConsentCheckbox(context, isConsentChecked),
-                SizedBox(height: 16.r),
+                SizedBox(height: 16.h),
                 _buildGoogleSignInButton(context, ref, isConsentChecked.value),
-                SizedBox(height: 16.r),
+                SizedBox(height: 16.h),
                 _buildAppleSignInButton(context, ref, isConsentChecked.value),
               ],
             ),
@@ -39,7 +39,7 @@ class SignInPage extends HookConsumerWidget {
 
   Widget _buildAppTitle() {
     return Padding(
-      padding: EdgeInsets.only(top: 100.r),
+      padding: EdgeInsets.only(top: 100.h),
       child: Text(
         'グリーンハート',
         style: TextStyle(
@@ -54,7 +54,7 @@ class SignInPage extends HookConsumerWidget {
   Widget _buildConsentCheckbox(
       BuildContext context, ValueNotifier<bool> isConsentChecked) {
     return Padding(
-      padding: EdgeInsets.only(right: 16.r),
+      padding: EdgeInsets.only(right: 16.w),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -67,7 +67,7 @@ class SignInPage extends HookConsumerWidget {
           Flexible(
             child: RichText(
               text: TextSpan(
-                style: TextStyle(fontSize: 14.sp, color: Colors.black),
+                style: TextStyle(fontSize: 16.sp, color: Colors.black),
                 children: [
                   const TextSpan(text: ''),
                   TextSpan(
@@ -94,11 +94,11 @@ class SignInPage extends HookConsumerWidget {
                               expand: false,
                               builder: (BuildContext context,
                                   ScrollController scrollController) {
-                                return const ClipRRect(
+                                return ClipRRect(
                                   borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(20),
+                                    top: Radius.circular(20.r),
                                   ),
-                                  child: TermsOfUsePage(),
+                                  child: const TermsOfUsePage(),
                                 );
                               },
                             );
@@ -119,12 +119,12 @@ class SignInPage extends HookConsumerWidget {
   Widget _buildGoogleSignInButton(
       BuildContext context, WidgetRef ref, bool isEnabled) {
     return Padding(
-      padding: EdgeInsets.only(left: 30.r, right: 30.r),
+      padding: EdgeInsets.only(left: 30.w, right: 30.w),
       child: GoogleAuthButton(
         text: 'Googleアカウントでログイン',
         style: AuthButtonStyle(
           width: double.infinity,
-          height: 50.r,
+          height: 50.h,
           textStyle: TextStyle(
             fontSize: 15.sp,
             fontWeight: FontWeight.bold,
@@ -140,7 +140,10 @@ class SignInPage extends HookConsumerWidget {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(e.toString()),
+                        content: Text(
+                          e.toString(),
+                          style: TextStyle(fontSize: 16.sp),
+                        ),
                       ),
                     );
                   }
@@ -154,12 +157,12 @@ class SignInPage extends HookConsumerWidget {
   Widget _buildAppleSignInButton(
       BuildContext context, WidgetRef ref, bool isEnabled) {
     return Padding(
-      padding: EdgeInsets.only(left: 30.r, right: 30.r),
+      padding: EdgeInsets.only(left: 30.w, right: 30.w),
       child: AppleAuthButton(
         text: 'Appleアカウントでログイン',
         style: AuthButtonStyle(
           width: double.infinity,
-          height: 50.r,
+          height: 50.h,
           buttonColor: isEnabled ? Colors.black : Colors.grey[300],
           iconBackground: isEnabled ? Colors.black : Colors.grey[300],
           iconColor: Colors.white,
@@ -179,7 +182,10 @@ class SignInPage extends HookConsumerWidget {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(e.toString()),
+                        content: Text(
+                          e.toString(),
+                          style: TextStyle(fontSize: 16.sp),
+                        ),
                       ),
                     );
                   }

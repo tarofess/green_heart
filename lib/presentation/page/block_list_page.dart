@@ -16,11 +16,22 @@ class BlockListPage extends ConsumerWidget {
     final blockState = ref.watch(blockNotifierProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('ブロックリスト')),
+      appBar: AppBar(
+        title: Text(
+          'ブロックリスト',
+          style: TextStyle(fontSize: 21.sp),
+        ),
+        toolbarHeight: 58.h,
+      ),
       body: blockState.when(
         data: (blockList) {
           if (blockList.isEmpty) {
-            return const Center(child: Text('ブロックしているユーザーはいません'));
+            return Center(
+              child: Text(
+                'ブロックしているユーザーはいません',
+                style: TextStyle(fontSize: 16.sp),
+              ),
+            );
           }
           return ListView.builder(
             itemCount: blockList.length,

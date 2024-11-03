@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 Future<String?> showReportDialog(BuildContext context) async {
   final reportTextController = TextEditingController();
@@ -9,8 +10,12 @@ Future<String?> showReportDialog(BuildContext context) async {
       return StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
-            title: const Text('不適切な内容を通報'),
+            title: Text(
+              '不適切な内容を通報',
+              style: TextStyle(fontSize: 24.sp),
+            ),
             content: TextField(
+              style: TextStyle(fontSize: 16.sp),
               controller: reportTextController,
               decoration: const InputDecoration(
                 hintText: '通報の理由を入力してください',
@@ -25,15 +30,19 @@ Future<String?> showReportDialog(BuildContext context) async {
                 onPressed: () {
                   Navigator.of(context).pop(null);
                 },
-                child: const Text('キャンセル'),
+                child: Text(
+                  'キャンセル',
+                  style: TextStyle(fontSize: 16.sp),
+                ),
               ),
               ElevatedButton(
                 onPressed: reportTextController.text.isNotEmpty
-                    ? () {
-                        Navigator.of(context).pop(reportTextController.text);
-                      }
+                    ? () => Navigator.of(context).pop(reportTextController.text)
                     : null,
-                child: const Text('通報'),
+                child: Text(
+                  '通報',
+                  style: TextStyle(fontSize: 16.sp),
+                ),
               ),
             ],
           );

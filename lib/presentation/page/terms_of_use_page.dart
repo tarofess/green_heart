@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/app_info_notifier.dart';
@@ -16,19 +17,22 @@ class TermsOfUsePage extends ConsumerWidget {
         data: (appInfo) {
           return SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     '利用規約',
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 24.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  Text(appInfo.termsOfUse),
+                  SizedBox(height: 16.h),
+                  Text(
+                    appInfo.termsOfUse,
+                    style: TextStyle(fontSize: 16.sp),
+                  ),
                 ],
               ),
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 Future<bool> showConfirmationDialog({
   required BuildContext context,
@@ -11,8 +12,15 @@ Future<bool> showConfirmationDialog({
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text(title, textAlign: TextAlign.center),
-        content: Text(content),
+        title: Text(
+          title,
+          style: TextStyle(fontSize: 24.sp),
+          textAlign: TextAlign.center,
+        ),
+        content: Text(
+          content,
+          style: TextStyle(fontSize: 16.sp),
+        ),
         actions: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -23,7 +31,7 @@ Future<bool> showConfirmationDialog({
                     foregroundColor: Colors.white,
                     backgroundColor: Colors.green,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
                   onPressed: () => Navigator.of(context).pop(false),
@@ -33,20 +41,23 @@ Future<bool> showConfirmationDialog({
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8.h),
               Expanded(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: Colors.green,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
                   onPressed: () => Navigator.of(context).pop(true),
                   child: Text(
                     positiveButtonText,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16.sp,
+                    ),
                   ),
                 ),
               ),

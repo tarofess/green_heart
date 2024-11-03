@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 Future<void> showSingleButtonDialogBase({
   required BuildContext context,
@@ -14,9 +15,13 @@ Future<void> showSingleButtonDialogBase({
       return AlertDialog(
         title: Text(
           title,
+          style: TextStyle(fontSize: 24.sp),
           textAlign: TextAlign.center,
         ),
-        content: Text(content),
+        content: Text(
+          content,
+          style: TextStyle(fontSize: 16.sp),
+        ),
         actions: [
           Center(
             child: ElevatedButton(
@@ -24,13 +29,16 @@ Future<void> showSingleButtonDialogBase({
                 foregroundColor: Colors.white,
                 backgroundColor: Colors.green,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
               ),
               onPressed: () => handleButtonPress(dialogContext),
               child: Text(
                 buttonText,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.sp,
+                ),
               ),
             ),
           ),

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/app_info_notifier.dart';
+import 'package:green_heart/main.dart';
+import 'package:green_heart/presentation/page/error_page.dart';
+import 'package:green_heart/presentation/widget/loading_indicator.dart';
 
 class AppInfoPage extends HookConsumerWidget {
   const AppInfoPage({super.key, required this.appInfo});
@@ -16,7 +20,13 @@ class AppInfoPage extends HookConsumerWidget {
         useState<List<bool>>([false, false, false, false, false]);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('アプリの情報')),
+      appBar: AppBar(
+        title: Text(
+          'アプリの情報',
+          style: TextStyle(fontSize: 21.sp),
+        ),
+        toolbarHeight: 58.h,
+      ),
       body: appInfoState.when(
         data: (appInfo) {
           return SingleChildScrollView(
@@ -31,37 +41,87 @@ class AppInfoPage extends HookConsumerWidget {
               children: [
                 ExpansionPanel(
                   headerBuilder: (BuildContext context, bool isExpanded) {
-                    return const ListTile(title: Text('開発者'));
+                    return ListTile(
+                      title: Text(
+                        '開発者',
+                        style: TextStyle(fontSize: 16.sp),
+                      ),
+                    );
                   },
-                  body: ListTile(title: Text(appInfo.developerName)),
+                  body: ListTile(
+                    title: Text(
+                      appInfo.developerName,
+                      style: TextStyle(fontSize: 16.sp),
+                    ),
+                  ),
                   isExpanded: isExpandedList.value[0],
                 ),
                 ExpansionPanel(
                   headerBuilder: (BuildContext context, bool isExpanded) {
-                    return const ListTile(title: Text('アプリのバージョン'));
+                    return ListTile(
+                      title: Text(
+                        'アプリのバージョン',
+                        style: TextStyle(fontSize: 16.sp),
+                      ),
+                    );
                   },
-                  body: ListTile(title: Text(appInfo.appVersion)),
+                  body: ListTile(
+                    title: Text(
+                      appInfo.appVersion,
+                      style: TextStyle(fontSize: 16.sp),
+                    ),
+                  ),
                   isExpanded: isExpandedList.value[1],
                 ),
                 ExpansionPanel(
                   headerBuilder: (BuildContext context, bool isExpanded) {
-                    return const ListTile(title: Text('利用規約'));
+                    return ListTile(
+                      title: Text(
+                        '利用規約',
+                        style: TextStyle(fontSize: 16.sp),
+                      ),
+                    );
                   },
-                  body: ListTile(title: Text(appInfo.termsOfUse)),
+                  body: ListTile(
+                    title: Text(
+                      appInfo.termsOfUse,
+                      style: TextStyle(fontSize: 16.sp),
+                    ),
+                  ),
                   isExpanded: isExpandedList.value[2],
                 ),
                 ExpansionPanel(
                   headerBuilder: (BuildContext context, bool isExpanded) {
-                    return const ListTile(title: Text('プライバシーポリシー'));
+                    return ListTile(
+                      title: Text(
+                        'プライバシーポリシー',
+                        style: TextStyle(fontSize: 16.sp),
+                      ),
+                    );
                   },
-                  body: ListTile(title: Text(appInfo.privacyPolicy)),
+                  body: ListTile(
+                    title: Text(
+                      appInfo.privacyPolicy,
+                      style: TextStyle(fontSize: 16.sp),
+                    ),
+                  ),
                   isExpanded: isExpandedList.value[3],
                 ),
                 ExpansionPanel(
                   headerBuilder: (BuildContext context, bool isExpanded) {
-                    return const ListTile(title: Text('更新履歴'));
+                    return ListTile(
+                      title: Text(
+                        '更新履歴',
+                        style: TextStyle(fontSize: 16.sp),
+                      ),
+                    );
                   },
-                  body: ListTile(title: Text(appInfo.updateHistory)),
+                  body: ListTile(
+                    title: Text(
+                      appInfo.updateHistory,
+                      style: TextStyle(fontSize: 16.sp),
+                    ),
+                  ),
                   isExpanded: isExpandedList.value[4],
                 ),
               ],
@@ -69,10 +129,16 @@ class AppInfoPage extends HookConsumerWidget {
           );
         },
         loading: () {
-          return const Center(child: CircularProgressIndicator());
+          return const LoadingIndicator(
+            message: '読み込み中',
+            backgroundColor: Colors.white10,
+          );
         },
-        error: (error, _) {
-          return Center(child: Text('エラーが発生しました。$error'));
+        error: (e, _) {
+          return ErrorPage(
+            error: e,
+            retry: () => ref.refresh(appInitProvider),
+          );
         },
       ),
     );

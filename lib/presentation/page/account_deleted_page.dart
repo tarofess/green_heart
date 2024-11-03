@@ -27,7 +27,7 @@ class AccountDeletedPage extends ConsumerWidget {
           Positioned(
             left: 0,
             right: 0,
-            bottom: 120.sp,
+            bottom: 120.h,
             child: Center(
               child: ElevatedButton(
                 onPressed: () {

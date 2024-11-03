@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 class LoadingIndicator extends StatefulWidget {
   final String message;
   final Color? backgroundColor;
@@ -57,39 +59,39 @@ class LoadingIndicatorState extends State<LoadingIndicator> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20.w),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(10.r),
                 ),
                 child: CircularProgressIndicator(
                   color: Theme.of(context).colorScheme.inversePrimary,
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 32),
+                    padding: EdgeInsets.only(left: 32.w),
                     child: Text(
                       widget.message,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Colors.white,
                             decoration: TextDecoration.none,
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
                           ),
                     ),
                   ),
                   SizedBox(
-                    width: 40,
+                    width: 40.w,
                     child: Text(
                       _getDots(),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Colors.white,
                             decoration: TextDecoration.none,
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
                           ),
                     ),
