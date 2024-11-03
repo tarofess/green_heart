@@ -29,7 +29,6 @@ class FirebasePostRepository implements PostRepository {
         content: content,
         imageUrls: imageUrls,
         createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
       );
 
       await docRef.set(post.toJson());

@@ -12,7 +12,7 @@ class Profile with _$Profile {
     required String bio,
     String? imageUrl,
     @Default(1) int status,
-    required DateTime createdAt,
+    DateTime? createdAt,
     required DateTime updatedAt,
   }) = _Profile;
 

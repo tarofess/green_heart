@@ -26,7 +26,7 @@ mixin _$Profile {
   String get bio => throw _privateConstructorUsedError;
   String? get imageUrl => throw _privateConstructorUsedError;
   int get status => throw _privateConstructorUsedError;
-  DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime? get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
   /// Serializes this Profile to a JSON map.
@@ -50,7 +50,7 @@ abstract class $ProfileCopyWith<$Res> {
       String bio,
       String? imageUrl,
       int status,
-      DateTime createdAt,
+      DateTime? createdAt,
       DateTime updatedAt});
 }
 
@@ -75,7 +75,7 @@ class _$ProfileCopyWithImpl<$Res, $Val extends Profile>
     Object? bio = null,
     Object? imageUrl = freezed,
     Object? status = null,
-    Object? createdAt = null,
+    Object? createdAt = freezed,
     Object? updatedAt = null,
   }) {
     return _then(_value.copyWith(
@@ -103,10 +103,10 @@ class _$ProfileCopyWithImpl<$Res, $Val extends Profile>
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as int,
-      createdAt: null == createdAt
+      createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
+              as DateTime?,
       updatedAt: null == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
@@ -129,7 +129,7 @@ abstract class _$$ProfileImplCopyWith<$Res> implements $ProfileCopyWith<$Res> {
       String bio,
       String? imageUrl,
       int status,
-      DateTime createdAt,
+      DateTime? createdAt,
       DateTime updatedAt});
 }
 
@@ -152,7 +152,7 @@ class __$$ProfileImplCopyWithImpl<$Res>
     Object? bio = null,
     Object? imageUrl = freezed,
     Object? status = null,
-    Object? createdAt = null,
+    Object? createdAt = freezed,
     Object? updatedAt = null,
   }) {
     return _then(_$ProfileImpl(
@@ -180,10 +180,10 @@ class __$$ProfileImplCopyWithImpl<$Res>
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as int,
-      createdAt: null == createdAt
+      createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
+              as DateTime?,
       updatedAt: null == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
@@ -202,7 +202,7 @@ class _$ProfileImpl implements _Profile {
       required this.bio,
       this.imageUrl,
       this.status = 1,
-      required this.createdAt,
+      this.createdAt,
       required this.updatedAt});
 
   factory _$ProfileImpl.fromJson(Map<String, dynamic> json) =>
@@ -222,7 +222,7 @@ class _$ProfileImpl implements _Profile {
   @JsonKey()
   final int status;
   @override
-  final DateTime createdAt;
+  final DateTime? createdAt;
   @override
   final DateTime updatedAt;
 
@@ -279,7 +279,7 @@ abstract class _Profile implements Profile {
       required final String bio,
       final String? imageUrl,
       final int status,
-      required final DateTime createdAt,
+      final DateTime? createdAt,
       required final DateTime updatedAt}) = _$ProfileImpl;
 
   factory _Profile.fromJson(Map<String, dynamic> json) = _$ProfileImpl.fromJson;
@@ -297,7 +297,7 @@ abstract class _Profile implements Profile {
   @override
   int get status;
   @override
-  DateTime get createdAt;
+  DateTime? get createdAt;
   @override
   DateTime get updatedAt;
 

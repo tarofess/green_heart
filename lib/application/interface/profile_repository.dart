@@ -1,14 +1,8 @@
 import 'package:green_heart/domain/type/profile.dart';
 
 abstract class ProfileRepository {
-  Future<Profile> saveProfile(
-    String uid,
-    String name,
-    String birthday,
-    String bio,
-    String? imageUrl,
-  );
-  Future<Profile?> getProfile(String uid);
+  Future<Profile> saveProfile(Profile profile);
+  Future<Profile?> getProfileByUid(String uid);
   Future<String?> uploadImage(String uid, String? path);
   Future<void> deleteProfile(String uid);
   Future<void> deleteImage(String imageUrl);

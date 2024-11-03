@@ -7,15 +7,10 @@ import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 
 class FirebaseBlockRepository implements BlockRepository {
   @override
-  Future<Block> addBlock(String uid, String blockedUid) async {
+  Future<Block> addBlock(Block block) async {
     try {
       final firestore = FirebaseFirestore.instance;
       final ref = firestore.collection('block').doc();
-      final block = Block(
-        uid: uid,
-        blockedUid: blockedUid,
-        blockedAt: DateTime.now(),
-      );
       await ref.set(block.toJson());
       return block;
     } catch (e, stackTrace) {

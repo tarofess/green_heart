@@ -9,6 +9,6 @@ class ProfileGetUsecase {
   ProfileGetUsecase(this._profileRepository);
 
   Future<Profile?> execute(String uid) async {
-    return await _profileRepository.getProfile(uid);
+    return await _profileRepository.getProfileByUid(uid);
   }
 }

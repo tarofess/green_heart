@@ -1,4 +1,5 @@
 import 'package:green_heart/application/interface/report_repository.dart';
+import 'package:green_heart/domain/type/report.dart';
 
 class ReportAddUsecase {
   final ReportRepository _reportRepository;
@@ -12,12 +13,15 @@ class ReportAddUsecase {
     required String? reportedCommentId,
     required String? reportedUserId,
   }) async {
-    await _reportRepository.addReport(
-      reporterUid,
-      reason,
+    final report = Report(
+      reporterUid: reporterUid,
+      reason: reason,
       reportedPostId: reportedPostId,
       reportedCommentId: reportedCommentId,
       reportedUserId: reportedUserId,
+      createdAt: DateTime.now(),
     );
+
+    await _reportRepository.addReport(report);
   }
 }

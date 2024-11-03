@@ -7,6 +7,11 @@ class BlockAddUsecase {
   BlockAddUsecase(this._blockRepository);
 
   Future<Block> execute(String uid, String blockedUid) async {
-    return await _blockRepository.addBlock(uid, blockedUid);
+    final block = Block(
+      uid: uid,
+      blockedUid: blockedUid,
+      blockedAt: DateTime.now(),
+    );
+    return await _blockRepository.addBlock(block);
   }
 }

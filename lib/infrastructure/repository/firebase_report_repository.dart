@@ -6,23 +6,8 @@ import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 
 class FirebaseReportRepository implements ReportRepository {
   @override
-  Future<void> addReport(
-    String reporterUid,
-    String reason, {
-    required String? reportedPostId,
-    required String? reportedCommentId,
-    required String? reportedUserId,
-  }) async {
+  Future<void> addReport(Report report) async {
     try {
-      final report = Report(
-        reporterUid: reporterUid,
-        reason: reason,
-        reportedPostId: reportedPostId,
-        reportedCommentId: reportedCommentId,
-        reportedUserId: reportedUserId,
-        createdAt: DateTime.now(),
-      );
-
       await FirebaseFirestore.instance
           .collection('report')
           .add(report.toJson());

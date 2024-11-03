@@ -11,7 +11,6 @@ class Post with _$Post {
     required String content,
     @Default([]) List<String> imageUrls,
     required DateTime createdAt,
-    required DateTime updatedAt,
   }) = _Post;
 
   factory Post.fromJson(Map<String, dynamic> json) => _$PostFromJson(json);

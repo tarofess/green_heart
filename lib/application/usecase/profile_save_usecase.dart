@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:green_heart/application/interface/profile_repository.dart';
 import 'package:green_heart/domain/type/profile.dart';
+import 'package:green_heart/domain/util/date_util.dart';
 
 class ProfileSaveUsecase {
   final ProfileRepository _profileRepository;
@@ -17,14 +18,17 @@ class ProfileSaveUsecase {
     String? oldImageUrl,
   ) async {
     final firebaseStorePath = await processImage(uid, imagePath, oldImageUrl);
-    final savedProfile = await _profileRepository.saveProfile(
-      uid,
-      name,
-      birthday,
-      bio,
-      firebaseStorePath,
+
+    final profile = Profile(
+      uid: uid,
+      name: name,
+      birthday: DateUtil.convertToDateTime(birthday),
+      bio: bio,
+      imageUrl: firebaseStorePath,
+      updatedAt: DateTime.now(),
     );
 
+    final savedProfile = await _profileRepository.saveProfile(profile);
     return savedProfile;
   }
 

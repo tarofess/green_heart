@@ -1,9 +1,5 @@
+import 'package:green_heart/domain/type/report.dart';
+
 abstract class ReportRepository {
-  Future<void> addReport(
-    String reporterUid,
-    String reason, {
-    required String? reportedPostId,
-    required String? reportedCommentId,
-    required String? reportedUserId,
-  });
+  Future<void> addReport(Report report);
 }
