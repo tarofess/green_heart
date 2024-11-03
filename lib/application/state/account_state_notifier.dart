@@ -1,32 +1,37 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/account_state.dart';
-import 'package:green_heart/application/di/shared_pref_di.dart';
+import 'package:green_heart/application/di/profile_di.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
 
-class AccountStateNotifier extends Notifier<AccountState> {
+class AccountStateNotifier extends AsyncNotifier<AccountState> {
   @override
-  AccountState build() {
-    return const AccountState(isRegistered: false, isDeleted: false);
+  Future<AccountState> build() async {
+    final uid = ref.watch(authStateProvider).value?.uid;
+    if (uid == null) {
+      return const AccountState(isRegistered: false, isDeleted: false);
+    }
+
+    final profile = await ref.read(profileGetUsecaseProvider).execute(uid);
+    return profile == null
+        ? const AccountState(isRegistered: false, isDeleted: false)
+        : const AccountState(isRegistered: true, isDeleted: false);
   }
 
   void setRegisteredState(bool isRegistered) {
-    state = state.copyWith(isRegistered: isRegistered);
+    state = state.whenData(
+      (accountState) => accountState.copyWith(isRegistered: isRegistered),
+    );
   }
 
   void setAccountDeletedState(bool isDeleted) {
-    state = state.copyWith(isDeleted: isDeleted);
-  }
-
-  Future<void> checkIfFirstTimeUser() async {
-    final uid = await ref.read(sharedPrefGetUsecaseProvider).execute('uid');
-    if (uid == null) return;
-
-    final isRegistered = uid.isNotEmpty;
-    setRegisteredState(isRegistered);
+    state = state.whenData(
+      (accountState) => accountState.copyWith(isDeleted: isDeleted),
+    );
   }
 }
 
 final accountStateNotifierProvider =
-    NotifierProvider<AccountStateNotifier, AccountState>(
+    AsyncNotifierProvider<AccountStateNotifier, AccountState>(
   () => AccountStateNotifier(),
 );

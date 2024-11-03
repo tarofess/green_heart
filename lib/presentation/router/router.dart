@@ -96,13 +96,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
     ],
-    redirect: (BuildContext context, GoRouterState state) {
+    redirect: (BuildContext context, GoRouterState state) async {
       final isLoggedIn = authState.value != null;
+      await ref.read(accountStateNotifierProvider.future);
       final isAccountRegistered =
-          ref.read(accountStateNotifierProvider).isRegistered;
-      final isAccountDeleted = ref.read(accountStateNotifierProvider).isDeleted;
+          ref.read(accountStateNotifierProvider).value?.isRegistered;
+      final isAccountDeleted =
+          ref.read(accountStateNotifierProvider).value?.isDeleted;
 
-      if (isAccountDeleted && !isLoggedIn) {
+      if (isAccountDeleted != null && isAccountDeleted && !isLoggedIn) {
         return '/account_deleted';
       }
 
@@ -110,7 +112,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         return '/signin';
       }
 
-      if (isLoggedIn && !isAccountRegistered) {
+      if (isLoggedIn && isAccountRegistered != null && !isAccountRegistered) {
         return '/profile_edit';
       }
 

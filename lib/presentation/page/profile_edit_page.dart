@@ -16,8 +16,6 @@ import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/domain/type/profile.dart';
-import 'package:green_heart/application/di/shared_pref_di.dart';
-import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/state/account_state_notifier.dart';
 
 class ProfileEditPage extends HookConsumerWidget {
@@ -121,10 +119,6 @@ class ProfileEditPage extends HookConsumerWidget {
                         bioTextController.text,
                         imagePath: imagePath.value,
                         oldImageUrl: profile?.imageUrl,
-                      );
-                  await ref.read(sharedPrefSaveUsecaseProvider).execute(
-                        'uid',
-                        ref.watch(authStateProvider).value?.uid ?? '',
                       );
                   ref
                       .read(accountStateNotifierProvider.notifier)

@@ -8,7 +8,6 @@ import 'package:green_heart/presentation/router/router.dart';
 import 'package:green_heart/presentation/theme/default_theme.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/application/di/init_di.dart';
-import 'package:green_heart/application/state/account_state_notifier.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -58,5 +57,4 @@ class MyApp extends ConsumerWidget {
 
 final appInitProvider = FutureProvider.autoDispose((ref) async {
   await ref.read(firebaseInitUsecaseProvider).execute();
-  await ref.read(accountStateNotifierProvider.notifier).checkIfFirstTimeUser();
 });
