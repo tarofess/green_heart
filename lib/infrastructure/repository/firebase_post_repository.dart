@@ -13,6 +13,8 @@ import 'package:green_heart/application/state/user_post_scroll_state_notifier.da
 import 'package:green_heart/domain/type/user_post_scroll_state.dart';
 
 class FirebasePostRepository implements PostRepository {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   @override
   Future<Post> addPost(
     String uid,
@@ -20,8 +22,7 @@ class FirebasePostRepository implements PostRepository {
     List<String> imageUrls,
   ) async {
     try {
-      final firestore = FirebaseFirestore.instance;
-      final docRef = firestore.collection('post').doc();
+      final docRef = _firestore.collection('post').doc();
 
       final post = Post(
         id: docRef.id,
@@ -50,8 +51,7 @@ class FirebasePostRepository implements PostRepository {
     try {
       if (!userPostScrollState.hasMore) return [];
 
-      final firestore = FirebaseFirestore.instance;
-      Query query = firestore
+      Query query = _firestore
           .collection('post')
           .where('uid', isEqualTo: uid)
           .orderBy('createdAt', descending: true)
@@ -89,8 +89,7 @@ class FirebasePostRepository implements PostRepository {
     try {
       if (!timeLineScrollState.hasMore) return [];
 
-      final firestore = FirebaseFirestore.instance;
-      Query query = firestore
+      Query query = _firestore
           .collection('post')
           .orderBy('createdAt', descending: true)
           .limit(pageSize);
@@ -141,8 +140,7 @@ class FirebasePostRepository implements PostRepository {
   @override
   Future<void> deletePost(String postId) async {
     try {
-      final firestore = FirebaseFirestore.instance;
-      await firestore.collection('post').doc(postId).delete();
+      await _firestore.collection('post').doc(postId).delete();
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('投稿の削除に失敗しました。再度お試しください。');
@@ -152,9 +150,10 @@ class FirebasePostRepository implements PostRepository {
   @override
   Future<void> deleteAllPostsByUid(String uid) async {
     try {
-      final firestore = FirebaseFirestore.instance;
-      final querySnapshot =
-          await firestore.collection('post').where('uid', isEqualTo: uid).get();
+      final querySnapshot = await _firestore
+          .collection('post')
+          .where('uid', isEqualTo: uid)
+          .get();
       for (final doc in querySnapshot.docs) {
         await doc.reference.delete();
       }

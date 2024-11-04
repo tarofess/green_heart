@@ -190,15 +190,7 @@ class ProfileEditPage extends HookConsumerWidget {
                   ? _buildEmptyImage()
                   : imagePath.value!.startsWith('http')
                       ? _buildFirebaseImage(imagePath.value!)
-                      : ClipRRect(
-                          borderRadius: BorderRadius.circular(100.r),
-                          child: Image.file(
-                            File(imagePath.value!),
-                            width: 200.w,
-                            height: 200.h,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                      : _buildSelectedImage(imagePath.value!),
               onTap: () async {
                 await showProfileImageActionSheet(context, ref, imagePath);
                 _unfocusAllKeyboard();
@@ -257,6 +249,18 @@ class ProfileEditPage extends HookConsumerWidget {
         ),
         placeholder: (context, url) => const CircularProgressIndicator(),
         errorWidget: (context, url, error) => const Icon(Icons.error),
+      ),
+    );
+  }
+
+  Widget _buildSelectedImage(String imageUrl) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(100.r),
+      child: Image.file(
+        File(imageUrl),
+        width: 200.w,
+        height: 200.h,
+        fit: BoxFit.cover,
       ),
     );
   }

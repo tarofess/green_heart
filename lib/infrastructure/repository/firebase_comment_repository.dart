@@ -6,6 +6,8 @@ import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 import 'package:green_heart/application/exception/app_exception.dart';
 
 class FirebaseCommentRepository implements CommentRepository {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   @override
   Future<Comment> addComment(
     String uid,
@@ -14,8 +16,7 @@ class FirebaseCommentRepository implements CommentRepository {
     String? parentCommentId,
   ) async {
     try {
-      final FirebaseFirestore firestore = FirebaseFirestore.instance;
-      final docRef = firestore.collection('comment').doc();
+      final docRef = _firestore.collection('comment').doc();
 
       final comment = Comment(
         id: docRef.id,
@@ -37,8 +38,7 @@ class FirebaseCommentRepository implements CommentRepository {
   @override
   Future<List<Comment>> getComments(String postId) async {
     try {
-      final FirebaseFirestore firestore = FirebaseFirestore.instance;
-      final docRef = firestore
+      final docRef = _firestore
           .collection('comment')
           .where('postId', isEqualTo: postId)
           .orderBy('createdAt', descending: false);
@@ -55,8 +55,7 @@ class FirebaseCommentRepository implements CommentRepository {
   @override
   Future<List<Comment>> getReplyComments(String parentCommentId) async {
     try {
-      final FirebaseFirestore firestore = FirebaseFirestore.instance;
-      final docRef = firestore
+      final docRef = _firestore
           .collection('comment')
           .where('parentCommentId', isEqualTo: parentCommentId)
           .orderBy('createdAt', descending: false);
@@ -73,8 +72,7 @@ class FirebaseCommentRepository implements CommentRepository {
   @override
   Future<void> deleteComment(String commentId) async {
     try {
-      final FirebaseFirestore firestore = FirebaseFirestore.instance;
-      final docRef = firestore.collection('comment').doc(commentId);
+      final docRef = _firestore.collection('comment').doc(commentId);
       await docRef.delete();
 
       for (final replyComment in await getReplyComments(commentId)) {
@@ -89,9 +87,8 @@ class FirebaseCommentRepository implements CommentRepository {
   @override
   Future<void> deleteAllCommentByUid(String uid) async {
     try {
-      final FirebaseFirestore firestore = FirebaseFirestore.instance;
       final docRef =
-          firestore.collection('comment').where('uid', isEqualTo: uid);
+          _firestore.collection('comment').where('uid', isEqualTo: uid);
       final docSnapshot = await docRef.get();
       for (final doc in docSnapshot.docs) {
         await deleteComment(doc.id);

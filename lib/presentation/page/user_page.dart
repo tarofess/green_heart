@@ -157,172 +157,8 @@ class _UserPageState extends ConsumerState<UserPage> {
                 },
               ),
         isBlocked.value
-            ? IconButton(
-                icon: Icon(Icons.block, size: 24.sp),
-                onPressed: () async {
-                  try {
-                    final result = await showConfirmationDialog(
-                      context: context,
-                      title: 'ブロック解除',
-                      content: 'このユーザーのブロックを解除しますか？',
-                      positiveButtonText: 'ブロック解除',
-                      negativeButtonText: 'キャンセル',
-                    );
-                    if (!result) return;
-
-                    if (context.mounted) {
-                      await LoadingOverlay.of(
-                        context,
-                        message: 'ブロック解除中',
-                        backgroundColor: Colors.white10,
-                      ).during(
-                        () => ref
-                            .read(blockNotifierProvider.notifier)
-                            .deleteBlock(widget.uid!),
-                      );
-                    }
-
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            '${profile.value?.name}のブロックを解除しました。',
-                            style: TextStyle(fontSize: 14.sp),
-                          ),
-                        ),
-                      );
-                    }
-
-                    isBlocked.value = false;
-                  } catch (e) {
-                    if (context.mounted) {
-                      showErrorDialog(
-                        context: context,
-                        title: 'ブロック解除エラー',
-                        content: e.toString(),
-                      );
-                    }
-                  }
-                },
-              )
-            : PopupMenuButton<String>(
-                icon: Icon(Icons.more_horiz, size: 24.r),
-                onSelected: (String result) async {
-                  switch (result) {
-                    case 'report':
-                      try {
-                        final reportText = await showReportDialog(context);
-                        if (reportText == null) return;
-
-                        final reporterIid =
-                            ref.watch(authStateProvider).value?.uid;
-                        if (reporterIid == null) return;
-
-                        if (context.mounted) {
-                          await LoadingOverlay.of(
-                            context,
-                            message: '通報中',
-                            backgroundColor: Colors.white10,
-                          ).during(
-                            () => ref.read(reportAddUsecaseProvider).execute(
-                                  reporterIid,
-                                  reportText,
-                                  reportedPostId: null,
-                                  reportedCommentId: null,
-                                  reportedUserId: widget.uid,
-                                ),
-                          );
-                        }
-
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'ユーザーを通報しました。',
-                                style: TextStyle(fontSize: 14.sp),
-                              ),
-                            ),
-                          );
-                        }
-                      } catch (e) {
-                        if (context.mounted) {
-                          showErrorDialog(
-                            context: context,
-                            title: '通報エラー',
-                            content: e.toString(),
-                          );
-                        }
-                      }
-                      break;
-                    case 'block':
-                      try {
-                        if (ref.watch(authStateProvider).value == null &&
-                            widget.uid == null) {
-                          return;
-                        }
-
-                        final result = await showConfirmationDialog(
-                          context: context,
-                          title: 'ブロック',
-                          content: 'このユーザーをブロックしますか？',
-                          positiveButtonText: 'ブロックする',
-                          negativeButtonText: 'キャンセル',
-                        );
-                        if (!result) return;
-
-                        if (context.mounted) {
-                          await LoadingOverlay.of(
-                            context,
-                            message: 'ブロック中',
-                            backgroundColor: Colors.white10,
-                          ).during(
-                            () => ref
-                                .read(blockNotifierProvider.notifier)
-                                .addBlock(widget.uid!),
-                          );
-                        }
-
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                '${profile.value?.name}をブロックしました。',
-                                style: TextStyle(fontSize: 14.sp),
-                              ),
-                            ),
-                          );
-                        }
-
-                        isBlocked.value = true;
-                      } catch (e) {
-                        if (context.mounted) {
-                          showErrorDialog(
-                            context: context,
-                            title: 'ブロックエラー',
-                            content: e.toString(),
-                          );
-                        }
-                      }
-                      break;
-                  }
-                },
-                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                  PopupMenuItem<String>(
-                    value: 'report',
-                    child: Text(
-                      '通報する',
-                      style: TextStyle(fontSize: 14.sp),
-                    ),
-                  ),
-                  PopupMenuItem<String>(
-                    value: 'block',
-                    child: Text(
-                      'ブロックする',
-                      style: TextStyle(fontSize: 14.sp),
-                    ),
-                  ),
-                ],
-              )
+            ? _buildBlockIconButton(context, ref, profile, isBlocked)
+            : _buildPopupMenu(context, ref, profile, isBlocked),
       ],
     );
   }
@@ -580,6 +416,187 @@ class _UserPageState extends ConsumerState<UserPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildBlockIconButton(
+    BuildContext context,
+    WidgetRef ref,
+    ValueNotifier<Profile?> profile,
+    ValueNotifier<bool> isBlocked,
+  ) {
+    return IconButton(
+      icon: Icon(Icons.block, size: 24.sp),
+      onPressed: () async {
+        try {
+          final result = await showConfirmationDialog(
+            context: context,
+            title: 'ブロック解除',
+            content: 'このユーザーのブロックを解除しますか？',
+            positiveButtonText: 'ブロック解除',
+            negativeButtonText: 'キャンセル',
+          );
+          if (!result) return;
+
+          if (context.mounted) {
+            await LoadingOverlay.of(
+              context,
+              message: 'ブロック解除中',
+              backgroundColor: Colors.white10,
+            ).during(
+              () => ref
+                  .read(blockNotifierProvider.notifier)
+                  .deleteBlock(widget.uid!),
+            );
+          }
+
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  '${profile.value?.name}のブロックを解除しました。',
+                  style: TextStyle(fontSize: 14.sp),
+                ),
+              ),
+            );
+          }
+
+          isBlocked.value = false;
+        } catch (e) {
+          if (context.mounted) {
+            showErrorDialog(
+              context: context,
+              title: 'ブロック解除エラー',
+              content: e.toString(),
+            );
+          }
+        }
+      },
+    );
+  }
+
+  Widget _buildPopupMenu(
+    BuildContext context,
+    WidgetRef ref,
+    ValueNotifier<Profile?> profile,
+    ValueNotifier<bool> isBlocked,
+  ) {
+    return PopupMenuButton<String>(
+      icon: Icon(Icons.more_horiz, size: 24.r),
+      onSelected: (String result) async {
+        switch (result) {
+          case 'report':
+            try {
+              final reportText = await showReportDialog(context);
+              if (reportText == null) return;
+
+              final reporterIid = ref.watch(authStateProvider).value?.uid;
+              if (reporterIid == null) return;
+
+              if (context.mounted) {
+                await LoadingOverlay.of(
+                  context,
+                  message: '通報中',
+                  backgroundColor: Colors.white10,
+                ).during(
+                  () => ref.read(reportAddUsecaseProvider).execute(
+                        reporterIid,
+                        reportText,
+                        reportedPostId: null,
+                        reportedCommentId: null,
+                        reportedUserId: widget.uid,
+                      ),
+                );
+              }
+
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'ユーザーを通報しました。',
+                      style: TextStyle(fontSize: 14.sp),
+                    ),
+                  ),
+                );
+              }
+            } catch (e) {
+              if (context.mounted) {
+                showErrorDialog(
+                  context: context,
+                  title: '通報エラー',
+                  content: e.toString(),
+                );
+              }
+            }
+            break;
+          case 'block':
+            try {
+              if (ref.watch(authStateProvider).value == null &&
+                  widget.uid == null) {
+                return;
+              }
+
+              final result = await showConfirmationDialog(
+                context: context,
+                title: 'ブロック',
+                content: 'このユーザーをブロックしますか？',
+                positiveButtonText: 'ブロックする',
+                negativeButtonText: 'キャンセル',
+              );
+              if (!result) return;
+
+              if (context.mounted) {
+                await LoadingOverlay.of(
+                  context,
+                  message: 'ブロック中',
+                  backgroundColor: Colors.white10,
+                ).during(
+                  () => ref
+                      .read(blockNotifierProvider.notifier)
+                      .addBlock(widget.uid!),
+                );
+              }
+
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      '${profile.value?.name}をブロックしました。',
+                      style: TextStyle(fontSize: 14.sp),
+                    ),
+                  ),
+                );
+              }
+
+              isBlocked.value = true;
+            } catch (e) {
+              if (context.mounted) {
+                showErrorDialog(
+                  context: context,
+                  title: 'ブロックエラー',
+                  content: e.toString(),
+                );
+              }
+            }
+            break;
+        }
+      },
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        PopupMenuItem<String>(
+          value: 'report',
+          child: Text(
+            '通報する',
+            style: TextStyle(fontSize: 14.sp),
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'block',
+          child: Text(
+            'ブロックする',
+            style: TextStyle(fontSize: 14.sp),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -6,11 +6,12 @@ import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 import 'package:green_heart/application/exception/app_exception.dart';
 
 class FirebaseLikeRepository implements LikeRepository {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   @override
   Future<void> toggleLike(String postId, String uid) async {
     try {
-      final firestore = FirebaseFirestore.instance;
-      final ref = firestore.collection('like').doc('${postId}_$uid');
+      final ref = _firestore.collection('like').doc('${postId}_$uid');
       final docSnapshot = await ref.get();
 
       if (docSnapshot.exists) {
@@ -33,8 +34,7 @@ class FirebaseLikeRepository implements LikeRepository {
   @override
   Future<List<Like>> getLikes(String postId) async {
     try {
-      final firestore = FirebaseFirestore.instance;
-      final docRef = firestore
+      final docRef = _firestore
           .collection('like')
           .where('postId', isEqualTo: postId)
           .orderBy('createdAt', descending: true);
@@ -52,11 +52,10 @@ class FirebaseLikeRepository implements LikeRepository {
   @override
   Future<void> deleteAllLikesByUid(String uid) async {
     try {
-      final firestore = FirebaseFirestore.instance;
-      final docRef = firestore.collection('like').where('uid', isEqualTo: uid);
+      final docRef = _firestore.collection('like').where('uid', isEqualTo: uid);
       final docSnapshot = await docRef.get();
 
-      final batch = firestore.batch();
+      final batch = _firestore.batch();
       for (var doc in docSnapshot.docs) {
         batch.delete(doc.reference);
       }

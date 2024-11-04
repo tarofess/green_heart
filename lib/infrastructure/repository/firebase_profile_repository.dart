@@ -9,12 +9,12 @@ import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 
 class FirebaseProfileRepository implements ProfileRepository {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   @override
   Future<Profile> saveProfile(Profile profile) async {
     try {
-      final firestore = FirebaseFirestore.instance;
-      final docRef = firestore.collection('profile').doc(profile.uid);
-
+      final docRef = _firestore.collection('profile').doc(profile.uid);
       final docSnapshot = await docRef.get();
       if (docSnapshot.exists) {
         profile = profile.copyWith(
@@ -38,8 +38,7 @@ class FirebaseProfileRepository implements ProfileRepository {
   @override
   Future<Profile?> getProfileByUid(String uid) async {
     try {
-      final firestore = FirebaseFirestore.instance;
-      final docRef = firestore.collection('profile').doc(uid);
+      final docRef = _firestore.collection('profile').doc(uid);
       final docSnapshot = await docRef.get();
       if (docSnapshot.exists) {
         return Profile.fromJson(docSnapshot.data()!);
@@ -73,8 +72,7 @@ class FirebaseProfileRepository implements ProfileRepository {
   @override
   Future<void> deleteProfile(String uid) async {
     try {
-      final firestore = FirebaseFirestore.instance;
-      final docRef = firestore.collection('profile').doc(uid);
+      final docRef = _firestore.collection('profile').doc(uid);
       await docRef.delete();
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);

@@ -199,6 +199,11 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
     });
   }
 
+  void updateProfile(String uid, String name, String? imageUrl) {
+    updateProfileName(uid, name);
+    updateProfileImage(uid, imageUrl);
+  }
+
   void updateProfileName(String uid, String name) {
     state.whenData((postDataList) {
       final updatedPostData = postDataList.map((postData) {

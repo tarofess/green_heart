@@ -43,10 +43,7 @@ class ProfileNotifier extends AsyncNotifier<Profile?> {
 
     ref
         .read(userPostNotifierProvider(uid).notifier)
-        .updateProfileName(uid, name);
-    ref
-        .read(userPostNotifierProvider(uid).notifier)
-        .updateProfileImage(uid, savedProfile.imageUrl);
+        .updateProfile(uid, name, savedProfile.imageUrl);
 
     state = AsyncData(savedProfile);
   }
