@@ -39,7 +39,7 @@ Future<bool> showConfirmationDialog({
                     negativeButtonText,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16.sp,
+                      fontSize: 14.sp,
                     ),
                   ),
                 ),
@@ -59,7 +59,7 @@ Future<bool> showConfirmationDialog({
                     positiveButtonText,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16.sp,
+                      fontSize: 14.sp,
                     ),
                   ),
                 ),

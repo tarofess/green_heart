@@ -32,7 +32,7 @@ Future<String?> showReportDialog(BuildContext context) async {
                 },
                 child: Text(
                   'キャンセル',
-                  style: TextStyle(fontSize: 16.sp),
+                  style: TextStyle(fontSize: 14.sp),
                 ),
               ),
               ElevatedButton(
@@ -41,7 +41,7 @@ Future<String?> showReportDialog(BuildContext context) async {
                     : null,
                 child: Text(
                   '通報',
-                  style: TextStyle(fontSize: 16.sp),
+                  style: TextStyle(fontSize: 14.sp),
                 ),
               ),
             ],
