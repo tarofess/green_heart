@@ -490,7 +490,7 @@ class _UserPageState extends ConsumerState<UserPage> {
     return profile?.birthday == null
         ? const SizedBox()
         : Text(
-            '${DateUtil.convertToJapaneseDate(profile?.birthday!)}生まれ',
+            '誕生日: ${DateUtil.convertToJapaneseDate(profile?.birthday!)}',
             style: TextStyle(fontSize: 13.sp),
           );
   }
