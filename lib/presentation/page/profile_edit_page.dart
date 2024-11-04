@@ -48,7 +48,15 @@ class ProfileEditPage extends HookConsumerWidget {
         savedBirthday.value = birthdayTextController.text;
       }
 
-      initializeForm();
+      try {
+        initializeForm();
+      } catch (e) {
+        showErrorDialog(
+          context: context,
+          title: 'プロフィール取得エラー',
+          content: e.toString(),
+        );
+      }
       return null;
     }, []);
 

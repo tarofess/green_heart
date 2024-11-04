@@ -68,9 +68,11 @@ class AccountNotifier extends Notifier<AccountInfo> {
     ]);
 
     await deleteTasks;
-    ref
-        .read(accountStateNotifierProvider.notifier)
-        .setAccountDeletedState(true);
+    Future.microtask(() {
+      ref
+          .read(accountStateNotifierProvider.notifier)
+          .setAccountDeletedState(true);
+    });
     await ref.read(accountDeleteUsecaseProvider).execute(user);
   }
 }

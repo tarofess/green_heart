@@ -9,8 +9,8 @@ import 'package:green_heart/application/state/account_info_notifier.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/domain/type/account_info.dart';
 
-class AccountPage extends HookConsumerWidget {
-  const AccountPage({super.key});
+class AccountInfoPage extends HookConsumerWidget {
+  const AccountInfoPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

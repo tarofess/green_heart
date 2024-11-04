@@ -28,7 +28,7 @@ class SettingsPage extends ConsumerWidget {
           _buildBlockItem(context, ref),
           _buildContactItem(context, ref),
           _buildAppInfoItem(context, ref),
-          _buildAccountItem(context, ref),
+          _buildAccountInfoItem(context, ref),
           _buildLogoutItem(context, ref),
         ],
       ),
@@ -113,7 +113,7 @@ class SettingsPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildAccountItem(BuildContext context, WidgetRef ref) {
+  Widget _buildAccountInfoItem(BuildContext context, WidgetRef ref) {
     return ListTile(
       leading: Icon(
         Icons.account_circle,
@@ -124,7 +124,7 @@ class SettingsPage extends ConsumerWidget {
         style: TextStyle(fontSize: 16.sp),
       ),
       onTap: () {
-        context.push('/account');
+        context.push('/account_info');
       },
     );
   }
