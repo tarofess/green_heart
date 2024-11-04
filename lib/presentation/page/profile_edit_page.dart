@@ -282,7 +282,9 @@ class ProfileEditPage extends HookConsumerWidget {
             style: TextStyle(fontSize: 16.sp),
             focusNode: _nameFocusNode,
             controller: nameTextController,
-            decoration: _buildInputDecoration('名前を入力してください'),
+            decoration: _buildInputDecoration('名前を入力してください').copyWith(
+              errorStyle: TextStyle(fontSize: 12.sp),
+            ),
             validator: (value) {
               return ProfileValidater.validateName(nameTextController.text);
             },
@@ -383,7 +385,10 @@ class ProfileEditPage extends HookConsumerWidget {
             style: TextStyle(fontSize: 16.sp),
             focusNode: _bioFocusNode,
             controller: bioTextController,
-            decoration: _buildInputDecoration('自己紹介文を200文字以内で入力してください'),
+            decoration:
+                _buildInputDecoration('自己紹介文を200文字以内で入力してください').copyWith(
+              errorStyle: TextStyle(fontSize: 12.sp),
+            ),
             maxLines: 5,
             validator: (value) {
               return ProfileValidater.validateBio(bioTextController.text);
