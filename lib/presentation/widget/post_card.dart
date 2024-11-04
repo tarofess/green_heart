@@ -294,6 +294,17 @@ class PostCard extends ConsumerWidget {
               () =>
                   ref.read(postDeleteUsecaseProvider).execute(postData.post.id),
             );
+
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    '投稿を削除しました。',
+                    style: TextStyle(fontSize: 14.sp),
+                  ),
+                ),
+              );
+            }
           }
         } catch (e) {
           if (context.mounted) {
