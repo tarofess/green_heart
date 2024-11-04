@@ -146,6 +146,9 @@ class CommentPage extends HookConsumerWidget {
                 style: TextStyle(fontSize: 16.sp),
                 focusNode: focusNode,
                 controller: commentTextController,
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
+                textInputAction: TextInputAction.newline,
                 decoration: InputDecoration(
                   hintText:
                       commentPageState.isReplying ? '返信中...' : 'コメントを入力...',
@@ -153,7 +156,7 @@ class CommentPage extends HookConsumerWidget {
                     borderRadius: BorderRadius.circular(20.r),
                   ),
                   contentPadding:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 0),
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                 ),
               ),
             ),
