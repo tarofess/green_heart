@@ -5,6 +5,6 @@ abstract class ProfileRepository {
   Future<Profile?> getProfileByUid(String uid);
   Future<String?> uploadImage(String uid, String? path);
   Future<void> deleteProfile(String uid);
-  Future<void> deleteImage(String imageUrl);
+  Future<void> deleteImage(String? imageUrl);
   Future<bool> checkImageExists(String imageUrl);
 }

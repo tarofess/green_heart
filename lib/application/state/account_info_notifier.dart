@@ -10,6 +10,7 @@ import 'package:green_heart/application/state/block_notifier.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/di/comment_di.dart';
 import 'package:green_heart/application/di/like_di.dart';
+import 'package:green_heart/application/state/account_state_notifier.dart';
 
 class AccountNotifier extends Notifier<AccountInfo> {
   @override
@@ -67,6 +68,9 @@ class AccountNotifier extends Notifier<AccountInfo> {
     ]);
 
     await deleteTasks;
+    ref
+        .read(accountStateNotifierProvider.notifier)
+        .setAccountDeletedState(true);
     await ref.read(accountDeleteUsecaseProvider).execute(user);
   }
 }

@@ -13,7 +13,6 @@ import 'package:green_heart/presentation/page/post_page.dart';
 import 'package:green_heart/presentation/page/profile_edit_page.dart';
 import 'package:green_heart/presentation/page/user_page.dart';
 import 'package:green_heart/application/state/account_state_notifier.dart';
-import 'package:green_heart/presentation/page/account_deleted_page.dart';
 import 'package:green_heart/presentation/page/block_list_page.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -75,10 +74,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const AccountPage(),
       ),
       GoRoute(
-        path: '/account_deleted',
-        builder: (context, state) => const AccountDeletedPage(),
-      ),
-      GoRoute(
         path: '/notification_setting',
         builder: (context, state) => const NotificationSettingPage(),
       ),
@@ -100,11 +95,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       final isLoggedIn = authState.value != null;
       final accountState = ref.watch(accountStateNotifierProvider);
       final isAccountRegistered = accountState.value?.isRegistered;
-      final isAccountDeleted = accountState.value?.isDeleted;
-
-      if (isAccountDeleted != null && isAccountDeleted && !isLoggedIn) {
-        return '/account_deleted';
-      }
 
       if (!isLoggedIn && state.matchedLocation != '/signin' ||
           accountState is AsyncLoading) {

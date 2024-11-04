@@ -120,21 +120,34 @@ class ProfileEditPage extends HookConsumerWidget {
                         imagePath: imagePath.value,
                         oldImageUrl: profile?.imageUrl,
                       );
+                });
+
+                if (profile == null) {
+                  // 新規登録時
+                  if (context.mounted) {
+                    await showMessageDialog(
+                      context: context,
+                      title: '登録完了',
+                      content: 'プロフィールを登録しました。\nアプリをお楽しみください！',
+                    );
+                  }
+
                   ref
                       .read(accountStateNotifierProvider.notifier)
                       .setRegisteredState(true);
-                });
-
-                if (context.mounted) {
-                  await showMessageDialog(
-                    context: context,
-                    title: '保存完了',
-                    content: 'プロフィールを保存しました。',
-                  );
-                }
-
-                if (context.mounted) {
-                  profile == null ? context.go('/') : context.pop();
+                } else {
+                  // 更新時
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'プロフィールを更新しました。',
+                          style: TextStyle(fontSize: 14.sp),
+                        ),
+                      ),
+                    );
+                    context.pop();
+                  }
                 }
               }
             } catch (e) {

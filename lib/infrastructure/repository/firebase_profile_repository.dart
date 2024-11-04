@@ -83,7 +83,8 @@ class FirebaseProfileRepository implements ProfileRepository {
   }
 
   @override
-  Future<void> deleteImage(String imageUrl) async {
+  Future<void> deleteImage(String? imageUrl) async {
+    if (imageUrl == null) return;
     try {
       if (await checkImageExists(imageUrl) == false) {
         return;

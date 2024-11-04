@@ -99,8 +99,18 @@ class _UserPageState extends ConsumerState<UserPage> {
         ref.read(userPostScrollStateNotifierProvider.notifier).reset();
       });
 
-      setProfile();
-      setBlockState();
+      try {
+        setProfile();
+        setBlockState();
+      } catch (e) {
+        if (context.mounted) {
+          showErrorDialog(
+            context: context,
+            title: 'エラー発生',
+            content: e.toString(),
+          );
+        }
+      }
       return;
     }, [ref.watch(profileNotifierProvider).value]);
 

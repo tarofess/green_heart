@@ -13,7 +13,7 @@ class ProfileDeleteUsecase {
     }
 
     final deleteTasks = Future.wait([
-      _profileRepository.deleteImage(profile.imageUrl!),
+      _profileRepository.deleteImage(profile.imageUrl),
       _profileRepository.deleteProfile(user.uid),
     ]);
     await deleteTasks;

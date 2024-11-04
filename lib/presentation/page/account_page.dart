@@ -8,7 +8,6 @@ import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/application/state/account_info_notifier.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/domain/type/account_info.dart';
-import 'package:green_heart/application/state/account_state_notifier.dart';
 
 class AccountPage extends HookConsumerWidget {
   const AccountPage({super.key});
@@ -140,13 +139,9 @@ class AccountPage extends HookConsumerWidget {
 
         try {
           if (context.mounted) {
-            await LoadingOverlay.of(context, message: 'アカウント削除中')
-                .during(() async {
-              await ref.read(accountNotifierProvider.notifier).deleteAccount();
-              ref
-                  .read(accountStateNotifierProvider.notifier)
-                  .setAccountDeletedState(true);
-            });
+            await LoadingOverlay.of(context, message: 'アカウント削除中').during(
+              () => ref.read(accountNotifierProvider.notifier).deleteAccount(),
+            );
           }
         } catch (e) {
           if (context.mounted) {

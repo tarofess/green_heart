@@ -8,6 +8,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:green_heart/application/di/auth_di.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/presentation/page/terms_of_use_page.dart';
+import 'package:green_heart/application/state/account_state_notifier.dart';
 
 class SignInPage extends HookConsumerWidget {
   const SignInPage({super.key});
@@ -15,6 +16,25 @@ class SignInPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isConsentChecked = useState(false);
+    final isAccountDeleted =
+        ref.watch(accountStateNotifierProvider).value?.isDeleted;
+
+    useEffect(() {
+      if (isAccountDeleted != null && isAccountDeleted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'アカウントが削除されました。ご利用ありがとうございました。',
+                style: TextStyle(fontSize: 14.sp),
+              ),
+            ),
+          );
+        });
+      }
+
+      return null;
+    });
 
     return Scaffold(
       body: Column(
