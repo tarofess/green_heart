@@ -9,7 +9,6 @@ import 'package:green_heart/infrastructure/util/permission_util.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/presentation/viewmodel/post_page_viewmodel.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
-import 'package:green_heart/presentation/dialog/message_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
@@ -122,10 +121,13 @@ class PostPage extends HookConsumerWidget {
                     });
 
                     if (context.mounted) {
-                      await showMessageDialog(
-                        context: context,
-                        title: '投稿完了',
-                        content: '投稿が完了しました。',
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            '投稿が完了しました。',
+                            style: TextStyle(fontSize: 14.sp),
+                          ),
+                        ),
                       );
                       if (context.mounted) context.pop();
                     }
