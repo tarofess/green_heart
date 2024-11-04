@@ -190,7 +190,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                           Expanded(child: _buildUserStats()),
                         ],
                       ),
-                      SizedBox(height: 16.h),
+                      SizedBox(height: 20.h),
                       _buildUserName(context, ref, profile.value),
                       SizedBox(height: 8.h),
                       _buildBirthDate(context, ref, profile.value),
@@ -325,9 +325,13 @@ class _UserPageState extends ConsumerState<UserPage> {
       BuildContext context, WidgetRef ref, Profile? profile) {
     return profile?.birthday == null
         ? const SizedBox()
-        : Text(
-            '誕生日: ${DateUtil.convertToJapaneseDate(profile?.birthday!)}',
-            style: TextStyle(fontSize: 13.sp),
+        : SizedBox(
+            width: double.infinity,
+            child: Text(
+              '誕生日: ${DateUtil.convertToJapaneseDate(profile?.birthday!)}',
+              style: TextStyle(fontSize: 13.sp),
+              textAlign: TextAlign.right,
+            ),
           );
   }
 
