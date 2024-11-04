@@ -6,7 +6,7 @@ import 'package:green_heart/domain/type/account_info.dart';
 import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/application/di/auth_di.dart';
 import 'package:green_heart/application/di/account_di.dart';
-import 'package:green_heart/application/di/shared_pref_di.dart';
+import 'package:green_heart/application/state/block_notifier.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/di/comment_di.dart';
 import 'package:green_heart/application/di/like_di.dart';
@@ -59,11 +59,11 @@ class AccountNotifier extends Notifier<AccountInfo> {
     final deleteTasks = Future.wait([
       ref.read(likeDeleteAllUsecaseProvider).execute(user),
       ref.read(commentDeleteAllUsecaseProvider).execute(user),
+      ref.read(blockNotifierProvider.notifier).deleteAllBlocks(user),
       ref
           .read(userPostNotifierProvider(user.uid).notifier)
           .deleteAllPosts(user),
       ref.read(profileNotifierProvider.notifier).deleteProfile(user, profile),
-      ref.read(sharedPrefDeleteUsecaseProvider).execute('uid'),
     ]);
 
     await deleteTasks;

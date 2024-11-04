@@ -4,5 +4,6 @@ abstract class BlockRepository {
   Future<Block> addBlock(Block block);
   Future<List<Block>> getBlockByUid(String uid);
   Future<void> deleteBlockByUid(String uid, String blockedUid);
+  Future<void> deleteAllBlockByUid(String uid);
   Future<bool> checkIfBlocked(String currentUserId, String targetUserId);
 }

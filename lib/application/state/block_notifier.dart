@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/block_di.dart';
@@ -67,6 +68,17 @@ class BlockNotifier extends AsyncNotifier<List<BlockData>> {
               blockData.block.blockedUid != blockedUid)
           .toList();
       state = AsyncData(updatedBlock);
+    });
+  }
+
+  Future<void> deleteAllBlocks(User user) async {
+    await ref.read(blockDeleteAllUsecaseProvider).execute(user);
+
+    state.whenData((blockdataList) {
+      final updatedBlockData = blockdataList
+          .where((blockdata) => blockdata.block.uid != user.uid)
+          .toList();
+      state = AsyncValue.data(updatedBlockData);
     });
   }
 }
