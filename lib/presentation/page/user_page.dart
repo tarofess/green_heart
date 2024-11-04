@@ -403,8 +403,8 @@ class _UserPageState extends ConsumerState<UserPage> {
 
   Widget _buildFirebaseImage(ValueNotifier<Profile?> profile) {
     return Container(
-      width: 120.w,
-      height: 120.h,
+      width: 120.r,
+      height: 120.r,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         image: DecorationImage(

@@ -234,8 +234,8 @@ class ProfileEditPage extends HookConsumerWidget {
 
   Widget _buildFirebaseImage(String imageUrl) {
     return Container(
-      width: 200.w,
-      height: 200.h,
+      width: 200.r,
+      height: 200.r,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         image: DecorationImage(
