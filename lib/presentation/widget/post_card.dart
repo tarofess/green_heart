@@ -67,11 +67,15 @@ class PostCard extends ConsumerWidget {
               }
             }),
         SizedBox(width: 8.h),
-        Text(
-          postData.userProfile?.name ?? '',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 14.sp,
+        Expanded(
+          child: Text(
+            postData.userProfile?.name ?? '',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14.sp,
+            ),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
           ),
         ),
       ],

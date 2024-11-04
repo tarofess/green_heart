@@ -55,7 +55,9 @@ class CommentCard extends HookConsumerWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildUserName(),
+                  Expanded(
+                    child: _buildUserName(),
+                  ),
                   SizedBox(width: 8.w),
                   _buildCommentedDate(),
                 ],
@@ -90,7 +92,9 @@ class CommentCard extends HookConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildUserName(replyComment),
+                    Expanded(
+                      child: _buildUserName(replyComment),
+                    ),
                     SizedBox(width: 8.w),
                     _buildCommentedDate(replyComment),
                   ],
@@ -155,6 +159,8 @@ class CommentCard extends HookConsumerWidget {
         fontWeight: FontWeight.bold,
         fontSize: 16.sp,
       ),
+      overflow: TextOverflow.ellipsis,
+      maxLines: 1,
     );
   }
 

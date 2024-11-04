@@ -206,11 +206,15 @@ class CommentPage extends HookConsumerWidget {
       padding: EdgeInsets.only(bottom: 8.w),
       child: Row(
         children: [
-          Text(
-            '${commentPageState.parentUserName}に返信中...',
-            style: TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.bold,
+          Expanded(
+            child: Text(
+              '${commentPageState.parentUserName}に返信中...',
+              style: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.bold,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
           ),
           IconButton(
