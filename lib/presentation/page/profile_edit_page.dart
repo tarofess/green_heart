@@ -266,6 +266,18 @@ class ProfileEditPage extends HookConsumerWidget {
   }
 
   Widget _buildNameField(TextEditingController nameTextController) {
+    const int maxLength = 15;
+    final remainingChars = useState(maxLength);
+
+    useEffect(() {
+      void listener() {
+        remainingChars.value = maxLength - nameTextController.text.length;
+      }
+
+      nameTextController.addListener(listener);
+      return () => nameTextController.removeListener(listener);
+    }, [nameTextController]);
+
     return Padding(
       padding: EdgeInsets.all(16.w),
       child: Column(
@@ -286,12 +298,21 @@ class ProfileEditPage extends HookConsumerWidget {
             style: TextStyle(fontSize: 16.sp),
             focusNode: _nameFocusNode,
             controller: nameTextController,
+            maxLength: maxLength,
             decoration: _buildInputDecoration('名前を入力してください').copyWith(
               errorStyle: TextStyle(fontSize: 12.sp),
+              counterText: '',
             ),
             validator: (value) {
               return ProfileValidater.validateName(nameTextController.text);
             },
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              '残り${remainingChars.value}文字',
+              style: TextStyle(fontSize: 12.sp, color: Colors.green),
+            ),
           ),
         ],
       ),
@@ -369,6 +390,18 @@ class ProfileEditPage extends HookConsumerWidget {
   }
 
   Widget _buildBioField(TextEditingController bioTextController) {
+    const int maxLength = 200;
+    final remainingChars = useState(maxLength);
+
+    useEffect(() {
+      void listener() {
+        remainingChars.value = maxLength - bioTextController.text.length;
+      }
+
+      bioTextController.addListener(listener);
+      return () => bioTextController.removeListener(listener);
+    }, [bioTextController]);
+
     return Padding(
       padding: EdgeInsets.all(16.w),
       child: Column(
@@ -392,11 +425,20 @@ class ProfileEditPage extends HookConsumerWidget {
             decoration:
                 _buildInputDecoration('自己紹介文を200文字以内で入力してください').copyWith(
               errorStyle: TextStyle(fontSize: 12.sp),
+              counterText: '',
             ),
             maxLines: 5,
+            maxLength: maxLength,
             validator: (value) {
               return ProfileValidater.validateBio(bioTextController.text);
             },
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              '残り${remainingChars.value}文字',
+              style: TextStyle(fontSize: 12.sp, color: Colors.green),
+            ),
           ),
         ],
       ),

@@ -1,7 +1,7 @@
 class ProfileValidater {
   static String? validateName(String name) {
     if (name.isEmpty) return '名前は必須です';
-    if (name.length >= 15) return '名前は15文字以内で入力してください';
+    if (name.length > 16) return '名前は15文字以内で入力してください';
     return null;
   }
 
@@ -11,7 +11,7 @@ class ProfileValidater {
   }
 
   static String? validateBio(String bio) {
-    if (bio.length >= 200) return '自己紹介は200文字以内で入力してください';
+    if (bio.length > 201) return '自己紹介は200文字以内で入力してください';
     return null;
   }
 }
