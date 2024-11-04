@@ -299,8 +299,11 @@ class CommentCard extends HookConsumerWidget {
 
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('コメントを通報しました。'),
+              SnackBar(
+                content: Text(
+                  'コメントを通報しました。',
+                  style: TextStyle(fontSize: 14.sp),
+                ),
               ),
             );
           }

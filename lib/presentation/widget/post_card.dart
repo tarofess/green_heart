@@ -345,7 +345,7 @@ class PostCard extends ConsumerWidget {
               SnackBar(
                 content: Text(
                   '投稿を通報しました。',
-                  style: TextStyle(fontSize: 16.sp),
+                  style: TextStyle(fontSize: 14.sp),
                 ),
               ),
             );

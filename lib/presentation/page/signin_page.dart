@@ -162,7 +162,7 @@ class SignInPage extends HookConsumerWidget {
                       SnackBar(
                         content: Text(
                           e.toString(),
-                          style: TextStyle(fontSize: 16.sp),
+                          style: TextStyle(fontSize: 14.sp),
                         ),
                       ),
                     );
@@ -204,7 +204,7 @@ class SignInPage extends HookConsumerWidget {
                       SnackBar(
                         content: Text(
                           e.toString(),
-                          style: TextStyle(fontSize: 16.sp),
+                          style: TextStyle(fontSize: 14.sp),
                         ),
                       ),
                     );

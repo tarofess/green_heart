@@ -73,9 +73,7 @@ class _UserPageState extends ConsumerState<UserPage> {
   }
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     final userPostState = ref.watch(userPostNotifierProvider(widget.uid));
     final profile = useState<Profile?>(null);
     final isBlocked = useState(false);
@@ -189,7 +187,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                         SnackBar(
                           content: Text(
                             '${profile.value?.name}のブロックを解除しました。',
-                            style: TextStyle(fontSize: 16.sp),
+                            style: TextStyle(fontSize: 14.sp),
                           ),
                         ),
                       );
@@ -238,8 +236,11 @@ class _UserPageState extends ConsumerState<UserPage> {
 
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('ユーザーを通報しました。'),
+                            SnackBar(
+                              content: Text(
+                                'ユーザーを通報しました。',
+                                style: TextStyle(fontSize: 14.sp),
+                              ),
                             ),
                           );
                         }
@@ -286,7 +287,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                             SnackBar(
                               content: Text(
                                 '${profile.value?.name}をブロックしました。',
-                                style: TextStyle(fontSize: 16.sp),
+                                style: TextStyle(fontSize: 14.sp),
                               ),
                             ),
                           );
