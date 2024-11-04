@@ -189,7 +189,6 @@ class PostCard extends ConsumerWidget {
         try {
           await LoadingOverlay.of(
             context,
-            message: 'いいね中',
             backgroundColor: Colors.white10,
           ).during(
             () => ref
