@@ -105,6 +105,8 @@ flutter:
     - assets/images/post_floating_action_icon.png
     - assets/images/icon.png
     - assets/images/icon_android.png
+    - assets/images/sakura.png
+    - assets/images/leaf.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

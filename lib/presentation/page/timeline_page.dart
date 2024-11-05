@@ -48,6 +48,11 @@ class TimelinePage extends HookConsumerWidget {
           style: TextStyle(fontSize: 21.sp),
         ),
         toolbarHeight: 58.h,
+        leadingWidth: 42.w,
+        leading: Padding(
+          padding: EdgeInsets.only(left: 12.w),
+          child: Image.asset('assets/images/sakura.png'),
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.search, size: 24.r),

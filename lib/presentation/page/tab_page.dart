@@ -39,9 +39,10 @@ class TabPage extends HookConsumerWidget {
           onPressed: () {
             context.go('/post');
           },
-          child: ImageIcon(
-            const AssetImage('assets/images/post_floating_action_icon.png'),
-            size: 28.r,
+          backgroundColor: Colors.white,
+          child: Image.asset(
+            'assets/images/post_floating_action_icon.png',
+            width: 34.r,
           ),
         ),
       ),
