@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -8,55 +9,37 @@ import 'package:green_heart/presentation/widget/post_card.dart';
 import 'package:green_heart/application/state/timeline_notifier.dart';
 import 'package:green_heart/presentation/widget/post_search.dart';
 
-class TimelinePage extends ConsumerStatefulWidget {
+class TimelinePage extends HookConsumerWidget {
   const TimelinePage({super.key});
 
   @override
-  ConsumerState<TimelinePage> createState() => _TimelinePageState();
-}
-
-class _TimelinePageState extends ConsumerState<TimelinePage> {
-  final ScrollController _scrollController = ScrollController();
-  bool _isLoadingMore = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_scrollListener);
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _scrollListener() {
-    if (_isLoadingMore) return;
-
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent * 0.9) {
-      _loadMore();
-    }
-  }
-
-  Future<void> _loadMore() async {
-    if (_isLoadingMore) return;
-
-    setState(() {
-      _isLoadingMore = true;
-    });
-
-    await ref.read(timelineNotifierProvider.notifier).loadMore();
-
-    setState(() {
-      _isLoadingMore = false;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final timelineState = ref.watch(timelineNotifierProvider);
+    final isLoadingMore = useState(false);
+    final scrollController = useScrollController();
+
+    useEffect(() {
+      void onScroll() async {
+        if (scrollController.position.extentAfter < 500 &&
+            !isLoadingMore.value) {
+          isLoadingMore.value = true;
+          try {
+            await ref.read(timelineNotifierProvider.notifier).loadMore();
+          } catch (e) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('データの読み込みに失敗しました。再試行してください。')),
+              );
+            }
+          } finally {
+            isLoadingMore.value = false;
+          }
+        }
+      }
+
+      scrollController.addListener(onScroll);
+      return () => scrollController.removeListener(onScroll);
+    }, [scrollController]);
 
     return Scaffold(
       appBar: AppBar(
@@ -84,17 +67,9 @@ class _TimelinePageState extends ConsumerState<TimelinePage> {
               await ref.read(timelineNotifierProvider.notifier).refresh();
             },
             child: ListView.builder(
-              controller: _scrollController,
-              itemCount: timeline.length + 1,
+              controller: scrollController,
+              itemCount: timeline.length,
               itemBuilder: (context, index) {
-                if (index == timeline.length) {
-                  return _isLoadingMore
-                      ? const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Center(child: CircularProgressIndicator()),
-                        )
-                      : const SizedBox.shrink();
-                }
                 return PostCard(
                   key: ValueKey(timeline[index].post.id),
                   postData: timeline[index],

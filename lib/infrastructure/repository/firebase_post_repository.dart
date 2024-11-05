@@ -14,6 +14,7 @@ import 'package:green_heart/domain/type/user_post_scroll_state.dart';
 
 class FirebasePostRepository implements PostRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final int pageSize = 20;
 
   @override
   Future<Post> addPost(
@@ -46,8 +47,6 @@ class FirebasePostRepository implements PostRepository {
     UserPostScrollState userPostScrollState,
     UserPostScrollStateNotifier userPostScrollStateNotifier,
   ) async {
-    const int pageSize = 20;
-
     try {
       if (!userPostScrollState.hasMore) return [];
 
@@ -84,8 +83,6 @@ class FirebasePostRepository implements PostRepository {
     TimeLineScrollState timeLineScrollState,
     TimelineScrollStateNotifier timelineScrollStateNotifier,
   ) async {
-    const int pageSize = 20;
-
     try {
       if (!timeLineScrollState.hasMore) return [];
 

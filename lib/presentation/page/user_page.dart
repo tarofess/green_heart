@@ -24,73 +24,48 @@ import 'package:green_heart/application/di/report_di.dart';
 import 'package:green_heart/presentation/dialog/report_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 
-class UserPage extends StatefulHookConsumerWidget {
+class UserPage extends HookConsumerWidget {
   const UserPage({super.key, required this.uid});
   final String? uid;
 
   @override
-  ConsumerState<UserPage> createState() => _UserPageState();
-}
-
-class _UserPageState extends ConsumerState<UserPage> {
-  final ScrollController _scrollController = ScrollController();
-  bool _isLoadingMore = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_scrollListener);
-  }
-
-  @override
-  void dispose() {
-    _scrollController.removeListener(_scrollListener);
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _scrollListener() {
-    if (_isLoadingMore) return;
-
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent * 0.9) {
-      _loadMore();
-    }
-  }
-
-  Future<void> _loadMore() async {
-    if (_isLoadingMore) return;
-
-    setState(() {
-      _isLoadingMore = true;
-    });
-
-    await ref.read(userPostNotifierProvider(widget.uid).notifier).loadMore();
-
-    setState(() {
-      _isLoadingMore = false;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final userPostState = ref.watch(userPostNotifierProvider(widget.uid));
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userPostState = ref.watch(userPostNotifierProvider(uid));
     final profile = useState<Profile?>(null);
     final isBlocked = useState(false);
+    final isLoadingMore = useState(false);
+    final scrollController = useScrollController();
 
     useEffect(() {
       void setProfile() async {
-        if (widget.uid == null) return;
-        profile.value =
-            await ref.read(profileGetUsecaseProvider).execute(widget.uid!);
+        if (uid == null) return;
+        profile.value = await ref.read(profileGetUsecaseProvider).execute(uid!);
       }
 
       void setBlockState() async {
-        if (widget.uid == null) return;
+        if (uid == null) return;
 
         isBlocked.value = await ref
             .read(blockCheckUsecaseProvider)
-            .execute(ref.watch(authStateProvider).value?.uid, widget.uid!);
+            .execute(ref.watch(authStateProvider).value?.uid, uid!);
+      }
+
+      void onScroll() async {
+        if (scrollController.position.extentAfter < 500 &&
+            !isLoadingMore.value) {
+          isLoadingMore.value = true;
+          try {
+            await ref.read(userPostNotifierProvider(uid).notifier).loadMore();
+          } catch (e) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('データの読み込みに失敗しました。再試行してください。')),
+              );
+            }
+          } finally {
+            isLoadingMore.value = false;
+          }
+        }
       }
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -109,23 +84,32 @@ class _UserPageState extends ConsumerState<UserPage> {
           );
         }
       }
-      return;
-    }, [ref.watch(profileNotifierProvider).value]);
+
+      scrollController.addListener(onScroll);
+      return () => scrollController.removeListener(onScroll);
+    }, [ref.watch(profileNotifierProvider).value, scrollController]);
 
     return Scaffold(
-      appBar: widget.uid == ref.watch(authStateProvider).value?.uid
+      appBar: uid == ref.watch(authStateProvider).value?.uid
           ? null
           : _buildAppBar(context, ref, userPostState, profile, isBlocked),
       body: userPostState.when(
         data: (userPosts) {
           return isBlocked.value
               ? _buildBlockedBody(context, ref, profile)
-              : _buildBody(context, ref, profile, userPosts);
+              : _buildBody(
+                  context,
+                  ref,
+                  profile,
+                  userPosts,
+                  scrollController,
+                  isLoadingMore,
+                );
         },
         loading: () => const LoadingIndicator(message: '読み込み中'),
         error: (e, _) => ErrorPage(
           error: e,
-          retry: () => ref.refresh(userPostNotifierProvider(widget.uid)),
+          retry: () => ref.refresh(userPostNotifierProvider(uid)),
         ),
       ),
     );
@@ -151,7 +135,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                     context: context,
                     delegate: PostSearch(
                       postSearchType: PostSearchType.user,
-                      uid: widget.uid,
+                      uid: uid,
                     ),
                   );
                 },
@@ -168,13 +152,15 @@ class _UserPageState extends ConsumerState<UserPage> {
     WidgetRef ref,
     ValueNotifier<Profile?> profile,
     List<PostData> userPosts,
+    ScrollController scrollController,
+    ValueNotifier<bool> isLoadingMore,
   ) {
     return RefreshIndicator(
       onRefresh: () async {
-        await ref.read(userPostNotifierProvider(widget.uid).notifier).refresh();
+        await ref.read(userPostNotifierProvider(uid).notifier).refresh();
       },
       child: CustomScrollView(
-        controller: _scrollController,
+        controller: scrollController,
         slivers: [
           SliverToBoxAdapter(
             child: Column(
@@ -208,7 +194,7 @@ class _UserPageState extends ConsumerState<UserPage> {
           ),
           SliverPadding(
             padding: EdgeInsets.all(8.w),
-            sliver: _buildUserPosts(context, ref, userPosts),
+            sliver: _buildUserPosts(context, ref, userPosts, isLoadingMore),
           ),
         ],
       ),
@@ -346,7 +332,7 @@ class _UserPageState extends ConsumerState<UserPage> {
   }
 
   Widget _buildFollowButton(BuildContext context, WidgetRef ref) {
-    return widget.uid == ref.watch(authStateProvider).value?.uid
+    return uid == ref.watch(authStateProvider).value?.uid
         ? const SizedBox()
         : Center(
             child: SizedBox(
@@ -363,6 +349,7 @@ class _UserPageState extends ConsumerState<UserPage> {
     BuildContext context,
     WidgetRef ref,
     List<PostData> userPosts,
+    ValueNotifier<bool> isLoadingMore,
   ) {
     return userPosts.isEmpty
         ? SliverToBoxAdapter(
@@ -377,7 +364,7 @@ class _UserPageState extends ConsumerState<UserPage> {
             delegate: SliverChildBuilderDelegate(
               (context, index) {
                 if (index == userPosts.length) {
-                  return _isLoadingMore
+                  return isLoadingMore.value
                       ? Padding(
                           padding: EdgeInsets.all(8.w),
                           child: const Center(
@@ -389,7 +376,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                 return PostCard(
                   key: ValueKey(userPosts[index]),
                   postData: userPosts[index],
-                  uidInPreviosPage: widget.uid,
+                  uidInPreviosPage: uid,
                 );
               },
               childCount: userPosts.length + 1,
@@ -448,9 +435,7 @@ class _UserPageState extends ConsumerState<UserPage> {
               message: 'ブロック解除中',
               backgroundColor: Colors.white10,
             ).during(
-              () => ref
-                  .read(blockNotifierProvider.notifier)
-                  .deleteBlock(widget.uid!),
+              () => ref.read(blockNotifierProvider.notifier).deleteBlock(uid!),
             );
           }
 
@@ -508,7 +493,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                         reportText,
                         reportedPostId: null,
                         reportedCommentId: null,
-                        reportedUserId: widget.uid,
+                        reportedUserId: uid,
                       ),
                 );
               }
@@ -535,8 +520,7 @@ class _UserPageState extends ConsumerState<UserPage> {
             break;
           case 'block':
             try {
-              if (ref.watch(authStateProvider).value == null &&
-                  widget.uid == null) {
+              if (ref.watch(authStateProvider).value == null && uid == null) {
                 return;
               }
 
@@ -555,9 +539,7 @@ class _UserPageState extends ConsumerState<UserPage> {
                   message: 'ブロック中',
                   backgroundColor: Colors.white10,
                 ).during(
-                  () => ref
-                      .read(blockNotifierProvider.notifier)
-                      .addBlock(widget.uid!),
+                  () => ref.read(blockNotifierProvider.notifier).addBlock(uid!),
                 );
               }
 
