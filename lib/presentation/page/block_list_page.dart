@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -7,6 +6,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:green_heart/application/state/block_notifier.dart';
 import 'package:green_heart/presentation/page/error_page.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
+import 'package:green_heart/presentation/widget/user_empty_image.dart';
+import 'package:green_heart/presentation/widget/user_firebase_image.dart';
 
 class BlockListPage extends ConsumerWidget {
   const BlockListPage({super.key});
@@ -37,12 +38,12 @@ class BlockListPage extends ConsumerWidget {
             itemCount: blockList.length,
             itemBuilder: (context, index) {
               return ListTile(
-                leading: CircleAvatar(
-                  radius: 24.r,
-                  backgroundImage: CachedNetworkImageProvider(
-                    blockList[index].profile?.imageUrl ?? '',
-                  ),
-                ),
+                leading: blockList[index].profile?.imageUrl == null
+                    ? const UserEmptyImage(radius: 24)
+                    : UserFirebaseImage(
+                        imageUrl: blockList[index].profile?.imageUrl,
+                        radius: 48,
+                      ),
                 title: Text(blockList[index].profile?.name ?? ''),
                 onTap: () {
                   context.push(

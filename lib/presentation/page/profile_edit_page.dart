@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,6 +16,8 @@ import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/application/state/account_state_notifier.dart';
+import 'package:green_heart/presentation/widget/user_empty_image.dart';
+import 'package:green_heart/presentation/widget/user_firebase_image.dart';
 
 class ProfileEditPage extends HookConsumerWidget {
   ProfileEditPage({super.key});
@@ -187,9 +188,12 @@ class ProfileEditPage extends HookConsumerWidget {
           Center(
             child: GestureDetector(
               child: imagePath.value == null
-                  ? _buildEmptyImage()
+                  ? const UserEmptyImage(radius: 100)
                   : imagePath.value!.startsWith('http')
-                      ? _buildFirebaseImage(imagePath.value!)
+                      ? UserFirebaseImage(
+                          imageUrl: imagePath.value!,
+                          radius: 200,
+                        )
                       : _buildSelectedImage(imagePath.value!),
               onTap: () async {
                 await showProfileImageActionSheet(context, ref, imagePath);
@@ -208,47 +212,6 @@ class ProfileEditPage extends HookConsumerWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildEmptyImage() {
-    return CircleAvatar(
-      radius: 100.r,
-      backgroundColor: Colors.grey[200],
-      child: Icon(
-        Icons.person,
-        size: 100.r,
-        color: Colors.grey[500],
-      ),
-    );
-  }
-
-  Widget _buildFirebaseImage(String imageUrl) {
-    return Container(
-      width: 200.r,
-      height: 200.r,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        image: DecorationImage(
-          fit: BoxFit.cover,
-          image: CachedNetworkImageProvider(imageUrl),
-        ),
-      ),
-      child: CachedNetworkImage(
-        key: ValueKey(imageUrl),
-        imageUrl: imageUrl,
-        imageBuilder: (context, imageProvider) => Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            image: DecorationImage(
-              image: imageProvider,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        placeholder: (context, url) => const CircularProgressIndicator(),
-        errorWidget: (context, url, error) => const Icon(Icons.error),
       ),
     );
   }

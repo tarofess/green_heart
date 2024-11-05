@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:green_heart/domain/type/comment_data.dart';
@@ -13,6 +12,8 @@ import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/presentation/dialog/report_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
+import 'package:green_heart/presentation/widget/user_empty_image.dart';
+import 'package:green_heart/presentation/widget/user_firebase_image.dart';
 
 class CommentCard extends HookConsumerWidget {
   const CommentCard({
@@ -119,35 +120,19 @@ class CommentCard extends HookConsumerWidget {
   Widget _buildUserImage(CommentType commentType, [CommentData? replyComment]) {
     if (commentType == CommentType.comment) {
       return commentData.profile?.imageUrl == null
-          ? _buildEmptyImage()
-          : CircleAvatar(
-              radius: 24.r,
-              backgroundImage: CachedNetworkImageProvider(
-                commentData.profile?.imageUrl ?? '',
-              ),
+          ? const UserEmptyImage(radius: 24)
+          : UserFirebaseImage(
+              imageUrl: commentData.profile?.imageUrl,
+              radius: 48,
             );
     } else {
       return replyComment!.profile?.imageUrl == null
-          ? _buildEmptyImage()
-          : CircleAvatar(
-              radius: 24.r,
-              backgroundImage: CachedNetworkImageProvider(
-                replyComment.profile?.imageUrl ?? '',
-              ),
+          ? const UserEmptyImage(radius: 24)
+          : UserFirebaseImage(
+              imageUrl: replyComment.profile?.imageUrl,
+              radius: 48,
             );
     }
-  }
-
-  Widget _buildEmptyImage() {
-    return CircleAvatar(
-      radius: 24.r,
-      backgroundColor: Colors.grey[200],
-      child: Icon(
-        Icons.person,
-        size: 24.r,
-        color: Colors.grey[500],
-      ),
-    );
   }
 
   Widget _buildUserName([CommentData? replyComment]) {

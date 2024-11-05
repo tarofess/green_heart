@@ -17,6 +17,8 @@ import 'package:green_heart/presentation/dialog/report_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/application/di/like_di.dart';
 import 'package:green_heart/application/di/report_di.dart';
+import 'package:green_heart/presentation/widget/user_empty_image.dart';
+import 'package:green_heart/presentation/widget/user_firebase_image.dart';
 
 class PostCard extends ConsumerWidget {
   PostCard({super.key, required this.postData, this.uidInPreviosPage});
@@ -52,12 +54,10 @@ class PostCard extends ConsumerWidget {
       children: [
         GestureDetector(
             child: postData.userProfile?.imageUrl == null
-                ? _buildEmptyImage()
-                : CircleAvatar(
-                    radius: 24.r,
-                    backgroundImage: CachedNetworkImageProvider(
-                      postData.userProfile?.imageUrl ?? '',
-                    ),
+                ? const UserEmptyImage(radius: 24)
+                : UserFirebaseImage(
+                    imageUrl: postData.userProfile?.imageUrl,
+                    radius: 48,
                   ),
             onTap: () {
               final uid = ref.watch(authStateProvider).value?.uid;
@@ -79,18 +79,6 @@ class PostCard extends ConsumerWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildEmptyImage() {
-    return CircleAvatar(
-      radius: 24.r,
-      backgroundColor: Colors.grey[200],
-      child: Icon(
-        Icons.person,
-        size: 24.r,
-        color: Colors.grey[500],
-      ),
     );
   }
 
