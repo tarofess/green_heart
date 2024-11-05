@@ -7,10 +7,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:green_heart/presentation/page/comment_page.dart';
 import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
-import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/domain/type/post_data.dart';
-import 'package:green_heart/application/state/timeline_notifier.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/presentation/dialog/report_dialog.dart';
@@ -19,6 +17,8 @@ import 'package:green_heart/application/di/like_di.dart';
 import 'package:green_heart/application/di/report_di.dart';
 import 'package:green_heart/presentation/widget/user_empty_image.dart';
 import 'package:green_heart/presentation/widget/user_firebase_image.dart';
+import 'package:green_heart/application/state/post_manager_notifier.dart';
+import 'package:green_heart/application/state/user_post_notifier.dart';
 
 class PostCard extends ConsumerWidget {
   PostCard({super.key, required this.postData, this.uidInPreviosPage});
@@ -183,6 +183,11 @@ class PostCard extends ConsumerWidget {
                 .read(likeToggleUsecaseProvider)
                 .execute(postData.post.id, uid),
           );
+
+          ref.read(postManagerNotifierProvider.notifier).toggleLike(
+                postData.post.id,
+                uid,
+              );
         } catch (e) {
           if (context.mounted) {
             showErrorDialog(
@@ -192,12 +197,6 @@ class PostCard extends ConsumerWidget {
             );
           }
         }
-        ref
-            .read(userPostNotifierProvider(postData.post.uid).notifier)
-            .toggleLike(postData.post.id, uid);
-        ref
-            .read(timelineNotifierProvider.notifier)
-            .toggleLike(postData.post.id, uid);
       },
     );
   }
@@ -254,7 +253,7 @@ class PostCard extends ConsumerWidget {
   Widget _buildDeletePostButton(
     BuildContext context,
     WidgetRef ref,
-    String? myUid,
+    String? uid,
   ) {
     return GestureDetector(
       child: Icon(
@@ -282,6 +281,10 @@ class PostCard extends ConsumerWidget {
                   ref.read(postDeleteUsecaseProvider).execute(postData.post.id),
             );
 
+            ref.read(userPostNotifierProvider(uid).notifier).deletePost(
+                  postData.post.id,
+                );
+
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -302,12 +305,6 @@ class PostCard extends ConsumerWidget {
             );
           }
         }
-        ref
-            .read(userPostNotifierProvider(myUid).notifier)
-            .deletePost(postData.post.id);
-        ref
-            .read(timelineNotifierProvider.notifier)
-            .deletePost(postData.post.id);
       },
     );
   }
