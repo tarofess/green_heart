@@ -40,6 +40,8 @@ class SignInPage extends HookConsumerWidget {
       body: Column(
         children: [
           _buildAppTitle(),
+          SizedBox(height: 52.h),
+          _buildAppIcon(),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -68,6 +70,14 @@ class SignInPage extends HookConsumerWidget {
           color: Colors.lightGreen,
         ),
       ),
+    );
+  }
+
+  Widget _buildAppIcon() {
+    return Image.asset(
+      'assets/images/icon.png',
+      width: 140.w,
+      height: 140.h,
     );
   }
 
