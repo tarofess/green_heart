@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:green_heart/application/di/follow_di.dart';
-import 'package:green_heart/application/state/follow_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/profile.dart';
@@ -26,6 +24,10 @@ import 'package:green_heart/presentation/dialog/report_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/presentation/widget/user_empty_image.dart';
 import 'package:green_heart/presentation/widget/user_firebase_image.dart';
+import 'package:green_heart/application/di/follow_di.dart';
+import 'package:green_heart/application/state/following_notifier.dart';
+import 'package:green_heart/application/state/follower_notifier.dart';
+import 'package:green_heart/domain/type/follow_data.dart';
 
 class UserPage extends HookConsumerWidget {
   const UserPage({super.key, required this.uid});
@@ -34,6 +36,8 @@ class UserPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userPostState = ref.watch(userPostNotifierProvider(uid));
+    final followerState = ref.watch(followerNotifierProvider(uid));
+    final followingState = ref.watch(followingNotifierProvider(uid));
     final profile = useState<Profile?>(null);
     final isFollowing = useState(false);
     final isBlocked = useState(false);
@@ -122,6 +126,8 @@ class UserPage extends HookConsumerWidget {
                   isFollowing,
                   scrollController,
                   isLoadingMore,
+                  followerState,
+                  followingState,
                 );
         },
         loading: () => const LoadingIndicator(message: '読み込み中'),
@@ -173,6 +179,8 @@ class UserPage extends HookConsumerWidget {
     ValueNotifier<bool> isFollowing,
     ScrollController scrollController,
     ValueNotifier<bool> isLoadingMore,
+    AsyncValue<List<FollowData>> followerState,
+    AsyncValue<List<FollowData>> followingState,
   ) {
     return RefreshIndicator(
       onRefresh: () async {
@@ -192,7 +200,13 @@ class UserPage extends HookConsumerWidget {
                       Row(
                         children: [
                           _buildUserImage(context, ref, profile),
-                          Expanded(child: _buildUserStats()),
+                          Expanded(
+                            child: _buildFlowState(
+                              ref,
+                              followerState,
+                              followingState,
+                            ),
+                          ),
                         ],
                       ),
                       SizedBox(height: 20.h),
@@ -230,48 +244,70 @@ class UserPage extends HookConsumerWidget {
         : UserFirebaseImage(imageUrl: profile.value?.imageUrl, radius: 120);
   }
 
-  Widget _buildUserStats() {
-    return SizedBox(
-      height: 120.h,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              GestureDetector(
-                onTap: () {},
-                child: Column(
-                  children: [
-                    const Text('フォロワー'),
-                    Text(
-                      '120',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16.sp,
+  Widget _buildFlowState(
+    WidgetRef ref,
+    AsyncValue<List<FollowData>> followerState,
+    AsyncValue<List<FollowData>> followingState,
+  ) {
+    return followerState.when(
+      data: (follower) {
+        return followingState.when(
+          data: (following) {
+            return SizedBox(
+              height: 120.h,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      GestureDetector(
+                        onTap: () {},
+                        child: Column(
+                          children: [
+                            const Text('フォロワー'),
+                            Text(
+                              follower.length.toString(),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16.sp,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              GestureDetector(
-                onTap: () {},
-                child: Column(
-                  children: [
-                    const Text('フォロー中'),
-                    Text(
-                      '63',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16.sp,
+                      GestureDetector(
+                        onTap: () {},
+                        child: Column(
+                          children: [
+                            const Text('フォロー中'),
+                            Text(
+                              following.length.toString(),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16.sp,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ),
-            ],
+            );
+          },
+          loading: () => const SizedBox(),
+          error: (e, _) => ErrorPage(
+            error: e,
+            retry: () => ref.refresh(followerNotifierProvider(uid)),
           ),
-        ],
+        );
+      },
+      loading: () => const SizedBox(),
+      error: (e, _) => ErrorPage(
+        error: e,
+        retry: () => ref.refresh(followingNotifierProvider(uid)),
       ),
     );
   }
@@ -323,19 +359,25 @@ class UserPage extends HookConsumerWidget {
               child: ElevatedButton(
                 onPressed: () async {
                   try {
-                    if (isFollowing.value) {
-                      await ref.read(followNotifierProvider.notifier).unfollow(
-                            ref.watch(authStateProvider).value!.uid,
-                            uid!,
-                          );
-                      isFollowing.value = false;
-                    } else {
-                      await ref.read(followNotifierProvider.notifier).follow(
-                            ref.watch(authStateProvider).value!.uid,
-                            uid!,
-                          );
-                      isFollowing.value = true;
-                    }
+                    await LoadingOverlay.of(
+                      context,
+                      backgroundColor: Colors.white10,
+                    ).during(() async {
+                      final myUid = ref.watch(authStateProvider).value?.uid;
+                      if (isFollowing.value) {
+                        await ref
+                            .read(followerNotifierProvider(uid).notifier)
+                            .unfollow(myUid!, uid!);
+
+                        isFollowing.value = false;
+                      } else {
+                        await ref
+                            .read(followerNotifierProvider(uid).notifier)
+                            .follow(myUid!, uid!);
+
+                        isFollowing.value = true;
+                      }
+                    });
                   } catch (e) {
                     if (context.mounted) {
                       showErrorDialog(

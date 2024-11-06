@@ -1,10 +1,10 @@
 import 'package:green_heart/application/exception/app_exception.dart';
 import 'package:green_heart/application/interface/follow_repository.dart';
 
-class FollowCheckUsecase {
+class FollowingCheckUsecase {
   final FollowRepository _followRepository;
 
-  FollowCheckUsecase(this._followRepository);
+  FollowingCheckUsecase(this._followRepository);
 
   Future<bool> execute(String? uid, String followingUid) async {
     if (uid == null) {

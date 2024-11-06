@@ -9,6 +9,6 @@ part 'follow_data.freezed.dart';
 class FollowData with _$FollowData {
   const factory FollowData({
     required Follow follow,
-    required Profile profile,
+    required Profile? profile,
   }) = _FollowData;
 }

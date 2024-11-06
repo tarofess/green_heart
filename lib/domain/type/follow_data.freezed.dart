@@ -17,7 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$FollowData {
   Follow get follow => throw _privateConstructorUsedError;
-  Profile get profile => throw _privateConstructorUsedError;
+  Profile? get profile => throw _privateConstructorUsedError;
 
   /// Create a copy of FollowData
   /// with the given fields replaced by the non-null parameter values.
@@ -32,10 +32,10 @@ abstract class $FollowDataCopyWith<$Res> {
           FollowData value, $Res Function(FollowData) then) =
       _$FollowDataCopyWithImpl<$Res, FollowData>;
   @useResult
-  $Res call({Follow follow, Profile profile});
+  $Res call({Follow follow, Profile? profile});
 
   $FollowCopyWith<$Res> get follow;
-  $ProfileCopyWith<$Res> get profile;
+  $ProfileCopyWith<$Res>? get profile;
 }
 
 /// @nodoc
@@ -54,17 +54,17 @@ class _$FollowDataCopyWithImpl<$Res, $Val extends FollowData>
   @override
   $Res call({
     Object? follow = null,
-    Object? profile = null,
+    Object? profile = freezed,
   }) {
     return _then(_value.copyWith(
       follow: null == follow
           ? _value.follow
           : follow // ignore: cast_nullable_to_non_nullable
               as Follow,
-      profile: null == profile
+      profile: freezed == profile
           ? _value.profile
           : profile // ignore: cast_nullable_to_non_nullable
-              as Profile,
+              as Profile?,
     ) as $Val);
   }
 
@@ -82,8 +82,12 @@ class _$FollowDataCopyWithImpl<$Res, $Val extends FollowData>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $ProfileCopyWith<$Res> get profile {
-    return $ProfileCopyWith<$Res>(_value.profile, (value) {
+  $ProfileCopyWith<$Res>? get profile {
+    if (_value.profile == null) {
+      return null;
+    }
+
+    return $ProfileCopyWith<$Res>(_value.profile!, (value) {
       return _then(_value.copyWith(profile: value) as $Val);
     });
   }
@@ -97,12 +101,12 @@ abstract class _$$FollowDataImplCopyWith<$Res>
       __$$FollowDataImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Follow follow, Profile profile});
+  $Res call({Follow follow, Profile? profile});
 
   @override
   $FollowCopyWith<$Res> get follow;
   @override
-  $ProfileCopyWith<$Res> get profile;
+  $ProfileCopyWith<$Res>? get profile;
 }
 
 /// @nodoc
@@ -119,17 +123,17 @@ class __$$FollowDataImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? follow = null,
-    Object? profile = null,
+    Object? profile = freezed,
   }) {
     return _then(_$FollowDataImpl(
       follow: null == follow
           ? _value.follow
           : follow // ignore: cast_nullable_to_non_nullable
               as Follow,
-      profile: null == profile
+      profile: freezed == profile
           ? _value.profile
           : profile // ignore: cast_nullable_to_non_nullable
-              as Profile,
+              as Profile?,
     ));
   }
 }
@@ -142,7 +146,7 @@ class _$FollowDataImpl implements _FollowData {
   @override
   final Follow follow;
   @override
-  final Profile profile;
+  final Profile? profile;
 
   @override
   String toString() {
@@ -173,12 +177,12 @@ class _$FollowDataImpl implements _FollowData {
 abstract class _FollowData implements FollowData {
   const factory _FollowData(
       {required final Follow follow,
-      required final Profile profile}) = _$FollowDataImpl;
+      required final Profile? profile}) = _$FollowDataImpl;
 
   @override
   Follow get follow;
   @override
-  Profile get profile;
+  Profile? get profile;
 
   /// Create a copy of FollowData
   /// with the given fields replaced by the non-null parameter values.

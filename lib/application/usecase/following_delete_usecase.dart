@@ -1,9 +1,9 @@
 import 'package:green_heart/application/interface/follow_repository.dart';
 
-class FollowDeleteUsecase {
+class FollowingDeleteUsecase {
   final FollowRepository _followRepository;
 
-  FollowDeleteUsecase(this._followRepository);
+  FollowingDeleteUsecase(this._followRepository);
 
   Future<void> execute(String uid, String followingUid) async {
     await _followRepository.unfollow(uid, followingUid);

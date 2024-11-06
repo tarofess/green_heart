@@ -50,34 +50,6 @@ class FirebaseFollowRepository implements FollowRepository {
   }
 
   @override
-  Future<int> getFollowersCount(String uid) async {
-    try {
-      final snapshot = await _firestore
-          .collection('follow')
-          .where('followingUid', isEqualTo: uid)
-          .get();
-      return snapshot.docs.length;
-    } catch (e, stackTrace) {
-      final exception = await ExceptionHandler.handleException(e, stackTrace);
-      throw exception ?? AppException('フォロワー数の取得に失敗しました。再度お試しください。');
-    }
-  }
-
-  @override
-  Future<int> getFollowingCount(String uid) async {
-    try {
-      final snapshot = await _firestore
-          .collection('follow')
-          .where('uid', isEqualTo: uid)
-          .get();
-      return snapshot.docs.length;
-    } catch (e, stackTrace) {
-      final exception = await ExceptionHandler.handleException(e, stackTrace);
-      throw exception ?? AppException('フォロー数の取得に失敗しました。再度お試しください。');
-    }
-  }
-
-  @override
   Future<List<Follow>> getFollowers(String uid) async {
     try {
       final snapshot = await _firestore
