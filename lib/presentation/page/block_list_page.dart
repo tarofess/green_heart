@@ -44,7 +44,10 @@ class BlockListPage extends ConsumerWidget {
                         imageUrl: blockList[index].profile?.imageUrl,
                         radius: 48,
                       ),
-                title: Text(blockList[index].profile?.name ?? ''),
+                title: Text(
+                  blockList[index].profile?.name ?? '',
+                  style: TextStyle(fontSize: 16.sp),
+                ),
                 onTap: () {
                   context.push(
                     '/user',

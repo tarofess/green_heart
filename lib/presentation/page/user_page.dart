@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/profile.dart';
@@ -28,6 +29,7 @@ import 'package:green_heart/application/di/follow_di.dart';
 import 'package:green_heart/application/state/following_notifier.dart';
 import 'package:green_heart/application/state/follower_notifier.dart';
 import 'package:green_heart/domain/type/follow_data.dart';
+import 'package:green_heart/presentation/page/follow_page.dart';
 
 class UserPage extends HookConsumerWidget {
   const UserPage({super.key, required this.uid});
@@ -202,6 +204,7 @@ class UserPage extends HookConsumerWidget {
                           _buildUserImage(context, ref, profile),
                           Expanded(
                             child: _buildFlowState(
+                              context,
                               ref,
                               followerState,
                               followingState,
@@ -245,6 +248,7 @@ class UserPage extends HookConsumerWidget {
   }
 
   Widget _buildFlowState(
+    BuildContext context,
     WidgetRef ref,
     AsyncValue<List<FollowData>> followerState,
     AsyncValue<List<FollowData>> followingState,
@@ -262,7 +266,12 @@ class UserPage extends HookConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          context.push('/follow', extra: {
+                            'follows': followerState.value,
+                            'followType': FollowType.follower,
+                          });
+                        },
                         child: Column(
                           children: [
                             const Text('フォロワー'),
@@ -277,7 +286,12 @@ class UserPage extends HookConsumerWidget {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          context.push('/follow', extra: {
+                            'follows': followingState.value,
+                            'followType': FollowType.following,
+                          });
+                        },
                         child: Column(
                           children: [
                             const Text('フォロー中'),

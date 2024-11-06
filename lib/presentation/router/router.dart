@@ -14,6 +14,8 @@ import 'package:green_heart/presentation/page/profile_edit_page.dart';
 import 'package:green_heart/presentation/page/user_page.dart';
 import 'package:green_heart/application/state/account_state_notifier.dart';
 import 'package:green_heart/presentation/page/block_list_page.dart';
+import 'package:green_heart/domain/type/follow_data.dart';
+import 'package:green_heart/presentation/page/follow_page.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -63,6 +65,19 @@ final routerProvider = Provider<GoRouter>((ref) {
               state.extra as Map<String, dynamic>;
           final uid = extra['uid'] as String?;
           return UserPage(uid: uid);
+        },
+      ),
+      GoRoute(
+        path: '/follow',
+        builder: (context, state) {
+          final Map<String, dynamic> extra =
+              state.extra as Map<String, dynamic>;
+          final follows = extra['follows'] as List<FollowData>;
+          final followType = extra['followType'] as FollowType;
+          return FollowPage(
+            follows: follows,
+            followType: followType,
+          );
         },
       ),
       GoRoute(

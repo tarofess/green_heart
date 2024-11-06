@@ -21,9 +21,8 @@ class FollowerNotifier extends FamilyAsyncNotifier<List<FollowData>, String?> {
 
   Future<List<FollowData>> _createFollowDataList(List<Follow> follows) async {
     final followDataList = follows.map((follow) async {
-      final profile = await ref
-          .read(profileGetUsecaseProvider)
-          .execute(follow.followingUid);
+      final profile =
+          await ref.read(profileGetUsecaseProvider).execute(follow.uid);
       return FollowData(
         follow: follow,
         profile: profile,
