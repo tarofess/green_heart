@@ -5,7 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/follower_notifier.dart';
 import 'package:green_heart/application/state/following_notifier.dart';
-import 'package:green_heart/presentation/page/error_page.dart';
+import 'package:green_heart/presentation/widget/async_error_widget.dart';
 import 'package:green_heart/presentation/page/follow_page.dart';
 
 class FollowStateWidget extends ConsumerWidget {
@@ -77,16 +77,16 @@ class FollowStateWidget extends ConsumerWidget {
             );
           },
           loading: () => const SizedBox(),
-          error: (e, _) => ErrorPage(
+          error: (e, _) => AsyncErrorWidget(
             error: e,
-            retry: () => ref.refresh(followerNotifierProvider(uid)),
+            retry: () => ref.refresh(followingNotifierProvider(uid)),
           ),
         );
       },
       loading: () => const SizedBox(),
-      error: (e, _) => ErrorPage(
+      error: (e, _) => AsyncErrorWidget(
         error: e,
-        retry: () => ref.refresh(followingNotifierProvider(uid)),
+        retry: () => ref.refresh(followerNotifierProvider(uid)),
       ),
     );
   }

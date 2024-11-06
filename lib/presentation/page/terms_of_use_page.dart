@@ -3,8 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/app_info_notifier.dart';
-import 'package:green_heart/presentation/page/error_page.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
+import 'package:green_heart/presentation/widget/async_error_widget.dart';
 
 class TermsOfUsePage extends ConsumerWidget {
   const TermsOfUsePage({super.key});
@@ -42,7 +42,7 @@ class TermsOfUsePage extends ConsumerWidget {
           message: '読み込み中',
           backgroundColor: Colors.white10,
         ),
-        error: (e, _) => ErrorPage(
+        error: (e, _) => AsyncErrorWidget(
           error: e,
           retry: () => ref.refresh(appInfoNotifierProvider),
         ),

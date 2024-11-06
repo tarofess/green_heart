@@ -5,7 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/comment_data.dart';
 import 'package:green_heart/application/state/comment_notifier.dart';
-import 'package:green_heart/presentation/page/error_page.dart';
+import 'package:green_heart/presentation/widget/async_error_widget.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/presentation/widget/comment_card.dart';
 import 'package:green_heart/application/state/comment_page_notifier.dart';
@@ -70,7 +70,7 @@ class CommentPage extends HookConsumerWidget {
           );
         },
         error: (e, stackTrace) {
-          return ErrorPage(
+          return AsyncErrorWidget(
             error: e,
             retry: () => ref.refresh(commentNotifierProvider(postId)),
           );

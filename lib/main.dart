@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'package:green_heart/presentation/page/error_page.dart';
+import 'package:green_heart/presentation/widget/async_error_widget.dart';
 import 'package:green_heart/presentation/router/router.dart';
 import 'package:green_heart/presentation/theme/default_theme.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
@@ -44,9 +44,11 @@ class MyApp extends ConsumerWidget {
           ),
           error: (e, _) => MaterialApp(
             debugShowCheckedModeBanner: false,
-            home: ErrorPage(
-              error: e,
-              retry: () => ref.refresh(appInitProvider),
+            home: Scaffold(
+              body: AsyncErrorWidget(
+                error: e,
+                retry: () => ref.refresh(appInitProvider),
+              ),
             ),
           ),
         );

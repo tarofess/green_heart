@@ -5,7 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/app_info_notifier.dart';
 import 'package:green_heart/main.dart';
-import 'package:green_heart/presentation/page/error_page.dart';
+import 'package:green_heart/presentation/widget/async_error_widget.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 
 class AppInfoPage extends HookConsumerWidget {
@@ -135,7 +135,7 @@ class AppInfoPage extends HookConsumerWidget {
           );
         },
         error: (e, _) {
-          return ErrorPage(
+          return AsyncErrorWidget(
             error: e,
             retry: () => ref.refresh(appInitProvider),
           );

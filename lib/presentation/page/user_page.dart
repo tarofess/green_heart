@@ -9,7 +9,7 @@ import 'package:green_heart/presentation/widget/post_card.dart';
 import 'package:green_heart/domain/type/post_data.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
-import 'package:green_heart/presentation/page/error_page.dart';
+import 'package:green_heart/presentation/widget/async_error_widget.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
@@ -127,7 +127,7 @@ class UserPage extends HookConsumerWidget {
                 );
         },
         loading: () => const LoadingIndicator(message: '読み込み中'),
-        error: (e, _) => ErrorPage(
+        error: (e, _) => AsyncErrorWidget(
           error: e,
           retry: () => ref.refresh(userPostNotifierProvider(uid)),
         ),

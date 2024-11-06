@@ -4,10 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/block_notifier.dart';
-import 'package:green_heart/presentation/page/error_page.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/presentation/widget/user_empty_image.dart';
 import 'package:green_heart/presentation/widget/user_firebase_image.dart';
+import 'package:green_heart/presentation/widget/async_error_widget.dart';
 
 class BlockListPage extends ConsumerWidget {
   const BlockListPage({super.key});
@@ -65,7 +65,7 @@ class BlockListPage extends ConsumerWidget {
           );
         },
         error: (e, _) {
-          return ErrorPage(
+          return AsyncErrorWidget(
             error: e,
             retry: () => ref.refresh(blockNotifierProvider),
           );
