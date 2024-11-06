@@ -42,9 +42,8 @@ class FirebaseProfileRepository implements ProfileRepository {
       final docSnapshot = await docRef.get();
       if (docSnapshot.exists) {
         return Profile.fromJson(docSnapshot.data()!);
-      } else {
-        return null;
       }
+      return null;
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('プロフィールの取得に失敗しました。再度お試しください。');

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:green_heart/application/di/follow_di.dart';
+import 'package:green_heart/application/state/follow_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/profile.dart';
@@ -33,6 +35,7 @@ class UserPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userPostState = ref.watch(userPostNotifierProvider(uid));
     final profile = useState<Profile?>(null);
+    final isFollowing = useState(false);
     final isBlocked = useState(false);
     final isLoadingMore = useState(false);
     final scrollController = useScrollController();
@@ -43,12 +46,24 @@ class UserPage extends HookConsumerWidget {
         profile.value = await ref.read(profileGetUsecaseProvider).execute(uid!);
       }
 
+      void setFollowState() async {
+        if (uid == null) return;
+        final currentUid = ref.watch(authStateProvider).value?.uid;
+
+        isFollowing.value = await ref.read(followCheckUsecaseProvider).execute(
+              currentUid,
+              uid!,
+            );
+      }
+
       void setBlockState() async {
         if (uid == null) return;
+        final currentUid = ref.watch(authStateProvider).value?.uid;
 
-        isBlocked.value = await ref
-            .read(blockCheckUsecaseProvider)
-            .execute(ref.watch(authStateProvider).value?.uid, uid!);
+        isBlocked.value = await ref.read(blockCheckUsecaseProvider).execute(
+              currentUid,
+              uid!,
+            );
       }
 
       void onScroll() async {
@@ -75,6 +90,7 @@ class UserPage extends HookConsumerWidget {
 
       try {
         setProfile();
+        setFollowState();
         setBlockState();
       } catch (e) {
         if (context.mounted) {
@@ -103,6 +119,7 @@ class UserPage extends HookConsumerWidget {
                   ref,
                   profile,
                   userPosts,
+                  isFollowing,
                   scrollController,
                   isLoadingMore,
                 );
@@ -153,6 +170,7 @@ class UserPage extends HookConsumerWidget {
     WidgetRef ref,
     ValueNotifier<Profile?> profile,
     List<PostData> userPosts,
+    ValueNotifier<bool> isFollowing,
     ScrollController scrollController,
     ValueNotifier<bool> isLoadingMore,
   ) {
@@ -184,7 +202,7 @@ class UserPage extends HookConsumerWidget {
                       SizedBox(height: 16.h),
                       _buildUserBio(context, ref, profile.value),
                       SizedBox(height: 16.h),
-                      _buildFollowButton(context, ref),
+                      _buildFollowButton(context, ref, isFollowing),
                     ],
                   ),
                 ),
@@ -292,15 +310,55 @@ class UserPage extends HookConsumerWidget {
           );
   }
 
-  Widget _buildFollowButton(BuildContext context, WidgetRef ref) {
+  Widget _buildFollowButton(
+    BuildContext context,
+    WidgetRef ref,
+    ValueNotifier<bool> isFollowing,
+  ) {
     return uid == ref.watch(authStateProvider).value?.uid
         ? const SizedBox()
         : Center(
             child: SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () async {},
-                child: Text('フォローする', style: TextStyle(fontSize: 14.sp)),
+                onPressed: () async {
+                  try {
+                    if (isFollowing.value) {
+                      await ref.read(followNotifierProvider.notifier).unfollow(
+                            ref.watch(authStateProvider).value!.uid,
+                            uid!,
+                          );
+                      isFollowing.value = false;
+                    } else {
+                      await ref.read(followNotifierProvider.notifier).follow(
+                            ref.watch(authStateProvider).value!.uid,
+                            uid!,
+                          );
+                      isFollowing.value = true;
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      showErrorDialog(
+                        context: context,
+                        title: 'フォローエラー',
+                        content: e.toString(),
+                      );
+                    }
+                  }
+                },
+                style: isFollowing.value
+                    ? ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                      )
+                    : null,
+                child: Text(
+                  isFollowing.value ? 'フォロー中' : 'フォローする',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.bold,
+                    color: isFollowing.value ? Colors.white : null,
+                  ),
+                ),
               ),
             ),
           );
