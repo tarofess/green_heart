@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/profile.dart';
@@ -26,20 +25,17 @@ import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/presentation/widget/user_empty_image.dart';
 import 'package:green_heart/presentation/widget/user_firebase_image.dart';
 import 'package:green_heart/application/di/follow_di.dart';
-import 'package:green_heart/application/state/following_notifier.dart';
 import 'package:green_heart/application/state/follower_notifier.dart';
-import 'package:green_heart/domain/type/follow_data.dart';
-import 'package:green_heart/presentation/page/follow_page.dart';
+import 'package:green_heart/presentation/widget/follow_state_widget.dart';
 
 class UserPage extends HookConsumerWidget {
   const UserPage({super.key, required this.uid});
+
   final String? uid;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userPostState = ref.watch(userPostNotifierProvider(uid));
-    final followerState = ref.watch(followerNotifierProvider(uid));
-    final followingState = ref.watch(followingNotifierProvider(uid));
     final profile = useState<Profile?>(null);
     final isFollowing = useState(false);
     final isBlocked = useState(false);
@@ -128,8 +124,6 @@ class UserPage extends HookConsumerWidget {
                   isFollowing,
                   scrollController,
                   isLoadingMore,
-                  followerState,
-                  followingState,
                 );
         },
         loading: () => const LoadingIndicator(message: '読み込み中'),
@@ -181,8 +175,6 @@ class UserPage extends HookConsumerWidget {
     ValueNotifier<bool> isFollowing,
     ScrollController scrollController,
     ValueNotifier<bool> isLoadingMore,
-    AsyncValue<List<FollowData>> followerState,
-    AsyncValue<List<FollowData>> followingState,
   ) {
     return RefreshIndicator(
       onRefresh: () async {
@@ -203,12 +195,7 @@ class UserPage extends HookConsumerWidget {
                         children: [
                           _buildUserImage(context, ref, profile),
                           Expanded(
-                            child: _buildFlowState(
-                              context,
-                              ref,
-                              followerState,
-                              followingState,
-                            ),
+                            child: FollowStateWidget(uid: uid),
                           ),
                         ],
                       ),
@@ -245,85 +232,6 @@ class UserPage extends HookConsumerWidget {
     return profile.value?.imageUrl == null
         ? const UserEmptyImage(radius: 60)
         : UserFirebaseImage(imageUrl: profile.value?.imageUrl, radius: 120);
-  }
-
-  Widget _buildFlowState(
-    BuildContext context,
-    WidgetRef ref,
-    AsyncValue<List<FollowData>> followerState,
-    AsyncValue<List<FollowData>> followingState,
-  ) {
-    return followerState.when(
-      data: (follower) {
-        return followingState.when(
-          data: (following) {
-            return SizedBox(
-              height: 120.h,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          context.push('/follow', extra: {
-                            'follows': followerState.value,
-                            'followType': FollowType.follower,
-                          });
-                        },
-                        child: Column(
-                          children: [
-                            const Text('フォロワー'),
-                            Text(
-                              follower.length.toString(),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16.sp,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          context.push('/follow', extra: {
-                            'follows': followingState.value,
-                            'followType': FollowType.following,
-                          });
-                        },
-                        child: Column(
-                          children: [
-                            const Text('フォロー中'),
-                            Text(
-                              following.length.toString(),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16.sp,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          },
-          loading: () => const SizedBox(),
-          error: (e, _) => ErrorPage(
-            error: e,
-            retry: () => ref.refresh(followerNotifierProvider(uid)),
-          ),
-        );
-      },
-      loading: () => const SizedBox(),
-      error: (e, _) => ErrorPage(
-        error: e,
-        retry: () => ref.refresh(followingNotifierProvider(uid)),
-      ),
-    );
   }
 
   Widget _buildUserName(BuildContext context, WidgetRef ref, Profile? profile) {

@@ -87,20 +87,12 @@ class FirebaseFollowRepository implements FollowRepository {
       for (final doc in snapshot.docs) {
         await doc.reference.delete();
       }
-    } catch (e, stackTrace) {
-      final exception = await ExceptionHandler.handleException(e, stackTrace);
-      throw exception ?? AppException('フォロー情報の削除に失敗しました。再度お試しください。');
-    }
-  }
 
-  @override
-  Future<void> deleteAllFollowing(String uid) async {
-    try {
-      final snapshot = await _firestore
+      final snapshot2 = await _firestore
           .collection('follow')
           .where('followingUid', isEqualTo: uid)
           .get();
-      for (final doc in snapshot.docs) {
+      for (final doc in snapshot2.docs) {
         await doc.reference.delete();
       }
     } catch (e, stackTrace) {

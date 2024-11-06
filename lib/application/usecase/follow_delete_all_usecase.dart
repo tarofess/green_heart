@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:green_heart/application/interface/follow_repository.dart';
 
 class FollowDeleteAllUsecase {
@@ -5,7 +7,7 @@ class FollowDeleteAllUsecase {
 
   FollowDeleteAllUsecase(this._followRepository);
 
-  Future<void> execute(String uid) {
-    return _followRepository.deleteAllFollows(uid);
+  Future<void> execute(User user) {
+    return _followRepository.deleteAllFollows(user.uid);
   }
 }

@@ -11,8 +11,7 @@ import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/di/comment_di.dart';
 import 'package:green_heart/application/di/like_di.dart';
 import 'package:green_heart/application/state/account_state_notifier.dart';
-import 'package:green_heart/application/state/follower_notifier.dart';
-import 'package:green_heart/application/state/following_notifier.dart';
+import 'package:green_heart/application/di/follow_di.dart';
 
 class AccountNotifier extends Notifier<AccountInfo> {
   @override
@@ -62,14 +61,9 @@ class AccountNotifier extends Notifier<AccountInfo> {
     final deleteTasks = Future.wait([
       ref.read(likeDeleteAllUsecaseProvider).execute(user),
       ref.read(commentDeleteAllUsecaseProvider).execute(user),
+      ref.read(followDeleteAllUsecaseProvider).execute(user),
       ref.read(blockNotifierProvider.notifier).deleteAllBlocks(user),
       ref.read(profileNotifierProvider.notifier).deleteProfile(user, profile),
-      ref.read(followerNotifierProvider(user.uid).notifier).deleteAllFollows(
-            user,
-          ),
-      ref.read(followingNotifierProvider(user.uid).notifier).deleteAllFollowing(
-            user,
-          ),
       ref.read(userPostNotifierProvider(user.uid).notifier).deleteAllPosts(
             user,
           ),

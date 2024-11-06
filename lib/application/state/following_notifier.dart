@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/follow_di.dart';
@@ -58,14 +57,6 @@ class FollowingNotifier extends FamilyAsyncNotifier<List<FollowData>, String?> {
       followDataList.removeWhere((followData) =>
           followData.follow.followingUid == targetUid &&
           followData.follow.uid == myUid);
-      return followDataList;
-    });
-  }
-
-  Future<void> deleteAllFollowing(User user) async {
-    await ref.read(followingDeleteAllUsecaseProvider).execute(user.uid);
-    state.whenData((followDataList) {
-      followDataList.clear();
       return followDataList;
     });
   }

@@ -7,5 +7,4 @@ abstract class FollowRepository {
   Future<List<Follow>> getFollowers(String uid);
   Future<List<Follow>> getFollowing(String uid);
   Future<void> deleteAllFollows(String uid);
-  Future<void> deleteAllFollowing(String uid);
 }
