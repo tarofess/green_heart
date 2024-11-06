@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/follow_data.dart';
 import 'package:green_heart/presentation/widget/user_firebase_image.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
 
 class FollowPage extends ConsumerWidget {
   const FollowPage({
@@ -48,8 +49,13 @@ class FollowPage extends ConsumerWidget {
                     style: TextStyle(fontSize: 16.sp),
                   ),
                   onTap: () {
-                    context
-                        .push('/user', extra: {'uid': followData.profile?.uid});
+                    final uid = ref.watch(authStateProvider).value?.uid;
+                    if (uid != followData.profile?.uid) {
+                      context.push(
+                        '/user',
+                        extra: {'uid': followData.profile?.uid},
+                      );
+                    }
                   },
                 );
               },
