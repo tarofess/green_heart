@@ -237,10 +237,10 @@ class PostPage extends HookConsumerWidget {
     return IconButton(
       icon: Icon(
         Icons.image,
-        color: selectedImages.value.length < 4 ? Colors.green : Colors.grey,
+        color: selectedImages.value.length < 5 ? Colors.green : Colors.grey,
         size: 24.r,
       ),
-      onPressed: selectedImages.value.length < 4
+      onPressed: selectedImages.value.length < 5
           ? () async {
               try {
                 if (await PermissionUtil.requestStoragePermission(context)) {

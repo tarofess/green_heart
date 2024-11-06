@@ -44,7 +44,7 @@ class ImagePickerService implements PictureService {
         maxHeight: 800,
         maxWidth: 800,
         imageQuality: 80,
-        limit: 4,
+        limit: 5,
       );
       return images.map((image) => image.path).toList();
     } catch (e, stackTrace) {

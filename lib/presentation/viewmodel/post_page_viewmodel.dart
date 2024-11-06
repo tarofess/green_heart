@@ -19,11 +19,11 @@ class PostPageViewModel {
   );
 
   Future<void> pickImages(ValueNotifier<List<String>> selectedImages) async {
-    if (selectedImages.value.length >= 4) {
+    if (selectedImages.value.length >= 5) {
       return;
     }
 
-    final int remainingSlots = 4 - selectedImages.value.length;
+    final int remainingSlots = 5 - selectedImages.value.length;
     if (remainingSlots > 1) {
       final List<String> images = await _pickMultipleImageUsecase.execute();
       selectedImages.value = [...selectedImages.value, ...images];
