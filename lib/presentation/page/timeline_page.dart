@@ -75,9 +75,12 @@ class TimelinePage extends HookConsumerWidget {
               controller: scrollController,
               itemCount: timeline.length,
               itemBuilder: (context, index) {
-                return PostCard(
-                  key: ValueKey(timeline[index].post.id),
-                  postData: timeline[index],
+                return Padding(
+                  padding: EdgeInsets.only(left: 8.w, right: 8.w, top: 8.h),
+                  child: PostCard(
+                    key: ValueKey(timeline[index].post.id),
+                    postData: timeline[index],
+                  ),
                 );
               },
             ),

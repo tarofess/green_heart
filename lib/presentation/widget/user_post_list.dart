@@ -75,10 +75,13 @@ class UserPostList extends HookConsumerWidget {
                             )
                           : const SizedBox.shrink();
                     }
-                    return PostCard(
-                      key: ValueKey(userPosts[index]),
-                      postData: userPosts[index],
-                      uidInPreviosPage: uid,
+                    return Padding(
+                      padding: EdgeInsets.only(left: 8.w, right: 8.w, top: 0.h),
+                      child: PostCard(
+                        key: ValueKey(userPosts[index]),
+                        postData: userPosts[index],
+                        uidInPreviosPage: uid,
+                      ),
                     );
                   },
                   childCount: userPosts.length + 1,

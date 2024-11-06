@@ -177,12 +177,9 @@ class UserPage extends HookConsumerWidget {
               ],
             ),
           ),
-          SliverPadding(
-            padding: EdgeInsets.all(8.w),
-            sliver: UserPostList(
-              uid: uid,
-              scrollController: scrollController,
-            ),
+          UserPostList(
+            uid: uid,
+            scrollController: scrollController,
           ),
         ],
       ),
