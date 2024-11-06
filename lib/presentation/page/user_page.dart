@@ -112,26 +112,17 @@ class UserPage extends HookConsumerWidget {
       appBar: uid == ref.watch(authStateProvider).value?.uid
           ? null
           : _buildAppBar(context, ref, userPostState, profile, isBlocked),
-      body: userPostState.when(
-        data: (userPosts) {
-          return isBlocked.value
-              ? _buildBlockedBody(context, ref, profile)
-              : _buildBody(
-                  context,
-                  ref,
-                  profile,
-                  userPosts,
-                  isFollowing,
-                  scrollController,
-                  isLoadingMore,
-                );
-        },
-        loading: () => const LoadingIndicator(message: '読み込み中'),
-        error: (e, _) => AsyncErrorWidget(
-          error: e,
-          retry: () => ref.refresh(userPostNotifierProvider(uid)),
-        ),
-      ),
+      body: isBlocked.value
+          ? _buildBlockedBody(context, ref, profile)
+          : _buildBody(
+              context,
+              ref,
+              userPostState,
+              profile,
+              isFollowing,
+              scrollController,
+              isLoadingMore,
+            ),
     );
   }
 
@@ -170,8 +161,8 @@ class UserPage extends HookConsumerWidget {
   Widget _buildBody(
     BuildContext context,
     WidgetRef ref,
+    AsyncValue<List<PostData>> userPostState,
     ValueNotifier<Profile?> profile,
-    List<PostData> userPosts,
     ValueNotifier<bool> isFollowing,
     ScrollController scrollController,
     ValueNotifier<bool> isLoadingMore,
@@ -217,7 +208,7 @@ class UserPage extends HookConsumerWidget {
           ),
           SliverPadding(
             padding: EdgeInsets.all(8.w),
-            sliver: _buildUserPosts(context, ref, userPosts, isLoadingMore),
+            sliver: _buildUserPosts(context, ref, userPostState, isLoadingMore),
           ),
         ],
       ),
@@ -331,40 +322,68 @@ class UserPage extends HookConsumerWidget {
   Widget _buildUserPosts(
     BuildContext context,
     WidgetRef ref,
-    List<PostData> userPosts,
+    AsyncValue<List<PostData>> userPostState,
     ValueNotifier<bool> isLoadingMore,
   ) {
-    return userPosts.isEmpty
-        ? SliverToBoxAdapter(
-            child: Center(
-              child: Text(
-                '投稿はまだありません',
-                style: TextStyle(fontSize: 16.sp),
+    return userPostState.when(
+      data: (userPosts) {
+        return userPosts.isEmpty
+            ? SliverToBoxAdapter(
+                child: Center(
+                  child: Text(
+                    '投稿はまだありません',
+                    style: TextStyle(fontSize: 16.sp),
+                  ),
+                ),
+              )
+            : SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    if (index == userPosts.length) {
+                      return isLoadingMore.value
+                          ? Padding(
+                              padding: EdgeInsets.all(8.w),
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            )
+                          : const SizedBox.shrink();
+                    }
+                    return PostCard(
+                      key: ValueKey(userPosts[index]),
+                      postData: userPosts[index],
+                      uidInPreviosPage: uid,
+                    );
+                  },
+                  childCount: userPosts.length + 1,
+                ),
+              );
+      },
+      loading: () {
+        return SliverToBoxAdapter(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: 100.h,
+              maxHeight: MediaQuery.of(context).size.height / 2,
+            ),
+            child: const Center(
+              child: LoadingIndicator(
+                message: '読み込み中',
+                backgroundColor: Colors.white10,
               ),
             ),
-          )
-        : SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                if (index == userPosts.length) {
-                  return isLoadingMore.value
-                      ? Padding(
-                          padding: EdgeInsets.all(8.w),
-                          child: const Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        )
-                      : const SizedBox.shrink();
-                }
-                return PostCard(
-                  key: ValueKey(userPosts[index]),
-                  postData: userPosts[index],
-                  uidInPreviosPage: uid,
-                );
-              },
-              childCount: userPosts.length + 1,
-            ),
-          );
+          ),
+        );
+      },
+      error: (error, stackTrace) {
+        return SliverToBoxAdapter(
+          child: AsyncErrorWidget(
+            error: error,
+            retry: () => ref.refresh(userPostNotifierProvider(uid)),
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildBlockedBody(
