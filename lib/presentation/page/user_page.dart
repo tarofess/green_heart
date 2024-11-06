@@ -87,7 +87,7 @@ class UserPage extends HookConsumerWidget {
     return Scaffold(
       appBar: uid == ref.watch(authStateProvider).value?.uid
           ? null
-          : _buildAppBar(context, ref, profile, isBlocked),
+          : _buildAppBar(context, ref, profile, isFollowing, isBlocked),
       body: isBlocked.value
           ? _buildBlockedBody(context, ref, profile)
           : _buildBody(
@@ -104,6 +104,7 @@ class UserPage extends HookConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     ValueNotifier<Profile?> profile,
+    ValueNotifier<bool> isFollowing,
     ValueNotifier<bool> isBlocked,
   ) {
     return AppBar(
@@ -126,7 +127,7 @@ class UserPage extends HookConsumerWidget {
               ),
         isBlocked.value
             ? _buildBlockIconButton(context, ref, profile, isBlocked)
-            : _buildPopupMenu(context, ref, profile, isBlocked),
+            : _buildPopupMenu(context, ref, profile, isFollowing, isBlocked),
       ],
     );
   }
@@ -374,6 +375,7 @@ class UserPage extends HookConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     ValueNotifier<Profile?> profile,
+    ValueNotifier<bool> isFollowing,
     ValueNotifier<bool> isBlocked,
   ) {
     return PopupMenuButton<String>(
@@ -444,9 +446,14 @@ class UserPage extends HookConsumerWidget {
                   context,
                   message: 'ブロック中',
                   backgroundColor: Colors.white10,
-                ).during(
-                  () => ref.read(blockNotifierProvider.notifier).addBlock(uid!),
-                );
+                ).during(() async {
+                  final myUid = ref.watch(authStateProvider).value?.uid;
+                  await ref.read(blockNotifierProvider.notifier).addBlock(uid!);
+                  await ref
+                      .read(followerNotifierProvider(uid).notifier)
+                      .unfollow(myUid!, uid!);
+                  isFollowing.value = false;
+                });
               }
 
               if (context.mounted) {
