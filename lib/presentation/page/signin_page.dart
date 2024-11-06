@@ -43,15 +43,19 @@ class SignInPage extends HookConsumerWidget {
           SizedBox(height: 52.h),
           _buildAppIcon(),
           Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildConsentCheckbox(context, isConsentChecked),
-                SizedBox(height: 16.h),
-                _buildGoogleSignInButton(context, ref, isConsentChecked.value),
-                SizedBox(height: 16.h),
-                _buildAppleSignInButton(context, ref, isConsentChecked.value),
-              ],
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 16.h),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildConsentCheckbox(context, isConsentChecked),
+                  SizedBox(height: 16.h),
+                  _buildGoogleSignInButton(
+                      context, ref, isConsentChecked.value),
+                  SizedBox(height: 16.h),
+                  _buildAppleSignInButton(context, ref, isConsentChecked.value),
+                ],
+              ),
             ),
           ),
         ],
@@ -76,8 +80,8 @@ class SignInPage extends HookConsumerWidget {
   Widget _buildAppIcon() {
     return Image.asset(
       'assets/images/icon.png',
-      width: 140.w,
-      height: 140.h,
+      width: 160.w,
+      height: 160.h,
     );
   }
 
