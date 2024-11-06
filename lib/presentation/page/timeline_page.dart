@@ -42,6 +42,7 @@ class TimelinePage extends HookConsumerWidget {
     }, [scrollController]);
 
     return Scaffold(
+      backgroundColor: Colors.lightGreen[100],
       appBar: AppBar(
         title: Text(
           'みんなの投稿',
@@ -76,7 +77,7 @@ class TimelinePage extends HookConsumerWidget {
               itemCount: timeline.length,
               itemBuilder: (context, index) {
                 return Padding(
-                  padding: EdgeInsets.only(left: 8.w, right: 8.w, top: 8.h),
+                  padding: EdgeInsets.only(left: 8.w, right: 8.w, top: 4.h),
                   child: PostCard(
                     key: ValueKey(timeline[index].post.id),
                     postData: timeline[index],
