@@ -54,7 +54,7 @@ class UserPostList extends HookConsumerWidget {
     return userPostState.when(
       data: (userPosts) {
         return userPosts.isEmpty
-            ? SliverToBoxAdapter(
+            ? SliverFillRemaining(
                 child: Center(
                   child: Text(
                     '投稿はまだありません',
@@ -89,23 +89,17 @@ class UserPostList extends HookConsumerWidget {
               );
       },
       loading: () {
-        return SliverToBoxAdapter(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: 100.h,
-              maxHeight: MediaQuery.of(context).size.height / 2,
-            ),
-            child: const Center(
-              child: LoadingIndicator(
-                message: '読み込み中',
-                backgroundColor: Colors.white10,
-              ),
+        return const SliverFillRemaining(
+          child: Center(
+            child: LoadingIndicator(
+              message: '読み込み中',
+              backgroundColor: Colors.white10,
             ),
           ),
         );
       },
       error: (error, stackTrace) {
-        return SliverToBoxAdapter(
+        return SliverFillRemaining(
           child: AsyncErrorWidget(
             error: error,
             retry: () => ref.refresh(userPostNotifierProvider(uid)),
