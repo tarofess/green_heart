@@ -14,7 +14,7 @@ import 'package:green_heart/domain/type/user_post_scroll_state.dart';
 
 class FirebasePostRepository implements PostRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final int pageSize = 20;
+  final int pageSize = 15;
 
   @override
   Future<Post> addPost(

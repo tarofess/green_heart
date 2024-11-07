@@ -8,6 +8,7 @@ import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/presentation/widget/post_card.dart';
 import 'package:green_heart/application/state/timeline_notifier.dart';
 import 'package:green_heart/presentation/widget/post_search.dart';
+import 'package:green_heart/application/state/timeline_scroll_state_notifier.dart';
 
 class TimelinePage extends HookConsumerWidget {
   const TimelinePage({super.key});
@@ -20,7 +21,8 @@ class TimelinePage extends HookConsumerWidget {
 
     useEffect(() {
       void onScroll() async {
-        if (scrollController.position.extentAfter < 500 &&
+        if (scrollController.position.pixels ==
+                scrollController.position.maxScrollExtent &&
             !isLoadingMore.value) {
           isLoadingMore.value = true;
           try {
@@ -74,15 +76,26 @@ class TimelinePage extends HookConsumerWidget {
             },
             child: ListView.builder(
               controller: scrollController,
-              itemCount: timeline.length,
+              itemCount: timeline.length + 1,
               itemBuilder: (context, index) {
-                return Padding(
-                  padding: EdgeInsets.only(left: 8.w, right: 8.w, top: 4.h),
-                  child: PostCard(
-                    key: ValueKey(timeline[index].post.id),
-                    postData: timeline[index],
-                  ),
-                );
+                if (index < timeline.length) {
+                  return Padding(
+                    padding: EdgeInsets.only(left: 8.w, right: 8.w, top: 4.h),
+                    child: PostCard(
+                      key: ValueKey(timeline[index].post.id),
+                      postData: timeline[index],
+                    ),
+                  );
+                } else {
+                  return ref.read(timelineScrollStateNotifierProvider).hasMore
+                      ? Padding(
+                          padding: EdgeInsets.only(top: 16.h, bottom: 16.h),
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        )
+                      : const SizedBox.shrink();
+                }
               },
             ),
           );
