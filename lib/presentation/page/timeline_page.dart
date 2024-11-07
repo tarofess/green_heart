@@ -75,6 +75,7 @@ class TimelinePage extends HookConsumerWidget {
               await ref.read(timelineNotifierProvider.notifier).refresh();
             },
             child: ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
               controller: scrollController,
               itemCount: timeline.length + 1,
               itemBuilder: (context, index) {
