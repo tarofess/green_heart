@@ -30,7 +30,9 @@ class UserPostList extends HookConsumerWidget {
             !isLoadingMore.value) {
           isLoadingMore.value = true;
           try {
-            await ref.read(userPostNotifierProvider(uid).notifier).loadMore();
+            await ref
+                .read(userPostNotifierProvider(uid).notifier)
+                .loadMore(uid);
           } catch (e) {
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -44,7 +46,7 @@ class UserPostList extends HookConsumerWidget {
       }
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(userPostScrollStateNotifierProvider.notifier).reset();
+        ref.read(userPostScrollStateNotifierProvider(uid).notifier).reset();
       });
 
       scrollController.addListener(onScroll);

@@ -3,9 +3,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/user_post_scroll_state.dart';
 
-class UserPostScrollStateNotifier extends Notifier<UserPostScrollState> {
+class UserPostScrollStateNotifier
+    extends FamilyNotifier<UserPostScrollState, String?> {
   @override
-  UserPostScrollState build() {
+  UserPostScrollState build(String? arg) {
     return const UserPostScrollState(lastDocument: null);
   }
 
@@ -22,7 +23,7 @@ class UserPostScrollStateNotifier extends Notifier<UserPostScrollState> {
   }
 }
 
-final userPostScrollStateNotifierProvider =
-    NotifierProvider<UserPostScrollStateNotifier, UserPostScrollState>(
+final userPostScrollStateNotifierProvider = NotifierProviderFamily<
+    UserPostScrollStateNotifier, UserPostScrollState, String?>(
   () => UserPostScrollStateNotifier(),
 );

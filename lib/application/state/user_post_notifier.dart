@@ -16,38 +16,42 @@ import 'package:green_heart/application/di/comment_di.dart';
 import 'package:green_heart/application/di/like_di.dart';
 
 class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
-  late String _uid;
-
   @override
   Future<List<PostData>> build(String? arg) async {
     if (arg == null) {
       throw Exception('ユーザーの投稿を取得できません。再度お試しください。');
     }
-    _uid = arg;
-    final posts = await _fetchNextBatch();
+
+    final posts = await _fetchNextBatch(arg);
     final postData = await _createPostDataList(posts);
     return postData;
   }
 
-  Future<List<Post>> _fetchNextBatch() async {
-    final userPostScrollState = ref.read(userPostScrollStateNotifierProvider);
+  Future<List<Post>> _fetchNextBatch(String uid) async {
+    final userPostScrollState =
+        ref.read(userPostScrollStateNotifierProvider(uid));
     if (!userPostScrollState.hasMore) return [];
 
     final posts = await ref.read(postGetUsecaseProvider).execute(
-          _uid,
+          uid,
           userPostScrollState,
-          ref.read(userPostScrollStateNotifierProvider.notifier),
+          ref.read(userPostScrollStateNotifierProvider(uid).notifier),
         );
     return posts;
   }
 
-  Future<void> loadMore() async {
-    final userPostScrollState = ref.read(userPostScrollStateNotifierProvider);
+  Future<void> loadMore(String? uid) async {
+    if (uid == null) {
+      throw Exception('ユーザーの投稿を取得できません。再度お試しください。');
+    }
+
+    final userPostScrollState =
+        ref.read(userPostScrollStateNotifierProvider(uid));
     if (!userPostScrollState.hasMore) return;
 
     state.whenData((currentPosts) async {
       try {
-        final newPosts = await _fetchNextBatch();
+        final newPosts = await _fetchNextBatch(uid);
         final newPostData = await _createPostDataList(newPosts);
 
         final updatedPosts = [
@@ -62,12 +66,16 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
     });
   }
 
-  Future<void> refresh() async {
-    ref.read(userPostScrollStateNotifierProvider.notifier)
+  Future<void> refresh(String? uid) async {
+    if (uid == null) {
+      throw Exception('ユーザーの投稿を取得できません。再度お試しください。');
+    }
+
+    ref.read(userPostScrollStateNotifierProvider(uid).notifier)
       ..updateLastDocument(null)
       ..updateHasMore(true);
     state = await AsyncValue.guard(() async {
-      final posts = await _fetchNextBatch();
+      final posts = await _fetchNextBatch(uid);
       final postData = await _createPostDataList(posts);
       return postData;
     });

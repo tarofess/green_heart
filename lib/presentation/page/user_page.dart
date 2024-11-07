@@ -64,7 +64,7 @@ class UserPage extends HookConsumerWidget {
       }
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(userPostScrollStateNotifierProvider.notifier).reset();
+        ref.read(userPostScrollStateNotifierProvider(uid).notifier).reset();
       });
 
       try {
@@ -141,7 +141,7 @@ class UserPage extends HookConsumerWidget {
   ) {
     return RefreshIndicator(
       onRefresh: () async {
-        await ref.read(userPostNotifierProvider(uid).notifier).refresh();
+        await ref.read(userPostNotifierProvider(uid).notifier).refresh(uid);
       },
       child: CustomScrollView(
         controller: scrollController,
