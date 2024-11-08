@@ -144,6 +144,7 @@ class UserPage extends HookConsumerWidget {
         await ref.read(userPostNotifierProvider(uid).notifier).refresh(uid);
       },
       child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         controller: scrollController,
         slivers: [
           SliverToBoxAdapter(
