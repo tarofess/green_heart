@@ -165,10 +165,10 @@ class UserPage extends HookConsumerWidget {
                       ),
                       SizedBox(height: 20.h),
                       _buildUserName(context, ref, profile.value),
-                      SizedBox(height: 8.h),
-                      _buildBirthDate(context, ref, profile.value),
                       SizedBox(height: 16.h),
                       _buildUserBio(context, ref, profile.value),
+                      SizedBox(height: 24.h),
+                      _buildBirthDate(context, ref, profile.value),
                       SizedBox(height: 16.h),
                       _buildFollowButton(context, ref, isFollowing),
                     ],
@@ -212,13 +212,9 @@ class UserPage extends HookConsumerWidget {
       BuildContext context, WidgetRef ref, Profile? profile) {
     return profile?.birthday == null
         ? const SizedBox()
-        : SizedBox(
-            width: double.infinity,
-            child: Text(
-              '誕生日: ${DateUtil.convertToJapaneseDate(profile?.birthday!)}',
-              style: TextStyle(fontSize: 13.sp),
-              textAlign: TextAlign.right,
-            ),
+        : Text(
+            '誕生日: ${DateUtil.convertToJapaneseDate(profile?.birthday!)}',
+            style: TextStyle(fontSize: 13.sp),
           );
   }
 
