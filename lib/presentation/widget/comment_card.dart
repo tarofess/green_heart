@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -47,7 +48,7 @@ class CommentCard extends HookConsumerWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildUserImage(CommentType.comment),
+        _buildUserImage(context, CommentType.comment),
         SizedBox(width: 12.w),
         Expanded(
           child: Column(
@@ -81,7 +82,7 @@ class CommentCard extends HookConsumerWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildUserImage(CommentType.reply, replyComment),
+          _buildUserImage(context, CommentType.reply, replyComment),
           SizedBox(width: 12.w),
           Expanded(
             child: Column(
@@ -124,21 +125,35 @@ class CommentCard extends HookConsumerWidget {
     );
   }
 
-  Widget _buildUserImage(CommentType commentType, [CommentData? replyComment]) {
+  Widget _buildUserImage(
+    BuildContext context,
+    CommentType commentType, [
+    CommentData? replyComment,
+  ]) {
     if (commentType == CommentType.comment) {
-      return commentData.profile?.imageUrl == null
-          ? const UserEmptyImage(radius: 24)
-          : UserFirebaseImage(
-              imageUrl: commentData.profile?.imageUrl,
-              radius: 48,
-            );
+      return GestureDetector(
+        onTap: () {
+          context.push('/user', extra: {'uid': commentData.comment.uid});
+        },
+        child: commentData.profile?.imageUrl == null
+            ? const UserEmptyImage(radius: 24)
+            : UserFirebaseImage(
+                imageUrl: commentData.profile?.imageUrl,
+                radius: 48,
+              ),
+      );
     } else {
-      return replyComment!.profile?.imageUrl == null
-          ? const UserEmptyImage(radius: 24)
-          : UserFirebaseImage(
-              imageUrl: replyComment.profile?.imageUrl,
-              radius: 48,
-            );
+      return GestureDetector(
+        onTap: () {
+          context.push('/user', extra: {'uid': replyComment.comment.uid});
+        },
+        child: replyComment!.profile?.imageUrl == null
+            ? const UserEmptyImage(radius: 24)
+            : UserFirebaseImage(
+                imageUrl: replyComment.profile?.imageUrl,
+                radius: 48,
+              ),
+      );
     }
   }
 
