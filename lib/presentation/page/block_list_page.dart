@@ -40,10 +40,10 @@ class BlockListPage extends ConsumerWidget {
               itemBuilder: (context, index) {
                 return ListTile(
                   leading: blockList[index].profile?.imageUrl == null
-                      ? const UserEmptyImage(radius: 24)
+                      ? const UserEmptyImage(radius: 21)
                       : UserFirebaseImage(
                           imageUrl: blockList[index].profile?.imageUrl,
-                          radius: 48,
+                          radius: 42,
                         ),
                   title: Text(
                     blockList[index].profile?.name ?? '',
