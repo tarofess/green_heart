@@ -122,17 +122,21 @@ class SignInPage extends HookConsumerWidget {
                           ),
                           builder: (BuildContext context) {
                             return DraggableScrollableSheet(
-                              initialChildSize: 0.9,
+                              initialChildSize: 0.7,
                               minChildSize: 0.5,
-                              maxChildSize: 0.9,
+                              maxChildSize: 0.7,
                               expand: false,
                               builder: (BuildContext context,
                                   ScrollController scrollController) {
-                                return ClipRRect(
-                                  borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(20.r),
+                                return Padding(
+                                  padding: EdgeInsets.only(
+                                      top: 16.h, left: 8.w, right: 8.w),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(20.r),
+                                    ),
+                                    child: const TermsOfUsePage(),
                                   ),
-                                  child: const TermsOfUsePage(),
                                 );
                               },
                             );
