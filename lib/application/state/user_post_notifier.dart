@@ -14,6 +14,7 @@ import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/application/state/user_post_scroll_state_notifier.dart';
 import 'package:green_heart/application/di/comment_di.dart';
 import 'package:green_heart/application/di/like_di.dart';
+import 'package:green_heart/application/di/block_di.dart';
 
 class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
   @override
@@ -24,7 +25,8 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
 
     final posts = await _fetchNextBatch(arg);
     final postData = await _createPostDataList(posts);
-    return postData;
+    final filteredPostsByBlock = await _filterCommentsByBlock(postData);
+    return filteredPostsByBlock;
   }
 
   Future<List<Post>> _fetchNextBatch(String uid) async {
@@ -53,10 +55,11 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
       try {
         final newPosts = await _fetchNextBatch(uid);
         final newPostData = await _createPostDataList(newPosts);
+        final filteredPostsByBlock = await _filterCommentsByBlock(newPostData);
 
         final updatedPosts = [
           ...currentPosts,
-          ...newPostData.where((newPost) => !currentPosts
+          ...filteredPostsByBlock.where((newPost) => !currentPosts
               .any((currentPost) => currentPost.post.id == newPost.post.id))
         ];
         state = AsyncValue.data(updatedPosts);
@@ -77,8 +80,29 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
     state = await AsyncValue.guard(() async {
       final posts = await _fetchNextBatch(uid);
       final postData = await _createPostDataList(posts);
-      return postData;
+      final filteredPostsByBlock = await _filterCommentsByBlock(postData);
+      return filteredPostsByBlock;
     });
+  }
+
+  Future<List<PostData>> _filterCommentsByBlock(
+    List<PostData> postDataList,
+  ) async {
+    final uid = ref.watch(authStateProvider).value?.uid;
+    if (uid == null) {
+      throw Exception('ユーザー情報が取得できません。再度お試し下さい。');
+    }
+
+    final blockList = await ref.read(blockGetUsecaseProvider).execute(uid);
+    final blockedUids = blockList.map((block) => block.blockedUid).toSet();
+    final filteredPosts = postDataList.map((postData) {
+      final comments = List<CommentData>.from(postData.comments);
+      comments.removeWhere(
+        (commentData) => blockedUids.contains(commentData.comment.uid),
+      );
+      return postData.copyWith(comments: comments);
+    }).toList();
+    return filteredPosts;
   }
 
   Future<List<PostData>> _createPostDataList(List<Post> posts) async {

@@ -107,24 +107,21 @@ class TimelineNotifier extends AsyncNotifier<List<PostData>> {
       throw Exception('ユーザーが存在しないので投稿を取得できません。再度お試しください。');
     }
 
-    final blockedByCurrentUser =
-        await ref.read(blockGetUsecaseProvider).execute(uid);
-    final blockedUids =
-        blockedByCurrentUser.map((block) => block.blockedUid).toSet();
+    final blockList = await ref.read(blockGetUsecaseProvider).execute(uid);
+    final blockedUids = blockList.map((block) => block.blockedUid).toSet();
 
-    final filterFutures = postDataList.map((postData) async {
-      final blockedByPostOwner =
-          await ref.read(blockGetUsecaseProvider).execute(postData.post.uid);
-      final isBlockedByPostOwner =
-          blockedByPostOwner.any((block) => block.blockedUid == uid);
-      if (!blockedUids.contains(postData.post.uid) && !isBlockedByPostOwner) {
-        return postData;
-      }
-      return null;
-    });
+    final filteredPosts = postDataList
+        .where((postData) => !blockedUids.contains(postData.post.uid))
+        .toList();
+    final filteredCommentPosts = filteredPosts.map((postData) {
+      final comments = List<CommentData>.from(postData.comments);
+      comments.removeWhere(
+        (commentData) => blockedUids.contains(commentData.comment.uid),
+      );
+      return postData.copyWith(comments: comments);
+    }).toList();
 
-    final filteredPostData = await Future.wait(filterFutures);
-    return filteredPostData.whereType<PostData>().toList();
+    return filteredCommentPosts;
   }
 
   Future<void> deletePost(String postId) async {

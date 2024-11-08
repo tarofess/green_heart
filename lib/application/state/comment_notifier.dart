@@ -62,15 +62,16 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
     return commentDataList;
   }
 
-  Future<List<Comment>> _filteredByBlock(List<Comment> commentDataList) async {
+  Future<List<Comment>> _filteredByBlock(List<Comment> comments) async {
     final uid = ref.watch(authStateProvider).value?.uid;
     if (uid == null) {
       throw Exception('ユーザー情報が取得できません。再度お試し下さい。');
     }
+
     final blockList = await ref.read(blockGetUsecaseProvider).execute(uid);
-    final filteredCommens = commentDataList.where((commentData) {
+    final filteredCommens = comments.where((comment) {
       final isBlockedByPostOwner = blockList.any(
-        (block) => block.blockedUid == commentData.uid,
+        (block) => block.blockedUid == comment.uid,
       );
       return !isBlockedByPostOwner;
     }).toList();
