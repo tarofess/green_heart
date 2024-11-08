@@ -88,15 +88,17 @@ class UserPage extends HookConsumerWidget {
       appBar: uid == ref.watch(authStateProvider).value?.uid
           ? null
           : _buildAppBar(context, ref, profile, isFollowing, isBlocked),
-      body: isBlocked.value
-          ? _buildBlockedBody(context, ref, profile)
-          : _buildBody(
-              context,
-              ref,
-              profile,
-              isFollowing,
-              scrollController,
-            ),
+      body: SafeArea(
+        child: isBlocked.value
+            ? _buildBlockedBody(context, ref, profile)
+            : _buildBody(
+                context,
+                ref,
+                profile,
+                isFollowing,
+                scrollController,
+              ),
+      ),
     );
   }
 
@@ -108,7 +110,14 @@ class UserPage extends HookConsumerWidget {
     ValueNotifier<bool> isBlocked,
   ) {
     return AppBar(
-      title: const Text(''),
+      centerTitle: true,
+      title: Padding(
+        padding: EdgeInsets.only(left: 8.w),
+        child: Image.asset(
+          'assets/images/leaf.png',
+          width: 100.w,
+        ),
+      ),
       toolbarHeight: 58.h,
       actions: [
         isBlocked.value
