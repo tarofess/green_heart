@@ -8,12 +8,15 @@ import 'package:green_heart/application/di/comment_di.dart';
 import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/application/state/post_manager_notifier.dart';
+import 'package:green_heart/application/di/block_di.dart';
 
 class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
   @override
   Future<List<CommentData>> build(String arg) async {
     final comments = await ref.read(commentGetUsecaseProvider).execute(arg);
-    final commentDataList = await _createCommentDataList(comments);
+    final filteredCommentsByBlock = await _filteredByBlock(comments);
+    final commentDataList =
+        await _createCommentDataList(filteredCommentsByBlock);
     return commentDataList;
   }
 
@@ -57,6 +60,21 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
 
     commentDataList = await Future.wait(commentFutures);
     return commentDataList;
+  }
+
+  Future<List<Comment>> _filteredByBlock(List<Comment> commentDataList) async {
+    final uid = ref.watch(authStateProvider).value?.uid;
+    if (uid == null) {
+      throw Exception('ユーザー情報が取得できません。再度お試し下さい。');
+    }
+    final blockList = await ref.read(blockGetUsecaseProvider).execute(uid);
+    final filteredCommens = commentDataList.where((commentData) {
+      final isBlockedByPostOwner = blockList.any(
+        (block) => block.blockedUid == commentData.uid,
+      );
+      return !isBlockedByPostOwner;
+    }).toList();
+    return filteredCommens;
   }
 
   Future<void> addComment(

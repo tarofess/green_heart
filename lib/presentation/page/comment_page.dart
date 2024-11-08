@@ -118,6 +118,7 @@ class CommentPage extends HookConsumerWidget {
     FocusNode focusNode,
   ) {
     return ListView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
       itemCount: comments.length,
       itemBuilder: (context, index) {
         return CommentCard(
