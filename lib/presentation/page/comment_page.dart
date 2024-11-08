@@ -38,43 +38,45 @@ class CommentPage extends HookConsumerWidget {
         ),
         toolbarHeight: 58.h,
       ),
-      body: commentState.when(
-        data: (comments) {
-          return Column(
-            children: [
-              Expanded(
-                child: RefreshIndicator(
-                  onRefresh: () => _refreshComments(ref),
-                  child: comments.isEmpty
-                      ? _buildEmptyCommentMessage()
-                      : _buildComment(ref, comments, focusNode),
+      body: SafeArea(
+        child: commentState.when(
+          data: (comments) {
+            return Column(
+              children: [
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: () => _refreshComments(ref),
+                    child: comments.isEmpty
+                        ? _buildEmptyCommentMessage()
+                        : _buildComment(ref, comments, focusNode),
+                  ),
                 ),
-              ),
-              const Divider(height: 1),
-              Padding(
-                padding: EdgeInsets.only(top: 8.h, bottom: 8.h, left: 16.w),
-                child: _buildInputForm(
-                  context,
-                  ref,
-                  commentPageState,
-                  commentTextController,
+                const Divider(height: 1),
+                Padding(
+                  padding: EdgeInsets.only(top: 8.h, bottom: 8.h, left: 16.w),
+                  child: _buildInputForm(
+                    context,
+                    ref,
+                    commentPageState,
+                    commentTextController,
+                  ),
                 ),
-              ),
-            ],
-          );
-        },
-        loading: () {
-          return const LoadingIndicator(
-            message: 'コメント取得中',
-            backgroundColor: Colors.white10,
-          );
-        },
-        error: (e, stackTrace) {
-          return AsyncErrorWidget(
-            error: e,
-            retry: () => ref.refresh(commentNotifierProvider(postId)),
-          );
-        },
+              ],
+            );
+          },
+          loading: () {
+            return const LoadingIndicator(
+              message: 'コメント取得中',
+              backgroundColor: Colors.white10,
+            );
+          },
+          error: (e, stackTrace) {
+            return AsyncErrorWidget(
+              error: e,
+              retry: () => ref.refresh(commentNotifierProvider(postId)),
+            );
+          },
+        ),
       ),
     );
   }

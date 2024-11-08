@@ -24,52 +24,54 @@ class BlockListPage extends ConsumerWidget {
         ),
         toolbarHeight: 58.h,
       ),
-      body: blockState.when(
-        data: (blockList) {
-          if (blockList.isEmpty) {
-            return Center(
-              child: Text(
-                'ブロックしているユーザーはいません',
-                style: TextStyle(fontSize: 16.sp),
-              ),
-            );
-          }
-          return ListView.builder(
-            itemCount: blockList.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                leading: blockList[index].profile?.imageUrl == null
-                    ? const UserEmptyImage(radius: 24)
-                    : UserFirebaseImage(
-                        imageUrl: blockList[index].profile?.imageUrl,
-                        radius: 48,
-                      ),
-                title: Text(
-                  blockList[index].profile?.name ?? '',
+      body: SafeArea(
+        child: blockState.when(
+          data: (blockList) {
+            if (blockList.isEmpty) {
+              return Center(
+                child: Text(
+                  'ブロックしているユーザーはいません',
                   style: TextStyle(fontSize: 16.sp),
                 ),
-                onTap: () {
-                  context.push(
-                    '/user',
-                    extra: {'uid': blockList[index].profile?.uid},
-                  );
-                },
               );
-            },
-          );
-        },
-        loading: () {
-          return const LoadingIndicator(
-            message: 'ブロックリスト取得中',
-            backgroundColor: Colors.white10,
-          );
-        },
-        error: (e, _) {
-          return AsyncErrorWidget(
-            error: e,
-            retry: () => ref.refresh(blockNotifierProvider),
-          );
-        },
+            }
+            return ListView.builder(
+              itemCount: blockList.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: blockList[index].profile?.imageUrl == null
+                      ? const UserEmptyImage(radius: 24)
+                      : UserFirebaseImage(
+                          imageUrl: blockList[index].profile?.imageUrl,
+                          radius: 48,
+                        ),
+                  title: Text(
+                    blockList[index].profile?.name ?? '',
+                    style: TextStyle(fontSize: 16.sp),
+                  ),
+                  onTap: () {
+                    context.push(
+                      '/user',
+                      extra: {'uid': blockList[index].profile?.uid},
+                    );
+                  },
+                );
+              },
+            );
+          },
+          loading: () {
+            return const LoadingIndicator(
+              message: 'ブロックリスト取得中',
+              backgroundColor: Colors.white10,
+            );
+          },
+          error: (e, _) {
+            return AsyncErrorWidget(
+              error: e,
+              retry: () => ref.refresh(blockNotifierProvider),
+            );
+          },
+        ),
       ),
     );
   }

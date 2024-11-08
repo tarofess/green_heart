@@ -73,22 +73,24 @@ class ProfileEditPage extends HookConsumerWidget {
           imagePath,
           profile.value,
         ),
-        body: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildImageField(context, ref, imagePath),
-                _buildNameField(nameTextController),
-                _buildBirthdayField(
-                  context,
-                  birthdayTextController,
-                  profile.value?.birthday,
-                  showBirthday,
-                  savedBirthday,
-                ),
-                _buildBioField(bioTextController),
-              ],
+        body: SafeArea(
+          child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildImageField(context, ref, imagePath),
+                  _buildNameField(nameTextController),
+                  _buildBirthdayField(
+                    context,
+                    birthdayTextController,
+                    profile.value?.birthday,
+                    showBirthday,
+                    savedBirthday,
+                  ),
+                  _buildBioField(bioTextController),
+                ],
+              ),
             ),
           ),
         ),

@@ -66,30 +66,32 @@ class PostPage extends HookConsumerWidget {
           )
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  TextField(
-                    style: TextStyle(fontSize: 16.sp),
-                    controller: postTextController,
-                    focusNode: focusNode,
-                    maxLines: null,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.all(16.w),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TextField(
+                      style: TextStyle(fontSize: 16.sp),
+                      controller: postTextController,
+                      focusNode: focusNode,
+                      maxLines: null,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.all(16.w),
+                      ),
                     ),
-                  ),
-                  _buildPickedImageArea(selectedImages),
-                ],
+                    _buildPickedImageArea(selectedImages),
+                  ],
+                ),
               ),
             ),
-          ),
-          _buildBottomBar(context, ref, selectedImages),
-        ],
+            _buildBottomBar(context, ref, selectedImages),
+          ],
+        ),
       ),
     );
   }

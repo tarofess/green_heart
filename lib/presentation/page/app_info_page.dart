@@ -27,119 +27,122 @@ class AppInfoPage extends HookConsumerWidget {
         ),
         toolbarHeight: 58.h,
       ),
-      body: appInfoState.when(
-        data: (appInfo) {
-          return SingleChildScrollView(
-            child: ExpansionPanelList(
-              expansionCallback: (int index, bool isExpanded) {
-                isExpandedList.value = isExpandedList.value
-                    .asMap()
-                    .map((i, value) => MapEntry(i, i == index ? !value : value))
-                    .values
-                    .toList();
-              },
-              children: [
-                ExpansionPanel(
-                  headerBuilder: (BuildContext context, bool isExpanded) {
-                    return ListTile(
+      body: SafeArea(
+        child: appInfoState.when(
+          data: (appInfo) {
+            return SingleChildScrollView(
+              child: ExpansionPanelList(
+                expansionCallback: (int index, bool isExpanded) {
+                  isExpandedList.value = isExpandedList.value
+                      .asMap()
+                      .map((i, value) =>
+                          MapEntry(i, i == index ? !value : value))
+                      .values
+                      .toList();
+                },
+                children: [
+                  ExpansionPanel(
+                    headerBuilder: (BuildContext context, bool isExpanded) {
+                      return ListTile(
+                        title: Text(
+                          '開発者',
+                          style: TextStyle(fontSize: 16.sp),
+                        ),
+                      );
+                    },
+                    body: ListTile(
                       title: Text(
-                        '開発者',
+                        appInfo.developerName,
                         style: TextStyle(fontSize: 16.sp),
                       ),
-                    );
-                  },
-                  body: ListTile(
-                    title: Text(
-                      appInfo.developerName,
-                      style: TextStyle(fontSize: 16.sp),
                     ),
+                    isExpanded: isExpandedList.value[0],
                   ),
-                  isExpanded: isExpandedList.value[0],
-                ),
-                ExpansionPanel(
-                  headerBuilder: (BuildContext context, bool isExpanded) {
-                    return ListTile(
+                  ExpansionPanel(
+                    headerBuilder: (BuildContext context, bool isExpanded) {
+                      return ListTile(
+                        title: Text(
+                          'アプリのバージョン',
+                          style: TextStyle(fontSize: 16.sp),
+                        ),
+                      );
+                    },
+                    body: ListTile(
                       title: Text(
-                        'アプリのバージョン',
+                        appInfo.appVersion,
                         style: TextStyle(fontSize: 16.sp),
                       ),
-                    );
-                  },
-                  body: ListTile(
-                    title: Text(
-                      appInfo.appVersion,
-                      style: TextStyle(fontSize: 16.sp),
                     ),
+                    isExpanded: isExpandedList.value[1],
                   ),
-                  isExpanded: isExpandedList.value[1],
-                ),
-                ExpansionPanel(
-                  headerBuilder: (BuildContext context, bool isExpanded) {
-                    return ListTile(
+                  ExpansionPanel(
+                    headerBuilder: (BuildContext context, bool isExpanded) {
+                      return ListTile(
+                        title: Text(
+                          '利用規約',
+                          style: TextStyle(fontSize: 16.sp),
+                        ),
+                      );
+                    },
+                    body: ListTile(
                       title: Text(
-                        '利用規約',
+                        appInfo.termsOfUse,
                         style: TextStyle(fontSize: 16.sp),
                       ),
-                    );
-                  },
-                  body: ListTile(
-                    title: Text(
-                      appInfo.termsOfUse,
-                      style: TextStyle(fontSize: 16.sp),
                     ),
+                    isExpanded: isExpandedList.value[2],
                   ),
-                  isExpanded: isExpandedList.value[2],
-                ),
-                ExpansionPanel(
-                  headerBuilder: (BuildContext context, bool isExpanded) {
-                    return ListTile(
+                  ExpansionPanel(
+                    headerBuilder: (BuildContext context, bool isExpanded) {
+                      return ListTile(
+                        title: Text(
+                          'プライバシーポリシー',
+                          style: TextStyle(fontSize: 16.sp),
+                        ),
+                      );
+                    },
+                    body: ListTile(
                       title: Text(
-                        'プライバシーポリシー',
+                        appInfo.privacyPolicy,
                         style: TextStyle(fontSize: 16.sp),
                       ),
-                    );
-                  },
-                  body: ListTile(
-                    title: Text(
-                      appInfo.privacyPolicy,
-                      style: TextStyle(fontSize: 16.sp),
                     ),
+                    isExpanded: isExpandedList.value[3],
                   ),
-                  isExpanded: isExpandedList.value[3],
-                ),
-                ExpansionPanel(
-                  headerBuilder: (BuildContext context, bool isExpanded) {
-                    return ListTile(
+                  ExpansionPanel(
+                    headerBuilder: (BuildContext context, bool isExpanded) {
+                      return ListTile(
+                        title: Text(
+                          '更新履歴',
+                          style: TextStyle(fontSize: 16.sp),
+                        ),
+                      );
+                    },
+                    body: ListTile(
                       title: Text(
-                        '更新履歴',
+                        appInfo.updateHistory,
                         style: TextStyle(fontSize: 16.sp),
                       ),
-                    );
-                  },
-                  body: ListTile(
-                    title: Text(
-                      appInfo.updateHistory,
-                      style: TextStyle(fontSize: 16.sp),
                     ),
+                    isExpanded: isExpandedList.value[4],
                   ),
-                  isExpanded: isExpandedList.value[4],
-                ),
-              ],
-            ),
-          );
-        },
-        loading: () {
-          return const LoadingIndicator(
-            message: '読み込み中',
-            backgroundColor: Colors.white10,
-          );
-        },
-        error: (e, _) {
-          return AsyncErrorWidget(
-            error: e,
-            retry: () => ref.refresh(appInitProvider),
-          );
-        },
+                ],
+              ),
+            );
+          },
+          loading: () {
+            return const LoadingIndicator(
+              message: '読み込み中',
+              backgroundColor: Colors.white10,
+            );
+          },
+          error: (e, _) {
+            return AsyncErrorWidget(
+              error: e,
+              retry: () => ref.refresh(appInitProvider),
+            );
+          },
+        ),
       ),
     );
   }
