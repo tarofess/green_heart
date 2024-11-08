@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/tab_page_provider.dart';
@@ -32,20 +31,6 @@ class TabPage extends HookConsumerWidget {
         },
       ),
       body: tabPageState[selectedIndex.value],
-      floatingActionButton: SizedBox(
-        width: 58.r,
-        height: 58.r,
-        child: FloatingActionButton(
-          onPressed: () {
-            context.go('/post');
-          },
-          backgroundColor: Colors.white,
-          child: Image.asset(
-            'assets/images/post_floating_action_icon.png',
-            width: 34.r,
-          ),
-        ),
-      ),
     );
   }
 }

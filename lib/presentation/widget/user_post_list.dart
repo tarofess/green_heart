@@ -26,7 +26,8 @@ class UserPostList extends HookConsumerWidget {
 
     useEffect(() {
       void onScroll() async {
-        if (scrollController.position.extentAfter < 500 &&
+        if (scrollController.position.pixels ==
+                scrollController.position.maxScrollExtent &&
             !isLoadingMore.value) {
           isLoadingMore.value = true;
           try {
@@ -56,27 +57,18 @@ class UserPostList extends HookConsumerWidget {
     return userPostState.when(
       data: (userPosts) {
         return userPosts.isEmpty
-            ? SliverFillRemaining(
-                child: Center(
-                  child: Text(
-                    '投稿はまだありません',
-                    style: TextStyle(fontSize: 16.sp),
-                  ),
+            ? Center(
+                child: Text(
+                  '投稿はまだありません',
+                  style: TextStyle(fontSize: 16.sp),
                 ),
               )
-            : SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    if (index == userPosts.length) {
-                      return isLoadingMore.value
-                          ? Padding(
-                              padding: EdgeInsets.all(8.w),
-                              child: const Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                            )
-                          : const SizedBox.shrink();
-                    }
+            : ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                controller: scrollController,
+                itemCount: userPosts.length + 1,
+                itemBuilder: (context, index) {
+                  if (index < userPosts.length) {
                     return Padding(
                       padding: EdgeInsets.only(left: 8.w, right: 8.w, top: 0.h),
                       child: PostCard(
@@ -85,29 +77,31 @@ class UserPostList extends HookConsumerWidget {
                         uidInPreviosPage: uid,
                       ),
                     );
-                  },
-                  childCount: userPosts.length + 1,
-                ),
+                  } else {
+                    return ref
+                            .read(userPostScrollStateNotifierProvider(uid))
+                            .hasMore
+                        ? Padding(
+                            padding: EdgeInsets.all(8.w),
+                            child: const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
+                        : const SizedBox.shrink();
+                  }
+                },
               );
       },
-      loading: () {
-        return const SliverFillRemaining(
-          child: Center(
-            child: LoadingIndicator(
-              message: '読み込み中',
-              backgroundColor: Colors.white10,
-            ),
-          ),
-        );
-      },
-      error: (error, stackTrace) {
-        return SliverFillRemaining(
-          child: AsyncErrorWidget(
-            error: error,
-            retry: () => ref.refresh(userPostNotifierProvider(uid)),
-          ),
-        );
-      },
+      loading: () => const Center(
+        child: LoadingIndicator(
+          message: '読み込み中',
+          backgroundColor: Colors.white10,
+        ),
+      ),
+      error: (error, stackTrace) => AsyncErrorWidget(
+        error: error,
+        retry: () => ref.refresh(userPostNotifierProvider(uid)),
+      ),
     );
   }
 }

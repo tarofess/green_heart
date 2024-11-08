@@ -7,7 +7,6 @@ import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
-import 'package:green_heart/presentation/widget/user_post_list.dart';
 import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/application/state/block_notifier.dart';
@@ -24,6 +23,7 @@ import 'package:green_heart/presentation/widget/user_firebase_image.dart';
 import 'package:green_heart/application/di/follow_di.dart';
 import 'package:green_heart/application/state/follower_notifier.dart';
 import 'package:green_heart/presentation/widget/follow_state_widget.dart';
+import 'package:green_heart/presentation/widget/user_page_tab.dart';
 
 class UserPage extends HookConsumerWidget {
   const UserPage({super.key, required this.uid});
@@ -148,51 +148,55 @@ class UserPage extends HookConsumerWidget {
     ValueNotifier<bool> isFollowing,
     ScrollController scrollController,
   ) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        await ref.read(userPostNotifierProvider(uid).notifier).refresh(uid);
-      },
-      child: CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        controller: scrollController,
-        slivers: [
-          SliverToBoxAdapter(
-            child: Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(left: 16.w, right: 16.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          _buildUserImage(context, ref, profile),
-                          Expanded(
-                            child: FollowStateWidget(uid: uid),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20.h),
-                      _buildUserName(context, ref, profile.value),
-                      SizedBox(height: 16.h),
-                      _buildUserBio(context, ref, profile.value),
-                      SizedBox(height: 24.h),
-                      _buildBirthDate(context, ref, profile.value),
-                      SizedBox(height: 16.h),
-                      _buildFollowButton(context, ref, isFollowing),
-                    ],
+    return DefaultTabController(
+      length: 2,
+      child: RefreshIndicator(
+        onRefresh: () async {
+          await ref.read(userPostNotifierProvider(uid).notifier).refresh(uid);
+        },
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left: 16.w, right: 16.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            _buildUserImage(context, ref, profile),
+                            Expanded(
+                              child: FollowStateWidget(uid: uid),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20.h),
+                        _buildUserName(context, ref, profile.value),
+                        SizedBox(height: 16.h),
+                        _buildUserBio(context, ref, profile.value),
+                        SizedBox(height: 24.h),
+                        _buildBirthDate(context, ref, profile.value),
+                        uid == ref.watch(authStateProvider).value?.uid
+                            ? const SizedBox()
+                            : SizedBox(height: 24.h),
+                        _buildFollowButton(context, ref, isFollowing),
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(height: 8.h),
-                const Divider(),
-              ],
+                ],
+              ),
             ),
-          ),
-          UserPostList(
-            uid: uid,
-            scrollController: scrollController,
-          ),
-        ],
+            SliverToBoxAdapter(child: SizedBox(height: 8.h)),
+            SliverFillRemaining(
+              child: UserPageTab(
+                uid: uid,
+                scrollController: scrollController,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -102,7 +102,6 @@ flutter:
     - assets/terms_of_use.txt
     - assets/privacy_policy.txt
     - assets/update_history.txt
-    - assets/images/post_floating_action_icon.png
     - assets/images/icon.png
     - assets/images/icon_android.png
     - assets/images/sakura.png
