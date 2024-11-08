@@ -64,10 +64,7 @@ class CommentCard extends HookConsumerWidget {
                 ],
               ),
               SizedBox(height: 4.h),
-              Text(
-                commentData.comment.content,
-                style: TextStyle(fontSize: 14.sp),
-              ),
+              _buildCommentText(commentData.comment.content),
               SizedBox(height: 8.h),
               _buildActions(context, ref, CommentType.comment),
             ],
@@ -101,7 +98,7 @@ class CommentCard extends HookConsumerWidget {
                   ],
                 ),
                 SizedBox(height: 4.h),
-                _buildReplyComment(ref, replyComment),
+                _buildCommentText(replyComment.comment.content),
                 SizedBox(height: 8.h),
                 _buildActions(
                   context,
@@ -113,6 +110,16 @@ class CommentCard extends HookConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCommentText(String comment) {
+    return Padding(
+      padding: EdgeInsets.only(right: 16.w),
+      child: Text(
+        comment,
+        style: TextStyle(fontSize: 14.sp),
       ),
     );
   }
@@ -160,25 +167,6 @@ class CommentCard extends HookConsumerWidget {
         color: Colors.grey,
         fontSize: 14.sp,
       ),
-    );
-  }
-
-  Widget _buildReplyComment(WidgetRef ref, CommentData replyComment) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              replyComment.comment.content,
-              style: TextStyle(
-                fontSize: 14.sp,
-              ),
-            ),
-          ],
-        ),
-      ],
     );
   }
 
