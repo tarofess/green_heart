@@ -458,6 +458,9 @@ class UserPage extends HookConsumerWidget {
                   await ref
                       .read(followerNotifierProvider(uid).notifier)
                       .unfollow(myUid!, uid!);
+                  await ref
+                      .read(followerNotifierProvider(uid).notifier)
+                      .unfollow(uid!, myUid);
                   isFollowing.value = false;
                 });
               }
