@@ -10,8 +10,8 @@ class ImagePickerService implements PictureService {
     try {
       final XFile? photo = await ImagePicker().pickImage(
         source: ImageSource.camera,
-        maxHeight: 800,
-        maxWidth: 800,
+        maxHeight: 1080,
+        maxWidth: 1080,
         imageQuality: 80,
       );
       return photo?.path;
@@ -26,8 +26,8 @@ class ImagePickerService implements PictureService {
     try {
       final XFile? image = await ImagePicker().pickImage(
         source: ImageSource.gallery,
-        maxHeight: 800,
-        maxWidth: 800,
+        maxHeight: 1080,
+        maxWidth: 1080,
         imageQuality: 80,
       );
       return image?.path;
@@ -41,8 +41,8 @@ class ImagePickerService implements PictureService {
   Future<List<String>> pickMultipleImagesFromGallery() async {
     try {
       final List<XFile> images = await ImagePicker().pickMultiImage(
-        maxHeight: 800,
-        maxWidth: 800,
+        maxHeight: 1080,
+        maxWidth: 1080,
         imageQuality: 80,
         limit: 5,
       );
