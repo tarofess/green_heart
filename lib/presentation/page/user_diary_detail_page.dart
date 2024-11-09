@@ -29,27 +29,29 @@ class UserDiaryDetailPage extends ConsumerWidget {
         ),
       ),
       body: SafeArea(
-        child: userPostState.when(
-          data: (userPosts) {
-            final postData = userPosts.firstWhere(
-              (posts) => posts.post.id == selectedPostData.post.id,
-            );
-            return Padding(
-              padding:
-                  EdgeInsets.only(top: 0.h, bottom: 8.h, left: 8.w, right: 8.w),
-              child: PostCard(postData: postData),
-            );
-          },
-          loading: () => const Center(
-            child: LoadingIndicator(
-              message: '読み込み中',
-              backgroundColor: Colors.white10,
+        child: SingleChildScrollView(
+          child: userPostState.when(
+            data: (userPosts) {
+              final postData = userPosts.firstWhere(
+                (posts) => posts.post.id == selectedPostData.post.id,
+              );
+              return Padding(
+                padding: EdgeInsets.only(
+                    top: 0.h, bottom: 8.h, left: 8.w, right: 8.w),
+                child: PostCard(postData: postData),
+              );
+            },
+            loading: () => const Center(
+              child: LoadingIndicator(
+                message: '読み込み中',
+                backgroundColor: Colors.white10,
+              ),
             ),
-          ),
-          error: (error, stackTrace) => AsyncErrorWidget(
-            error: error,
-            retry: () => ref
-                .refresh(userPostNotifierProvider(selectedPostData.post.uid)),
+            error: (error, stackTrace) => AsyncErrorWidget(
+              error: error,
+              retry: () => ref
+                  .refresh(userPostNotifierProvider(selectedPostData.post.uid)),
+            ),
           ),
         ),
       ),
