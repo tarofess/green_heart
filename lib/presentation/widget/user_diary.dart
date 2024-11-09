@@ -71,7 +71,7 @@ class UserDiary extends HookConsumerWidget {
               isSameDay(postData.post.releaseDate, tappedDay) &&
               ref.watch(authStateProvider).value?.uid == uid)) {
             context.push('/user_diary_detail', extra: {
-              'postData': userPosts.firstWhere(
+              'selectedPostData': userPosts.firstWhere(
                 (postData) => isSameDay(postData.post.releaseDate, tappedDay),
               ),
             });

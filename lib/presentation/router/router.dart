@@ -77,8 +77,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final Map<String, dynamic> extra =
               state.extra as Map<String, dynamic>;
-          final postData = extra['postData'] as PostData;
-          return UserDiaryDetailPage(postData: postData);
+          final postData = extra['selectedPostData'] as PostData;
+          return UserDiaryDetailPage(selectedPostData: postData);
         },
       ),
       GoRoute(

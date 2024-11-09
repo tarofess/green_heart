@@ -176,7 +176,9 @@ class UserPage extends HookConsumerWidget {
                         _buildUserName(context, ref, profile.value),
                         SizedBox(height: 16.h),
                         _buildUserBio(context, ref, profile.value),
-                        SizedBox(height: 24.h),
+                        profile.value?.birthday == null
+                            ? const SizedBox()
+                            : SizedBox(height: 24.h),
                         _buildBirthDate(context, ref, profile.value),
                         uid == ref.watch(authStateProvider).value?.uid
                             ? const SizedBox()
