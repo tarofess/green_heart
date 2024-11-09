@@ -46,10 +46,6 @@ class UserPostList extends HookConsumerWidget {
         }
       }
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(userPostScrollStateNotifierProvider(uid).notifier).reset();
-      });
-
       scrollController.addListener(onScroll);
       return () => scrollController.removeListener(onScroll);
     }, [scrollController]);

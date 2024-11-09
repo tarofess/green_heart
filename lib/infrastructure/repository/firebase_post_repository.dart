@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:green_heart/application/exception/app_exception.dart';
@@ -44,31 +43,6 @@ class FirebasePostRepository implements PostRepository {
   }
 
   @override
-  Future<List<Post>> getDiaryPosts(String uid, DateTime focusedDay) async {
-    try {
-      DateTime endDate = DateTime(focusedDay.year, focusedDay.month + 1, 0);
-      String startDateString =
-          DateFormat("yyyy-MM-ddT00:00:00.000'Z'").format(focusedDay);
-      String endDateString =
-          DateFormat("yyyy-MM-ddT23:59:59.999'Z'").format(endDate);
-
-      final querySnapshot = await _firestore
-          .collection('post')
-          .where('uid', isEqualTo: uid)
-          .where('releaseDate', isGreaterThanOrEqualTo: startDateString)
-          .where('releaseDate', isLessThan: endDateString)
-          .get();
-
-      return querySnapshot.docs
-          .map((doc) => Post.fromJson(doc.data()))
-          .toList();
-    } catch (e, stackTrace) {
-      final exception = await ExceptionHandler.handleException(e, stackTrace);
-      throw exception ?? AppException('投稿の取得に失敗しました。再度お試しください。');
-    }
-  }
-
-  @override
   Future<List<Post>> getPostsByUid(
     String uid,
     UserPostScrollState userPostScrollState,
@@ -82,7 +56,7 @@ class FirebasePostRepository implements PostRepository {
       Query query = _firestore
           .collection('post')
           .where('uid', isEqualTo: uid)
-          .orderBy('createdAt', descending: true)
+          .orderBy('releaseDate', descending: true)
           .limit(pageSize);
 
       if (userPostScrollState.lastDocument != null) {

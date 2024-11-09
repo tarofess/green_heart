@@ -79,7 +79,20 @@ class UserDiary extends HookConsumerWidget {
             context.go('/post', extra: {'selectedDay': selectedDay.value});
           }
         },
-        onPageChanged: (focusedDay) {},
+        onPageChanged: (firstDayInMonth) async {
+          final hasPostInFocusedDay = userPosts.any(
+            (postData) => postData.post.releaseDate.isAtSameMomentAs(
+              firstDayInMonth,
+            ),
+          );
+
+          if (!hasPostInFocusedDay) {
+            await ref.read(userPostNotifierProvider(uid).notifier).loadMore(
+                  uid,
+                );
+            focusedDay.value = firstDayInMonth;
+          }
+        },
         selectedDayPredicate: (day) {
           return isSameDay(selectedDay.value, day);
         },
