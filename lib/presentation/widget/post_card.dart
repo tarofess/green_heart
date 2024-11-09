@@ -141,7 +141,7 @@ class PostCard extends ConsumerWidget {
           ],
         ),
         Text(
-          DateUtil.formatPostTime(postData.post.createdAt),
+          DateUtil.formatPostTime(postData.post.releaseDate),
           style: TextStyle(fontSize: 12.sp, color: Colors.black),
         ),
       ],

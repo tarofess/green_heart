@@ -137,7 +137,11 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
     return postData;
   }
 
-  Future<void> addPost(String content, List<String> selectedImages) async {
+  Future<void> addPost(
+    String content,
+    List<String> selectedImages,
+    DateTime selectedDay,
+  ) async {
     final uid = ref.read(authStateProvider).value?.uid;
     if (uid == null) {
       throw Exception('投稿ができません。アカウントがログアウトされている可能性があります。');
@@ -147,6 +151,7 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
           uid,
           content,
           selectedImages,
+          selectedDay,
         );
 
     final profile = await ref.read(profileGetUsecaseProvider).execute(uid);

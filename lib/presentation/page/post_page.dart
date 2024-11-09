@@ -14,7 +14,9 @@ import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 
 class PostPage extends HookConsumerWidget {
-  const PostPage({super.key});
+  const PostPage({super.key, required this.selectedDay});
+
+  final DateTime selectedDay;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,7 +35,7 @@ class PostPage extends HookConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '投稿',
+          '${selectedDay.year}年${selectedDay.month}月${selectedDay.day}日',
           style: TextStyle(fontSize: 21.sp),
         ),
         toolbarHeight: 58.h,
@@ -119,6 +121,7 @@ class PostPage extends HookConsumerWidget {
                           .addPost(
                             postTextController.text,
                             selectedImages.value,
+                            selectedDay,
                           );
                     });
 

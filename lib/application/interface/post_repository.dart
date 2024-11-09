@@ -5,7 +5,13 @@ import 'package:green_heart/domain/type/timeline_scroll_state.dart';
 import 'package:green_heart/domain/type/user_post_scroll_state.dart';
 
 abstract class PostRepository {
-  Future<Post> addPost(String uid, String content, List<String> imageUrls);
+  Future<Post> addPost(
+    String uid,
+    String content,
+    List<String> imageUrls,
+    DateTime selectedDay,
+  );
+  Future<List<Post>> getDiaryPosts(String uid, DateTime focusedDay);
   Future<List<Post>> getPostsByUid(
     String uid,
     UserPostScrollState userPostScrollState,

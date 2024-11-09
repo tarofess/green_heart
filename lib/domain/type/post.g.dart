@@ -14,6 +14,7 @@ _$PostImpl _$$PostImplFromJson(Map<String, dynamic> json) => _$PostImpl(
               ?.map((e) => e as String)
               .toList() ??
           const [],
+      releaseDate: DateTime.parse(json['releaseDate'] as String),
       createdAt: DateTime.parse(json['createdAt'] as String),
     );
 
@@ -23,5 +24,6 @@ Map<String, dynamic> _$$PostImplToJson(_$PostImpl instance) =>
       'uid': instance.uid,
       'content': instance.content,
       'imageUrls': instance.imageUrls,
+      'releaseDate': instance.releaseDate.toIso8601String(),
       'createdAt': instance.createdAt.toIso8601String(),
     };

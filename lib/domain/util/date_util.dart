@@ -26,7 +26,7 @@ class DateUtil {
   static String formatPostTime(DateTime? postTime) {
     if (postTime == null) return '日時不明';
 
-    final formatter = DateFormat('yyyy/MM/dd HH:mm');
+    final formatter = DateFormat('yyyy/MM/dd');
     return formatter.format(postTime.toLocal());
   }
 

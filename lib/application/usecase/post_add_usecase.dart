@@ -10,9 +10,15 @@ class PostAddUsecase {
     String uid,
     String content,
     List<String> paths,
+    DateTime selectedDay,
   ) async {
     final imageUrls = await _postRepository.uploadImages(uid, paths);
-    final post = await _postRepository.addPost(uid, content, imageUrls);
+    final post = await _postRepository.addPost(
+      uid,
+      content,
+      imageUrls,
+      selectedDay,
+    );
     return post;
   }
 }

@@ -24,6 +24,7 @@ mixin _$Post {
   String get uid => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
   List<String> get imageUrls => throw _privateConstructorUsedError;
+  DateTime get releaseDate => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this Post to a JSON map.
@@ -45,6 +46,7 @@ abstract class $PostCopyWith<$Res> {
       String uid,
       String content,
       List<String> imageUrls,
+      DateTime releaseDate,
       DateTime createdAt});
 }
 
@@ -67,6 +69,7 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
     Object? uid = null,
     Object? content = null,
     Object? imageUrls = null,
+    Object? releaseDate = null,
     Object? createdAt = null,
   }) {
     return _then(_value.copyWith(
@@ -86,6 +89,10 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
           ? _value.imageUrls
           : imageUrls // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      releaseDate: null == releaseDate
+          ? _value.releaseDate
+          : releaseDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -106,6 +113,7 @@ abstract class _$$PostImplCopyWith<$Res> implements $PostCopyWith<$Res> {
       String uid,
       String content,
       List<String> imageUrls,
+      DateTime releaseDate,
       DateTime createdAt});
 }
 
@@ -125,6 +133,7 @@ class __$$PostImplCopyWithImpl<$Res>
     Object? uid = null,
     Object? content = null,
     Object? imageUrls = null,
+    Object? releaseDate = null,
     Object? createdAt = null,
   }) {
     return _then(_$PostImpl(
@@ -144,6 +153,10 @@ class __$$PostImplCopyWithImpl<$Res>
           ? _value._imageUrls
           : imageUrls // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      releaseDate: null == releaseDate
+          ? _value.releaseDate
+          : releaseDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -160,6 +173,7 @@ class _$PostImpl implements _Post {
       required this.uid,
       required this.content,
       final List<String> imageUrls = const [],
+      required this.releaseDate,
       required this.createdAt})
       : _imageUrls = imageUrls;
 
@@ -182,11 +196,13 @@ class _$PostImpl implements _Post {
   }
 
   @override
+  final DateTime releaseDate;
+  @override
   final DateTime createdAt;
 
   @override
   String toString() {
-    return 'Post(id: $id, uid: $uid, content: $content, imageUrls: $imageUrls, createdAt: $createdAt)';
+    return 'Post(id: $id, uid: $uid, content: $content, imageUrls: $imageUrls, releaseDate: $releaseDate, createdAt: $createdAt)';
   }
 
   @override
@@ -199,6 +215,8 @@ class _$PostImpl implements _Post {
             (identical(other.content, content) || other.content == content) &&
             const DeepCollectionEquality()
                 .equals(other._imageUrls, _imageUrls) &&
+            (identical(other.releaseDate, releaseDate) ||
+                other.releaseDate == releaseDate) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt));
   }
@@ -206,7 +224,7 @@ class _$PostImpl implements _Post {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, uid, content,
-      const DeepCollectionEquality().hash(_imageUrls), createdAt);
+      const DeepCollectionEquality().hash(_imageUrls), releaseDate, createdAt);
 
   /// Create a copy of Post
   /// with the given fields replaced by the non-null parameter values.
@@ -230,6 +248,7 @@ abstract class _Post implements Post {
       required final String uid,
       required final String content,
       final List<String> imageUrls,
+      required final DateTime releaseDate,
       required final DateTime createdAt}) = _$PostImpl;
 
   factory _Post.fromJson(Map<String, dynamic> json) = _$PostImpl.fromJson;
@@ -242,6 +261,8 @@ abstract class _Post implements Post {
   String get content;
   @override
   List<String> get imageUrls;
+  @override
+  DateTime get releaseDate;
   @override
   DateTime get createdAt;
 

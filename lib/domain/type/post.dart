@@ -10,6 +10,7 @@ class Post with _$Post {
     required String uid,
     required String content,
     @Default([]) List<String> imageUrls,
+    required DateTime releaseDate,
     required DateTime createdAt,
   }) = _Post;
 
