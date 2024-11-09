@@ -110,7 +110,6 @@ class UserPage extends HookConsumerWidget {
     ValueNotifier<bool> isBlocked,
   ) {
     return AppBar(
-      centerTitle: true,
       title: Padding(
         padding: EdgeInsets.only(left: 8.w),
         child: Image.asset(
