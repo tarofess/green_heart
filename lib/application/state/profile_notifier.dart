@@ -1,11 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
-import 'package:green_heart/application/usecase/profile_save_usecase.dart';
+import 'package:green_heart/application/state/user_post_notifier.dart';
 
 class ProfileNotifier extends AsyncNotifier<Profile?> {
   @override
@@ -20,7 +19,6 @@ class ProfileNotifier extends AsyncNotifier<Profile?> {
   }
 
   Future<void> saveProfile(
-    ProfileSaveUsecase profileSaveUsecase,
     String name,
     String birthday,
     String bio, {
@@ -32,14 +30,14 @@ class ProfileNotifier extends AsyncNotifier<Profile?> {
       throw Exception('プロフィールが保存できません。アカウントがログアウトされている可能性があります。');
     }
 
-    final savedProfile = await profileSaveUsecase.execute(
-      uid,
-      name,
-      birthday,
-      bio,
-      imagePath,
-      oldImageUrl,
-    );
+    final savedProfile = await ref.read(profileSaveUsecaseProvider).execute(
+          uid,
+          name,
+          birthday,
+          bio,
+          imagePath,
+          oldImageUrl,
+        );
 
     ref
         .read(userPostNotifierProvider(uid).notifier)

@@ -12,89 +12,86 @@ import 'package:green_heart/presentation/dialog/message_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/presentation/widget/profile_image_action_sheet.dart';
 import 'package:green_heart/domain/util/date_util.dart';
-import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
-import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/application/state/account_state_notifier.dart';
 import 'package:green_heart/presentation/widget/user_empty_image.dart';
 import 'package:green_heart/presentation/widget/user_firebase_image.dart';
+import 'package:green_heart/application/state/profile_edit_page_state_notifier.dart';
+import 'package:green_heart/domain/type/profile_edit_page_state.dart';
+import 'package:green_heart/presentation/widget/async_error_widget.dart';
+import 'package:green_heart/presentation/widget/loading_indicator.dart';
 
 class ProfileEditPage extends HookConsumerWidget {
   ProfileEditPage({super.key});
 
   final _formKey = GlobalKey<FormState>();
-  final FocusNode _nameFocusNode = FocusNode();
-  final FocusNode _bioFocusNode = FocusNode();
+  final _nameFocusNode = FocusNode();
+  final _bioFocusNode = FocusNode();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = useState<Profile?>(null);
-    final imagePath = useState<String?>(null);
+    final profileEditPageStateProvider =
+        ref.watch(profileEditPageStateNotifierProvider);
     final nameTextController = useTextEditingController();
     final birthdayTextController = useTextEditingController();
     final bioTextController = useTextEditingController();
-    final showBirthday = useState(false);
-    final savedBirthday = useState('');
 
     useEffect(() {
-      void initializeForm() async {
-        final profileState = await ref.read(profileNotifierProvider.future);
-        profile.value = profileState;
-        imagePath.value = profileState?.imageUrl;
-        nameTextController.text = profileState?.name ?? '';
-        birthdayTextController.text =
-            DateUtil.convertToJapaneseDate(profileState?.birthday);
-        bioTextController.text = profileState?.bio ?? '';
-        showBirthday.value = profileState?.birthday == null ? false : true;
-        savedBirthday.value = birthdayTextController.text;
-      }
-
-      try {
-        initializeForm();
-      } catch (e) {
-        showErrorDialog(
-          context: context,
-          title: 'プロフィール取得エラー',
-          content: e.toString(),
-        );
-      }
+      nameTextController.text =
+          profileEditPageStateProvider.valueOrNull?.profile?.name ?? '';
+      birthdayTextController.text = DateUtil.convertToJapaneseDate(
+        profileEditPageStateProvider.valueOrNull?.profile?.birthday,
+      );
+      bioTextController.text =
+          profileEditPageStateProvider.valueOrNull?.profile?.bio ?? '';
       return null;
-    }, []);
+    }, [profileEditPageStateProvider.value?.profile]);
 
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        appBar: _buildAppBar(
-          context,
-          ref,
-          nameTextController,
-          birthdayTextController,
-          bioTextController,
-          imagePath,
-          profile.value,
-        ),
-        body: SafeArea(
-          child: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  _buildImageField(context, ref, imagePath),
-                  _buildNameField(nameTextController),
-                  _buildBirthdayField(
-                    context,
-                    birthdayTextController,
-                    profile.value?.birthday,
-                    showBirthday,
-                    savedBirthday,
+    return profileEditPageStateProvider.when(
+      data: (profileEditPageState) {
+        return GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Scaffold(
+            appBar: _buildAppBar(
+              context,
+              ref,
+              nameTextController,
+              birthdayTextController,
+              bioTextController,
+              profileEditPageState,
+            ),
+            body: SafeArea(
+              child: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      _buildImageField(context, ref, profileEditPageState),
+                      _buildNameField(nameTextController),
+                      _buildBirthdayField(
+                        context,
+                        ref,
+                        birthdayTextController,
+                        profileEditPageState,
+                      ),
+                      _buildBioField(bioTextController),
+                    ],
                   ),
-                  _buildBioField(bioTextController),
-                ],
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
+      loading: () {
+        return const LoadingIndicator(message: '保存中');
+      },
+      error: (error, stackTrace) {
+        return AsyncErrorWidget(
+          error: error,
+          retry: () => ref.refresh(profileEditPageStateNotifierProvider),
+        );
+      },
     );
   }
 
@@ -104,8 +101,7 @@ class ProfileEditPage extends HookConsumerWidget {
     TextEditingController nameTextController,
     TextEditingController birthdayTextController,
     TextEditingController bioTextController,
-    ValueNotifier<String?> imagePath,
-    Profile? profile,
+    ProfileEditPageState profileEditPageState,
   ) {
     return AppBar(
       title: Text(
@@ -124,16 +120,15 @@ class ProfileEditPage extends HookConsumerWidget {
                   backgroundColor: Colors.white10,
                 ).during(() async {
                   await ref.read(profileNotifierProvider.notifier).saveProfile(
-                        ref.read(profileSaveUsecaseProvider),
                         nameTextController.text,
                         birthdayTextController.text,
                         bioTextController.text,
-                        imagePath: imagePath.value,
-                        oldImageUrl: profile?.imageUrl,
+                        imagePath: profileEditPageState.imagePath,
+                        oldImageUrl: profileEditPageState.profile?.imageUrl,
                       );
                 });
 
-                if (profile == null) {
+                if (profileEditPageState.profile == null) {
                   // 新規登録時
                   if (context.mounted) {
                     await showMessageDialog(
@@ -181,7 +176,10 @@ class ProfileEditPage extends HookConsumerWidget {
   }
 
   Widget _buildImageField(
-      BuildContext context, WidgetRef ref, ValueNotifier<String?> imagePath) {
+    BuildContext context,
+    WidgetRef ref,
+    ProfileEditPageState profileEditPageState,
+  ) {
     return Padding(
       padding: EdgeInsets.all(16.w),
       child: Column(
@@ -189,16 +187,16 @@ class ProfileEditPage extends HookConsumerWidget {
         children: [
           Center(
             child: GestureDetector(
-              child: imagePath.value == null
+              child: profileEditPageState.imagePath == null
                   ? const UserEmptyImage(radius: 100)
-                  : imagePath.value!.startsWith('http')
+                  : profileEditPageState.imagePath!.startsWith('http')
                       ? UserFirebaseImage(
-                          imageUrl: imagePath.value!,
+                          imageUrl: profileEditPageState.imagePath!,
                           radius: 200,
                         )
-                      : _buildSelectedImage(imagePath.value!),
+                      : _buildSelectedImage(profileEditPageState.imagePath!),
               onTap: () async {
-                await showProfileImageActionSheet(context, ref, imagePath);
+                await showProfileImageActionSheet(context, ref);
                 _unfocusAllKeyboard();
               },
             ),
@@ -208,7 +206,7 @@ class ProfileEditPage extends HookConsumerWidget {
             child: TextButton(
               child: Text('プロフィール画像を編集', style: TextStyle(fontSize: 16.sp)),
               onPressed: () async {
-                await showProfileImageActionSheet(context, ref, imagePath);
+                await showProfileImageActionSheet(context, ref);
                 _unfocusAllKeyboard();
               },
             ),
@@ -286,10 +284,9 @@ class ProfileEditPage extends HookConsumerWidget {
 
   Widget _buildBirthdayField(
     BuildContext context,
+    WidgetRef ref,
     TextEditingController birthdayTextController,
-    DateTime? birthday,
-    ValueNotifier<bool> showBirthday,
-    ValueNotifier<String> savedBirthday,
+    ProfileEditPageState profileEditPageState,
   ) {
     return Padding(
       padding: EdgeInsets.all(16.w),
@@ -313,22 +310,33 @@ class ProfileEditPage extends HookConsumerWidget {
                 children: [
                   Radio<bool>(
                     value: true,
-                    groupValue: showBirthday.value,
+                    groupValue: profileEditPageState.isShowBirthday,
                     onChanged: (value) {
-                      showBirthday.value = value!;
+                      if (value == null) return;
+
+                      ref
+                          .read(profileEditPageStateNotifierProvider.notifier)
+                          .setIsShowBirthday(value);
                       if (value) {
-                        birthdayTextController.text = savedBirthday.value;
+                        birthdayTextController.text =
+                            profileEditPageState.savedBirthday;
                       }
                     },
                   ),
                   Text('表示', style: TextStyle(fontSize: 16.sp)),
                   Radio<bool>(
                     value: false,
-                    groupValue: showBirthday.value,
+                    groupValue: profileEditPageState.isShowBirthday,
                     onChanged: (value) {
-                      showBirthday.value = value!;
+                      if (value == null) return;
+
+                      ref
+                          .read(profileEditPageStateNotifierProvider.notifier)
+                          .setIsShowBirthday(value);
                       if (!value) {
-                        savedBirthday.value = birthdayTextController.text;
+                        ref
+                            .read(profileEditPageStateNotifierProvider.notifier)
+                            .setSavedBirthday(birthdayTextController.text);
                         birthdayTextController.clear();
                       }
                     },
@@ -339,7 +347,7 @@ class ProfileEditPage extends HookConsumerWidget {
             ],
           ),
           SizedBox(height: 8.h),
-          if (showBirthday.value)
+          if (profileEditPageState.isShowBirthday)
             TextFormField(
               style: TextStyle(fontSize: 16.sp),
               controller: birthdayTextController,
