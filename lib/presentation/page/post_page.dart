@@ -65,6 +65,7 @@ class PostPage extends HookConsumerWidget {
             ref,
             postTextController,
             selectedImages,
+            focusNode,
           )
         ],
       ),
@@ -103,12 +104,14 @@ class PostPage extends HookConsumerWidget {
     WidgetRef ref,
     TextEditingController postTextController,
     ValueNotifier<List<String>> selectedImages,
+    FocusNode focusNode,
   ) {
     return IconButton(
       icon: Icon(Icons.upload, size: 24.r),
       onPressed:
           postTextController.text.isNotEmpty || selectedImages.value.isNotEmpty
               ? () async {
+                  focusNode.unfocus();
                   try {
                     await LoadingOverlay.of(
                       context,
