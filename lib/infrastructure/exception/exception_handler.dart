@@ -20,7 +20,7 @@ class ExceptionHandler {
     } else if (e is FirebaseException) {
       return AppException('Firebaseエラー: ${e.message}', e);
     } else if (e is TimeoutException) {
-      return AppException('接続がタイムアウトしました。インターネット復帰後にデータが自動で同期されます。', e);
+      return AppException('接続がタイムアウトしました。インターネットの接続を確認してください。', e);
     } else if (e is SocketException) {
       return AppException('ネットワーク接続エラーが発生しました。インターネット復帰後にデータが自動で同期されます。', e);
     } else if (e is HttpException) {

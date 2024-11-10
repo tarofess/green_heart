@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -19,6 +20,7 @@ class FirebaseInitService implements InitService {
   Future<void> initialize() async {
     try {
       await initFirebase();
+      await setupFirestore();
       await setupCrashlytics();
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
@@ -35,6 +37,18 @@ class FirebaseInitService implements InitService {
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('Firebaseの初期化に失敗しました。');
+    }
+  }
+
+  Future<void> setupFirestore() async {
+    try {
+      FirebaseFirestore.instance.settings = const Settings(
+        persistenceEnabled: true,
+        cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+      );
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('Firestoreの初期化に失敗しました。');
     }
   }
 

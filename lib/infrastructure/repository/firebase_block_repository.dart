@@ -7,12 +7,13 @@ import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 
 class FirebaseBlockRepository implements BlockRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final int _timeoutSeconds = 15;
 
   @override
   Future<Block> addBlock(Block block) async {
     try {
       final ref = _firestore.collection('block').doc();
-      await ref.set(block.toJson());
+      await ref.set(block.toJson()).timeout(Duration(seconds: _timeoutSeconds));
       return block;
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
@@ -25,7 +26,8 @@ class FirebaseBlockRepository implements BlockRepository {
     try {
       final docRef =
           _firestore.collection('block').where('uid', isEqualTo: uid);
-      final docSnapshot = await docRef.get();
+      final docSnapshot =
+          await docRef.get().timeout(Duration(seconds: _timeoutSeconds));
       return docSnapshot.docs.map((doc) => Block.fromJson(doc.data())).toList();
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
@@ -40,7 +42,8 @@ class FirebaseBlockRepository implements BlockRepository {
           .collection('block')
           .where('uid', isEqualTo: uid)
           .where('blockedUid', isEqualTo: blockedUid);
-      final docSnapshot = await docRef.get();
+      final docSnapshot =
+          await docRef.get().timeout(Duration(seconds: _timeoutSeconds));
       for (final doc in docSnapshot.docs) {
         await doc.reference.delete();
       }
@@ -55,7 +58,8 @@ class FirebaseBlockRepository implements BlockRepository {
     try {
       final docRef =
           _firestore.collection('block').where('uid', isEqualTo: uid);
-      final docSnapshot = await docRef.get();
+      final docSnapshot =
+          await docRef.get().timeout(Duration(seconds: _timeoutSeconds));
       for (final doc in docSnapshot.docs) {
         await doc.reference.delete();
       }
@@ -71,7 +75,8 @@ class FirebaseBlockRepository implements BlockRepository {
         .collection('block')
         .where('uid', isEqualTo: currentUserId)
         .where('blockedUid', isEqualTo: targetUserId);
-    final snapshot = await query.get();
+    final snapshot =
+        await query.get().timeout(Duration(seconds: _timeoutSeconds));
     return snapshot.docs.isNotEmpty;
   }
 }

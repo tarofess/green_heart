@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -14,6 +15,7 @@ import 'package:green_heart/domain/type/user_post_scroll_state.dart';
 
 class FirebasePostRepository implements PostRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final int _timeoutSeconds = 15;
 
   @override
   Future<Post> addPost(
@@ -22,21 +24,24 @@ class FirebasePostRepository implements PostRepository {
     List<String> imageUrls,
     DateTime selectedDay,
   ) async {
+    final docRef = _firestore.collection('post').doc();
+    final post = Post(
+      id: docRef.id,
+      uid: uid,
+      content: content,
+      imageUrls: imageUrls,
+      releaseDate: selectedDay,
+      createdAt: DateTime.now(),
+    );
     try {
-      final docRef = _firestore.collection('post').doc();
-
-      final post = Post(
-        id: docRef.id,
-        uid: uid,
-        content: content,
-        imageUrls: imageUrls,
-        releaseDate: selectedDay,
-        createdAt: DateTime.now(),
-      );
-
-      await docRef.set(post.toJson());
+      await docRef
+          .set(post.toJson())
+          .timeout(Duration(seconds: _timeoutSeconds));
       return post;
     } catch (e, stackTrace) {
+      if (e is TimeoutException) {
+        return post;
+      }
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('投稿に失敗しました。再度お試しください。');
     }
@@ -63,7 +68,8 @@ class FirebasePostRepository implements PostRepository {
         query = query.startAfterDocument(userPostScrollState.lastDocument!);
       }
 
-      final querySnapshot = await query.get();
+      final querySnapshot =
+          await query.get().timeout(Duration(seconds: _timeoutSeconds));
       if (querySnapshot.docs.isEmpty || querySnapshot.docs.length < pageSize) {
         userPostScrollStateNotifier.updateHasMore(false);
       }
@@ -100,7 +106,8 @@ class FirebasePostRepository implements PostRepository {
         query = query.startAfterDocument(timeLineScrollState.lastDocument!);
       }
 
-      final querySnapshot = await query.get();
+      final querySnapshot =
+          await query.get().timeout(Duration(seconds: _timeoutSeconds));
       if (querySnapshot.docs.isEmpty || querySnapshot.docs.length < pageSize) {
         timelineScrollStateNotifier.updateHasMore(false);
       }
@@ -127,8 +134,10 @@ class FirebasePostRepository implements PostRepository {
         Reference ref = FirebaseStorage.instance
             .ref()
             .child('image/post/$uid/$fileName.jpg');
-        await ref.putFile(file);
-        return await ref.getDownloadURL();
+        await ref.putFile(file).timeout(Duration(seconds: _timeoutSeconds));
+        return await ref
+            .getDownloadURL()
+            .timeout(Duration(seconds: _timeoutSeconds));
       });
 
       final urls = await Future.wait(uploadTasks);
@@ -142,7 +151,11 @@ class FirebasePostRepository implements PostRepository {
   @override
   Future<void> deletePost(String postId) async {
     try {
-      await _firestore.collection('post').doc(postId).delete();
+      await _firestore
+          .collection('post')
+          .doc(postId)
+          .delete()
+          .timeout(Duration(seconds: _timeoutSeconds));
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('投稿の削除に失敗しました。再度お試しください。');
@@ -155,7 +168,8 @@ class FirebasePostRepository implements PostRepository {
       final querySnapshot = await _firestore
           .collection('post')
           .where('uid', isEqualTo: uid)
-          .get();
+          .get()
+          .timeout(Duration(seconds: _timeoutSeconds));
       for (final doc in querySnapshot.docs) {
         await doc.reference.delete();
       }
@@ -170,7 +184,7 @@ class FirebasePostRepository implements PostRepository {
     try {
       for (final url in imageUrls) {
         Reference ref = FirebaseStorage.instance.refFromURL(url);
-        await ref.delete();
+        await ref.delete().timeout(Duration(seconds: _timeoutSeconds));
       }
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
@@ -182,9 +196,10 @@ class FirebasePostRepository implements PostRepository {
   Future<void> deleteAllImagesByUid(String uid) async {
     try {
       final ref = FirebaseStorage.instance.ref().child('image/post/$uid');
-      final listResult = await ref.listAll();
+      final listResult =
+          await ref.listAll().timeout(Duration(seconds: _timeoutSeconds));
       for (final item in listResult.items) {
-        await item.delete();
+        await item.delete().timeout(Duration(seconds: _timeoutSeconds));
       }
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);

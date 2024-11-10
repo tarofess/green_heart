@@ -7,6 +7,7 @@ import 'package:green_heart/application/exception/app_exception.dart';
 
 class FirebaseCommentRepository implements CommentRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final int _timeoutSeconds = 15;
 
   @override
   Future<Comment> addComment(
@@ -27,7 +28,9 @@ class FirebaseCommentRepository implements CommentRepository {
         parentCommentId: parentCommentId,
       );
 
-      await docRef.set(comment.toJson());
+      await docRef
+          .set(comment.toJson())
+          .timeout(Duration(seconds: _timeoutSeconds));
       return comment;
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
@@ -42,7 +45,8 @@ class FirebaseCommentRepository implements CommentRepository {
           .collection('comment')
           .where('postId', isEqualTo: postId)
           .orderBy('createdAt', descending: false);
-      final docSnapshot = await docRef.get();
+      final docSnapshot =
+          await docRef.get().timeout(Duration(seconds: _timeoutSeconds));
       return docSnapshot.docs
           .map((doc) => Comment.fromJson(doc.data()))
           .toList();
@@ -59,7 +63,8 @@ class FirebaseCommentRepository implements CommentRepository {
           .collection('comment')
           .where('parentCommentId', isEqualTo: parentCommentId)
           .orderBy('createdAt', descending: false);
-      final docSnapshot = await docRef.get();
+      final docSnapshot =
+          await docRef.get().timeout(Duration(seconds: _timeoutSeconds));
       return docSnapshot.docs
           .map((doc) => Comment.fromJson(doc.data()))
           .toList();
@@ -73,7 +78,7 @@ class FirebaseCommentRepository implements CommentRepository {
   Future<void> deleteComment(String commentId) async {
     try {
       final docRef = _firestore.collection('comment').doc(commentId);
-      await docRef.delete();
+      await docRef.delete().timeout(Duration(seconds: _timeoutSeconds));
 
       for (final replyComment in await getReplyComments(commentId)) {
         await deleteComment(replyComment.id);
@@ -89,7 +94,8 @@ class FirebaseCommentRepository implements CommentRepository {
     try {
       final docRef =
           _firestore.collection('comment').where('uid', isEqualTo: uid);
-      final docSnapshot = await docRef.get();
+      final docSnapshot =
+          await docRef.get().timeout(Duration(seconds: _timeoutSeconds));
       for (final doc in docSnapshot.docs) {
         await deleteComment(doc.id);
       }

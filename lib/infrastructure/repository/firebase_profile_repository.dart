@@ -10,12 +10,14 @@ import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 
 class FirebaseProfileRepository implements ProfileRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final int _timeoutSeconds = 15;
 
   @override
   Future<Profile> saveProfile(Profile profile) async {
     try {
       final docRef = _firestore.collection('profile').doc(profile.uid);
-      final docSnapshot = await docRef.get();
+      final docSnapshot =
+          await docRef.get().timeout(Duration(seconds: _timeoutSeconds));
       if (docSnapshot.exists) {
         profile = profile.copyWith(
           createdAt: DateTime.parse(docSnapshot['createdAt']),
@@ -26,7 +28,9 @@ class FirebaseProfileRepository implements ProfileRepository {
         );
       }
 
-      await docRef.set(profile.toJson());
+      await docRef
+          .set(profile.toJson())
+          .timeout(Duration(seconds: _timeoutSeconds));
 
       return profile;
     } catch (e, stackTrace) {
@@ -39,7 +43,8 @@ class FirebaseProfileRepository implements ProfileRepository {
   Future<Profile?> getProfileByUid(String uid) async {
     try {
       final docRef = _firestore.collection('profile').doc(uid);
-      final docSnapshot = await docRef.get();
+      final docSnapshot =
+          await docRef.get().timeout(Duration(seconds: _timeoutSeconds));
       if (docSnapshot.exists) {
         return Profile.fromJson(docSnapshot.data()!);
       }
@@ -60,8 +65,10 @@ class FirebaseProfileRepository implements ProfileRepository {
       Reference ref = FirebaseStorage.instance
           .ref()
           .child('image/profile/$uid/$fileName.$extension');
-      await ref.putFile(file);
-      return await ref.getDownloadURL();
+      await ref.putFile(file).timeout(Duration(seconds: _timeoutSeconds));
+      return await ref
+          .getDownloadURL()
+          .timeout(Duration(seconds: _timeoutSeconds));
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('プロフィール画像のアップロードに失敗しました。再度お試しください。');
@@ -72,7 +79,7 @@ class FirebaseProfileRepository implements ProfileRepository {
   Future<void> deleteProfile(String uid) async {
     try {
       final docRef = _firestore.collection('profile').doc(uid);
-      await docRef.delete();
+      await docRef.delete().timeout(Duration(seconds: _timeoutSeconds));
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('プロフィールの削除に失敗しました。再度お試しください。');
@@ -87,7 +94,7 @@ class FirebaseProfileRepository implements ProfileRepository {
         return;
       }
       final ref = FirebaseStorage.instance.refFromURL(imageUrl);
-      await ref.delete();
+      await ref.delete().timeout(Duration(seconds: _timeoutSeconds));
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('プロフィール画像の削除に失敗しました。再度お試しください。');
@@ -98,7 +105,7 @@ class FirebaseProfileRepository implements ProfileRepository {
   Future<bool> checkImageExists(String imageUrl) async {
     final ref = FirebaseStorage.instance.refFromURL(imageUrl);
     try {
-      await ref.getMetadata();
+      await ref.getMetadata().timeout(Duration(seconds: _timeoutSeconds));
       return true;
     } catch (e) {
       if (e is FirebaseException && e.code == 'object-not-found') {
