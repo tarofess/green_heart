@@ -18,7 +18,7 @@ class ExceptionHandler {
     } else if (e is SignInWithAppleAuthorizationException) {
       return _handleAppleAuthException(e);
     } else if (e is FirebaseException) {
-      return AppException('Firebaseエラー: ${e.message}', e);
+      return _handleFirebaseException(e);
     } else if (e is TimeoutException) {
       return AppException('接続がタイムアウトしました。インターネットの接続を確認してください。', e);
     } else if (e is SocketException) {
@@ -54,7 +54,8 @@ class ExceptionHandler {
   }
 
   static AppException _handleAppleAuthException(
-      SignInWithAppleAuthorizationException e) {
+    SignInWithAppleAuthorizationException e,
+  ) {
     switch (e.code) {
       case AuthorizationErrorCode.canceled:
         return AppException('Appleログインがキャンセルされました。', e);
@@ -68,6 +69,21 @@ class ExceptionHandler {
         return AppException('予期せぬエラーが発生しました。しばらくしてから再度お試しください。', e);
       default:
         return AppException('Appleログインに失敗しました。別の方法でログインしてください。', e);
+    }
+  }
+
+  static AppException _handleFirebaseException(FirebaseException e) {
+    switch (e.code) {
+      case 'permission-denied':
+        return AppException('アクセス権限がありません。', e);
+      case 'unavailable':
+        return AppException('サービスが利用できません。インターネットの接続を確認してください。', e);
+      case 'internal':
+        return AppException('サーバーエラーが発生しました。しばらくしてから再度お試しください。', e);
+      case 'unknown':
+        return AppException('予期せぬエラーが発生しました。しばらくしてから再度お試しください。', e);
+      default:
+        return AppException('Firebaseエラー: ${e.message}', e);
     }
   }
 }
