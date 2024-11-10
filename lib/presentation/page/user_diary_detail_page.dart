@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -29,29 +30,36 @@ class UserDiaryDetailPage extends ConsumerWidget {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: userPostState.when(
-            data: (userPosts) {
-              final postData = userPosts.firstWhere(
-                (posts) => posts.post.id == selectedPostData.post.id,
-              );
-              return Padding(
-                padding: EdgeInsets.only(
-                    top: 0.h, bottom: 8.h, left: 8.w, right: 8.w),
-                child: PostCard(postData: postData),
-              );
-            },
-            loading: () => const Center(
-              child: LoadingIndicator(
-                message: '読み込み中',
-                backgroundColor: Colors.white10,
-              ),
+        child: userPostState.when(
+          data: (userPosts) {
+            final postData = userPosts.firstWhereOrNull(
+              (posts) => posts.post.id == selectedPostData.post.id,
+            );
+            return postData == null
+                ? Center(
+                    child: Text(
+                      'データがありません',
+                      style: TextStyle(fontSize: 16.sp),
+                    ),
+                  )
+                : SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          top: 0.h, bottom: 8.h, left: 8.w, right: 8.w),
+                      child: PostCard(postData: postData),
+                    ),
+                  );
+          },
+          loading: () => const Center(
+            child: LoadingIndicator(
+              message: '読み込み中',
+              backgroundColor: Colors.white10,
             ),
-            error: (error, stackTrace) => AsyncErrorWidget(
-              error: error,
-              retry: () => ref
-                  .refresh(userPostNotifierProvider(selectedPostData.post.uid)),
-            ),
+          ),
+          error: (error, stackTrace) => AsyncErrorWidget(
+            error: error,
+            retry: () => ref
+                .refresh(userPostNotifierProvider(selectedPostData.post.uid)),
           ),
         ),
       ),
