@@ -7,22 +7,22 @@ import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
-import 'package:green_heart/application/di/profile_di.dart';
-import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/application/state/block_notifier.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
-import 'package:green_heart/application/di/block_di.dart';
 import 'package:green_heart/presentation/widget/post_search.dart';
 import 'package:green_heart/application/di/report_di.dart';
 import 'package:green_heart/presentation/dialog/report_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/presentation/widget/user_empty_image.dart';
 import 'package:green_heart/presentation/widget/user_firebase_image.dart';
-import 'package:green_heart/application/di/follow_di.dart';
 import 'package:green_heart/application/state/follower_notifier.dart';
 import 'package:green_heart/presentation/widget/follow_state_widget.dart';
 import 'package:green_heart/presentation/widget/user_page_tab.dart';
+import 'package:green_heart/application/state/user_page_state_notifier.dart';
+import 'package:green_heart/presentation/widget/async_error_widget.dart';
+import 'package:green_heart/presentation/widget/loading_indicator.dart';
+import 'package:green_heart/domain/type/user_page_state.dart';
 
 class UserPage extends HookConsumerWidget {
   const UserPage({super.key, required this.uid});
@@ -31,78 +31,47 @@ class UserPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = useState<Profile?>(null);
-    final isFollowing = useState(false);
-    final isBlocked = useState(false);
+    final userPageStateProvider = ref.watch(userPageStateNotifierProvider(uid));
     final scrollController = useScrollController();
 
-    useEffect(() {
-      void setProfile() async {
-        if (uid == null) return;
-        profile.value = await ref.read(profileGetUsecaseProvider).execute(uid!);
-      }
-
-      void setFollowState() async {
-        if (uid == null) return;
-        final currentUid = ref.watch(authStateProvider).value?.uid;
-
-        isFollowing.value = await ref.read(followCheckUsecaseProvider).execute(
-              currentUid,
-              uid!,
-            );
-      }
-
-      void setBlockState() async {
-        if (uid == null) return;
-        final currentUid = ref.watch(authStateProvider).value?.uid;
-
-        isBlocked.value = await ref.read(blockCheckUsecaseProvider).execute(
-              currentUid,
-              uid!,
-            );
-      }
-
-      try {
-        setProfile();
-        setFollowState();
-        setBlockState();
-      } catch (e) {
-        if (context.mounted) {
-          showErrorDialog(
-            context: context,
-            title: 'エラー発生',
-            content: e.toString(),
-          );
-        }
-      }
-
-      return null;
-    }, [ref.watch(profileNotifierProvider).value]);
-
-    return Scaffold(
-      appBar: uid == ref.watch(authStateProvider).value?.uid
-          ? null
-          : _buildAppBar(context, ref, profile, isFollowing, isBlocked),
-      body: SafeArea(
-        child: isBlocked.value
-            ? _buildBlockedBody(context, ref, profile)
-            : _buildBody(
-                context,
-                ref,
-                profile,
-                isFollowing,
-                scrollController,
-              ),
-      ),
+    return userPageStateProvider.when(
+      data: (userPageState) {
+        return Scaffold(
+          appBar: uid == ref.watch(authStateProvider).value?.uid
+              ? null
+              : _buildAppBar(context, ref, userPageState),
+          body: SafeArea(
+            child: userPageState.isBlocked
+                ? _buildBlockedBody(context, ref, userPageState)
+                : _buildBody(
+                    context,
+                    ref,
+                    userPageState,
+                    scrollController,
+                  ),
+          ),
+        );
+      },
+      loading: () {
+        return const Scaffold(
+          body: LoadingIndicator(message: '読み込み中'),
+        );
+      },
+      error: (e, _) {
+        return Scaffold(
+          body: AsyncErrorWidget(
+            error: e,
+            retry: () => ref.refresh(userPageStateNotifierProvider(uid)),
+          ),
+        );
+      },
     );
   }
 
   AppBar _buildAppBar(
     BuildContext context,
     WidgetRef ref,
-    ValueNotifier<Profile?> profile,
-    ValueNotifier<bool> isFollowing,
-    ValueNotifier<bool> isBlocked,
+    UserPageState userPageState,
   ) {
     return AppBar(
       title: Padding(
@@ -114,7 +83,7 @@ class UserPage extends HookConsumerWidget {
       ),
       toolbarHeight: 58.h,
       actions: [
-        isBlocked.value
+        userPageState.isBlocked
             ? const SizedBox()
             : IconButton(
                 icon: Icon(Icons.search, size: 24.r),
@@ -128,9 +97,9 @@ class UserPage extends HookConsumerWidget {
                   );
                 },
               ),
-        isBlocked.value
-            ? _buildBlockIconButton(context, ref, profile, isBlocked)
-            : _buildPopupMenu(context, ref, profile, isFollowing, isBlocked),
+        userPageState.isBlocked
+            ? _buildBlockIconButton(context, ref, userPageState)
+            : _buildPopupMenu(context, ref, userPageState),
       ],
     );
   }
@@ -138,8 +107,7 @@ class UserPage extends HookConsumerWidget {
   Widget _buildBody(
     BuildContext context,
     WidgetRef ref,
-    ValueNotifier<Profile?> profile,
-    ValueNotifier<bool> isFollowing,
+    UserPageState userPageState,
     ScrollController scrollController,
   ) {
     return DefaultTabController(
@@ -160,24 +128,28 @@ class UserPage extends HookConsumerWidget {
                       children: [
                         Row(
                           children: [
-                            _buildUserImage(context, ref, profile),
+                            _buildUserImage(
+                              context,
+                              ref,
+                              userPageState.profile,
+                            ),
                             Expanded(
                               child: FollowStateWidget(uid: uid),
                             ),
                           ],
                         ),
                         SizedBox(height: 20.h),
-                        _buildUserName(context, ref, profile.value),
+                        _buildUserName(context, ref, userPageState.profile),
                         SizedBox(height: 16.h),
-                        _buildUserBio(context, ref, profile.value),
-                        profile.value?.birthday == null
+                        _buildUserBio(context, ref, userPageState.profile),
+                        userPageState.profile?.birthday == null
                             ? const SizedBox()
                             : SizedBox(height: 24.h),
-                        _buildBirthDate(context, ref, profile.value),
+                        _buildBirthDate(context, ref, userPageState.profile),
                         uid == ref.watch(authStateProvider).value?.uid
                             ? const SizedBox()
                             : SizedBox(height: 24.h),
-                        _buildFollowButton(context, ref, isFollowing),
+                        _buildFollowButton(context, ref, userPageState),
                       ],
                     ),
                   ),
@@ -200,11 +172,11 @@ class UserPage extends HookConsumerWidget {
   Widget _buildUserImage(
     BuildContext context,
     WidgetRef ref,
-    ValueNotifier<Profile?> profile,
+    Profile? profile,
   ) {
-    return profile.value?.imageUrl == null
+    return profile?.imageUrl == null
         ? const UserEmptyImage(radius: 60)
-        : UserFirebaseImage(imageUrl: profile.value?.imageUrl, radius: 120);
+        : UserFirebaseImage(imageUrl: profile?.imageUrl, radius: 120);
   }
 
   Widget _buildUserName(BuildContext context, WidgetRef ref, Profile? profile) {
@@ -240,7 +212,7 @@ class UserPage extends HookConsumerWidget {
   Widget _buildFollowButton(
     BuildContext context,
     WidgetRef ref,
-    ValueNotifier<bool> isFollowing,
+    UserPageState userPageState,
   ) {
     return uid == ref.watch(authStateProvider).value?.uid
         ? const SizedBox()
@@ -255,18 +227,20 @@ class UserPage extends HookConsumerWidget {
                       backgroundColor: Colors.white10,
                     ).during(() async {
                       final myUid = ref.watch(authStateProvider).value?.uid;
-                      if (isFollowing.value) {
+                      if (userPageState.isFollowing) {
                         await ref
                             .read(followerNotifierProvider(uid).notifier)
                             .unfollow(myUid!, uid!);
-
-                        isFollowing.value = false;
+                        ref
+                            .read(userPageStateNotifierProvider(uid).notifier)
+                            .setIsFollowing(false);
                       } else {
                         await ref
                             .read(followerNotifierProvider(uid).notifier)
                             .follow(myUid!, uid!);
-
-                        isFollowing.value = true;
+                        ref
+                            .read(userPageStateNotifierProvider(uid).notifier)
+                            .setIsFollowing(true);
                       }
                     });
                   } catch (e) {
@@ -279,17 +253,17 @@ class UserPage extends HookConsumerWidget {
                     }
                   }
                 },
-                style: isFollowing.value
+                style: userPageState.isFollowing
                     ? ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                       )
                     : null,
                 child: Text(
-                  isFollowing.value ? 'フォロー中' : 'フォローする',
+                  userPageState.isFollowing ? 'フォロー中' : 'フォローする',
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.bold,
-                    color: isFollowing.value ? Colors.white : null,
+                    color: userPageState.isFollowing ? Colors.white : null,
                   ),
                 ),
               ),
@@ -300,7 +274,7 @@ class UserPage extends HookConsumerWidget {
   Widget _buildBlockedBody(
     BuildContext context,
     WidgetRef ref,
-    ValueNotifier<Profile?> profile,
+    UserPageState userPageState,
   ) {
     return Center(
       child: Padding(
@@ -308,10 +282,10 @@ class UserPage extends HookConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildUserImage(context, ref, profile),
+            _buildUserImage(context, ref, userPageState.profile),
             SizedBox(height: 32.h),
             Text(
-              'あなたは${profile.value?.name}をブロックしています。',
+              'あなたは${userPageState.profile?.name}をブロックしています。',
               style: TextStyle(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.bold,
@@ -326,8 +300,7 @@ class UserPage extends HookConsumerWidget {
   Widget _buildBlockIconButton(
     BuildContext context,
     WidgetRef ref,
-    ValueNotifier<Profile?> profile,
-    ValueNotifier<bool> isBlocked,
+    UserPageState userPageState,
   ) {
     return IconButton(
       icon: Icon(Icons.block, size: 24.sp),
@@ -356,14 +329,16 @@ class UserPage extends HookConsumerWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  '${profile.value?.name}のブロックを解除しました。',
+                  '${userPageState.profile?.name}のブロックを解除しました。',
                   style: TextStyle(fontSize: 14.sp),
                 ),
               ),
             );
           }
 
-          isBlocked.value = false;
+          ref
+              .read(userPageStateNotifierProvider(uid).notifier)
+              .setIsBlocked(false);
         } catch (e) {
           if (context.mounted) {
             showErrorDialog(
@@ -380,9 +355,7 @@ class UserPage extends HookConsumerWidget {
   Widget _buildPopupMenu(
     BuildContext context,
     WidgetRef ref,
-    ValueNotifier<Profile?> profile,
-    ValueNotifier<bool> isFollowing,
-    ValueNotifier<bool> isBlocked,
+    UserPageState userPageState,
   ) {
     return PopupMenuButton<String>(
       icon: Icon(Icons.more_horiz, size: 24.r),
@@ -461,7 +434,9 @@ class UserPage extends HookConsumerWidget {
                   await ref
                       .read(followerNotifierProvider(uid).notifier)
                       .unfollow(uid!, myUid);
-                  isFollowing.value = false;
+                  ref
+                      .read(userPageStateNotifierProvider(uid).notifier)
+                      .setIsFollowing(false);
                 });
               }
 
@@ -469,14 +444,16 @@ class UserPage extends HookConsumerWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      '${profile.value?.name}をブロックしました。',
+                      '${userPageState.profile?.name}をブロックしました。',
                       style: TextStyle(fontSize: 14.sp),
                     ),
                   ),
                 );
               }
 
-              isBlocked.value = true;
+              ref
+                  .read(userPageStateNotifierProvider(uid).notifier)
+                  .setIsBlocked(true);
             } catch (e) {
               if (context.mounted) {
                 showErrorDialog(
