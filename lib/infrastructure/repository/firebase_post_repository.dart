@@ -157,6 +157,9 @@ class FirebasePostRepository implements PostRepository {
           .delete()
           .timeout(Duration(seconds: _timeoutSeconds));
     } catch (e, stackTrace) {
+      if (e is TimeoutException) {
+        return;
+      }
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('投稿の削除に失敗しました。再度お試しください。');
     }
