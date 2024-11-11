@@ -34,6 +34,9 @@ class FirebaseProfileRepository implements ProfileRepository {
 
       return profile;
     } catch (e, stackTrace) {
+      if (e is TimeoutException) {
+        return profile;
+      }
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('プロフィールの保存に失敗しました。再度お試しください。');
     }
