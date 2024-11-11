@@ -83,6 +83,8 @@ class UserDiary extends HookConsumerWidget {
                 (postData) => !isSameDay(postData.post.releaseDate, tappedDay),
               )) {
             context.go('/post', extra: {'selectedDay': selectedDay.value});
+          } else if (myUid == uid && userPosts.isEmpty) {
+            context.go('/post', extra: {'selectedDay': selectedDay.value});
           }
         },
         onPageChanged: (firstDayInMonth) async {
