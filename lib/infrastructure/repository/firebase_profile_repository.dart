@@ -62,6 +62,16 @@ class FirebaseProfileRepository implements ProfileRepository {
   Future<String?> uploadImage(String uid, String? path) async {
     try {
       if (path == null) return null;
+
+      ListResult result = await FirebaseStorage.instance
+          .ref()
+          .child('image/profile/$uid')
+          .listAll()
+          .timeout(Duration(seconds: _timeoutSeconds));
+      for (var item in result.items) {
+        await item.delete().timeout(Duration(seconds: _timeoutSeconds));
+      }
+
       File file = File(path);
       String fileName = DateTime.now().millisecondsSinceEpoch.toString();
       String extension = path.split('.').last;
