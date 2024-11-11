@@ -68,7 +68,7 @@ class UserPostList extends HookConsumerWidget {
                     return Padding(
                       padding: EdgeInsets.only(left: 8.w, right: 8.w, top: 0.h),
                       child: PostCard(
-                        key: ValueKey(userPosts[index]),
+                        key: ValueKey(userPosts[index].post.id),
                         postData: userPosts[index],
                         uidInPreviosPage: uid,
                       ),

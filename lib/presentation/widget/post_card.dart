@@ -185,7 +185,7 @@ class PostCard extends ConsumerWidget {
           );
 
           ref.read(postManagerNotifierProvider.notifier).toggleLike(
-                postData.post.id,
+                postData,
                 uid,
               );
         } catch (e) {
