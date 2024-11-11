@@ -15,17 +15,18 @@ import 'package:green_heart/presentation/dialog/report_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/presentation/widget/user_empty_image.dart';
 import 'package:green_heart/presentation/widget/user_firebase_image.dart';
+import 'package:green_heart/domain/type/post_data.dart';
 
 class CommentCard extends HookConsumerWidget {
   const CommentCard({
     super.key,
     required this.commentData,
-    required this.postId,
+    required this.postData,
     required this.focusNode,
   });
 
   final CommentData commentData;
-  final String postId;
+  final PostData postData;
   final FocusNode focusNode;
 
   @override
@@ -239,7 +240,7 @@ class CommentCard extends HookConsumerWidget {
               backgroundColor: Colors.white10,
             ).during(
               () => ref
-                  .read(commentNotifierProvider(postId).notifier)
+                  .read(commentNotifierProvider(postData.post.id).notifier)
                   .deleteComment(
                     replyComment == null
                         ? commentData.comment.id

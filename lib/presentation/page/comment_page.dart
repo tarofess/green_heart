@@ -13,16 +13,21 @@ import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/domain/type/comment_page_state.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
+import 'package:green_heart/domain/type/post_data.dart';
 
 class CommentPage extends HookConsumerWidget {
-  const CommentPage({super.key, required this.postId, required this.focusNode});
+  const CommentPage({
+    super.key,
+    required this.postData,
+    required this.focusNode,
+  });
 
-  final String postId;
+  final PostData postData;
   final FocusNode focusNode;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final commentState = ref.watch(commentNotifierProvider(postId));
+    final commentState = ref.watch(commentNotifierProvider(postData.post.id));
     final commentPageState = ref.watch(commentPageNotifierProvider);
     final commentTextController = useTextEditingController();
 
@@ -70,7 +75,9 @@ class CommentPage extends HookConsumerWidget {
           error: (e, stackTrace) {
             return AsyncErrorWidget(
               error: e,
-              retry: () => ref.refresh(commentNotifierProvider(postId)),
+              retry: () => ref.refresh(commentNotifierProvider(
+                postData.post.id,
+              )),
             );
           },
         ),
@@ -80,7 +87,7 @@ class CommentPage extends HookConsumerWidget {
 
   Future<void> _refreshComments(WidgetRef ref) async {
     // ignore: unused_result
-    await ref.refresh(commentNotifierProvider(postId).future);
+    ref.refresh(commentNotifierProvider(postData.post.id));
   }
 
   Widget _buildEmptyCommentMessage() {
@@ -121,7 +128,7 @@ class CommentPage extends HookConsumerWidget {
         return CommentCard(
           key: ValueKey(comments[index].comment.id),
           commentData: comments[index],
-          postId: postId,
+          postData: postData,
           focusNode: focusNode,
         );
       },
@@ -174,10 +181,11 @@ class CommentPage extends HookConsumerWidget {
                       backgroundColor: Colors.white10,
                     ).during(
                       () async => ref
-                          .read(commentNotifierProvider(postId).notifier)
+                          .read(commentNotifierProvider(postData.post.id)
+                              .notifier)
                           .addComment(
                             uid,
-                            postId,
+                            postData,
                             commentTextController.text,
                             commentPageState.parentCommentId,
                           ),

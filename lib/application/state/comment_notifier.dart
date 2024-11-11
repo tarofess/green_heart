@@ -9,6 +9,7 @@ import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/application/state/post_manager_notifier.dart';
 import 'package:green_heart/application/di/block_di.dart';
+import 'package:green_heart/domain/type/post_data.dart';
 
 class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
   @override
@@ -80,13 +81,13 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
 
   Future<void> addComment(
     String uid,
-    String postId,
+    PostData postData,
     String comment,
     String? parentCommentId,
   ) async {
     final newComment = await ref.read(commentAddUsecaseProvider).execute(
           uid,
-          postId,
+          postData.post.id,
           comment,
           ref.read(commentPageNotifierProvider).parentCommentId,
         );
@@ -133,7 +134,10 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
       });
     }
 
-    ref.read(postManagerNotifierProvider.notifier).addComment(newComment);
+    ref.read(postManagerNotifierProvider.notifier).addComment(
+          newComment,
+          postData,
+        );
   }
 
   Future<void> deleteComment(String commentId) async {

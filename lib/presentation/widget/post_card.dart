@@ -238,7 +238,7 @@ class PostCard extends ConsumerWidget {
                     top: Radius.circular(20.r),
                   ),
                   child: CommentPage(
-                    postId: postData.post.id,
+                    postData: postData,
                     focusNode: focusNode,
                   ),
                 );
