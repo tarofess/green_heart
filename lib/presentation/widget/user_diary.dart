@@ -26,16 +26,18 @@ class UserDiary extends HookConsumerWidget {
       data: (userPosts) {
         return _buildCalendar(context, ref, userPosts, selectedDay, focusedDay);
       },
-      loading: () => const Center(
-        child: LoadingIndicator(
-          message: '読み込み中',
+      loading: () {
+        return const LoadingIndicator(
+          message: null,
           backgroundColor: Colors.white10,
-        ),
-      ),
-      error: (error, stackTrace) => AsyncErrorWidget(
-        error: error,
-        retry: () => ref.refresh(userPostNotifierProvider(uid)),
-      ),
+        );
+      },
+      error: (error, stackTrace) {
+        return AsyncErrorWidget(
+          error: error,
+          retry: () => ref.refresh(userPostNotifierProvider(uid)),
+        );
+      },
     );
   }
 

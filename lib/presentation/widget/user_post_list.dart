@@ -88,13 +88,15 @@ class UserPostList extends HookConsumerWidget {
                 },
               );
       },
-      loading: () => const Center(
-        child: LoadingIndicator(message: '読み込み中'),
-      ),
-      error: (error, stackTrace) => AsyncErrorWidget(
-        error: error,
-        retry: () => ref.refresh(userPostNotifierProvider(uid)),
-      ),
+      loading: () {
+        return const LoadingIndicator(message: '読み込み中');
+      },
+      error: (error, stackTrace) {
+        return AsyncErrorWidget(
+          error: error,
+          retry: () => ref.refresh(userPostNotifierProvider(uid)),
+        );
+      },
     );
   }
 }
