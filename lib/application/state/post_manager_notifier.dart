@@ -10,6 +10,15 @@ class PostManagerNotifier extends Notifier {
   @override
   void build() {}
 
+  void deletePost(String uid, PostData postData) {
+    ref.read(userPostNotifierProvider(uid).notifier).deletePost(
+          postData.post.id,
+        );
+    ref.read(timelineNotifierProvider.notifier).deletePost(
+          postData.post.id,
+        );
+  }
+
   void toggleLike(PostData postData, String uid) {
     ref.read(userPostNotifierProvider(postData.post.uid).notifier).toggleLike(
           postData.post.id,

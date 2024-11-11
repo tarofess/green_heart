@@ -18,7 +18,6 @@ import 'package:green_heart/application/di/report_di.dart';
 import 'package:green_heart/presentation/widget/user_empty_image.dart';
 import 'package:green_heart/presentation/widget/user_firebase_image.dart';
 import 'package:green_heart/application/state/post_manager_notifier.dart';
-import 'package:green_heart/application/state/user_post_notifier.dart';
 
 class PostCard extends ConsumerWidget {
   PostCard({super.key, required this.postData, this.uidInPreviosPage});
@@ -261,6 +260,8 @@ class PostCard extends ConsumerWidget {
         size: 24.r,
       ),
       onTap: () async {
+        if (uid == null) return;
+
         final result = await showConfirmationDialog(
           context: context,
           title: '投稿の削除',
@@ -280,8 +281,9 @@ class PostCard extends ConsumerWidget {
                   ref.read(postDeleteUsecaseProvider).execute(postData.post.id),
             );
 
-            ref.read(userPostNotifierProvider(uid).notifier).deletePost(
-                  postData.post.id,
+            ref.read(postManagerNotifierProvider.notifier).deletePost(
+                  uid,
+                  postData,
                 );
 
             if (context.mounted) {
