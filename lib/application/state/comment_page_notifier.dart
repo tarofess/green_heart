@@ -1,6 +1,6 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:green_heart/application/state/comment_page_state.dart';
+import 'package:green_heart/domain/type/comment_page_state.dart';
 
 class CommentPageNotifier extends Notifier<CommentPageState> {
   @override

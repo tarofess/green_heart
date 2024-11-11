@@ -49,7 +49,7 @@ class BlockNotifier extends AsyncNotifier<List<BlockData>> {
           block: newBlock,
           profile: profile,
         ));
-      state = AsyncData(updatedBlock);
+      state = AsyncValue.data(updatedBlock);
     });
   }
 
@@ -67,7 +67,7 @@ class BlockNotifier extends AsyncNotifier<List<BlockData>> {
               blockData.block.uid != uid &&
               blockData.block.blockedUid != blockedUid)
           .toList();
-      state = AsyncData(updatedBlock);
+      state = AsyncValue.data(updatedBlock);
     });
   }
 

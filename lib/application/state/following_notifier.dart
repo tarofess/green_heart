@@ -57,11 +57,13 @@ class FollowingNotifier extends FamilyAsyncNotifier<List<FollowData>, String?> {
 
   Future<void> unfollow(String myUid, String targetUid) async {
     await ref.read(followingDeleteUsecaseProvider).execute(myUid, targetUid);
-    state = state.whenData((followDataList) {
-      followDataList.removeWhere((followData) =>
-          followData.follow.followingUid == targetUid &&
-          followData.follow.uid == myUid);
-      return followDataList;
+    state.whenData((followDataList) {
+      final updatedState = followDataList
+          .where((followData) =>
+              !(followData.follow.followingUid == targetUid &&
+                  followData.follow.uid == myUid))
+          .toList();
+      state = AsyncValue.data(updatedState);
     });
 
     ref.read(followerNotifierProvider(targetUid).notifier).removeFollower(

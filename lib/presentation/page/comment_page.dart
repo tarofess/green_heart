@@ -10,7 +10,7 @@ import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/presentation/widget/comment_card.dart';
 import 'package:green_heart/application/state/comment_page_notifier.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
-import 'package:green_heart/application/state/comment_page_state.dart';
+import 'package:green_heart/domain/type/comment_page_state.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 
