@@ -16,13 +16,13 @@ import 'package:green_heart/presentation/dialog/report_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/presentation/widget/user_empty_image.dart';
 import 'package:green_heart/presentation/widget/user_firebase_image.dart';
-import 'package:green_heart/application/state/follower_notifier.dart';
 import 'package:green_heart/presentation/widget/follow_state_widget.dart';
 import 'package:green_heart/presentation/widget/user_page_tab.dart';
 import 'package:green_heart/application/state/user_page_state_notifier.dart';
 import 'package:green_heart/presentation/widget/async_error_widget.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/domain/type/user_page_state.dart';
+import 'package:green_heart/application/state/following_notifier.dart';
 
 class UserPage extends HookConsumerWidget {
   const UserPage({super.key, required this.uid});
@@ -229,14 +229,14 @@ class UserPage extends HookConsumerWidget {
                       final myUid = ref.watch(authStateProvider).value?.uid;
                       if (userPageState.isFollowing) {
                         await ref
-                            .read(followerNotifierProvider(uid).notifier)
+                            .read(followingNotifierProvider(myUid).notifier)
                             .unfollow(myUid!, uid!);
                         ref
                             .read(userPageStateNotifierProvider(uid).notifier)
                             .setIsFollowing(false);
                       } else {
                         await ref
-                            .read(followerNotifierProvider(uid).notifier)
+                            .read(followingNotifierProvider(myUid).notifier)
                             .follow(myUid!, uid!);
                         ref
                             .read(userPageStateNotifierProvider(uid).notifier)
@@ -429,10 +429,10 @@ class UserPage extends HookConsumerWidget {
                   final myUid = ref.watch(authStateProvider).value?.uid;
                   await ref.read(blockNotifierProvider.notifier).addBlock(uid!);
                   await ref
-                      .read(followerNotifierProvider(uid).notifier)
+                      .read(followingNotifierProvider(uid).notifier)
                       .unfollow(myUid!, uid!);
                   await ref
-                      .read(followerNotifierProvider(uid).notifier)
+                      .read(followingNotifierProvider(uid).notifier)
                       .unfollow(uid!, myUid);
                   ref
                       .read(userPageStateNotifierProvider(uid).notifier)

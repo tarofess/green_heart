@@ -1,3 +1,4 @@
+import 'package:green_heart/application/state/follower_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/follow_di.dart';
@@ -32,33 +33,41 @@ class FollowingNotifier extends FamilyAsyncNotifier<List<FollowData>, String?> {
     return Future.wait(followDataList);
   }
 
-  Future<void> addFollow(String myUid, String targetUid) async {
-    final newFollow = Follow(
-      uid: myUid,
-      followingUid: targetUid,
-      createdAt: DateTime.now(),
-    );
-    final profile =
-        await ref.read(profileGetUsecaseProvider).execute(targetUid);
+  Future<void> follow(String myUid, String targetUid) async {
+    final newFollow =
+        await ref.read(followingAddUsecaseProvider).execute(myUid, targetUid);
+    final profile = await ref.read(profileGetUsecaseProvider).execute(
+          targetUid,
+        );
 
     if (profile == null) {
-      throw AppException('フォローするユーザーが存在しません。再度お試しください。');
+      throw AppException('フォローされるユーザーが存在しません。再度お試しください。');
     }
 
     final followData = FollowData(follow: newFollow, profile: profile);
     state.whenData((followDataList) {
-      followDataList.add(followData);
-      return followDataList;
+      state = AsyncValue.data(followDataList..add(followData));
     });
+
+    ref.read(followerNotifierProvider(targetUid).notifier).addFollower(
+          myUid,
+          targetUid,
+        );
   }
 
-  Future<void> removeFollow(String myUid, String targetUid) async {
-    state.whenData((followDataList) {
+  Future<void> unfollow(String myUid, String targetUid) async {
+    await ref.read(followingDeleteUsecaseProvider).execute(myUid, targetUid);
+    state = state.whenData((followDataList) {
       followDataList.removeWhere((followData) =>
           followData.follow.followingUid == targetUid &&
           followData.follow.uid == myUid);
       return followDataList;
     });
+
+    ref.read(followerNotifierProvider(targetUid).notifier).removeFollower(
+          myUid,
+          targetUid,
+        );
   }
 }
 

@@ -5,7 +5,6 @@ import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/application/exception/app_exception.dart';
 import 'package:green_heart/domain/type/follow_data.dart';
 import 'package:green_heart/domain/type/follow.dart';
-import 'package:green_heart/application/state/following_notifier.dart';
 
 class FollowerNotifier extends FamilyAsyncNotifier<List<FollowData>, String?> {
   @override
@@ -32,40 +31,33 @@ class FollowerNotifier extends FamilyAsyncNotifier<List<FollowData>, String?> {
     return Future.wait(followDataList);
   }
 
-  Future<void> follow(String myUid, String targetUid) async {
-    final newFollow =
-        await ref.read(followingAddUsecaseProvider).execute(myUid, targetUid);
-    final profile = await ref.read(profileGetUsecaseProvider).execute(myUid);
+  Future<void> addFollower(String myUid, String targetUid) async {
+    final newFollower = Follow(
+      uid: myUid,
+      followingUid: targetUid,
+      createdAt: DateTime.now(),
+    );
+    final profile = await ref.read(profileGetUsecaseProvider).execute(
+          myUid,
+        );
 
     if (profile == null) {
       throw AppException('フォローされるユーザーが存在しません。再度お試しください。');
     }
 
-    final followData = FollowData(follow: newFollow, profile: profile);
+    final followData = FollowData(follow: newFollower, profile: profile);
     state.whenData((followDataList) {
-      followDataList.add(followData);
-      return followDataList;
+      state = AsyncValue.data(followDataList..add(followData));
     });
-
-    ref.read(followingNotifierProvider(myUid).notifier).addFollow(
-          myUid,
-          targetUid,
-        );
   }
 
-  Future<void> unfollow(String myUid, String targetUid) async {
-    await ref.read(followingDeleteUsecaseProvider).execute(myUid, targetUid);
-    state.whenData((followDataList) {
+  Future<void> removeFollower(String myUid, String targetUid) async {
+    state = state.whenData((followDataList) {
       followDataList.removeWhere((followData) =>
           followData.follow.followingUid == targetUid &&
           followData.follow.uid == myUid);
       return followDataList;
     });
-
-    ref.read(followingNotifierProvider(myUid).notifier).removeFollow(
-          myUid,
-          targetUid,
-        );
   }
 }
 
