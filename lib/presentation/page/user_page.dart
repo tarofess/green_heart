@@ -429,7 +429,7 @@ class UserPage extends HookConsumerWidget {
                   final myUid = ref.watch(authStateProvider).value?.uid;
                   await ref.read(blockNotifierProvider.notifier).addBlock(uid!);
                   await ref
-                      .read(followingNotifierProvider(uid).notifier)
+                      .read(followingNotifierProvider(myUid).notifier)
                       .unfollow(myUid!, uid!);
                   await ref
                       .read(followingNotifierProvider(uid).notifier)
