@@ -6,15 +6,14 @@ class LoadingOverlay {
   final BuildContext _context;
   OverlayEntry? _overlay;
   bool _isLoading = false;
-  String _message;
+  String? _message;
   final Color? backgroundColor;
 
-  LoadingOverlay._private(this._context,
-      [this._message = '処理中', this.backgroundColor]);
+  LoadingOverlay._private(this._context, [this._message, this.backgroundColor]);
 
   factory LoadingOverlay.of(
     BuildContext context, {
-    String message = '処理中',
+    String? message,
     Color? backgroundColor,
   }) {
     return LoadingOverlay._private(context, message, backgroundColor);

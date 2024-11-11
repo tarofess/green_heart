@@ -131,10 +131,7 @@ class AppInfoPage extends HookConsumerWidget {
             );
           },
           loading: () {
-            return const LoadingIndicator(
-              message: '読み込み中',
-              backgroundColor: Colors.white10,
-            );
+            return const LoadingIndicator(message: '読み込み中');
           },
           error: (e, _) {
             return AsyncErrorWidget(

@@ -65,10 +65,7 @@ class CommentPage extends HookConsumerWidget {
             );
           },
           loading: () {
-            return const LoadingIndicator(
-              message: 'コメント取得中',
-              backgroundColor: Colors.white10,
-            );
+            return const LoadingIndicator(message: 'コメント取得中');
           },
           error: (e, stackTrace) {
             return AsyncErrorWidget(
@@ -174,7 +171,6 @@ class CommentPage extends HookConsumerWidget {
 
                     await LoadingOverlay.of(
                       context,
-                      message: 'コメント投稿中',
                       backgroundColor: Colors.white10,
                     ).during(
                       () async => ref

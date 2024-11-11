@@ -318,7 +318,6 @@ class UserPage extends HookConsumerWidget {
           if (context.mounted) {
             await LoadingOverlay.of(
               context,
-              message: 'ブロック解除中',
               backgroundColor: Colors.white10,
             ).during(
               () => ref.read(blockNotifierProvider.notifier).deleteBlock(uid!),
@@ -372,7 +371,6 @@ class UserPage extends HookConsumerWidget {
               if (context.mounted) {
                 await LoadingOverlay.of(
                   context,
-                  message: '通報中',
                   backgroundColor: Colors.white10,
                 ).during(
                   () => ref.read(reportAddUsecaseProvider).execute(
@@ -423,7 +421,6 @@ class UserPage extends HookConsumerWidget {
               if (context.mounted) {
                 await LoadingOverlay.of(
                   context,
-                  message: 'ブロック中',
                   backgroundColor: Colors.white10,
                 ).during(() async {
                   final myUid = ref.watch(authStateProvider).value?.uid;

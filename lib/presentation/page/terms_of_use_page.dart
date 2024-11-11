@@ -38,10 +38,7 @@ class TermsOfUsePage extends ConsumerWidget {
             ),
           );
         },
-        loading: () => const LoadingIndicator(
-          message: '読み込み中',
-          backgroundColor: Colors.white10,
-        ),
+        loading: () => const LoadingIndicator(message: '読み込み中'),
         error: (e, _) => AsyncErrorWidget(
           error: e,
           retry: () => ref.refresh(appInfoNotifierProvider),

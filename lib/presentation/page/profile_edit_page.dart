@@ -84,7 +84,7 @@ class ProfileEditPage extends HookConsumerWidget {
         );
       },
       loading: () {
-        return const LoadingIndicator(message: '保存中');
+        return const LoadingIndicator(message: 'プロフィール取得中');
       },
       error: (error, stackTrace) {
         return AsyncErrorWidget(
@@ -116,7 +116,6 @@ class ProfileEditPage extends HookConsumerWidget {
               if (_formKey.currentState!.validate()) {
                 await LoadingOverlay.of(
                   context,
-                  message: '保存中',
                   backgroundColor: Colors.white10,
                 ).during(() async {
                   await ref.read(profileNotifierProvider.notifier).saveProfile(

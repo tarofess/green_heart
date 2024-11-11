@@ -115,7 +115,6 @@ class PostPage extends HookConsumerWidget {
                   try {
                     await LoadingOverlay.of(
                       context,
-                      message: '投稿中',
                       backgroundColor: Colors.white10,
                     ).during(() async {
                       final uid = ref.watch(authStateProvider).value?.uid;
@@ -256,7 +255,6 @@ class PostPage extends HookConsumerWidget {
                     FocusScope.of(context).unfocus();
                     await LoadingOverlay.of(
                       context,
-                      message: '写真選択中',
                       backgroundColor: Colors.white10,
                     ).during(
                       () => ref

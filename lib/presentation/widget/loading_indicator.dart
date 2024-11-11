@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LoadingIndicator extends StatefulWidget {
-  final String message;
+  final String? message;
   final Color? backgroundColor;
 
   const LoadingIndicator({
@@ -69,35 +69,43 @@ class LoadingIndicatorState extends State<LoadingIndicator> {
                 ),
               ),
               SizedBox(height: 20.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: 32.w),
-                    child: Text(
-                      widget.message,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.white,
-                            decoration: TextDecoration.none,
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.bold,
+              widget.message == null
+                  ? const SizedBox()
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(left: 32.w),
+                          child: Text(
+                            widget.message!,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Colors.white,
+                                  decoration: TextDecoration.none,
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 40.w,
-                    child: Text(
-                      _getDots(),
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.white,
-                            decoration: TextDecoration.none,
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.bold,
+                        ),
+                        SizedBox(
+                          width: 40.w,
+                          child: Text(
+                            _getDots(),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Colors.white,
+                                  decoration: TextDecoration.none,
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
             ],
           ),
         ),

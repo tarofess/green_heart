@@ -60,10 +60,7 @@ class BlockListPage extends ConsumerWidget {
             );
           },
           loading: () {
-            return const LoadingIndicator(
-              message: 'ブロックリスト取得中',
-              backgroundColor: Colors.white10,
-            );
+            return const LoadingIndicator(message: 'ブロックリスト取得中');
           },
           error: (e, _) {
             return AsyncErrorWidget(

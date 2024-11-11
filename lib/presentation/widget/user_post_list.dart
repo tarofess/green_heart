@@ -89,10 +89,7 @@ class UserPostList extends HookConsumerWidget {
               );
       },
       loading: () => const Center(
-        child: LoadingIndicator(
-          message: '読み込み中',
-          backgroundColor: Colors.white10,
-        ),
+        child: LoadingIndicator(message: '読み込み中'),
       ),
       error: (error, stackTrace) => AsyncErrorWidget(
         error: error,

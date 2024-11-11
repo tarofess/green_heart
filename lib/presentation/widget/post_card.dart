@@ -274,7 +274,6 @@ class PostCard extends ConsumerWidget {
           if (context.mounted) {
             await LoadingOverlay.of(
               context,
-              message: '削除中',
               backgroundColor: Colors.white10,
             ).during(
               () =>
@@ -326,7 +325,6 @@ class PostCard extends ConsumerWidget {
           if (context.mounted) {
             await LoadingOverlay.of(
               context,
-              message: '通報中',
               backgroundColor: Colors.white10,
             ).during(
               () => ref.read(reportAddUsecaseProvider).execute(

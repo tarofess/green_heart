@@ -50,17 +50,18 @@ class UserDiaryDetailPage extends ConsumerWidget {
                     ),
                   );
           },
-          loading: () => const Center(
-            child: LoadingIndicator(
-              message: '読み込み中',
-              backgroundColor: Colors.white10,
-            ),
-          ),
-          error: (error, stackTrace) => AsyncErrorWidget(
-            error: error,
-            retry: () => ref
-                .refresh(userPostNotifierProvider(selectedPostData.post.uid)),
-          ),
+          loading: () {
+            return const Center(
+              child: LoadingIndicator(message: '読み込み中'),
+            );
+          },
+          error: (error, stackTrace) {
+            return AsyncErrorWidget(
+              error: error,
+              retry: () => ref
+                  .refresh(userPostNotifierProvider(selectedPostData.post.uid)),
+            );
+          },
         ),
       ),
     );

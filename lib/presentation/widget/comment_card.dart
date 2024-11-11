@@ -236,7 +236,6 @@ class CommentCard extends HookConsumerWidget {
           if (context.mounted) {
             await LoadingOverlay.of(
               context,
-              message: '削除中',
               backgroundColor: Colors.white10,
             ).during(
               () => ref
@@ -278,7 +277,6 @@ class CommentCard extends HookConsumerWidget {
           if (context.mounted) {
             await LoadingOverlay.of(
               context,
-              message: '通報中',
               backgroundColor: Colors.white10,
             ).during(
               () => ref.read(reportAddUsecaseProvider).execute(
