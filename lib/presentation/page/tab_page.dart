@@ -3,14 +3,14 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:green_heart/application/state/tab_page_provider.dart';
+import 'package:green_heart/presentation/page/home_page.dart';
+import 'package:green_heart/presentation/page/timeline_page.dart';
 
 class TabPage extends HookConsumerWidget {
   const TabPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tabPageState = ref.watch(tabPageProvider);
     final selectedIndex = useState(0);
 
     return Scaffold(
@@ -30,7 +30,13 @@ class TabPage extends HookConsumerWidget {
           selectedIndex.value = index;
         },
       ),
-      body: tabPageState[selectedIndex.value],
+      body: IndexedStack(
+        index: selectedIndex.value,
+        children: const [
+          HomePage(),
+          TimelinePage(),
+        ],
+      ),
     );
   }
 }
