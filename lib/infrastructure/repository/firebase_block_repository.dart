@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:green_heart/application/exception/app_exception.dart';
@@ -7,7 +9,7 @@ import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 
 class FirebaseBlockRepository implements BlockRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final int _timeoutSeconds = 15;
+  final int _timeoutSeconds = 10;
 
   @override
   Future<Block> addBlock(Block block) async {
@@ -16,6 +18,9 @@ class FirebaseBlockRepository implements BlockRepository {
       await ref.set(block.toJson()).timeout(Duration(seconds: _timeoutSeconds));
       return block;
     } catch (e, stackTrace) {
+      if (e is TimeoutException) {
+        return block;
+      }
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('ブロックリストへの追加に失敗しました。再度お試しください。');
     }
@@ -45,9 +50,14 @@ class FirebaseBlockRepository implements BlockRepository {
       final docSnapshot =
           await docRef.get().timeout(Duration(seconds: _timeoutSeconds));
       for (final doc in docSnapshot.docs) {
-        await doc.reference.delete();
+        await doc.reference
+            .delete()
+            .timeout(Duration(seconds: _timeoutSeconds));
       }
     } catch (e, stackTrace) {
+      if (e is TimeoutException) {
+        return;
+      }
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('ブロックリストの削除に失敗しました。再度お試しください。');
     }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:green_heart/application/exception/app_exception.dart';
@@ -7,23 +8,26 @@ import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 
 class FirebaseFollowRepository implements FollowRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final int _timeoutSeconds = 15;
+  final int _timeoutSeconds = 10;
 
   @override
   Future<Follow> follow(String uid, String followingUid) async {
-    try {
-      final follow = Follow(
-        uid: uid,
-        followingUid: followingUid,
-        createdAt: DateTime.now(),
-      );
+    final follow = Follow(
+      uid: uid,
+      followingUid: followingUid,
+      createdAt: DateTime.now(),
+    );
+    final ref = _firestore.collection('follow').doc('${uid}_$followingUid');
 
-      final ref = _firestore.collection('follow').doc('${uid}_$followingUid');
+    try {
       await ref
           .set(follow.toJson())
           .timeout(Duration(seconds: _timeoutSeconds));
       return follow;
     } catch (e, stackTrace) {
+      if (e is TimeoutException) {
+        return follow;
+      }
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('フォローに失敗しました。再度お試しください。');
     }
@@ -35,6 +39,9 @@ class FirebaseFollowRepository implements FollowRepository {
       final ref = _firestore.collection('follow').doc('${uid}_$followingUid');
       await ref.delete().timeout(Duration(seconds: _timeoutSeconds));
     } catch (e, stackTrace) {
+      if (e is TimeoutException) {
+        return;
+      }
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('フォロー解除に失敗しました。再度お試しください。');
     }
