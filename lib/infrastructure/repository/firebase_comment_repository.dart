@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:green_heart/application/interface/comment_repository.dart';
@@ -16,23 +17,25 @@ class FirebaseCommentRepository implements CommentRepository {
     String content,
     String? parentCommentId,
   ) async {
+    final docRef = _firestore.collection('comment').doc();
+    final comment = Comment(
+      id: docRef.id,
+      uid: uid,
+      postId: postId,
+      content: content,
+      createdAt: DateTime.now(),
+      parentCommentId: parentCommentId,
+    );
+
     try {
-      final docRef = _firestore.collection('comment').doc();
-
-      final comment = Comment(
-        id: docRef.id,
-        uid: uid,
-        postId: postId,
-        content: content,
-        createdAt: DateTime.now(),
-        parentCommentId: parentCommentId,
-      );
-
       await docRef
           .set(comment.toJson())
           .timeout(Duration(seconds: _timeoutSeconds));
       return comment;
     } catch (e, stackTrace) {
+      if (e is TimeoutException) {
+        return comment;
+      }
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('コメントの追加に失敗しました。再度お試しください。');
     }
@@ -84,6 +87,9 @@ class FirebaseCommentRepository implements CommentRepository {
         await deleteComment(replyComment.id);
       }
     } catch (e, stackTrace) {
+      if (e is TimeoutException) {
+        return;
+      }
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('コメントの削除に失敗しました。再度お試しください。');
     }
