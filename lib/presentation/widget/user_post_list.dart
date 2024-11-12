@@ -52,41 +52,47 @@ class UserPostList extends HookConsumerWidget {
 
     return userPostState.when(
       data: (userPosts) {
-        return userPosts.isEmpty
-            ? Center(
-                child: Text(
-                  '投稿はまだありません',
-                  style: TextStyle(fontSize: 16.sp),
+        return RefreshIndicator(
+          onRefresh: () async {
+            await ref.read(userPostNotifierProvider(uid).notifier).refresh(uid);
+          },
+          child: userPosts.isEmpty
+              ? Center(
+                  child: Text(
+                    '投稿はまだありません',
+                    style: TextStyle(fontSize: 16.sp),
+                  ),
+                )
+              : ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  controller: scrollController,
+                  itemCount: userPosts.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index < userPosts.length) {
+                      return Padding(
+                        padding:
+                            EdgeInsets.only(left: 8.w, right: 8.w, top: 0.h),
+                        child: PostCard(
+                          key: ValueKey(userPosts[index].post.id),
+                          postData: userPosts[index],
+                          uidInPreviosPage: uid,
+                        ),
+                      );
+                    } else {
+                      return ref
+                              .read(userPostScrollStateNotifierProvider(uid))
+                              .hasMore
+                          ? Padding(
+                              padding: EdgeInsets.all(8.w),
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            )
+                          : const SizedBox.shrink();
+                    }
+                  },
                 ),
-              )
-            : ListView.builder(
-                physics: const AlwaysScrollableScrollPhysics(),
-                controller: scrollController,
-                itemCount: userPosts.length + 1,
-                itemBuilder: (context, index) {
-                  if (index < userPosts.length) {
-                    return Padding(
-                      padding: EdgeInsets.only(left: 8.w, right: 8.w, top: 0.h),
-                      child: PostCard(
-                        key: ValueKey(userPosts[index].post.id),
-                        postData: userPosts[index],
-                        uidInPreviosPage: uid,
-                      ),
-                    );
-                  } else {
-                    return ref
-                            .read(userPostScrollStateNotifierProvider(uid))
-                            .hasMore
-                        ? Padding(
-                            padding: EdgeInsets.all(8.w),
-                            child: const Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                          )
-                        : const SizedBox.shrink();
-                  }
-                },
-              );
+        );
       },
       loading: () {
         return const LoadingIndicator(message: '読み込み中');

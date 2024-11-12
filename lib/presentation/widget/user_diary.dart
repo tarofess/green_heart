@@ -24,7 +24,14 @@ class UserDiary extends HookConsumerWidget {
 
     return userPostState.when(
       data: (userPosts) {
-        return _buildCalendar(context, ref, userPosts, selectedDay, focusedDay);
+        return RefreshIndicator(
+            onRefresh: () async {
+              await ref
+                  .read(userPostNotifierProvider(uid).notifier)
+                  .refresh(uid);
+            },
+            child: _buildCalendar(
+                context, ref, userPosts, selectedDay, focusedDay));
       },
       loading: () {
         return const LoadingIndicator(

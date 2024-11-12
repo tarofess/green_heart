@@ -5,7 +5,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/domain/util/date_util.dart';
-import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/state/block_notifier.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
@@ -112,59 +111,54 @@ class UserPage extends HookConsumerWidget {
   ) {
     return DefaultTabController(
       length: 2,
-      child: RefreshIndicator(
-        onRefresh: () async {
-          await ref.read(userPostNotifierProvider(uid).notifier).refresh(uid);
-        },
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: 16.w, right: 16.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            _buildUserImage(
-                              context,
-                              ref,
-                              userPageState.profile,
-                            ),
-                            Expanded(
-                              child: FollowStateWidget(uid: uid),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 20.h),
-                        _buildUserName(context, ref, userPageState.profile),
-                        SizedBox(height: 16.h),
-                        _buildUserBio(context, ref, userPageState.profile),
-                        userPageState.profile?.birthday == null
-                            ? const SizedBox()
-                            : SizedBox(height: 24.h),
-                        _buildBirthDate(context, ref, userPageState.profile),
-                        uid == ref.watch(authStateProvider).value?.uid
-                            ? const SizedBox()
-                            : SizedBox(height: 24.h),
-                        _buildFollowButton(context, ref, userPageState),
-                      ],
-                    ),
+      child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: 16.w, right: 16.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          _buildUserImage(
+                            context,
+                            ref,
+                            userPageState.profile,
+                          ),
+                          Expanded(
+                            child: FollowStateWidget(uid: uid),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20.h),
+                      _buildUserName(context, ref, userPageState.profile),
+                      SizedBox(height: 16.h),
+                      _buildUserBio(context, ref, userPageState.profile),
+                      userPageState.profile?.birthday == null
+                          ? const SizedBox()
+                          : SizedBox(height: 24.h),
+                      _buildBirthDate(context, ref, userPageState.profile),
+                      uid == ref.watch(authStateProvider).value?.uid
+                          ? const SizedBox()
+                          : SizedBox(height: 24.h),
+                      _buildFollowButton(context, ref, userPageState),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            SliverToBoxAdapter(child: SizedBox(height: 8.h)),
-            SliverFillRemaining(
-              child: UserPageTab(
-                uid: uid,
-                scrollController: scrollController,
-              ),
+          ),
+          SliverToBoxAdapter(child: SizedBox(height: 8.h)),
+          SliverFillRemaining(
+            child: UserPageTab(
+              uid: uid,
+              scrollController: scrollController,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
