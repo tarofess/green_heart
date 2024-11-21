@@ -17,7 +17,6 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$ProfileEditPageState {
   Profile? get profile => throw _privateConstructorUsedError;
-  String? get imagePath => throw _privateConstructorUsedError;
   bool get isShowBirthday => throw _privateConstructorUsedError;
   String get savedBirthday => throw _privateConstructorUsedError;
 
@@ -34,11 +33,7 @@ abstract class $ProfileEditPageStateCopyWith<$Res> {
           $Res Function(ProfileEditPageState) then) =
       _$ProfileEditPageStateCopyWithImpl<$Res, ProfileEditPageState>;
   @useResult
-  $Res call(
-      {Profile? profile,
-      String? imagePath,
-      bool isShowBirthday,
-      String savedBirthday});
+  $Res call({Profile? profile, bool isShowBirthday, String savedBirthday});
 
   $ProfileCopyWith<$Res>? get profile;
 }
@@ -60,7 +55,6 @@ class _$ProfileEditPageStateCopyWithImpl<$Res,
   @override
   $Res call({
     Object? profile = freezed,
-    Object? imagePath = freezed,
     Object? isShowBirthday = null,
     Object? savedBirthday = null,
   }) {
@@ -69,10 +63,6 @@ class _$ProfileEditPageStateCopyWithImpl<$Res,
           ? _value.profile
           : profile // ignore: cast_nullable_to_non_nullable
               as Profile?,
-      imagePath: freezed == imagePath
-          ? _value.imagePath
-          : imagePath // ignore: cast_nullable_to_non_nullable
-              as String?,
       isShowBirthday: null == isShowBirthday
           ? _value.isShowBirthday
           : isShowBirthday // ignore: cast_nullable_to_non_nullable
@@ -107,11 +97,7 @@ abstract class _$$ProfileEditPageStateImplCopyWith<$Res>
       __$$ProfileEditPageStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {Profile? profile,
-      String? imagePath,
-      bool isShowBirthday,
-      String savedBirthday});
+  $Res call({Profile? profile, bool isShowBirthday, String savedBirthday});
 
   @override
   $ProfileCopyWith<$Res>? get profile;
@@ -131,7 +117,6 @@ class __$$ProfileEditPageStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? profile = freezed,
-    Object? imagePath = freezed,
     Object? isShowBirthday = null,
     Object? savedBirthday = null,
   }) {
@@ -140,10 +125,6 @@ class __$$ProfileEditPageStateImplCopyWithImpl<$Res>
           ? _value.profile
           : profile // ignore: cast_nullable_to_non_nullable
               as Profile?,
-      imagePath: freezed == imagePath
-          ? _value.imagePath
-          : imagePath // ignore: cast_nullable_to_non_nullable
-              as String?,
       isShowBirthday: null == isShowBirthday
           ? _value.isShowBirthday
           : isShowBirthday // ignore: cast_nullable_to_non_nullable
@@ -161,14 +142,11 @@ class __$$ProfileEditPageStateImplCopyWithImpl<$Res>
 class _$ProfileEditPageStateImpl implements _ProfileEditPageState {
   const _$ProfileEditPageStateImpl(
       {required this.profile,
-      required this.imagePath,
       required this.isShowBirthday,
       this.savedBirthday = ''});
 
   @override
   final Profile? profile;
-  @override
-  final String? imagePath;
   @override
   final bool isShowBirthday;
   @override
@@ -177,7 +155,7 @@ class _$ProfileEditPageStateImpl implements _ProfileEditPageState {
 
   @override
   String toString() {
-    return 'ProfileEditPageState(profile: $profile, imagePath: $imagePath, isShowBirthday: $isShowBirthday, savedBirthday: $savedBirthday)';
+    return 'ProfileEditPageState(profile: $profile, isShowBirthday: $isShowBirthday, savedBirthday: $savedBirthday)';
   }
 
   @override
@@ -186,8 +164,6 @@ class _$ProfileEditPageStateImpl implements _ProfileEditPageState {
         (other.runtimeType == runtimeType &&
             other is _$ProfileEditPageStateImpl &&
             (identical(other.profile, profile) || other.profile == profile) &&
-            (identical(other.imagePath, imagePath) ||
-                other.imagePath == imagePath) &&
             (identical(other.isShowBirthday, isShowBirthday) ||
                 other.isShowBirthday == isShowBirthday) &&
             (identical(other.savedBirthday, savedBirthday) ||
@@ -195,8 +171,8 @@ class _$ProfileEditPageStateImpl implements _ProfileEditPageState {
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, profile, imagePath, isShowBirthday, savedBirthday);
+  int get hashCode =>
+      Object.hash(runtimeType, profile, isShowBirthday, savedBirthday);
 
   /// Create a copy of ProfileEditPageState
   /// with the given fields replaced by the non-null parameter values.
@@ -212,14 +188,11 @@ class _$ProfileEditPageStateImpl implements _ProfileEditPageState {
 abstract class _ProfileEditPageState implements ProfileEditPageState {
   const factory _ProfileEditPageState(
       {required final Profile? profile,
-      required final String? imagePath,
       required final bool isShowBirthday,
       final String savedBirthday}) = _$ProfileEditPageStateImpl;
 
   @override
   Profile? get profile;
-  @override
-  String? get imagePath;
   @override
   bool get isShowBirthday;
   @override

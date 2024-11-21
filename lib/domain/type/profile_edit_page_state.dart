@@ -8,7 +8,6 @@ part 'profile_edit_page_state.freezed.dart';
 class ProfileEditPageState with _$ProfileEditPageState {
   const factory ProfileEditPageState({
     required Profile? profile,
-    required String? imagePath,
     required bool isShowBirthday,
     @Default('') String savedBirthday,
   }) = _ProfileEditPageState;

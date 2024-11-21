@@ -32,11 +32,14 @@ class ProfileEditPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profileEditPageStateProvider =
         ref.watch(profileEditPageStateNotifierProvider);
+    final imagePath = useState<String?>(null);
     final nameTextController = useTextEditingController();
     final birthdayTextController = useTextEditingController();
     final bioTextController = useTextEditingController();
 
     useEffect(() {
+      imagePath.value =
+          profileEditPageStateProvider.valueOrNull?.profile?.imageUrl;
       nameTextController.text =
           profileEditPageStateProvider.valueOrNull?.profile?.name ?? '';
       birthdayTextController.text = DateUtil.convertToJapaneseDate(
@@ -55,6 +58,7 @@ class ProfileEditPage extends HookConsumerWidget {
             appBar: _buildAppBar(
               context,
               ref,
+              imagePath,
               nameTextController,
               birthdayTextController,
               bioTextController,
@@ -66,7 +70,7 @@ class ProfileEditPage extends HookConsumerWidget {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      _buildImageField(context, ref, profileEditPageState),
+                      _buildImageField(context, ref, imagePath),
                       _buildNameField(nameTextController),
                       _buildBirthdayField(
                         context,
@@ -98,6 +102,7 @@ class ProfileEditPage extends HookConsumerWidget {
   AppBar _buildAppBar(
     BuildContext context,
     WidgetRef ref,
+    ValueNotifier<String?> imagePath,
     TextEditingController nameTextController,
     TextEditingController birthdayTextController,
     TextEditingController bioTextController,
@@ -122,7 +127,7 @@ class ProfileEditPage extends HookConsumerWidget {
                         nameTextController.text,
                         birthdayTextController.text,
                         bioTextController.text,
-                        imagePath: profileEditPageState.imagePath,
+                        imagePath: imagePath.value,
                         oldImageUrl: profileEditPageState.profile?.imageUrl,
                       );
                 });
@@ -177,7 +182,7 @@ class ProfileEditPage extends HookConsumerWidget {
   Widget _buildImageField(
     BuildContext context,
     WidgetRef ref,
-    ProfileEditPageState profileEditPageState,
+    ValueNotifier<String?> imagePath,
   ) {
     return Padding(
       padding: EdgeInsets.all(16.w),
@@ -186,16 +191,16 @@ class ProfileEditPage extends HookConsumerWidget {
         children: [
           Center(
             child: GestureDetector(
-              child: profileEditPageState.imagePath == null
+              child: imagePath.value == null
                   ? const UserEmptyImage(radius: 100)
-                  : profileEditPageState.imagePath!.startsWith('http')
+                  : imagePath.value!.startsWith('http')
                       ? UserFirebaseImage(
-                          imageUrl: profileEditPageState.imagePath!,
+                          imageUrl: imagePath.value,
                           radius: 200,
                         )
-                      : _buildSelectedImage(profileEditPageState.imagePath!),
+                      : _buildSelectedImage(imagePath.value!),
               onTap: () async {
-                await showProfileImageActionSheet(context, ref);
+                await showProfileImageActionSheet(context, ref, imagePath);
                 _unfocusAllKeyboard();
               },
             ),
@@ -205,7 +210,7 @@ class ProfileEditPage extends HookConsumerWidget {
             child: TextButton(
               child: Text('プロフィール画像を編集', style: TextStyle(fontSize: 16.sp)),
               onPressed: () async {
-                await showProfileImageActionSheet(context, ref);
+                await showProfileImageActionSheet(context, ref, imagePath);
                 _unfocusAllKeyboard();
               },
             ),

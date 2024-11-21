@@ -11,15 +11,8 @@ class ProfileEditPageStateNotifier extends AsyncNotifier<ProfileEditPageState> {
 
     return ProfileEditPageState(
       profile: profile,
-      imagePath: profile?.imageUrl,
       isShowBirthday: isShowBirthday,
     );
-  }
-
-  void updateImagePath(String? imagePath) {
-    state.whenData((currentState) {
-      state = AsyncValue.data(currentState.copyWith(imagePath: imagePath));
-    });
   }
 
   void setIsShowBirthday(bool isShowBirthday) {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:green_heart/application/state/profile_edit_page_state_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/picture_di.dart';
@@ -9,6 +8,7 @@ import 'package:green_heart/infrastructure/util/permission_util.dart';
 Future<void> showProfileImageActionSheet(
   BuildContext context,
   WidgetRef ref,
+  ValueNotifier<String?> imagePath,
 ) async {
   await showModalBottomSheet(
     context: context,
@@ -36,9 +36,7 @@ Future<void> showProfileImageActionSheet(
                       await ref.read(takePhotoUsecaseProvider).execute();
                   if (picture == null) return;
 
-                  ref
-                      .read(profileEditPageStateNotifierProvider.notifier)
-                      .updateImagePath(picture);
+                  imagePath.value = picture;
                 }
                 if (context.mounted) Navigator.pop(context);
               },
@@ -52,9 +50,7 @@ Future<void> showProfileImageActionSheet(
                       await ref.read(pickImageUsecaseProvider).execute();
                   if (picture == null) return;
 
-                  ref
-                      .read(profileEditPageStateNotifierProvider.notifier)
-                      .updateImagePath(picture);
+                  imagePath.value = picture;
                 }
                 if (context.mounted) Navigator.pop(context);
               },
@@ -63,9 +59,7 @@ Future<void> showProfileImageActionSheet(
               leading: Icon(Icons.cancel, size: 24.r),
               title: Text('画像を削除する', style: TextStyle(fontSize: 14.sp)),
               onTap: () {
-                ref
-                    .read(profileEditPageStateNotifierProvider.notifier)
-                    .updateImagePath(null);
+                imagePath.value = null;
                 Navigator.pop(context);
               },
             ),
