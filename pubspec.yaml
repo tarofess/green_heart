@@ -70,7 +70,7 @@ dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/images/icon.png"
+  image_path: "assets/images/icon_ios.png"
   image_path_android: "assets/images/icon_android.png"
   adaptive_icon_background: "#FFFFFF"
   adaptive_icon_foreground: "assets/images/icon_android.png"
@@ -106,6 +106,7 @@ flutter:
     - assets/update_history.txt
     - assets/images/icon.png
     - assets/images/icon_android.png
+    - assets/images/icon_ios.png
     - assets/images/sakura.png
     - assets/images/leaf.png
 
