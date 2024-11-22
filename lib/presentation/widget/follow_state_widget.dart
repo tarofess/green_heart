@@ -39,7 +39,12 @@ class FollowStateWidget extends ConsumerWidget {
                         },
                         child: Column(
                           children: [
-                            const Text('フォロワー'),
+                            Text(
+                              'フォロワー',
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                              ),
+                            ),
                             Text(
                               follower.length.toString(),
                               style: TextStyle(
@@ -59,7 +64,12 @@ class FollowStateWidget extends ConsumerWidget {
                         },
                         child: Column(
                           children: [
-                            const Text('フォロー中'),
+                            Text(
+                              'フォロー中',
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                              ),
+                            ),
                             Text(
                               following.length.toString(),
                               style: TextStyle(
