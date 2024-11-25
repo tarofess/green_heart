@@ -16,17 +16,12 @@ class AppInfoNotifier extends AsyncNotifier<AppInfo> {
             .read(appInfoReadTextFileUsecaseProvider)
             .execute('privacy_policy.txt') ??
         'プライバシーポリシーを取得できませんでした。';
-    final updateHistoryText = await ref
-            .read(appInfoReadTextFileUsecaseProvider)
-            .execute('update_history.txt') ??
-        '更新履歴を取得できませんでした。';
 
     return AppInfo(
       developerName: developerName,
       appVersion: appVersion,
       termsOfUse: termsOfUse,
       privacyPolicy: privacyPolicy,
-      updateHistory: updateHistoryText,
     );
   }
 }

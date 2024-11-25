@@ -109,23 +109,6 @@ class AppInfoPage extends HookConsumerWidget {
                     ),
                     isExpanded: isExpandedList.value[3],
                   ),
-                  ExpansionPanel(
-                    headerBuilder: (BuildContext context, bool isExpanded) {
-                      return ListTile(
-                        title: Text(
-                          '更新履歴',
-                          style: TextStyle(fontSize: 16.sp),
-                        ),
-                      );
-                    },
-                    body: ListTile(
-                      title: Text(
-                        appInfo.updateHistory,
-                        style: TextStyle(fontSize: 16.sp),
-                      ),
-                    ),
-                    isExpanded: isExpandedList.value[4],
-                  ),
                 ],
               ),
             );

@@ -20,7 +20,6 @@ mixin _$AppInfo {
   String get appVersion => throw _privateConstructorUsedError;
   String get termsOfUse => throw _privateConstructorUsedError;
   String get privacyPolicy => throw _privateConstructorUsedError;
-  String get updateHistory => throw _privateConstructorUsedError;
 
   /// Create a copy of AppInfo
   /// with the given fields replaced by the non-null parameter values.
@@ -37,8 +36,7 @@ abstract class $AppInfoCopyWith<$Res> {
       {String developerName,
       String appVersion,
       String termsOfUse,
-      String privacyPolicy,
-      String updateHistory});
+      String privacyPolicy});
 }
 
 /// @nodoc
@@ -60,7 +58,6 @@ class _$AppInfoCopyWithImpl<$Res, $Val extends AppInfo>
     Object? appVersion = null,
     Object? termsOfUse = null,
     Object? privacyPolicy = null,
-    Object? updateHistory = null,
   }) {
     return _then(_value.copyWith(
       developerName: null == developerName
@@ -79,10 +76,6 @@ class _$AppInfoCopyWithImpl<$Res, $Val extends AppInfo>
           ? _value.privacyPolicy
           : privacyPolicy // ignore: cast_nullable_to_non_nullable
               as String,
-      updateHistory: null == updateHistory
-          ? _value.updateHistory
-          : updateHistory // ignore: cast_nullable_to_non_nullable
-              as String,
     ) as $Val);
   }
 }
@@ -98,8 +91,7 @@ abstract class _$$AppInfoImplCopyWith<$Res> implements $AppInfoCopyWith<$Res> {
       {String developerName,
       String appVersion,
       String termsOfUse,
-      String privacyPolicy,
-      String updateHistory});
+      String privacyPolicy});
 }
 
 /// @nodoc
@@ -119,7 +111,6 @@ class __$$AppInfoImplCopyWithImpl<$Res>
     Object? appVersion = null,
     Object? termsOfUse = null,
     Object? privacyPolicy = null,
-    Object? updateHistory = null,
   }) {
     return _then(_$AppInfoImpl(
       developerName: null == developerName
@@ -138,10 +129,6 @@ class __$$AppInfoImplCopyWithImpl<$Res>
           ? _value.privacyPolicy
           : privacyPolicy // ignore: cast_nullable_to_non_nullable
               as String,
-      updateHistory: null == updateHistory
-          ? _value.updateHistory
-          : updateHistory // ignore: cast_nullable_to_non_nullable
-              as String,
     ));
   }
 }
@@ -153,8 +140,7 @@ class _$AppInfoImpl implements _AppInfo {
       {required this.developerName,
       required this.appVersion,
       required this.termsOfUse,
-      required this.privacyPolicy,
-      required this.updateHistory});
+      required this.privacyPolicy});
 
   @override
   final String developerName;
@@ -164,12 +150,10 @@ class _$AppInfoImpl implements _AppInfo {
   final String termsOfUse;
   @override
   final String privacyPolicy;
-  @override
-  final String updateHistory;
 
   @override
   String toString() {
-    return 'AppInfo(developerName: $developerName, appVersion: $appVersion, termsOfUse: $termsOfUse, privacyPolicy: $privacyPolicy, updateHistory: $updateHistory)';
+    return 'AppInfo(developerName: $developerName, appVersion: $appVersion, termsOfUse: $termsOfUse, privacyPolicy: $privacyPolicy)';
   }
 
   @override
@@ -184,14 +168,12 @@ class _$AppInfoImpl implements _AppInfo {
             (identical(other.termsOfUse, termsOfUse) ||
                 other.termsOfUse == termsOfUse) &&
             (identical(other.privacyPolicy, privacyPolicy) ||
-                other.privacyPolicy == privacyPolicy) &&
-            (identical(other.updateHistory, updateHistory) ||
-                other.updateHistory == updateHistory));
+                other.privacyPolicy == privacyPolicy));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, developerName, appVersion,
-      termsOfUse, privacyPolicy, updateHistory);
+  int get hashCode => Object.hash(
+      runtimeType, developerName, appVersion, termsOfUse, privacyPolicy);
 
   /// Create a copy of AppInfo
   /// with the given fields replaced by the non-null parameter values.
@@ -207,8 +189,7 @@ abstract class _AppInfo implements AppInfo {
       {required final String developerName,
       required final String appVersion,
       required final String termsOfUse,
-      required final String privacyPolicy,
-      required final String updateHistory}) = _$AppInfoImpl;
+      required final String privacyPolicy}) = _$AppInfoImpl;
 
   @override
   String get developerName;
@@ -218,8 +199,6 @@ abstract class _AppInfo implements AppInfo {
   String get termsOfUse;
   @override
   String get privacyPolicy;
-  @override
-  String get updateHistory;
 
   /// Create a copy of AppInfo
   /// with the given fields replaced by the non-null parameter values.

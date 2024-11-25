@@ -103,7 +103,6 @@ flutter:
   assets:
     - assets/terms_of_use.txt
     - assets/privacy_policy.txt
-    - assets/update_history.txt
     - assets/images/icon.png
     - assets/images/icon_android.png
     - assets/images/icon_ios.png

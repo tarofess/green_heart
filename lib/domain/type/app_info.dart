@@ -9,6 +9,5 @@ class AppInfo with _$AppInfo {
     required String appVersion,
     required String termsOfUse,
     required String privacyPolicy,
-    required String updateHistory,
   }) = _AppInfo;
 }
