@@ -12,6 +12,7 @@ import 'package:green_heart/application/di/comment_di.dart';
 import 'package:green_heart/application/di/like_di.dart';
 import 'package:green_heart/application/state/account_state_notifier.dart';
 import 'package:green_heart/application/di/follow_di.dart';
+import 'package:green_heart/application/di/notification_di.dart';
 
 class AccountNotifier extends Notifier<AccountInfo> {
   @override
@@ -59,6 +60,7 @@ class AccountNotifier extends Notifier<AccountInfo> {
     await ref.read(accountReauthUsecaseProvider).execute(user);
 
     final deleteTasks = Future.wait([
+      ref.read(notificationDeleteUsecaseProvider).execute(user),
       ref.read(likeDeleteAllUsecaseProvider).execute(user),
       ref.read(commentDeleteAllUsecaseProvider).execute(user),
       ref.read(followDeleteAllUsecaseProvider).execute(user),
