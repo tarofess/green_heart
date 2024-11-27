@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:algoliasearch/algoliasearch.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
@@ -12,6 +13,7 @@ import 'package:green_heart/application/state/timeline_scroll_state_notifier.dar
 import 'package:green_heart/domain/type/timeline_scroll_state.dart';
 import 'package:green_heart/application/state/user_post_scroll_state_notifier.dart';
 import 'package:green_heart/domain/type/user_post_scroll_state.dart';
+import 'package:green_heart/env/env.dart';
 
 class FirebasePostRepository implements PostRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -122,6 +124,44 @@ class FirebasePostRepository implements PostRepository {
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('投稿の取得に失敗しました。再度お試しください。');
+    }
+  }
+
+  @override
+  Future<List<Post>> getPostsBySearchWord(
+    String searchWord,
+    String? uid,
+  ) async {
+    try {
+      const int pageSize = 15;
+      final client = SearchClient(
+        appId: Env.appId,
+        apiKey: Env.apiKey,
+      );
+
+      SearchForHits queryHits;
+      if (uid == null) {
+        queryHits = SearchForHits(
+          indexName: 'post',
+          query: searchWord,
+          hitsPerPage: pageSize,
+        );
+      } else {
+        queryHits = SearchForHits(
+          indexName: 'post',
+          query: searchWord,
+          hitsPerPage: pageSize,
+          filters: 'uid:$uid',
+        );
+      }
+
+      final responseHits = await client.searchIndex(request: queryHits);
+      return responseHits.hits
+          .map((hit) => Post.fromJson(hit as Map<String, dynamic>))
+          .toList();
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('投稿の検索に失敗しました。再度お試しください。');
     }
   }
 

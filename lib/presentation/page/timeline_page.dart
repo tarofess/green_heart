@@ -62,7 +62,7 @@ class TimelinePage extends HookConsumerWidget {
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: PostSearch(postSearchType: PostSearchType.timeline),
+                delegate: PostSearch(),
               );
             },
           )

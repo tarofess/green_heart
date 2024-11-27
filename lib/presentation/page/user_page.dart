@@ -89,10 +89,7 @@ class UserPage extends HookConsumerWidget {
                 onPressed: () {
                   showSearch(
                     context: context,
-                    delegate: PostSearch(
-                      postSearchType: PostSearchType.user,
-                      uid: uid,
-                    ),
+                    delegate: PostSearch(uid: uid),
                   );
                 },
               ),

@@ -20,6 +20,7 @@ abstract class PostRepository {
     TimeLineScrollState timeLineScrollState,
     TimelineScrollStateNotifier timelineScrollStateNotifier,
   );
+  Future<List<Post>> getPostsBySearchWord(String searchWord, String? uid);
   Future<List<String>> uploadImages(String uid, List<String> paths);
   Future<void> deletePost(String postId);
   Future<void> deleteAllPostsByUid(String uid);
