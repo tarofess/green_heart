@@ -14,6 +14,8 @@ import 'package:green_heart/domain/type/timeline_scroll_state.dart';
 import 'package:green_heart/application/state/user_post_scroll_state_notifier.dart';
 import 'package:green_heart/domain/type/user_post_scroll_state.dart';
 import 'package:green_heart/env/env.dart';
+import 'package:green_heart/application/state/search_post_scroll_state_notifier.dart';
+import 'package:green_heart/domain/type/search_post_scroll_state.dart';
 
 class FirebasePostRepository implements PostRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -131,9 +133,14 @@ class FirebasePostRepository implements PostRepository {
   Future<List<Post>> getPostsBySearchWord(
     String searchWord,
     String? uid,
+    SearchPostScrollState searchPostScrollState,
+    SearchPostScrollStateNotifier searchPostScrollStateNotifier,
   ) async {
     try {
       const int pageSize = 15;
+
+      if (!searchPostScrollState.hasMore) return [];
+
       final client = SearchClient(
         appId: Env.appId,
         apiKey: Env.apiKey,
@@ -145,6 +152,7 @@ class FirebasePostRepository implements PostRepository {
           indexName: 'post',
           query: searchWord,
           hitsPerPage: pageSize,
+          page: searchPostScrollState.currentPage,
         );
       } else {
         queryHits = SearchForHits(
@@ -152,10 +160,20 @@ class FirebasePostRepository implements PostRepository {
           query: searchWord,
           hitsPerPage: pageSize,
           filters: 'uid:$uid',
+          page: searchPostScrollState.currentPage,
         );
       }
 
-      final responseHits = await client.searchIndex(request: queryHits);
+      final responseHits = await client.searchIndex(request: queryHits).timeout(
+            Duration(seconds: _timeoutSeconds),
+          );
+      if (responseHits.hits.isEmpty) {
+        searchPostScrollStateNotifier.updateHasMore(false);
+      } else {
+        searchPostScrollStateNotifier.updateCurrentPage(
+          searchPostScrollState.currentPage + 1,
+        );
+      }
       return responseHits.hits
           .map((hit) => Post.fromJson(hit as Map<String, dynamic>))
           .toList();

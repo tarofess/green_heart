@@ -5,6 +5,7 @@ import 'package:green_heart/application/state/timeline_notifier.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/domain/type/post_data.dart';
+import 'package:green_heart/application/state/search_post_notifier.dart';
 
 class PostManagerNotifier extends Notifier {
   @override
@@ -17,6 +18,9 @@ class PostManagerNotifier extends Notifier {
     ref.read(timelineNotifierProvider.notifier).deletePost(
           postData.post.id,
         );
+    ref.read(searchPostNotifierProvider.notifier).deletePost(
+          postData.post.id,
+        );
   }
 
   void toggleLike(PostData postData, String uid) {
@@ -25,6 +29,10 @@ class PostManagerNotifier extends Notifier {
           uid,
         );
     ref.read(timelineNotifierProvider.notifier).toggleLike(
+          postData.post.id,
+          uid,
+        );
+    ref.read(searchPostNotifierProvider.notifier).toggleLike(
           postData.post.id,
           uid,
         );
@@ -41,12 +49,14 @@ class PostManagerNotifier extends Notifier {
     }
 
     ref.read(timelineNotifierProvider.notifier).addComment(newComment);
+    ref.read(searchPostNotifierProvider.notifier).addComment(newComment);
   }
 
   void deleteComment(String commentId) {
     final uid = ref.watch(authStateProvider).value?.uid;
     ref.read(userPostNotifierProvider(uid).notifier).deleteComment(commentId);
     ref.read(timelineNotifierProvider.notifier).deleteComment(commentId);
+    ref.read(searchPostNotifierProvider.notifier).deleteComment(commentId);
   }
 }
 

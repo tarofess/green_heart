@@ -12,6 +12,8 @@ import 'package:green_heart/domain/type/post.dart';
 import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/application/di/block_di.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
+import 'package:green_heart/application/state/search_post_scroll_state_notifier.dart';
+import 'package:green_heart/application/state/profile_notifier.dart';
 
 class SearchPostNotifier extends Notifier<List<PostData>> {
   @override
@@ -19,17 +21,23 @@ class SearchPostNotifier extends Notifier<List<PostData>> {
     return [];
   }
 
-  Future<List<PostData>> getPostsBySearchWord(
+  Future<void> getPostsBySearchWord(
     String searchWord,
     String? uid,
   ) async {
+    final searchPostScrollState =
+        ref.read(searchPostScrollStateNotifierProvider);
+    if (!searchPostScrollState.hasMore) return;
+
     final posts = await ref.read(postSearchResultGetUsecaseProvider).execute(
           searchWord,
           uid,
+          searchPostScrollState,
+          ref.read(searchPostScrollStateNotifierProvider.notifier),
         );
     final postData = await _createPostDataList(posts);
     final postDataFilteredByBlock = await _filterByBlock(postData);
-    return postDataFilteredByBlock;
+    state = [...state, ...postDataFilteredByBlock];
   }
 
   Future<List<PostData>> _createPostDataList(List<Post> posts) async {
@@ -85,6 +93,67 @@ class SearchPostNotifier extends Notifier<List<PostData>> {
     }).toList();
 
     return filteredCommentPosts;
+  }
+
+  Future<void> deletePost(String postId) async {
+    final updatedPostData =
+        state.where((postData) => postData.post.id != postId).toList();
+    state = updatedPostData;
+  }
+
+  void toggleLike(String postId, String uid) {
+    final updatedPostData = state.map((postData) {
+      if (postData.post.id == postId) {
+        final likes = List<Like>.from(postData.likes);
+        final isLiked = likes.any((element) => element.uid == uid);
+        if (isLiked) {
+          likes.removeWhere((element) => element.uid == uid);
+        } else {
+          likes.add(Like(
+            uid: uid,
+            postId: postId,
+            createdAt: DateTime.now(),
+          ));
+        }
+        return postData.copyWith(likes: likes);
+      }
+      return postData;
+    }).toList();
+
+    state = updatedPostData;
+  }
+
+  void addComment(Comment comment) {
+    final updatedPostData = state.map((postData) {
+      if (postData.post.id == comment.postId) {
+        final comments = List<CommentData>.from(postData.comments);
+        final profile = ref.read(profileNotifierProvider).value;
+        comments.add(CommentData(
+          comment: comment,
+          profile: profile,
+        ));
+        return postData.copyWith(comments: comments);
+      }
+      return postData;
+    }).toList();
+
+    state = updatedPostData;
+  }
+
+  void deleteComment(String commentId) {
+    final updatedPostData = state.map((postData) {
+      final comments = List<CommentData>.from(postData.comments);
+      comments.removeWhere((commentData) =>
+          commentData.comment.id == commentId ||
+          commentData.comment.parentCommentId == commentId);
+      return postData.copyWith(comments: comments);
+    }).toList();
+
+    state = updatedPostData;
+  }
+
+  void reset() {
+    state = [];
   }
 }
 
