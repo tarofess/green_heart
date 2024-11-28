@@ -72,7 +72,7 @@ class PostSearchResults extends HookConsumerWidget {
           _loadMorePosts(context, ref, isLoadingMore);
         }
       });
-      _loadInitialPosts(ref, isSearching);
+      _loadInitialPosts(context, ref, isSearching);
       return () => scrollController.dispose();
     }, []);
 
@@ -114,6 +114,7 @@ class PostSearchResults extends HookConsumerWidget {
   }
 
   Future<void> _loadInitialPosts(
+    BuildContext context,
     WidgetRef ref,
     ValueNotifier<bool> isSearching,
   ) async {
@@ -122,6 +123,14 @@ class PostSearchResults extends HookConsumerWidget {
       await ref
           .read(searchPostNotifierProvider.notifier)
           .getPostsBySearchWord(query, uid);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('データの読み込みに失敗しました。再試行してください。'),
+          ),
+        );
+      }
     } finally {
       isSearching.value = false;
     }
