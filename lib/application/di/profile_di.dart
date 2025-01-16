@@ -13,8 +13,8 @@ final profileSaveUsecaseProvider = Provider(
     final uid = ref.watch(authStateProvider).value?.uid;
     return ProfileSaveUsecase(
       FirebaseProfileRepository(),
-      ref.watch(profileNotifierProvider.notifier),
-      ref.watch(userPostNotifierProvider(uid).notifier),
+      ref.read(profileNotifierProvider.notifier),
+      ref.read(userPostNotifierProvider(uid).notifier),
     );
   },
 );

@@ -9,16 +9,15 @@ import 'package:green_heart/application/usecase/post_delete_all_usecase.dart';
 import 'package:green_heart/application/usecase/post_search_result_get_usecase.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
-import 'package:green_heart/application/usecase/profile_get_usecase.dart';
-import 'package:green_heart/infrastructure/repository/firebase_profile_repository.dart';
+import 'package:green_heart/application/di/profile_di.dart';
 
 final postAddUsecaseProvider = Provider(
   (ref) {
     final uid = ref.watch(authStateProvider).value?.uid;
     return PostAddUsecase(
       FirebasePostRepository(),
-      ProfileGetUsecase(FirebaseProfileRepository()),
-      ref.watch(userPostNotifierProvider(uid).notifier),
+      ref.read(profileGetUsecaseProvider),
+      ref.read(userPostNotifierProvider(uid).notifier),
     );
   },
 );

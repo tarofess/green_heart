@@ -8,6 +8,10 @@ import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/application/state/account_info_notifier.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/domain/type/account_info.dart';
+import 'package:green_heart/application/di/account_di.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
+import 'package:green_heart/application/state/profile_notifier.dart';
+import 'package:green_heart/domain/type/result.dart';
 
 class AccountInfoPage extends HookConsumerWidget {
   const AccountInfoPage({super.key});
@@ -137,19 +141,28 @@ class AccountInfoPage extends HookConsumerWidget {
           if (!result2) return;
         }
 
-        try {
-          if (context.mounted) {
-            await LoadingOverlay.of(context, message: 'アカウント削除中').during(
-              () => ref.read(accountNotifierProvider.notifier).deleteAccount(),
-            );
-          }
-        } catch (e) {
-          if (context.mounted) {
-            await showErrorDialog(
-              context: context,
-              title: 'アカウント削除エラー',
-              content: e.toString(),
-            );
+        if (context.mounted) {
+          final result =
+              await LoadingOverlay.of(context, message: 'アカウント削除中').during(() {
+            final user = ref.read(authStateProvider).value;
+            final profile = ref.read(profileNotifierProvider).value;
+            return ref.read(accountDeleteUsecaseProvider).execute(
+                  user,
+                  profile,
+                );
+          });
+
+          switch (result) {
+            case Success():
+              break;
+            case Failure(message: final message):
+              if (context.mounted) {
+                await showErrorDialog(
+                  context: context,
+                  title: 'アカウント削除エラー',
+                  content: message,
+                );
+              }
           }
         }
       },

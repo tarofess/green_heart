@@ -9,17 +9,21 @@ class AccountReauthUsecase {
   AccountReauthUsecase(this._authService);
 
   Future<void> execute(User user) async {
-    String? providerId = user.providerData
-        .firstWhere((info) =>
-            info.providerId == 'google.com' || info.providerId == 'apple.com')
-        .providerId;
+    try {
+      String? providerId = user.providerData
+          .firstWhere((info) =>
+              info.providerId == 'google.com' || info.providerId == 'apple.com')
+          .providerId;
 
-    if (providerId == 'google.com') {
-      await _authService.reauthenticateWithGoogle();
-    } else if (providerId == 'apple.com') {
-      await _authService.reauthenticateWithApple();
-    } else {
-      throw AppException('サポートされていない認証プロバイダです。');
+      if (providerId == 'google.com') {
+        await _authService.reauthenticateWithGoogle();
+      } else if (providerId == 'apple.com') {
+        await _authService.reauthenticateWithApple();
+      } else {
+        throw AppException('サポートされていない認証プロバイダです。');
+      }
+    } catch (e) {
+      throw AppException('アカウントの再認証に失敗しました。再度お試しください。');
     }
   }
 }
