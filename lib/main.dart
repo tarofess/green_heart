@@ -36,14 +36,16 @@ class MyApp extends ConsumerWidget {
             supportedLocales: const [Locale('ja', 'JP')],
             locale: const Locale('ja', 'JP'),
           ),
-          loading: () => const MaterialApp(
+          loading: () => MaterialApp(
             debugShowCheckedModeBanner: false,
-            home: Scaffold(
+            theme: createDefaultTheme(),
+            home: const Scaffold(
               body: LoadingIndicator(message: '初期化中'),
             ),
           ),
           error: (e, _) => MaterialApp(
             debugShowCheckedModeBanner: false,
+            theme: createDefaultTheme(),
             home: Scaffold(
               body: AsyncErrorWidget(
                 error: e,
