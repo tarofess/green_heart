@@ -11,7 +11,7 @@ class UserFirebaseImage extends ConsumerWidget {
   });
 
   final String? imageUrl;
-  final int radius;
+  final double radius;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

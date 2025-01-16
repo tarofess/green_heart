@@ -201,7 +201,7 @@ class ProfileEditPage extends HookConsumerWidget {
                   : imagePath.value!.startsWith('http')
                       ? UserFirebaseImage(
                           imageUrl: imagePath.value,
-                          radius: 200,
+                          radius: 200.r,
                         )
                       : _buildSelectedImage(imagePath.value!),
               onTap: () async {
@@ -230,8 +230,8 @@ class ProfileEditPage extends HookConsumerWidget {
       borderRadius: BorderRadius.circular(100.r),
       child: Image.file(
         File(imageUrl),
-        width: 200.w,
-        height: 200.h,
+        width: 200.r,
+        height: 200.r,
         fit: BoxFit.cover,
       ),
     );
@@ -317,38 +317,16 @@ class ProfileEditPage extends HookConsumerWidget {
               const Spacer(),
               Row(
                 children: [
-                  Radio<bool>(
-                    value: true,
-                    groupValue: profileEditPageState.isShowBirthday,
-                    onChanged: (value) {
-                      if (value == null) return;
-
-                      ref
-                          .read(profileEditPageStateNotifierProvider.notifier)
-                          .setIsShowBirthday(value);
-                      if (value) {
-                        birthdayTextController.text =
-                            profileEditPageState.savedBirthday;
-                      }
-                    },
+                  _buildShowRadioButton(
+                    ref,
+                    profileEditPageState,
+                    birthdayTextController,
                   ),
                   Text('表示', style: TextStyle(fontSize: 16.sp)),
-                  Radio<bool>(
-                    value: false,
-                    groupValue: profileEditPageState.isShowBirthday,
-                    onChanged: (value) {
-                      if (value == null) return;
-
-                      ref
-                          .read(profileEditPageStateNotifierProvider.notifier)
-                          .setIsShowBirthday(value);
-                      if (!value) {
-                        ref
-                            .read(profileEditPageStateNotifierProvider.notifier)
-                            .setSavedBirthday(birthdayTextController.text);
-                        birthdayTextController.clear();
-                      }
-                    },
+                  _buildHideRadioButton(
+                    ref,
+                    profileEditPageState,
+                    birthdayTextController,
                   ),
                   Text('非表示', style: TextStyle(fontSize: 16.sp)),
                 ],
@@ -368,6 +346,51 @@ class ProfileEditPage extends HookConsumerWidget {
             )
         ],
       ),
+    );
+  }
+
+  Widget _buildShowRadioButton(
+    WidgetRef ref,
+    ProfileEditPageState profileEditPageState,
+    TextEditingController birthdayTextController,
+  ) {
+    return Radio<bool>(
+      value: true,
+      groupValue: profileEditPageState.isShowBirthday,
+      onChanged: (value) {
+        if (value == null) return;
+
+        ref
+            .read(profileEditPageStateNotifierProvider.notifier)
+            .setIsShowBirthday(value);
+        if (value) {
+          birthdayTextController.text = profileEditPageState.savedBirthday;
+        }
+      },
+    );
+  }
+
+  Widget _buildHideRadioButton(
+    WidgetRef ref,
+    ProfileEditPageState profileEditPageState,
+    TextEditingController birthdayTextController,
+  ) {
+    return Radio<bool>(
+      value: false,
+      groupValue: profileEditPageState.isShowBirthday,
+      onChanged: (value) {
+        if (value == null) return;
+
+        ref
+            .read(profileEditPageStateNotifierProvider.notifier)
+            .setIsShowBirthday(value);
+        if (!value) {
+          ref
+              .read(profileEditPageStateNotifierProvider.notifier)
+              .setSavedBirthday(birthdayTextController.text);
+          birthdayTextController.clear();
+        }
+      },
     );
   }
 
