@@ -10,8 +10,9 @@ import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/presentation/viewmodel/post_page_viewmodel.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
-import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
+import 'package:green_heart/application/di/post_di.dart';
+import 'package:green_heart/domain/type/result.dart';
 
 class PostPage extends HookConsumerWidget {
   const PostPage({super.key, required this.selectedDay});
@@ -112,22 +113,26 @@ class PostPage extends HookConsumerWidget {
           postTextController.text.isNotEmpty || selectedImages.value.isNotEmpty
               ? () async {
                   focusNode.unfocus();
-                  try {
-                    await LoadingOverlay.of(
-                      context,
-                      backgroundColor: Colors.white10,
-                    ).during(() async {
+
+                  final result = await LoadingOverlay.of(
+                    context,
+                    backgroundColor: Colors.white10,
+                  ).during(
+                    () async {
                       final uid = ref.watch(authStateProvider).value?.uid;
-                      await ref
-                          .read(userPostNotifierProvider(uid).notifier)
-                          .addPost(
+                      return await ref.read(postAddUsecaseProvider).execute(
+                            uid,
                             postTextController.text,
                             selectedImages.value,
                             selectedDay,
                           );
-                    });
+                    },
+                  );
 
-                    if (context.mounted) {
+                  if (!context.mounted) return;
+
+                  switch (result) {
+                    case Success():
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
@@ -136,16 +141,14 @@ class PostPage extends HookConsumerWidget {
                           ),
                         ),
                       );
-                      if (context.mounted) context.pop();
-                    }
-                  } catch (e) {
-                    if (context.mounted) {
+                      context.pop();
+                      break;
+                    case Failure(message: final message):
                       showErrorDialog(
                         context: context,
                         title: '投稿エラー',
-                        content: e.toString(),
+                        content: message,
                       );
-                    }
                   }
                 }
               : null,

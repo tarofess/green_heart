@@ -30,8 +30,9 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
   }
 
   Future<List<Post>> _fetchNextBatch(String uid) async {
-    final userPostScrollState =
-        ref.read(userPostScrollStateNotifierProvider(uid));
+    final userPostScrollState = ref.read(
+      userPostScrollStateNotifierProvider(uid),
+    );
     if (!userPostScrollState.hasMore) return [];
 
     final posts = await ref.read(postGetUsecaseProvider).execute(
@@ -139,32 +140,7 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
     return postData;
   }
 
-  Future<void> addPost(
-    String content,
-    List<String> selectedImages,
-    DateTime selectedDay,
-  ) async {
-    final uid = ref.read(authStateProvider).value?.uid;
-    if (uid == null) {
-      throw Exception('投稿ができません。アカウントがログアウトされている可能性があります。');
-    }
-
-    final addedPost = await ref.read(postAddUsecaseProvider).execute(
-          uid,
-          content,
-          selectedImages,
-          selectedDay,
-        );
-
-    final profile = await ref.read(profileGetUsecaseProvider).execute(uid);
-
-    final newPostData = PostData(
-      post: addedPost,
-      userProfile: profile,
-      likes: [],
-      comments: [],
-    );
-
+  void addPost(PostData newPostData) async {
     state = state.whenData((posts) => [newPostData, ...posts]);
   }
 
