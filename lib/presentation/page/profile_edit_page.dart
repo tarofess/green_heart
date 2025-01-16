@@ -12,7 +12,6 @@ import 'package:green_heart/presentation/dialog/message_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/presentation/widget/profile_image_action_sheet.dart';
 import 'package:green_heart/domain/util/date_util.dart';
-import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/application/state/account_state_notifier.dart';
 import 'package:green_heart/presentation/widget/user_empty_image.dart';
 import 'package:green_heart/presentation/widget/user_firebase_image.dart';
@@ -20,6 +19,9 @@ import 'package:green_heart/application/state/profile_edit_page_state_notifier.d
 import 'package:green_heart/domain/type/profile_edit_page_state.dart';
 import 'package:green_heart/presentation/widget/async_error_widget.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
+import 'package:green_heart/application/di/profile_di.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
+import 'package:green_heart/domain/type/result.dart';
 
 class ProfileEditPage extends HookConsumerWidget {
   ProfileEditPage({super.key});
@@ -116,64 +118,67 @@ class ProfileEditPage extends HookConsumerWidget {
       toolbarHeight: 58.h,
       actions: [
         TextButton(
-          onPressed: () async {
-            try {
-              if (_formKey.currentState!.validate()) {
-                await LoadingOverlay.of(
-                  context,
-                  backgroundColor: Colors.white10,
-                ).during(() async {
-                  await ref.read(profileNotifierProvider.notifier).saveProfile(
-                        nameTextController.text,
-                        birthdayTextController.text,
-                        bioTextController.text,
-                        imagePath: imagePath.value,
-                        oldImageUrl: profileEditPageState.profile?.imageUrl,
-                      );
-                });
-
-                if (profileEditPageState.profile == null) {
-                  // 新規登録時
-                  if (context.mounted) {
-                    await showMessageDialog(
-                      context: context,
-                      title: '登録完了',
-                      content: 'プロフィールを登録しました。\nアプリをお楽しみください！',
-                    );
-                  }
-
-                  ref
-                      .read(accountStateNotifierProvider.notifier)
-                      .setRegisteredState(true);
-                } else {
-                  // 更新時
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'プロフィールを更新しました。',
-                          style: TextStyle(fontSize: 14.sp),
-                        ),
-                      ),
-                    );
-                    context.pop();
-                  }
-                }
-              }
-            } catch (e) {
-              if (context.mounted) {
-                showErrorDialog(
-                  context: context,
-                  title: '保存失敗',
-                  content: e.toString(),
-                );
-              }
-            }
-          },
           child: Text(
             '保存',
             style: TextStyle(fontSize: 16.sp),
           ),
+          onPressed: () async {
+            if (!_formKey.currentState!.validate()) {
+              return;
+            }
+
+            final result = await LoadingOverlay.of(
+              context,
+              backgroundColor: Colors.white10,
+            ).during(() async {
+              return ref.read(profileSaveUsecaseProvider).execute(
+                    ref.watch(authStateProvider).value?.uid,
+                    nameTextController.text,
+                    birthdayTextController.text,
+                    bioTextController.text,
+                    imagePath.value,
+                    profileEditPageState.profile?.imageUrl,
+                  );
+            });
+
+            if (!context.mounted) return;
+
+            switch (result) {
+              case Success():
+                if (profileEditPageState.profile == null) {
+                  // 新規登録時
+                  await showMessageDialog(
+                    context: context,
+                    title: '登録完了',
+                    content: 'プロフィールを登録しました。\nアプリをお楽しみください！',
+                  );
+
+                  final accountStateNotifier = ref.read(
+                    accountStateNotifierProvider.notifier,
+                  );
+                  accountStateNotifier.setRegisteredState(true);
+                } else {
+                  // 更新時
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'プロフィールを更新しました。',
+                        style: TextStyle(fontSize: 14.sp),
+                      ),
+                    ),
+                  );
+                  context.pop();
+                }
+                break;
+              case Failure(message: final message):
+                showErrorDialog(
+                  context: context,
+                  title: '保存失敗',
+                  content: message,
+                );
+                break;
+            }
+          },
         ),
       ],
     );

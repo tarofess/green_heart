@@ -1,35 +1,55 @@
 import 'dart:async';
 
 import 'package:green_heart/application/interface/profile_repository.dart';
+import 'package:green_heart/application/state/profile_notifier.dart';
+import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/domain/type/profile.dart';
+import 'package:green_heart/domain/type/result.dart';
 import 'package:green_heart/domain/util/date_util.dart';
 
 class ProfileSaveUsecase {
   final ProfileRepository _profileRepository;
+  final ProfileNotifier _profileNotifier;
+  final UserPostNotifier _userPostNotifier;
 
-  ProfileSaveUsecase(this._profileRepository);
+  ProfileSaveUsecase(
+    this._profileRepository,
+    this._profileNotifier,
+    this._userPostNotifier,
+  );
 
-  Future<Profile> execute(
-    String uid,
+  Future<Result> execute(
+    String? uid,
     String name,
     String birthday,
     String bio,
     String? imagePath,
     String? oldImageUrl,
   ) async {
-    final firebaseStorePath = await processImage(uid, imagePath, oldImageUrl);
+    try {
+      if (uid == null) {
+        return const Failure('プロフィールが保存できません。アカウントがログアウトされている可能性があります。');
+      }
 
-    final profile = Profile(
-      uid: uid,
-      name: name,
-      birthday: DateUtil.convertToDateTime(birthday),
-      bio: bio,
-      imageUrl: firebaseStorePath,
-      updatedAt: DateTime.now(),
-    );
+      final firebaseStorePath = await processImage(uid, imagePath, oldImageUrl);
 
-    final savedProfile = await _profileRepository.saveProfile(profile);
-    return savedProfile;
+      final profile = Profile(
+        uid: uid,
+        name: name,
+        birthday: DateUtil.convertToDateTime(birthday),
+        bio: bio,
+        imageUrl: firebaseStorePath,
+        updatedAt: DateTime.now(),
+      );
+
+      final savedProfile = await _profileRepository.saveProfile(profile);
+      _profileNotifier.saveProfile(savedProfile);
+      _userPostNotifier.updateProfile(uid, name, savedProfile.imageUrl);
+
+      return const Success(null);
+    } catch (e) {
+      return Failure(e.toString(), e as Exception?);
+    }
   }
 
   Future<String?> processImage(

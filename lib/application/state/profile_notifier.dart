@@ -4,7 +4,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
-import 'package:green_heart/application/state/user_post_notifier.dart';
 
 class ProfileNotifier extends AsyncNotifier<Profile?> {
   @override
@@ -18,32 +17,8 @@ class ProfileNotifier extends AsyncNotifier<Profile?> {
     return profile;
   }
 
-  Future<void> saveProfile(
-    String name,
-    String birthday,
-    String bio, {
-    required String? imagePath,
-    required String? oldImageUrl,
-  }) async {
-    final uid = ref.read(authStateProvider).value?.uid;
-    if (uid == null) {
-      throw Exception('プロフィールが保存できません。アカウントがログアウトされている可能性があります。');
-    }
-
-    final savedProfile = await ref.read(profileSaveUsecaseProvider).execute(
-          uid,
-          name,
-          birthday,
-          bio,
-          imagePath,
-          oldImageUrl,
-        );
-
-    ref
-        .read(userPostNotifierProvider(uid).notifier)
-        .updateProfile(uid, name, savedProfile.imageUrl);
-
-    state = AsyncData(savedProfile);
+  void saveProfile(Profile profile) {
+    state = AsyncData(profile);
   }
 
   Future<void> deleteProfile(User user, Profile profile) async {
