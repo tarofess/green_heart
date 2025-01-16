@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import 'package:green_heart/domain/type/result.dart';
 import 'package:green_heart/application/di/auth_di.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/presentation/page/terms_of_use_page.dart';
@@ -20,6 +21,7 @@ class SignInPage extends HookConsumerWidget {
         ref.watch(accountStateNotifierProvider).value?.isDeleted;
 
     useEffect(() {
+      // アカウント削除後にこの画面に遷移した時に表示する
       if (isAccountDeleted != null && isAccountDeleted) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -170,21 +172,25 @@ class SignInPage extends HookConsumerWidget {
         ),
         onPressed: isEnabled
             ? () async {
-                try {
-                  await LoadingOverlay.of(context, message: 'ログイン中').during(
-                    () => ref.read(googleSignInUseCaseProvider).execute(),
-                  );
-                } catch (e) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          e.toString(),
-                          style: TextStyle(fontSize: 14.sp),
+                final result =
+                    await LoadingOverlay.of(context, message: 'ログイン中').during(
+                  () => ref.read(googleSignInUseCaseProvider).execute(),
+                );
+
+                switch (result) {
+                  case Success():
+                    break;
+                  case Failure(message: final message):
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            message,
+                            style: TextStyle(fontSize: 14.sp),
+                          ),
                         ),
-                      ),
-                    );
-                  }
+                      );
+                    }
                 }
               }
             : null,
@@ -212,21 +218,25 @@ class SignInPage extends HookConsumerWidget {
         ),
         onPressed: isEnabled
             ? () async {
-                try {
-                  await LoadingOverlay.of(context, message: 'ログイン中').during(
-                    () => ref.read(appleSignInUseCaseProvider).execute(),
-                  );
-                } catch (e) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          e.toString(),
-                          style: TextStyle(fontSize: 14.sp),
+                final result =
+                    await LoadingOverlay.of(context, message: 'ログイン中').during(
+                  () => ref.read(appleSignInUseCaseProvider).execute(),
+                );
+
+                switch (result) {
+                  case Success():
+                    break;
+                  case Failure(message: final message):
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            message,
+                            style: TextStyle(fontSize: 14.sp),
+                          ),
                         ),
-                      ),
-                    );
-                  }
+                      );
+                    }
                 }
               }
             : null,
