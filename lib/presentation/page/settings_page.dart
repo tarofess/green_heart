@@ -8,6 +8,7 @@ import 'package:green_heart/application/di/settings_di.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/application/state/timeline_scroll_state_notifier.dart';
+import 'package:green_heart/domain/type/result.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -144,26 +145,28 @@ class SettingsPage extends ConsumerWidget {
         ),
       ),
       onTap: () async {
-        try {
-          final result = await showConfirmationDialog(
-            context: context,
-            title: 'ログアウト',
-            content: 'アカウントからログアウトしますか？',
-            positiveButtonText: 'ログアウト',
-            negativeButtonText: 'キャンセル',
-          );
-          if (!result) return;
+        final isConfirmed = await showConfirmationDialog(
+          context: context,
+          title: 'ログアウト',
+          content: 'アカウントからログアウトしますか？',
+          positiveButtonText: 'ログアウト',
+          negativeButtonText: 'キャンセル',
+        );
+        if (!isConfirmed) return;
 
-          await ref.read(signOutUseCaseProvider).execute();
-          ref.read(timelineScrollStateNotifierProvider.notifier).reset();
-        } catch (e) {
-          if (context.mounted) {
-            showErrorDialog(
-              context: context,
-              title: 'ログアウトエラー',
-              content: e.toString(),
-            );
-          }
+        final result = await ref.read(signOutUseCaseProvider).execute();
+        switch (result) {
+          case Success():
+            ref.read(timelineScrollStateNotifierProvider.notifier).reset();
+            break;
+          case Failure(message: final message):
+            if (context.mounted) {
+              showErrorDialog(
+                context: context,
+                title: 'ログアウトエラー',
+                content: message,
+              );
+            }
         }
       },
     );
