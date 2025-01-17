@@ -7,11 +7,15 @@ class AppInfoNotifier extends AsyncNotifier<AppInfo> {
   @override
   Future<AppInfo> build() async {
     const developerName = 'ところやまたろう';
-    const appVersion = '1.0.0';
+
+    final appVersion = await ref.read(appVersionGetUsecaseProvider).execute() ??
+        'アプリのバージョンを取得できませんでした。';
+
     final termsOfUse = await ref
             .read(appInfoReadTextFileUsecaseProvider)
             .execute('terms_of_use.txt') ??
         '利用規約を取得できませんでした。';
+
     final privacyPolicy = await ref
             .read(appInfoReadTextFileUsecaseProvider)
             .execute('privacy_policy.txt') ??
