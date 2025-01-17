@@ -14,6 +14,8 @@ import 'package:green_heart/domain/type/comment_page_state.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/domain/type/post_data.dart';
+import 'package:green_heart/application/di/comment_di.dart';
+import 'package:green_heart/domain/type/result.dart';
 
 class CommentPage extends HookConsumerWidget {
   const CommentPage({
@@ -75,9 +77,11 @@ class CommentPage extends HookConsumerWidget {
           error: (e, stackTrace) {
             return AsyncErrorWidget(
               error: e,
-              retry: () => ref.refresh(commentNotifierProvider(
-                postData.post.id,
-              )),
+              retry: () => ref.refresh(
+                commentNotifierProvider(
+                  postData.post.id,
+                ),
+              ),
             );
           },
         ),
@@ -168,40 +172,44 @@ class CommentPage extends HookConsumerWidget {
               ),
             ),
             IconButton(
-                icon: Icon(Icons.send, size: 24.sp),
-                onPressed: () async {
-                  try {
-                    final uid = ref.watch(authStateProvider).value?.uid;
-                    if (uid == null || commentTextController.text.isEmpty) {
-                      return;
-                    }
+              icon: Icon(Icons.send, size: 24.sp),
+              onPressed: () async {
+                final uid = ref.watch(authStateProvider).value?.uid;
+                if (uid == null || commentTextController.text.isEmpty) {
+                  return;
+                }
 
-                    await LoadingOverlay.of(
-                      context,
-                      backgroundColor: Colors.white10,
-                    ).during(
-                      () async => ref
-                          .read(commentNotifierProvider(postData.post.id)
-                              .notifier)
-                          .addComment(
-                            uid,
-                            postData,
-                            commentTextController.text,
-                            commentPageState.parentCommentId,
-                          ),
-                    );
+                final result = await LoadingOverlay.of(
+                  context,
+                  backgroundColor: Colors.white10,
+                ).during(
+                  () async => ref.read(commentAddUsecaseProvider).execute(
+                        uid,
+                        postData,
+                        commentTextController.text,
+                        commentPageState.parentCommentId,
+                        ref.read(
+                          commentNotifierProvider(postData.post.id).notifier,
+                        ),
+                      ),
+                );
 
-                    clearReply(ref, commentTextController);
-                  } catch (e) {
+                switch (result) {
+                  case Success():
+                    break;
+                  case Failure(message: final message):
                     if (context.mounted) {
                       showErrorDialog(
                         context: context,
                         title: 'コメントの投稿に失敗しました',
-                        content: e.toString(),
+                        content: message,
                       );
                     }
-                  }
-                }),
+                }
+
+                clearReply(ref, commentTextController);
+              },
+            ),
           ],
         ),
       ],

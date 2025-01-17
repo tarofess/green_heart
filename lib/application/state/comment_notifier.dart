@@ -3,7 +3,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/domain/type/comment_data.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
-import 'package:green_heart/application/state/comment_page_notifier.dart';
 import 'package:green_heart/application/di/comment_di.dart';
 import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/domain/type/comment.dart';
@@ -16,8 +15,9 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
   Future<List<CommentData>> build(String arg) async {
     final comments = await ref.read(commentGetUsecaseProvider).execute(arg);
     final filteredCommentsByBlock = await _filteredByBlock(comments);
-    final commentDataList =
-        await _createCommentDataList(filteredCommentsByBlock);
+    final commentDataList = await _createCommentDataList(
+      filteredCommentsByBlock,
+    );
     return commentDataList;
   }
 
@@ -80,20 +80,13 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
   }
 
   Future<void> addComment(
-    String uid,
+    Comment newComment,
     PostData postData,
-    String comment,
     String? parentCommentId,
   ) async {
-    final newComment = await ref.read(commentAddUsecaseProvider).execute(
-          uid,
-          postData.post.id,
-          comment,
-          ref.read(commentPageNotifierProvider).parentCommentId,
+    final userProfile = await ref.read(profileGetUsecaseProvider).execute(
+          newComment.uid,
         );
-
-    final userProfile =
-        await ref.read(profileGetUsecaseProvider).execute(newComment.uid);
 
     if (parentCommentId == null) {
       // 新規コメント
@@ -166,4 +159,5 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
 
 final commentNotifierProvider =
     AsyncNotifierProviderFamily<CommentNotifier, List<CommentData>, String>(
-        CommentNotifier.new);
+  CommentNotifier.new,
+);

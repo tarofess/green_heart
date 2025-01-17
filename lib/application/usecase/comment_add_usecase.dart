@@ -1,24 +1,33 @@
 import 'package:green_heart/application/interface/comment_repository.dart';
-import 'package:green_heart/domain/type/comment.dart';
+import 'package:green_heart/application/state/comment_notifier.dart';
+import 'package:green_heart/domain/type/post_data.dart';
+import 'package:green_heart/domain/type/result.dart';
 
 class CommentAddUsecase {
   final CommentRepository _commentRepository;
 
   CommentAddUsecase(this._commentRepository);
 
-  Future<Comment> execute(
+  Future<Result> execute(
     String uid,
-    String postId,
+    PostData postData,
     String content,
     String? parentCommentId,
+    CommentNotifier commentNotifier,
   ) async {
-    final addedComment = await _commentRepository.addComment(
-      uid,
-      postId,
-      content,
-      parentCommentId,
-    );
+    try {
+      final newComment = await _commentRepository.addComment(
+        uid,
+        postData.post.id,
+        content,
+        parentCommentId,
+      );
 
-    return addedComment;
+      commentNotifier.addComment(newComment, postData, parentCommentId);
+
+      return const Success(null);
+    } catch (e) {
+      return Failure(e.toString(), e as Exception?);
+    }
   }
 }
