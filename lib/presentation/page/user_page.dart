@@ -422,15 +422,23 @@ class UserPage extends HookConsumerWidget {
                 backgroundColor: Colors.white10,
               ).during(() async {
                 final myUid = ref.watch(authStateProvider).value?.uid;
-                await ref.read(blockAddUsecaseProvider).execute(myUid, uid);
-                return await ref.read(unfollowUsecaseProvider).execute(
-                      myUid,
-                      uid,
-                      userPageState,
-                      ref.read(followingNotifierProvider(myUid).notifier),
-                      ref.read(followingNotifierProvider(uid).notifier),
-                      ref.read(userPageStateNotifierProvider(uid).notifier),
-                    );
+                final blockResult =
+                    await ref.read(blockAddUsecaseProvider).execute(
+                          myUid,
+                          uid,
+                        );
+                if (blockResult is Failure) return blockResult;
+
+                final unfollowResult =
+                    await ref.read(unfollowUsecaseProvider).execute(
+                          myUid,
+                          uid,
+                          userPageState,
+                          ref.read(followingNotifierProvider(myUid).notifier),
+                          ref.read(followingNotifierProvider(uid).notifier),
+                          ref.read(userPageStateNotifierProvider(uid).notifier),
+                        );
+                return unfollowResult;
               });
 
               switch (result) {

@@ -39,6 +39,7 @@ class BlockListPage extends ConsumerWidget {
               itemCount: blockList.length,
               itemBuilder: (context, index) {
                 return ListTile(
+                  key: ValueKey(blockList[index].profile?.uid),
                   leading: blockList[index].profile?.imageUrl == null
                       ? const UserEmptyImage(radius: 21)
                       : UserFirebaseImage(
@@ -60,7 +61,10 @@ class BlockListPage extends ConsumerWidget {
             );
           },
           loading: () {
-            return const LoadingIndicator(message: 'ブロックリスト取得中');
+            return const LoadingIndicator(
+              message: 'ブロックリスト取得中',
+              backgroundColor: Colors.white10,
+            );
           },
           error: (e, _) {
             return AsyncErrorWidget(

@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:green_heart/application/exception/app_exception.dart';
 
+import 'package:green_heart/application/exception/app_exception.dart';
 import 'package:green_heart/application/interface/block_repository.dart';
 
 class BlockDeleteAllUsecase {

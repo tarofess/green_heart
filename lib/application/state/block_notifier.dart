@@ -15,21 +15,25 @@ class BlockNotifier extends AsyncNotifier<List<BlockData>> {
       throw Exception('ユーザーが存在しないのでブロックリストを取得できません。再度お試しください。');
     }
     final blocks = await ref.read(blockGetUsecaseProvider).execute(uid);
-    final blockData = _createBlockData(blocks);
-    return blockData;
+    final blockDataList = await _createBlockData(blocks);
+    return blockDataList;
   }
 
   Future<List<BlockData>> _createBlockData(List<Block> blocks) async {
-    final blockDataList = blocks.map((block) async {
-      final profile =
-          await ref.read(profileGetUsecaseProvider).execute(block.blockedUid);
+    List<BlockData> blockData = [];
+
+    final task = blocks.map((block) async {
+      final profile = await ref.read(profileGetUsecaseProvider).execute(
+            block.blockedUid,
+          );
       return BlockData(
         block: block,
         profile: profile,
       );
     }).toList();
 
-    return Future.wait(blockDataList);
+    blockData = await Future.wait(task);
+    return blockData;
   }
 
   Future<void> addBlock(String targetUid, Block newBlock) async {

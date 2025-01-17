@@ -29,8 +29,9 @@ class FirebaseBlockRepository implements BlockRepository {
     try {
       final docRef =
           _firestore.collection('block').where('uid', isEqualTo: uid);
-      final docSnapshot =
-          await docRef.get().timeout(Duration(seconds: _timeoutSeconds));
+      final docSnapshot = await docRef.get().timeout(
+            Duration(seconds: _timeoutSeconds),
+          );
       return docSnapshot.docs.map((doc) => Block.fromJson(doc.data())).toList();
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
@@ -45,8 +46,9 @@ class FirebaseBlockRepository implements BlockRepository {
           .collection('block')
           .where('uid', isEqualTo: uid)
           .where('blockedUid', isEqualTo: blockedUid);
-      final docSnapshot =
-          await docRef.get().timeout(Duration(seconds: _timeoutSeconds));
+      final docSnapshot = await docRef.get().timeout(
+            Duration(seconds: _timeoutSeconds),
+          );
       for (final doc in docSnapshot.docs) {
         await doc.reference
             .delete()
