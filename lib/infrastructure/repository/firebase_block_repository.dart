@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:green_heart/application/exception/app_exception.dart';
@@ -12,14 +11,13 @@ class FirebaseBlockRepository implements BlockRepository {
   final int _timeoutSeconds = 10;
 
   @override
-  Future<Block> addBlock(Block block) async {
+  Future<void> addBlock(Block block) async {
     try {
       final ref = _firestore.collection('block').doc();
       await ref.set(block.toJson()).timeout(Duration(seconds: _timeoutSeconds));
-      return block;
     } catch (e, stackTrace) {
       if (e is TimeoutException) {
-        return block;
+        return;
       }
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('ブロックリストへの追加に失敗しました。再度お試しください。');

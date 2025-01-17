@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:green_heart/application/di/follow_di.dart';
-import 'package:green_heart/domain/type/result.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
-import 'package:green_heart/application/state/block_notifier.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/presentation/widget/post_search.dart';
@@ -24,6 +21,9 @@ import 'package:green_heart/presentation/widget/async_error_widget.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/domain/type/user_page_state.dart';
 import 'package:green_heart/application/state/following_notifier.dart';
+import 'package:green_heart/application/di/block_di.dart';
+import 'package:green_heart/application/di/follow_di.dart';
+import 'package:green_heart/domain/type/result.dart';
 
 class UserPage extends HookConsumerWidget {
   const UserPage({super.key, required this.uid});
@@ -296,46 +296,51 @@ class UserPage extends HookConsumerWidget {
     return IconButton(
       icon: Icon(Icons.block, size: 24.sp),
       onPressed: () async {
-        try {
-          final result = await showConfirmationDialog(
-            context: context,
-            title: 'ブロック解除',
-            content: 'このユーザーのブロックを解除しますか？',
-            positiveButtonText: 'ブロック解除',
-            negativeButtonText: 'キャンセル',
+        final isConfirmed = await showConfirmationDialog(
+          context: context,
+          title: 'ブロック解除',
+          content: 'このユーザーのブロックを解除しますか？',
+          positiveButtonText: 'ブロック解除',
+          negativeButtonText: 'キャンセル',
+        );
+        if (!isConfirmed) return;
+
+        if (context.mounted) {
+          final result = await LoadingOverlay.of(
+            context,
+            backgroundColor: Colors.white10,
+          ).during(
+            () {
+              final myUid = ref.watch(authStateProvider).value?.uid;
+              return ref.read(blockDeleteUsecaseProvider).execute(myUid, uid);
+            },
           );
-          if (!result) return;
 
-          if (context.mounted) {
-            await LoadingOverlay.of(
-              context,
-              backgroundColor: Colors.white10,
-            ).during(
-              () => ref.read(blockNotifierProvider.notifier).deleteBlock(uid!),
-            );
-          }
-
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  '${userPageState.profile?.name}のブロックを解除しました。',
-                  style: TextStyle(fontSize: 14.sp),
-                ),
-              ),
-            );
-          }
-
-          ref
-              .read(userPageStateNotifierProvider(uid).notifier)
-              .setIsBlocked(false);
-        } catch (e) {
-          if (context.mounted) {
-            showErrorDialog(
-              context: context,
-              title: 'ブロック解除エラー',
-              content: e.toString(),
-            );
+          switch (result) {
+            case Success():
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      '${userPageState.profile?.name}のブロックを解除しました。',
+                      style: TextStyle(fontSize: 14.sp),
+                    ),
+                  ),
+                );
+                ref
+                    .read(userPageStateNotifierProvider(uid).notifier)
+                    .setIsBlocked(false);
+              }
+              break;
+            case Failure(message: final message):
+              if (context.mounted) {
+                showErrorDialog(
+                  context: context,
+                  title: 'ブロック解除エラー',
+                  content: message,
+                );
+              }
+              break;
           }
         }
       },
@@ -414,7 +419,7 @@ class UserPage extends HookConsumerWidget {
                 backgroundColor: Colors.white10,
               ).during(() async {
                 final myUid = ref.watch(authStateProvider).value?.uid;
-                await ref.read(blockNotifierProvider.notifier).addBlock(uid!);
+                await ref.read(blockAddUsecaseProvider).execute(myUid, uid);
                 return await ref.read(unfollowUsecaseProvider).execute(
                       myUid,
                       uid,
@@ -437,6 +442,9 @@ class UserPage extends HookConsumerWidget {
                       ),
                     );
                   }
+                  ref
+                      .read(userPageStateNotifierProvider(uid).notifier)
+                      .setIsBlocked(true);
                   break;
                 case Failure(message: final message):
                   if (context.mounted) {

@@ -32,16 +32,9 @@ class BlockNotifier extends AsyncNotifier<List<BlockData>> {
     return Future.wait(blockDataList);
   }
 
-  Future<void> addBlock(String blockedUid) async {
-    final uid = ref.watch(authStateProvider).value?.uid;
-    if (uid == null) {
-      throw Exception('ユーザーが存在しないのでブロックリストを取得できません。再度お試しください。');
-    }
-
-    final newBlock =
-        await ref.read(blockAddUsecaseProvider).execute(uid, blockedUid);
+  Future<void> addBlock(String targetUid, Block newBlock) async {
     final profile =
-        await ref.read(profileGetUsecaseProvider).execute(blockedUid);
+        await ref.read(profileGetUsecaseProvider).execute(targetUid);
 
     state.whenData((currentBlocks) {
       final updatedBlock = List<BlockData>.from(currentBlocks)
@@ -53,19 +46,12 @@ class BlockNotifier extends AsyncNotifier<List<BlockData>> {
     });
   }
 
-  Future<void> deleteBlock(String blockedUid) async {
-    final uid = ref.watch(authStateProvider).value?.uid;
-    if (uid == null) {
-      throw Exception('ユーザーが存在しないのでブロックリストを取得できません。再度お試しください。');
-    }
-
-    await ref.read(blockDeleteUsecaseProvider).execute(uid, blockedUid);
-
+  void deleteBlock(String myUid, String targetUid) async {
     state.whenData((currentBlocks) {
       final updatedBlock = currentBlocks
           .where((blockData) =>
-              blockData.block.uid != uid &&
-              blockData.block.blockedUid != blockedUid)
+              blockData.block.uid != myUid &&
+              blockData.block.blockedUid != targetUid)
           .toList();
       state = AsyncValue.data(updatedBlock);
     });
