@@ -1,4 +1,3 @@
-import 'package:green_heart/application/state/follower_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/follow_di.dart';
@@ -6,6 +5,7 @@ import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/application/exception/app_exception.dart';
 import 'package:green_heart/domain/type/follow_data.dart';
 import 'package:green_heart/domain/type/follow.dart';
+import 'package:green_heart/application/state/follower_notifier.dart';
 
 class FollowingNotifier extends FamilyAsyncNotifier<List<FollowData>, String?> {
   @override
@@ -33,9 +33,7 @@ class FollowingNotifier extends FamilyAsyncNotifier<List<FollowData>, String?> {
     return Future.wait(followDataList);
   }
 
-  Future<void> follow(String myUid, String targetUid) async {
-    final newFollow =
-        await ref.read(followingAddUsecaseProvider).execute(myUid, targetUid);
+  Future<void> follow(String myUid, String targetUid, Follow newFollow) async {
     final profile = await ref.read(profileGetUsecaseProvider).execute(
           targetUid,
         );
@@ -55,8 +53,7 @@ class FollowingNotifier extends FamilyAsyncNotifier<List<FollowData>, String?> {
         );
   }
 
-  Future<void> unfollow(String myUid, String targetUid) async {
-    await ref.read(followingDeleteUsecaseProvider).execute(myUid, targetUid);
+  void unfollow(String myUid, String targetUid) async {
     state.whenData((followDataList) {
       final updatedState = followDataList
           .where((followData) =>

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:green_heart/application/di/follow_di.dart';
+import 'package:green_heart/domain/type/result.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/profile.dart';
@@ -212,36 +214,34 @@ class UserPage extends HookConsumerWidget {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
-                  try {
-                    await LoadingOverlay.of(
-                      context,
-                      backgroundColor: Colors.white10,
-                    ).during(() async {
-                      final myUid = ref.watch(authStateProvider).value?.uid;
-                      if (userPageState.isFollowing) {
-                        await ref
-                            .read(followingNotifierProvider(myUid).notifier)
-                            .unfollow(myUid!, uid!);
-                        ref
-                            .read(userPageStateNotifierProvider(uid).notifier)
-                            .setIsFollowing(false);
-                      } else {
-                        await ref
-                            .read(followingNotifierProvider(myUid).notifier)
-                            .follow(myUid!, uid!);
-                        ref
-                            .read(userPageStateNotifierProvider(uid).notifier)
-                            .setIsFollowing(true);
+                  final result = await LoadingOverlay.of(
+                    context,
+                    backgroundColor: Colors.white10,
+                  ).during(() async {
+                    final myUid = ref.watch(authStateProvider).value?.uid;
+                    return ref.read(followUsecaseProvider).execute(
+                          myUid,
+                          uid,
+                          userPageState,
+                          ref.read(followingNotifierProvider(myUid).notifier),
+                          ref.read(
+                            userPageStateNotifierProvider(uid).notifier,
+                          ),
+                        );
+                  });
+
+                  switch (result) {
+                    case Success():
+                      break;
+                    case Failure(message: final message):
+                      if (context.mounted) {
+                        showErrorDialog(
+                          context: context,
+                          title: 'フォローエラー',
+                          content: message,
+                        );
+                        break;
                       }
-                    });
-                  } catch (e) {
-                    if (context.mounted) {
-                      showErrorDialog(
-                        context: context,
-                        title: 'フォローエラー',
-                        content: e.toString(),
-                      );
-                    }
                   }
                 },
                 style: userPageState.isFollowing
@@ -395,63 +395,60 @@ class UserPage extends HookConsumerWidget {
             }
             break;
           case 'block':
-            try {
-              if (ref.watch(authStateProvider).value == null && uid == null) {
-                return;
-              }
+            if (ref.watch(authStateProvider).value == null && uid == null) {
+              return;
+            }
 
-              final result = await showConfirmationDialog(
-                context: context,
-                title: 'ブロック',
-                content: 'このユーザーをブロックしますか？',
-                positiveButtonText: 'ブロックする',
-                negativeButtonText: 'キャンセル',
-              );
-              if (!result) return;
+            final isConfirmed = await showConfirmationDialog(
+              context: context,
+              title: 'ブロック',
+              content: 'このユーザーをブロックしますか？',
+              positiveButtonText: 'ブロックする',
+              negativeButtonText: 'キャンセル',
+            );
+            if (!isConfirmed) return;
 
-              if (context.mounted) {
-                await LoadingOverlay.of(
-                  context,
-                  backgroundColor: Colors.white10,
-                ).during(() async {
-                  final myUid = ref.watch(authStateProvider).value?.uid;
-                  await ref.read(blockNotifierProvider.notifier).addBlock(uid!);
-                  await ref
-                      .read(followingNotifierProvider(myUid).notifier)
-                      .unfollow(myUid!, uid!);
-                  await ref
-                      .read(followingNotifierProvider(uid).notifier)
-                      .unfollow(uid!, myUid);
-                  ref
-                      .read(userPageStateNotifierProvider(uid).notifier)
-                      .setIsFollowing(false);
-                });
-              }
+            if (context.mounted) {
+              final result = await LoadingOverlay.of(
+                context,
+                backgroundColor: Colors.white10,
+              ).during(() async {
+                final myUid = ref.watch(authStateProvider).value?.uid;
+                await ref.read(blockNotifierProvider.notifier).addBlock(uid!);
+                return await ref.read(unfollowUsecaseProvider).execute(
+                      myUid,
+                      uid,
+                      userPageState,
+                      ref.read(followingNotifierProvider(myUid).notifier),
+                      ref.read(followingNotifierProvider(uid).notifier),
+                      ref.read(userPageStateNotifierProvider(uid).notifier),
+                    );
+              });
 
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      '${userPageState.profile?.name}をブロックしました。',
-                      style: TextStyle(fontSize: 14.sp),
-                    ),
-                  ),
-                );
-              }
-
-              ref
-                  .read(userPageStateNotifierProvider(uid).notifier)
-                  .setIsBlocked(true);
-            } catch (e) {
-              if (context.mounted) {
-                showErrorDialog(
-                  context: context,
-                  title: 'ブロックエラー',
-                  content: e.toString(),
-                );
+              switch (result) {
+                case Success():
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          '${userPageState.profile?.name}をブロックしました。',
+                          style: TextStyle(fontSize: 14.sp),
+                        ),
+                      ),
+                    );
+                  }
+                  break;
+                case Failure(message: final message):
+                  if (context.mounted) {
+                    showErrorDialog(
+                      context: context,
+                      title: 'ブロックエラー',
+                      content: message,
+                    );
+                  }
+                  break;
               }
             }
-            break;
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
