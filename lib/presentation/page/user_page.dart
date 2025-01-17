@@ -357,45 +357,48 @@ class UserPage extends HookConsumerWidget {
       onSelected: (String result) async {
         switch (result) {
           case 'report':
-            try {
-              final reportText = await showReportDialog(context);
-              if (reportText == null) return;
+            final reportText = await showReportDialog(context);
+            if (reportText == null) return;
 
-              final reporterIid = ref.watch(authStateProvider).value?.uid;
-              if (reporterIid == null) return;
+            final reporterIid = ref.watch(authStateProvider).value?.uid;
+            if (reporterIid == null) return;
 
-              if (context.mounted) {
-                await LoadingOverlay.of(
-                  context,
-                  backgroundColor: Colors.white10,
-                ).during(
-                  () => ref.read(reportAddUsecaseProvider).execute(
-                        reporterIid,
-                        reportText,
-                        reportedPostId: null,
-                        reportedCommentId: null,
-                        reportedUserId: uid,
-                      ),
-                );
-              }
-
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'ユーザーを通報しました。',
-                      style: TextStyle(fontSize: 14.sp),
+            if (context.mounted) {
+              final result = await LoadingOverlay.of(
+                context,
+                backgroundColor: Colors.white10,
+              ).during(
+                () => ref.read(reportAddUsecaseProvider).execute(
+                      reporterIid,
+                      reportText,
+                      reportedPostId: null,
+                      reportedCommentId: null,
+                      reportedUserId: uid,
                     ),
-                  ),
-                );
-              }
-            } catch (e) {
-              if (context.mounted) {
-                showErrorDialog(
-                  context: context,
-                  title: '通報エラー',
-                  content: e.toString(),
-                );
+              );
+
+              switch (result) {
+                case Success():
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'ユーザーを通報しました。',
+                          style: TextStyle(fontSize: 14.sp),
+                        ),
+                      ),
+                    );
+                  }
+                  break;
+                case Failure(message: final message):
+                  if (context.mounted) {
+                    showErrorDialog(
+                      context: context,
+                      title: '通報エラー',
+                      content: message,
+                    );
+                    break;
+                  }
               }
             }
             break;
@@ -457,6 +460,7 @@ class UserPage extends HookConsumerWidget {
                   break;
               }
             }
+            break;
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
