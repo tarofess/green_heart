@@ -67,15 +67,19 @@ class PostSearchResults extends HookConsumerWidget {
     final isSearching = useState(false);
 
     useEffect(() {
-      scrollController.addListener(() {
-        if (scrollController.position.pixels ==
-            scrollController.position.maxScrollExtent) {
-          _loadMorePosts(context, ref, isLoadingMore);
-        }
-      });
+      void onScroll() async {
+        scrollController.addListener(() {
+          if (scrollController.position.pixels ==
+              scrollController.position.maxScrollExtent) {
+            _loadMorePosts(context, ref, isLoadingMore);
+          }
+        });
+      }
+
       _loadInitialPosts(context, ref, isSearching);
-      return () => scrollController.dispose();
-    }, []);
+      scrollController.addListener(onScroll);
+      return () => scrollController.removeListener(onScroll);
+    }, [scrollController]);
 
     final searchPostState = ref.watch(searchPostNotifierProvider);
     final hasMore = ref.watch(searchPostScrollStateNotifierProvider).hasMore;
