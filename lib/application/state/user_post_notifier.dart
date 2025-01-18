@@ -139,7 +139,7 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
     return postData;
   }
 
-  void addPost(PostData newPostData) async {
+  void addPost(PostData newPostData) {
     state = state.whenData((posts) => [newPostData, ...posts]);
   }
 

@@ -95,7 +95,7 @@ class SearchPostNotifier extends Notifier<List<PostData>> {
     return filteredCommentPosts;
   }
 
-  Future<void> deletePost(String postId) async {
+  void deletePost(String postId) {
     final updatedPostData =
         state.where((postData) => postData.post.id != postId).toList();
     state = updatedPostData;

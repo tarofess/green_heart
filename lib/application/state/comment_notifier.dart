@@ -9,6 +9,7 @@ import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/application/state/post_manager_notifier.dart';
 import 'package:green_heart/application/di/block_di.dart';
 import 'package:green_heart/domain/type/post_data.dart';
+import 'package:green_heart/application/state/profile_notifier.dart';
 
 class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
   @override
@@ -79,20 +80,16 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
     return filteredCommens;
   }
 
-  Future<void> addComment(
+  void addComment(
     Comment newComment,
     PostData postData,
     String? parentCommentId,
-  ) async {
-    final userProfile = await ref.read(profileGetUsecaseProvider).execute(
-          newComment.uid,
-        );
-
+  ) {
     if (parentCommentId == null) {
       // 新規コメント
       final newCommentData = CommentData(
         comment: newComment,
-        profile: userProfile,
+        profile: ref.read(profileNotifierProvider).value,
         replyComments: [],
         isMe: true,
       );
@@ -106,7 +103,7 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
       );
       final updatedCommentData = CommentData(
         comment: updatedComment,
-        profile: userProfile,
+        profile: ref.read(profileNotifierProvider).value,
         replyComments: [],
         isMe: true,
       );
@@ -133,7 +130,7 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
         );
   }
 
-  void deleteComment(String commentId) async {
+  void deleteComment(String commentId) {
     state.whenData((comments) {
       final updatedCommentData = comments
           .map((commentData) {

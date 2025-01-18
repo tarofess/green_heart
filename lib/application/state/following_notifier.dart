@@ -53,7 +53,7 @@ class FollowingNotifier extends FamilyAsyncNotifier<List<FollowData>, String?> {
         );
   }
 
-  void unfollow(String myUid, String targetUid) async {
+  void unfollow(String myUid, String targetUid) {
     state.whenData((followDataList) {
       final updatedState = followDataList
           .where((followData) =>

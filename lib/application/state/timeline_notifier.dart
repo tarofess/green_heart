@@ -124,7 +124,7 @@ class TimelineNotifier extends AsyncNotifier<List<PostData>> {
     return filteredCommentPosts;
   }
 
-  Future<void> deletePost(String postId) async {
+  void deletePost(String postId) {
     state.whenData((postData) {
       final updatedPostData =
           postData.where((postData) => postData.post.id != postId).toList();

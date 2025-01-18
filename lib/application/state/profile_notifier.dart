@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/profile_di.dart';
@@ -19,11 +18,6 @@ class ProfileNotifier extends AsyncNotifier<Profile?> {
 
   void saveProfile(Profile profile) {
     state = AsyncData(profile);
-  }
-
-  Future<void> deleteProfile(User user, Profile profile) async {
-    await ref.read(profileDeleteUsecaseProvider).execute(user, profile);
-    state = const AsyncData(null);
   }
 }
 
