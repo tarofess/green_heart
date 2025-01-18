@@ -5,6 +5,7 @@ import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/application/exception/app_exception.dart';
 import 'package:green_heart/domain/type/follow_data.dart';
 import 'package:green_heart/domain/type/follow.dart';
+import 'package:green_heart/application/state/profile_notifier.dart';
 
 class FollowerNotifier extends FamilyAsyncNotifier<List<FollowData>, String?> {
   @override
@@ -31,27 +32,22 @@ class FollowerNotifier extends FamilyAsyncNotifier<List<FollowData>, String?> {
     return Future.wait(followDataList);
   }
 
-  Future<void> addFollower(String myUid, String targetUid) async {
+  void addFollower(String myUid, String targetUid) {
     final newFollower = Follow(
       uid: myUid,
       followingUid: targetUid,
       createdAt: DateTime.now(),
     );
-    final profile = await ref.read(profileGetUsecaseProvider).execute(
-          myUid,
-        );
 
-    if (profile == null) {
-      throw AppException('フォローされるユーザーが存在しません。再度お試しください。');
-    }
+    final myProfile = ref.read(profileNotifierProvider).value;
 
-    final followData = FollowData(follow: newFollower, profile: profile);
+    final followData = FollowData(follow: newFollower, profile: myProfile);
     state.whenData((followDataList) {
       state = AsyncValue.data(followDataList..add(followData));
     });
   }
 
-  Future<void> removeFollower(String myUid, String targetUid) async {
+  void removeFollower(String myUid, String targetUid) {
     state.whenData((followDataList) {
       final updatedState = followDataList
           .where((followData) =>
