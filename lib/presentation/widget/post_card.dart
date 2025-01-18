@@ -17,7 +17,6 @@ import 'package:green_heart/application/di/like_di.dart';
 import 'package:green_heart/application/di/report_di.dart';
 import 'package:green_heart/presentation/widget/user_empty_image.dart';
 import 'package:green_heart/presentation/widget/user_firebase_image.dart';
-import 'package:green_heart/application/state/post_manager_notifier.dart';
 import 'package:green_heart/domain/type/result.dart';
 
 class PostCard extends ConsumerWidget {
@@ -259,48 +258,45 @@ class PostCard extends ConsumerWidget {
       onTap: () async {
         if (uid == null) return;
 
-        final result = await showConfirmationDialog(
+        final isConfirmed = await showConfirmationDialog(
           context: context,
           title: '投稿の削除',
           content: 'この投稿を削除しますか？',
           positiveButtonText: '削除',
           negativeButtonText: 'キャンセル',
         );
-        if (!result) return;
+        if (!isConfirmed) return;
 
-        try {
-          if (context.mounted) {
-            await LoadingOverlay.of(
-              context,
-              backgroundColor: Colors.white10,
-            ).during(
-              () =>
-                  ref.read(postDeleteUsecaseProvider).execute(postData.post.id),
-            );
+        if (context.mounted) {
+          final result = await LoadingOverlay.of(
+            context,
+            backgroundColor: Colors.white10,
+          ).during(
+            () => ref.read(postDeleteUsecaseProvider).execute(postData, uid),
+          );
 
-            ref.read(postManagerNotifierProvider.notifier).deletePost(
-                  uid,
-                  postData,
-                );
-
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    '投稿を削除しました。',
-                    style: TextStyle(fontSize: 14.sp),
+          switch (result) {
+            case Success():
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      '投稿を削除しました。',
+                      style: TextStyle(fontSize: 14.sp),
+                    ),
                   ),
-                ),
-              );
-            }
-          }
-        } catch (e) {
-          if (context.mounted) {
-            showErrorDialog(
-              context: context,
-              title: '削除エラー',
-              content: e.toString(),
-            );
+                );
+              }
+              break;
+            case Failure(message: final message):
+              if (context.mounted) {
+                showErrorDialog(
+                  context: context,
+                  title: '削除エラー',
+                  content: message,
+                );
+              }
+              break;
           }
         }
       },

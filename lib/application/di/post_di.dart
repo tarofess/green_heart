@@ -10,6 +10,7 @@ import 'package:green_heart/application/usecase/post_search_result_get_usecase.d
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/di/profile_di.dart';
+import 'package:green_heart/application/state/post_manager_notifier.dart';
 
 final postAddUsecaseProvider = Provider(
   (ref) {
@@ -27,7 +28,10 @@ final postGetUsecaseProvider = Provider(
 );
 
 final postDeleteUsecaseProvider = Provider(
-  (ref) => PostDeleteUsecase(FirebasePostRepository()),
+  (ref) => PostDeleteUsecase(
+    FirebasePostRepository(),
+    ref.read(postManagerNotifierProvider.notifier),
+  ),
 );
 
 final postDeleteAllUsecaseProvider = Provider(
