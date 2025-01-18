@@ -13,6 +13,7 @@ final blockGetUsecaseProvider = Provider<BlockGetUsecase>((ref) {
 });
 
 final blockAddUsecaseProvider = Provider<BlockAddUsecase>((ref) {
+  ref.watch(blockNotifierProvider);
   return BlockAddUsecase(
     FirebaseBlockRepository(),
     ref.read(blockNotifierProvider.notifier),
