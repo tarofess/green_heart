@@ -16,6 +16,8 @@ import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/presentation/widget/user_empty_image.dart';
 import 'package:green_heart/presentation/widget/user_firebase_image.dart';
 import 'package:green_heart/domain/type/post_data.dart';
+import 'package:green_heart/application/di/comment_di.dart';
+import 'package:green_heart/domain/type/result.dart';
 
 class CommentCard extends HookConsumerWidget {
   const CommentCard({
@@ -224,37 +226,44 @@ class CommentCard extends HookConsumerWidget {
   ]) {
     return TextButton(
       onPressed: () async {
-        try {
-          final result = await showConfirmationDialog(
-            context: context,
-            title: '確認',
-            content: 'コメントを削除しますか？',
-            positiveButtonText: '削除する',
-            negativeButtonText: 'キャンセル',
-          );
-          if (!result) return;
+        final isConfirmed = await showConfirmationDialog(
+          context: context,
+          title: '確認',
+          content: 'コメントを削除しますか？',
+          positiveButtonText: '削除する',
+          negativeButtonText: 'キャンセル',
+        );
+        if (!isConfirmed) return;
 
-          if (context.mounted) {
-            await LoadingOverlay.of(
-              context,
-              backgroundColor: Colors.white10,
-            ).during(
-              () => ref
-                  .read(commentNotifierProvider(postData.post.id).notifier)
-                  .deleteComment(
-                    replyComment == null
-                        ? commentData.comment.id
-                        : replyComment.comment.id,
+        if (context.mounted) {
+          final result = await LoadingOverlay.of(
+            context,
+            backgroundColor: Colors.white10,
+          ).during(() {
+            final commentId = replyComment == null
+                ? commentData.comment.id
+                : replyComment.comment.id;
+
+            return ref.read(commentDeleteUsecaseProvider).execute(
+                  commentId,
+                  ref.read(
+                    commentNotifierProvider(postData.post.id).notifier,
                   ),
-            );
-          }
-        } catch (e) {
-          if (context.mounted) {
-            showErrorDialog(
-              context: context,
-              title: 'コメント削除エラー',
-              content: e.toString(),
-            );
+                );
+          });
+
+          switch (result) {
+            case Success():
+              break;
+            case Failure(message: final message):
+              if (context.mounted) {
+                showErrorDialog(
+                  context: context,
+                  title: 'コメント削除エラー',
+                  content: message,
+                );
+              }
+              break;
           }
         }
       },
@@ -268,45 +277,48 @@ class CommentCard extends HookConsumerWidget {
   Widget _buildReportButton(BuildContext context, WidgetRef ref) {
     return TextButton(
       onPressed: () async {
-        try {
-          final reportText = await showReportDialog(context);
-          if (reportText == null) return;
+        final reportText = await showReportDialog(context);
+        if (reportText == null) return;
 
-          final uid = ref.watch(authStateProvider).value?.uid;
-          if (uid == null) return;
+        final uid = ref.watch(authStateProvider).value?.uid;
+        if (uid == null) return;
 
-          if (context.mounted) {
-            await LoadingOverlay.of(
-              context,
-              backgroundColor: Colors.white10,
-            ).during(
-              () => ref.read(reportAddUsecaseProvider).execute(
-                    uid,
-                    reportText,
-                    reportedPostId: null,
-                    reportedCommentId: commentData.comment.id,
-                    reportedUserId: null,
-                  ),
-            );
-          }
-
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'コメントを通報しました。',
-                  style: TextStyle(fontSize: 14.sp),
+        if (context.mounted) {
+          final result = await LoadingOverlay.of(
+            context,
+            backgroundColor: Colors.white10,
+          ).during(
+            () => ref.read(reportAddUsecaseProvider).execute(
+                  uid,
+                  reportText,
+                  reportedPostId: null,
+                  reportedCommentId: commentData.comment.id,
+                  reportedUserId: null,
                 ),
-              ),
-            );
-          }
-        } catch (e) {
-          if (context.mounted) {
-            showErrorDialog(
-              context: context,
-              title: '通報エラー',
-              content: e.toString(),
-            );
+          );
+
+          switch (result) {
+            case Success():
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'コメントを通報しました。',
+                      style: TextStyle(fontSize: 14.sp),
+                    ),
+                  ),
+                );
+              }
+              break;
+            case Failure(message: final message):
+              if (context.mounted) {
+                showErrorDialog(
+                  context: context,
+                  title: '通報エラー',
+                  content: message,
+                );
+              }
+              break;
           }
         }
       },
