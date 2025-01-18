@@ -18,6 +18,7 @@ import 'package:green_heart/application/di/report_di.dart';
 import 'package:green_heart/presentation/widget/user_empty_image.dart';
 import 'package:green_heart/presentation/widget/user_firebase_image.dart';
 import 'package:green_heart/domain/type/result.dart';
+import 'package:green_heart/application/state/comment_page_notifier.dart';
 
 class PostCard extends ConsumerWidget {
   PostCard({super.key, required this.postData, this.uidInPreviosPage});
@@ -211,8 +212,8 @@ class PostCard extends ConsumerWidget {
           ),
         ],
       ),
-      onTap: () {
-        showModalBottomSheet(
+      onTap: () async {
+        final result = await showModalBottomSheet(
           context: context,
           isScrollControlled: true,
           shape: RoundedRectangleBorder(
@@ -241,6 +242,10 @@ class PostCard extends ConsumerWidget {
             );
           },
         );
+
+        if (result == null) {
+          ref.read(commentPageNotifierProvider.notifier).cancelReply();
+        }
       },
     );
   }

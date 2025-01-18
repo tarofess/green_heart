@@ -33,10 +33,6 @@ class CommentPage extends HookConsumerWidget {
     final commentPageState = ref.watch(commentPageNotifierProvider);
     final commentTextController = useTextEditingController();
 
-    useEffect(() {
-      return ref.read(commentPageNotifierProvider.notifier).cancelReply;
-    }, const []);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
