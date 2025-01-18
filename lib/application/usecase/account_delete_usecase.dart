@@ -40,7 +40,7 @@ class AccountDeleteUsecase {
 
   Future<Result> execute(User? user, Profile? profile) async {
     if (profile == null || user == null) {
-      throw Exception('現在アカウント情報が取得できないためアカウントを削除できません。のちほどお試しください。');
+      return const Failure('現在アカウント情報が取得できないためアカウントを削除できません。のちほどお試しください。');
     }
 
     try {

@@ -12,7 +12,7 @@ class BlockAddUsecase {
   Future<Result> execute(String? myUid, String? targetUid) async {
     try {
       if (myUid == null || targetUid == null) {
-        throw Exception('ユーザーが存在しないのでブロックリストを取得できません。再度お試しください。');
+        return const Failure('ユーザーが存在しないのでブロックリストを取得できません。再度お試しください。');
       }
 
       final newBlock = Block(

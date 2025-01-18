@@ -23,7 +23,7 @@ class PostAddUsecase {
   ) async {
     try {
       if (uid == null) {
-        throw Exception('投稿ができません。アカウントがログアウトされている可能性があります。');
+        return const Failure('投稿ができません。アカウントがログアウトされている可能性があります。');
       }
       final imageUrls = await _postRepository.uploadImages(uid, paths);
       final newPost = await _postRepository.addPost(
