@@ -7,12 +7,12 @@ import 'package:go_router/go_router.dart';
 
 import 'package:green_heart/infrastructure/util/permission_util.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
-import 'package:green_heart/presentation/viewmodel/post_page_viewmodel.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/domain/type/result.dart';
+import 'package:green_heart/application/di/picture_di.dart';
 
 class PostPage extends HookConsumerWidget {
   const PostPage({super.key, required this.selectedDay});
@@ -252,27 +252,32 @@ class PostPage extends HookConsumerWidget {
       ),
       onPressed: selectedImages.value.length < 5
           ? () async {
-              try {
-                if (await PermissionUtil.requestStoragePermission(context)) {
-                  if (context.mounted) {
-                    FocusScope.of(context).unfocus();
-                    await LoadingOverlay.of(
-                      context,
-                      backgroundColor: Colors.white10,
-                    ).during(
-                      () => ref
-                          .read(postPageViewModel)
-                          .pickImages(selectedImages),
-                    );
-                  }
-                }
-              } catch (e) {
+              if (await PermissionUtil.requestStoragePermission(context)) {
                 if (context.mounted) {
-                  showErrorDialog(
-                    context: context,
-                    title: '画像取得エラー',
-                    content: e.toString(),
+                  FocusScope.of(context).unfocus();
+
+                  final result = await LoadingOverlay.of(
+                    context,
+                    backgroundColor: Colors.white10,
+                  ).during(
+                    () => ref
+                        .read(pickPostImagesUsecaseProvider)
+                        .execute(selectedImages),
                   );
+
+                  switch (result) {
+                    case Success():
+                      break;
+                    case Failure(message: final message):
+                      if (context.mounted) {
+                        showErrorDialog(
+                          context: context,
+                          title: '画像取得エラー',
+                          content: message,
+                        );
+                      }
+                      break;
+                  }
                 }
               }
             }

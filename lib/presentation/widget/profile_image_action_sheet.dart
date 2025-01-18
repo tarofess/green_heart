@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/picture_di.dart';
 import 'package:green_heart/infrastructure/util/permission_util.dart';
+import 'package:green_heart/domain/type/result.dart';
 
 Future<void> showProfileImageActionSheet(
   BuildContext context,
@@ -32,11 +33,22 @@ Future<void> showProfileImageActionSheet(
               title: Text('写真を撮る', style: TextStyle(fontSize: 14.sp)),
               onTap: () async {
                 if (await PermissionUtil.requestCameraPermission(context)) {
-                  final picture =
+                  final result =
                       await ref.read(takePhotoUsecaseProvider).execute();
-                  if (picture == null) return;
 
-                  imagePath.value = picture;
+                  switch (result) {
+                    case Success(value: final path):
+                      if (path == null) return;
+                      imagePath.value = path;
+                      break;
+                    case Failure(message: final message):
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(message)),
+                        );
+                      }
+                      break;
+                  }
                 }
                 if (context.mounted) Navigator.pop(context);
               },
@@ -46,11 +58,22 @@ Future<void> showProfileImageActionSheet(
               title: Text('カメラフォルダから選択する', style: TextStyle(fontSize: 14.sp)),
               onTap: () async {
                 if (await PermissionUtil.requestStoragePermission(context)) {
-                  final picture =
+                  final result =
                       await ref.read(pickImageUsecaseProvider).execute();
-                  if (picture == null) return;
 
-                  imagePath.value = picture;
+                  switch (result) {
+                    case Success(value: final path):
+                      if (path == null) return;
+                      imagePath.value = path;
+                      break;
+                    case Failure(message: final message):
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(message)),
+                        );
+                      }
+                      break;
+                  }
                 }
                 if (context.mounted) Navigator.pop(context);
               },
