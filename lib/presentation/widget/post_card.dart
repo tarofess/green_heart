@@ -310,45 +310,47 @@ class PostCard extends ConsumerWidget {
         size: 24.r,
       ),
       onTap: () async {
-        try {
-          final reportText = await showReportDialog(context);
-          if (reportText == null) return;
+        final reportText = await showReportDialog(context);
+        if (reportText == null) return;
 
-          final uid = ref.watch(authStateProvider).value?.uid;
-          if (uid == null) return;
+        final uid = ref.watch(authStateProvider).value?.uid;
+        if (uid == null) return;
 
-          if (context.mounted) {
-            await LoadingOverlay.of(
-              context,
-              backgroundColor: Colors.white10,
-            ).during(
-              () => ref.read(reportAddUsecaseProvider).execute(
-                    uid,
-                    reportText,
-                    reportedPostId: postData.post.id,
-                    reportedCommentId: null,
-                    reportedUserId: null,
-                  ),
-            );
-          }
-
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  '投稿を通報しました。',
-                  style: TextStyle(fontSize: 14.sp),
+        if (context.mounted) {
+          final result = await LoadingOverlay.of(
+            context,
+            backgroundColor: Colors.white10,
+          ).during(
+            () => ref.read(reportAddUsecaseProvider).execute(
+                  uid,
+                  reportText,
+                  reportedPostId: postData.post.id,
+                  reportedCommentId: null,
+                  reportedUserId: null,
                 ),
-              ),
-            );
-          }
-        } catch (e) {
-          if (context.mounted) {
-            showErrorDialog(
-              context: context,
-              title: '通報エラー',
-              content: e.toString(),
-            );
+          );
+
+          switch (result) {
+            case Success():
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      '投稿を通報しました。',
+                      style: TextStyle(fontSize: 14.sp),
+                    ),
+                  ),
+                );
+              }
+            case Failure(message: final message):
+              if (context.mounted) {
+                showErrorDialog(
+                  context: context,
+                  title: '通報エラー',
+                  content: message,
+                );
+              }
+              break;
           }
         }
       },
