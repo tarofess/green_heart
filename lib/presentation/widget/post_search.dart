@@ -7,6 +7,7 @@ import 'package:green_heart/presentation/widget/post_card.dart';
 import 'package:green_heart/application/state/search_post_notifier.dart';
 import 'package:green_heart/application/state/search_post_scroll_state_notifier.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
+import 'package:green_heart/application/di/post_di.dart';
 
 class PostSearch extends SearchDelegate<String> {
   PostSearch({this.uid});
@@ -120,9 +121,16 @@ class PostSearchResults extends HookConsumerWidget {
   ) async {
     isSearching.value = true;
     try {
-      await ref
-          .read(searchPostNotifierProvider.notifier)
-          .getPostsBySearchWord(query, uid);
+      final searchPostScrollState = ref.read(
+        searchPostScrollStateNotifierProvider,
+      );
+
+      await ref.read(postSearchResultGetUsecaseProvider).execute(
+            query,
+            uid,
+            searchPostScrollState,
+            ref.read(searchPostScrollStateNotifierProvider.notifier),
+          );
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -144,9 +152,16 @@ class PostSearchResults extends HookConsumerWidget {
     if (!isLoadingMore.value) {
       isLoadingMore.value = true;
       try {
-        await ref
-            .read(searchPostNotifierProvider.notifier)
-            .getPostsBySearchWord(query, uid);
+        final searchPostScrollState = ref.read(
+          searchPostScrollStateNotifierProvider,
+        );
+
+        await ref.read(postSearchResultGetUsecaseProvider).execute(
+              query,
+              uid,
+              searchPostScrollState,
+              ref.read(searchPostScrollStateNotifierProvider.notifier),
+            );
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

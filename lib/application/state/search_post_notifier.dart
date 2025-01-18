@@ -1,7 +1,6 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/post_data.dart';
-import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/application/di/comment_di.dart';
 import 'package:green_heart/application/di/like_di.dart';
 import 'package:green_heart/application/di/profile_di.dart';
@@ -12,7 +11,6 @@ import 'package:green_heart/domain/type/post.dart';
 import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/application/di/block_di.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
-import 'package:green_heart/application/state/search_post_scroll_state_notifier.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
 
 class SearchPostNotifier extends Notifier<List<PostData>> {
@@ -21,20 +19,7 @@ class SearchPostNotifier extends Notifier<List<PostData>> {
     return [];
   }
 
-  Future<void> getPostsBySearchWord(
-    String searchWord,
-    String? uid,
-  ) async {
-    final searchPostScrollState =
-        ref.read(searchPostScrollStateNotifierProvider);
-    if (!searchPostScrollState.hasMore) return;
-
-    final posts = await ref.read(postSearchResultGetUsecaseProvider).execute(
-          searchWord,
-          uid,
-          searchPostScrollState,
-          ref.read(searchPostScrollStateNotifierProvider.notifier),
-        );
+  Future<void> setPostsBySearchWord(List<Post> posts) async {
     final postData = await _createPostDataList(posts);
     final postDataFilteredByBlock = await _filterByBlock(postData);
     state = [...state, ...postDataFilteredByBlock];
