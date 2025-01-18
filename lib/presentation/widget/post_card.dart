@@ -18,6 +18,7 @@ import 'package:green_heart/application/di/report_di.dart';
 import 'package:green_heart/presentation/widget/user_empty_image.dart';
 import 'package:green_heart/presentation/widget/user_firebase_image.dart';
 import 'package:green_heart/application/state/post_manager_notifier.dart';
+import 'package:green_heart/domain/type/result.dart';
 
 class PostCard extends ConsumerWidget {
   PostCard({super.key, required this.postData, this.uidInPreviosPage});
@@ -173,28 +174,24 @@ class PostCard extends ConsumerWidget {
         final uid = ref.read(authStateProvider).value?.uid;
         if (uid == null) return;
 
-        try {
-          await LoadingOverlay.of(
-            context,
-            backgroundColor: Colors.white10,
-          ).during(
-            () => ref
-                .read(likeToggleUsecaseProvider)
-                .execute(postData.post.id, uid),
-          );
+        final result = await LoadingOverlay.of(
+          context,
+          backgroundColor: Colors.white10,
+        ).during(
+          () => ref.read(likeToggleUsecaseProvider).execute(postData, uid),
+        );
 
-          ref.read(postManagerNotifierProvider.notifier).toggleLike(
-                postData,
-                uid,
+        switch (result) {
+          case Success():
+            break;
+          case Failure(message: final message):
+            if (context.mounted) {
+              showErrorDialog(
+                context: context,
+                title: 'いいねエラー',
+                content: message,
               );
-        } catch (e) {
-          if (context.mounted) {
-            showErrorDialog(
-              context: context,
-              title: 'いいねエラー',
-              content: e.toString(),
-            );
-          }
+            }
         }
       },
     );
