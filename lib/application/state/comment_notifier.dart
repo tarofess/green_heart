@@ -15,69 +15,51 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
   @override
   Future<List<CommentData>> build(String arg) async {
     final comments = await ref.read(commentGetUsecaseProvider).execute(arg);
-    final filteredCommentsByBlock = await _filteredByBlock(comments);
-    final commentDataList = await _createCommentDataList(
-      filteredCommentsByBlock,
-    );
-    return commentDataList;
+    final filteredComments = await _filterBlockedComments(comments);
+    return _createCommentDataList(filteredComments);
   }
 
   Future<List<CommentData>> _createCommentDataList(
     List<Comment> comments,
   ) async {
-    List<CommentData> commentDataList = [];
-
-    final commentFutures = comments
+    return Future.wait(comments
         .where((comment) => comment.parentCommentId == null)
-        .map((comment) async {
-      final results = await Future.wait([
-        ref.read(profileGetUsecaseProvider).execute(comment.uid),
-        ref.read(commentGetReplyUsecaseProvider).execute(comment.id),
-      ]);
-      final profile = results[0] as Profile?;
-      final replyComments = results[1] as List<Comment>;
-      final isMe = ref.watch(authStateProvider).value?.uid == comment.uid;
-
-      final replyCommentFuture = replyComments.map((relpyComment) async {
-        final replyProfile =
-            await ref.read(profileGetUsecaseProvider).execute(relpyComment.uid);
-        final isMe =
-            ref.watch(authStateProvider).value?.uid == relpyComment.uid;
-        return CommentData(
-          comment: relpyComment,
-          profile: replyProfile,
-          replyComments: [],
-          isMe: isMe,
-        );
-      });
-
-      final replyCommentData = await Future.wait(replyCommentFuture);
-      return CommentData(
-        comment: comment,
-        profile: profile,
-        replyComments: replyCommentData,
-        isMe: isMe,
-      );
-    });
-
-    commentDataList = await Future.wait(commentFutures);
-    return commentDataList;
+        .map((comment) => _createCommentData(comment)));
   }
 
-  Future<List<Comment>> _filteredByBlock(List<Comment> comments) async {
-    final uid = ref.watch(authStateProvider).value?.uid;
-    if (uid == null) {
+  Future<CommentData> _createCommentData(Comment comment) async {
+    final results = await Future.wait([
+      ref.read(profileGetUsecaseProvider).execute(comment.uid),
+      ref.read(commentGetReplyUsecaseProvider).execute(comment.id),
+    ]);
+
+    final profile = results[0] as Profile?;
+    final replyComments = results[1] as List<Comment>;
+
+    final replyCommentData = await Future.wait(
+      replyComments.map((reply) => _createCommentData(reply)),
+    );
+
+    return CommentData(
+      comment: comment,
+      profile: profile,
+      replyComments: replyCommentData,
+      isMe: ref.watch(authStateProvider).value?.uid == comment.uid,
+    );
+  }
+
+  Future<List<Comment>> _filterBlockedComments(List<Comment> comments) async {
+    final currentUid = ref.watch(authStateProvider).value?.uid;
+    if (currentUid == null) {
       throw Exception('ユーザー情報が取得できません。再度お試し下さい。');
     }
 
-    final blockList = await ref.read(blockGetUsecaseProvider).execute(uid);
-    final filteredCommens = comments.where((comment) {
-      final isBlockedByPostOwner = blockList.any(
-        (block) => block.blockedUid == comment.uid,
-      );
-      return !isBlockedByPostOwner;
-    }).toList();
-    return filteredCommens;
+    final blockList =
+        await ref.read(blockGetUsecaseProvider).execute(currentUid);
+    return comments
+        .where((comment) =>
+            !blockList.any((block) => block.blockedUid == comment.uid))
+        .toList();
   }
 
   void addComment(
@@ -85,44 +67,27 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
     PostData postData,
     String? parentCommentId,
   ) {
-    if (parentCommentId == null) {
-      // 新規コメント
-      final newCommentData = CommentData(
-        comment: newComment,
-        profile: ref.read(profileNotifierProvider).value,
-        replyComments: [],
-        isMe: true,
-      );
-      state.whenData((comments) {
-        state = AsyncValue.data([...comments, newCommentData]);
-      });
-    } else {
-      // 返信コメント
-      final updatedComment = newComment.copyWith(
-        parentCommentId: parentCommentId,
-      );
-      final updatedCommentData = CommentData(
-        comment: updatedComment,
-        profile: ref.read(profileNotifierProvider).value,
-        replyComments: [],
-        isMe: true,
-      );
-      state.whenData((comments) {
-        final updatedComment = comments.map((commentData) {
+    final newCommentData = CommentData(
+      comment: newComment,
+      profile: ref.read(profileNotifierProvider).value,
+      replyComments: [],
+      isMe: true,
+    );
+
+    state = state.whenData((comments) {
+      if (parentCommentId == null) {
+        return [...comments, newCommentData];
+      } else {
+        return comments.map((commentData) {
           if (commentData.comment.id == parentCommentId) {
             return commentData.copyWith(
-              replyComments: [
-                ...commentData.replyComments,
-                updatedCommentData,
-              ],
+              replyComments: [...commentData.replyComments, newCommentData],
             );
           }
           return commentData;
         }).toList();
-
-        state = AsyncValue.data(updatedComment);
-      });
-    }
+      }
+    });
 
     ref.read(postManagerNotifierProvider.notifier).addComment(
           newComment,
@@ -131,22 +96,20 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
   }
 
   void deleteComment(String commentId) {
-    state.whenData((comments) {
-      final updatedCommentData = comments
-          .map((commentData) {
-            if (commentData.comment.id == commentId) {
-              return null;
-            }
+    state = state.whenData((comments) => comments
+        .map((commentData) {
+          final updatedReplies = commentData.replyComments
+              .where((reply) => reply.comment.id != commentId)
+              .toList();
 
-            final updatedReplies = commentData.replyComments
-                .where((reply) => reply.comment.id != commentId)
-                .toList();
-            return commentData.copyWith(replyComments: updatedReplies);
-          })
-          .whereType<CommentData>()
-          .toList();
-      state = AsyncValue.data(updatedCommentData);
-    });
+          if (commentData.comment.id == commentId) {
+            return null;
+          }
+
+          return commentData.copyWith(replyComments: updatedReplies);
+        })
+        .whereType<CommentData>()
+        .toList());
 
     ref.read(postManagerNotifierProvider.notifier).deleteComment(commentId);
   }

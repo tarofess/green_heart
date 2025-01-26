@@ -22,9 +22,8 @@ class BlockNotifier extends AsyncNotifier<List<BlockData>> {
     List<BlockData> blockData = [];
 
     final task = blocks.map((block) async {
-      final profile = await ref.read(profileGetUsecaseProvider).execute(
-            block.blockedUid,
-          );
+      final profile =
+          await ref.read(profileGetUsecaseProvider).execute(block.blockedUid);
       return BlockData(
         block: block,
         profile: profile,
