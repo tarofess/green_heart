@@ -28,7 +28,7 @@ class UnfollowUsecase {
       targetFollowingNotifier.unfollow(targetUid, myUid);
       userPageStateNotifier.setIsFollowing(false);
 
-      return const Success(null);
+      return const Success();
     } catch (e) {
       return Failure(e.toString(), e as Exception?);
     }

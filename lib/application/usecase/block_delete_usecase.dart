@@ -17,7 +17,7 @@ class BlockDeleteUsecase {
       await _blockRepository.deleteBlockByUid(myUid, targetUid);
       _blockNotifier.deleteBlock(targetUid);
 
-      return const Success(null);
+      return const Success();
     } catch (e) {
       return Failure(e.toString(), e as Exception?);
     }

@@ -25,7 +25,7 @@ class CommentAddUsecase {
 
       commentNotifier.addComment(newComment, postData, parentCommentId);
 
-      return const Success(null);
+      return const Success();
     } catch (e) {
       return Failure(e.toString(), e as Exception?);
     }

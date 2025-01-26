@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:green_heart/application/exception/app_exception.dart';
+import 'package:green_heart/domain/type/result.dart';
 import 'package:green_heart/infrastructure/service/firebase_auth_service.dart';
 
 class AccountReauthUsecase {
@@ -8,7 +9,7 @@ class AccountReauthUsecase {
 
   AccountReauthUsecase(this._authService);
 
-  Future<void> execute(User user) async {
+  Future<Result> execute(User user) async {
     try {
       String? providerId = user.providerData
           .firstWhere((info) =>
@@ -22,8 +23,9 @@ class AccountReauthUsecase {
       } else {
         throw AppException('サポートされていない認証プロバイダです。');
       }
+      return const Success();
     } catch (e) {
-      throw AppException('アカウントの再認証に失敗しました。再度お試しください。');
+      return Failure(e.toString(), e as Exception?);
     }
   }
 }

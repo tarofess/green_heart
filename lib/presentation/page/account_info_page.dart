@@ -120,7 +120,7 @@ class AccountInfoPage extends HookConsumerWidget {
         ),
       ),
       onPressed: () async {
-        final result = await showConfirmationDialog(
+        final isConfirmed = await showConfirmationDialog(
           context: context,
           title: 'アカウント削除',
           content: 'アカウントを削除すると投稿データやプロフィールなどアカウントに紐付く全てのデータが削除されます。\n\n'
@@ -128,17 +128,17 @@ class AccountInfoPage extends HookConsumerWidget {
           positiveButtonText: '削除する',
           negativeButtonText: 'キャンセル',
         );
-        if (!result) return;
+        if (!isConfirmed) return;
 
         if (context.mounted) {
-          final result2 = await showConfirmationDialog(
+          final isConfirmed2 = await showConfirmationDialog(
             context: context,
             title: '再認証',
             content: 'アカウント削除を続けるためにもう一度ログインし直してください。',
             positiveButtonText: 'ログイン',
             negativeButtonText: 'キャンセル',
           );
-          if (!result2) return;
+          if (!isConfirmed2) return;
         }
 
         if (context.mounted) {

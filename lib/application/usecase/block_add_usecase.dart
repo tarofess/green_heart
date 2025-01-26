@@ -24,7 +24,7 @@ class BlockAddUsecase {
       await _blockRepository.addBlock(newBlock);
       await _blockNotifier.addBlock(targetUid, newBlock);
 
-      return const Success(null);
+      return const Success();
     } catch (e) {
       return Failure(e.toString(), e as Exception?);
     }

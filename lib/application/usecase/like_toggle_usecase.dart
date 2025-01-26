@@ -13,7 +13,7 @@ class LikeToggleUsecase {
     try {
       await _likeRepository.toggleLike(postData.post.id, uid);
       _postManagerNotifier.toggleLike(postData, uid);
-      return const Success(null);
+      return const Success();
     } catch (e) {
       return Failure(e.toString(), e as Exception?);
     }

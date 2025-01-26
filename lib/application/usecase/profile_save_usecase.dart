@@ -46,7 +46,7 @@ class ProfileSaveUsecase {
       _profileNotifier.saveProfile(savedProfile);
       _userPostNotifier.updateProfile(uid, name, savedProfile.imageUrl);
 
-      return const Success(null);
+      return const Success();
     } catch (e) {
       return Failure(e.toString(), e as Exception?);
     }

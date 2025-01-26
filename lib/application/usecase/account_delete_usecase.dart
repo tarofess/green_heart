@@ -42,10 +42,14 @@ class AccountDeleteUsecase {
     if (profile == null || user == null) {
       return const Failure('現在アカウント情報が取得できないためアカウントを削除できません。のちほどお試しください。');
     }
-
     try {
+      final result = await _accountReauthUsecase.execute(user);
+
+      if (result is Failure) {
+        return result;
+      }
+
       final deleteTasks = Future.wait([
-        _accountReauthUsecase.execute(user),
         _notificationDeleteUsecase.execute(user),
         _likeDeleteAllUsecase.execute(user),
         _commentDeleteAllUsecase.execute(user),
@@ -62,7 +66,7 @@ class AccountDeleteUsecase {
       });
 
       await _accountRepository.deleteAccount(user);
-      return const Success(null);
+      return const Success();
     } catch (e) {
       return Failure(e.toString(), e as Exception?);
     }

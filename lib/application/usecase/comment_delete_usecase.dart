@@ -14,7 +14,7 @@ class CommentDeleteUsecase {
     try {
       await _commentRepository.deleteComment(commentId);
       commentNotifier.deleteComment(commentId);
-      return const Success(null);
+      return const Success();
     } catch (e) {
       return Failure(e.toString(), e as Exception?);
     }

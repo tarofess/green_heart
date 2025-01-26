@@ -11,7 +11,7 @@ class SignOutUseCase {
   Future<Result> execute() async {
     try {
       await _authService.signOut();
-      return const Success(null);
+      return const Success();
     } catch (e) {
       return Failure(e.toString(), e as Exception?);
     }

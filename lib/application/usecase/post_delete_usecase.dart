@@ -13,7 +13,7 @@ class PostDeleteUsecase {
     try {
       await _postRepository.deletePost(postData.post.id);
       _postManagerNotifier.deletePost(uid, postData);
-      return const Success(null);
+      return const Success();
     } catch (e) {
       return Failure(e.toString(), e as Exception?);
     }

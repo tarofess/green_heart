@@ -30,7 +30,7 @@ class FollowUsecase {
         await followingNotifier.follow(myUid, targetUid, newFollow);
         userPageStateNotifier.setIsFollowing(true);
       }
-      return const Success(null);
+      return const Success();
     } catch (e) {
       return Failure(e.toString(), e as Exception?);
     }
