@@ -20,121 +20,103 @@ class SearchPostNotifier extends Notifier<List<PostData>> {
   }
 
   Future<void> setPostsBySearchWord(List<Post> posts) async {
-    final postData = await _createPostDataList(posts);
-    final postDataFilteredByBlock = await _filterByBlock(postData);
-    state = [...state, ...postDataFilteredByBlock];
+    final postData = await Future.wait(posts.map(_createPostData));
+    final filteredPostData = await _filterByBlock(postData);
+    state = [...state, ...filteredPostData];
   }
 
-  Future<List<PostData>> _createPostDataList(List<Post> posts) async {
-    List<PostData> postData = [];
+  Future<PostData> _createPostData(Post post) async {
+    final results = await Future.wait([
+      ref.read(profileGetUsecaseProvider).execute(post.uid),
+      ref.read(likeGetUsecaseProvider).execute(post.id),
+      ref.read(commentGetUsecaseProvider).execute(post.id),
+    ]);
 
-    final postDataFutures = posts.map((post) async {
-      final results = await Future.wait([
-        ref.read(profileGetUsecaseProvider).execute(post.uid),
-        ref.read(likeGetUsecaseProvider).execute(post.id),
-        ref.read(commentGetUsecaseProvider).execute(post.id),
-      ]);
-      final profile = results[0] as Profile;
-      final likes = results[1] as List<Like>;
-      final comments = results[2] as List<Comment>;
+    final profile = results[0] as Profile;
+    final likes = results[1] as List<Like>;
+    final comments = results[2] as List<Comment>;
 
-      final commentDataFutures = comments.map((comment) async {
-        final profile =
-            await ref.read(profileGetUsecaseProvider).execute(comment.uid);
-        return CommentData(comment: comment, profile: profile);
-      });
+    final commentData = await Future.wait(comments.map(_createCommentData));
 
-      final commentData = await Future.wait(commentDataFutures);
-      return PostData(
-        post: post,
-        userProfile: profile,
-        likes: likes,
-        comments: commentData,
-      );
-    });
-
-    postData = await Future.wait(postDataFutures);
-    return postData;
+    return PostData(
+      post: post,
+      userProfile: profile,
+      likes: likes,
+      comments: commentData,
+    );
   }
 
-  Future<List<PostData>> _filterByBlock(List<PostData> postDataList) async {
+  Future<CommentData> _createCommentData(Comment comment) async {
+    final profile =
+        await ref.read(profileGetUsecaseProvider).execute(comment.uid);
+    return CommentData(comment: comment, profile: profile);
+  }
+
+  Future<List<PostData>> _filterByBlock(List<PostData> postData) async {
     final uid = ref.watch(authStateProvider).value?.uid;
     if (uid == null) {
-      throw Exception('ユーザーが存在しないので投稿を取得できません。再度お試しください。');
+      throw Exception('ユーザーが存在しないため投稿を取得できません。再度お試しください。');
     }
 
     final blockList = await ref.read(blockGetUsecaseProvider).execute(uid);
     final blockedUids = blockList.map((block) => block.blockedUid).toSet();
 
-    final filteredPosts = postDataList
-        .where((postData) => !blockedUids.contains(postData.post.uid))
-        .toList();
-    final filteredCommentPosts = filteredPosts.map((postData) {
-      final comments = List<CommentData>.from(postData.comments);
-      comments.removeWhere(
-        (commentData) => blockedUids.contains(commentData.comment.uid),
-      );
-      return postData.copyWith(comments: comments);
-    }).toList();
+    return postData.where((postData) {
+      final isPostBlocked = blockedUids.contains(postData.post.uid);
+      if (isPostBlocked) {
+        return false; // 投稿自体がブロックされている場合は除外
+      }
 
-    return filteredCommentPosts;
+      // 投稿がブロックされていない場合のみコメントをフィルタリング
+      final filteredComments = postData.comments
+          .where(
+              (commentData) => !blockedUids.contains(commentData.comment.uid))
+          .toList();
+
+      postData = postData.copyWith(comments: filteredComments);
+
+      return true;
+    }).toList();
   }
 
   void deletePost(String postId) {
-    final updatedPostData =
-        state.where((postData) => postData.post.id != postId).toList();
-    state = updatedPostData;
+    state = state.where((postData) => postData.post.id != postId).toList();
   }
 
   void toggleLike(String postId, String uid) {
-    final updatedPostData = state.map((postData) {
+    state = state.map((postData) {
       if (postData.post.id == postId) {
         final likes = List<Like>.from(postData.likes);
-        final isLiked = likes.any((element) => element.uid == uid);
-        if (isLiked) {
-          likes.removeWhere((element) => element.uid == uid);
+        if (likes.any((like) => like.uid == uid)) {
+          likes.removeWhere((like) => like.uid == uid);
         } else {
-          likes.add(Like(
-            uid: uid,
-            postId: postId,
-            createdAt: DateTime.now(),
-          ));
+          likes.add(Like(uid: uid, postId: postId, createdAt: DateTime.now()));
         }
         return postData.copyWith(likes: likes);
       }
       return postData;
     }).toList();
-
-    state = updatedPostData;
   }
 
   void addComment(Comment comment) {
-    final updatedPostData = state.map((postData) {
+    state = state.map((postData) {
       if (postData.post.id == comment.postId) {
         final comments = List<CommentData>.from(postData.comments);
         final profile = ref.read(profileNotifierProvider).value;
-        comments.add(CommentData(
-          comment: comment,
-          profile: profile,
-        ));
+        comments.add(CommentData(comment: comment, profile: profile));
         return postData.copyWith(comments: comments);
       }
       return postData;
     }).toList();
-
-    state = updatedPostData;
   }
 
   void deleteComment(String commentId) {
-    final updatedPostData = state.map((postData) {
-      final comments = List<CommentData>.from(postData.comments);
-      comments.removeWhere((commentData) =>
-          commentData.comment.id == commentId ||
-          commentData.comment.parentCommentId == commentId);
+    state = state.map((postData) {
+      final comments = postData.comments
+          .where((commentData) => commentData.comment.id != commentId)
+          .toList();
       return postData.copyWith(comments: comments);
     }).toList();
-
-    state = updatedPostData;
   }
 
   void reset() {
