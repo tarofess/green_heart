@@ -79,9 +79,10 @@ class PostInteractionService {
   ) {
     state.whenData((postDataList) {
       final updatedPostData = postDataList.map((postData) {
-        final comments = postData.comments
-            .where((commentData) => commentData.comment.id != commentId)
-            .toList();
+        final comments = List<CommentData>.from(postData.comments);
+        comments.removeWhere((commentData) =>
+            commentData.comment.id == commentId ||
+            commentData.comment.parentCommentId == commentId);
         return postData.copyWith(comments: comments);
       }).toList();
 
