@@ -12,8 +12,13 @@ import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/application/di/block_di.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
+import 'package:green_heart/application/service/post_interaction_service.dart';
 
-class SearchPostNotifier extends Notifier<List<PostData>> {
+class SearchPostNotifier extends AsyncNotifier<List<PostData>> {
+  final PostInteractionService _postInteractionService;
+
+  SearchPostNotifier(this._postInteractionService);
+
   @override
   List<PostData> build() {
     return [];
@@ -22,7 +27,7 @@ class SearchPostNotifier extends Notifier<List<PostData>> {
   Future<void> setPostsBySearchWord(List<Post> posts) async {
     final postData = await Future.wait(posts.map(_createPostData));
     final filteredPostData = await _filterByBlock(postData);
-    state = [...state, ...filteredPostData];
+    state = AsyncValue.data([...state.value ?? [], ...filteredPostData]);
   }
 
   Future<PostData> _createPostData(Post post) async {
@@ -80,51 +85,39 @@ class SearchPostNotifier extends Notifier<List<PostData>> {
   }
 
   void deletePost(String postId) {
-    state = state.where((postData) => postData.post.id != postId).toList();
+    _postInteractionService.deletePost(state, postId, (updatedPosts) {
+      state = AsyncValue.data(updatedPosts);
+    });
   }
 
   void toggleLike(String postId, String uid) {
-    state = state.map((postData) {
-      if (postData.post.id == postId) {
-        final likes = List<Like>.from(postData.likes);
-        if (likes.any((like) => like.uid == uid)) {
-          likes.removeWhere((like) => like.uid == uid);
-        } else {
-          likes.add(Like(uid: uid, postId: postId, createdAt: DateTime.now()));
-        }
-        return postData.copyWith(likes: likes);
-      }
-      return postData;
-    }).toList();
+    _postInteractionService.toggleLike(state, postId, uid, (updatedPosts) {
+      state = AsyncValue.data(updatedPosts);
+    });
   }
 
   void addComment(Comment comment) {
-    state = state.map((postData) {
-      if (postData.post.id == comment.postId) {
-        final comments = List<CommentData>.from(postData.comments);
-        final profile = ref.read(profileNotifierProvider).value;
-        comments.add(CommentData(comment: comment, profile: profile));
-        return postData.copyWith(comments: comments);
-      }
-      return postData;
-    }).toList();
+    final profile = ref.read(profileNotifierProvider).value;
+    if (profile == null) {
+      throw Exception('プロフィール情報が取得できませんでした。再度お試しください。');
+    }
+    _postInteractionService.addComment(state, comment, profile, (updatedPosts) {
+      state = AsyncValue.data(updatedPosts);
+    });
   }
 
   void deleteComment(String commentId) {
-    state = state.map((postData) {
-      final comments = postData.comments
-          .where((commentData) => commentData.comment.id != commentId)
-          .toList();
-      return postData.copyWith(comments: comments);
-    }).toList();
+    _postInteractionService.deleteComment(state, commentId, (updatedPosts) {
+      state = AsyncValue.data(updatedPosts);
+    });
   }
 
   void reset() {
-    state = [];
+    state = const AsyncValue.data([]);
   }
 }
 
 final searchPostNotifierProvider =
-    NotifierProvider<SearchPostNotifier, List<PostData>>(
-  () => SearchPostNotifier(),
+    AsyncNotifierProvider<SearchPostNotifier, List<PostData>>(
+  () => SearchPostNotifier(PostInteractionService()),
 );

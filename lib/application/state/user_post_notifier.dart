@@ -14,13 +14,18 @@ import 'package:green_heart/application/state/user_post_scroll_state_notifier.da
 import 'package:green_heart/application/di/comment_di.dart';
 import 'package:green_heart/application/di/like_di.dart';
 import 'package:green_heart/application/di/block_di.dart';
+import 'package:green_heart/application/service/post_interaction_service.dart';
 
 class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
+  late final PostInteractionService _postInteractionService;
+
   @override
   Future<List<PostData>> build(String? arg) async {
     if (arg == null) {
       throw Exception('ユーザーの投稿を取得できません。再度お試しください。');
     }
+
+    _postInteractionService = ref.read(postInteractionServiceProvider);
 
     final posts = await _fetchNextBatch(arg);
     final postData = await _createPostDataList(posts);
@@ -143,68 +148,31 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
     state = state.whenData((posts) => [newPostData, ...posts]);
   }
 
-  Future<void> deletePost(String postId) async {
-    state.whenData((postDataList) {
-      final updatedPostData =
-          postDataList.where((postData) => postData.post.id != postId).toList();
-      state = AsyncValue.data(updatedPostData);
+  void deletePost(String postId) {
+    _postInteractionService.deletePost(state, postId, (updatedPosts) {
+      state = AsyncValue.data(updatedPosts);
     });
   }
 
   void toggleLike(String postId, String uid) {
-    state.whenData((postDataList) {
-      final updatedPostData = postDataList.map((postData) {
-        if (postData.post.id == postId) {
-          final likes = List<Like>.from(postData.likes);
-          final isLiked = likes.any((element) => element.uid == uid);
-          if (isLiked) {
-            likes.removeWhere((element) => element.uid == uid);
-          } else {
-            likes.add(Like(
-              uid: uid,
-              postId: postId,
-              createdAt: DateTime.now(),
-            ));
-          }
-          return postData.copyWith(likes: likes);
-        }
-        return postData;
-      }).toList();
-
-      state = AsyncValue.data(updatedPostData);
+    _postInteractionService.toggleLike(state, postId, uid, (updatedPosts) {
+      state = AsyncValue.data(updatedPosts);
     });
   }
 
   void addComment(Comment comment) {
-    state.whenData((postDataList) {
-      final updatedPostData = postDataList.map((postData) {
-        if (postData.post.id == comment.postId) {
-          final comments = List<CommentData>.from(postData.comments);
-          final profile = ref.read(profileNotifierProvider).value;
-          comments.add(CommentData(
-            comment: comment,
-            profile: profile,
-          ));
-          return postData.copyWith(comments: comments);
-        }
-        return postData;
-      }).toList();
-
-      state = AsyncValue.data(updatedPostData);
+    final profile = ref.read(profileNotifierProvider).value;
+    if (profile == null) {
+      throw Exception('プロフィール情報が取得できませんでした。再度お試しください。');
+    }
+    _postInteractionService.addComment(state, comment, profile, (updatedPosts) {
+      state = AsyncValue.data(updatedPosts);
     });
   }
 
   void deleteComment(String commentId) {
-    state.whenData((postDataList) {
-      final updatedPostData = postDataList.map((postData) {
-        final comments = List<CommentData>.from(postData.comments);
-        comments.removeWhere((commentData) =>
-            commentData.comment.id == commentId ||
-            commentData.comment.parentCommentId == commentId);
-        return postData.copyWith(comments: comments);
-      }).toList();
-
-      state = AsyncValue.data(updatedPostData);
+    _postInteractionService.deleteComment(state, commentId, (updatedPosts) {
+      state = AsyncValue.data(updatedPosts);
     });
   }
 
@@ -245,4 +213,9 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
 
 final userPostNotifierProvider =
     AsyncNotifierProviderFamily<UserPostNotifier, List<PostData>, String?>(
-        UserPostNotifier.new);
+  UserPostNotifier.new,
+);
+
+final postInteractionServiceProvider = Provider<PostInteractionService>(
+  (ref) => PostInteractionService(),
+);

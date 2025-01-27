@@ -8,6 +8,8 @@ import 'package:green_heart/application/state/search_post_notifier.dart';
 import 'package:green_heart/application/state/search_post_scroll_state_notifier.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/application/di/post_di.dart';
+import 'package:green_heart/domain/type/post_data.dart';
+import 'package:green_heart/presentation/widget/async_error_widget.dart';
 
 class PostSearch extends SearchDelegate<String> {
   PostSearch({this.uid});
@@ -88,32 +90,27 @@ class PostSearchResults extends HookConsumerWidget {
       return const LoadingIndicator(message: '検索中');
     }
 
-    if (searchPostState.isEmpty && !isLoadingMore.value) {
-      return const SizedBox();
-    }
-
-    return ListView.builder(
-      controller: scrollController,
-      itemCount: searchPostState.length + 1,
-      itemBuilder: (context, index) {
-        if (index < searchPostState.length) {
-          return Padding(
-            padding: EdgeInsets.only(left: 8.w, right: 8.w, top: 0.h),
-            child: PostCard(
-              key: ValueKey(searchPostState[index].post.id),
-              postData: searchPostState[index],
-            ),
-          );
-        } else if (hasMore && searchPostState.length >= 15) {
-          return Padding(
-            padding: EdgeInsets.only(top: 16.h, bottom: 16.h),
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        } else {
+    return searchPostState.when(
+      data: (postData) {
+        if (postData.isEmpty) {
           return const SizedBox.shrink();
         }
+
+        return _buildPostList(
+          searchPostState: postData,
+          scrollController: scrollController,
+          isLoadingMore: isLoadingMore,
+          hasMore: hasMore,
+        );
+      },
+      loading: () {
+        return const LoadingIndicator(message: '検索中');
+      },
+      error: (e, stackTrace) {
+        return AsyncErrorWidget(
+          error: e,
+          retry: () => ref.refresh(searchPostNotifierProvider),
+        );
       },
     );
   }
@@ -178,5 +175,37 @@ class PostSearchResults extends HookConsumerWidget {
         isLoadingMore.value = false;
       }
     }
+  }
+
+  Widget _buildPostList({
+    required List<PostData> searchPostState,
+    required ScrollController scrollController,
+    required ValueNotifier<bool> isLoadingMore,
+    required bool hasMore,
+  }) {
+    return ListView.builder(
+      controller: scrollController,
+      itemCount: searchPostState.length + 1,
+      itemBuilder: (context, index) {
+        if (index < searchPostState.length) {
+          return Padding(
+            padding: EdgeInsets.only(left: 8.w, right: 8.w, top: 0.h),
+            child: PostCard(
+              key: ValueKey(searchPostState[index].post.id),
+              postData: searchPostState[index],
+            ),
+          );
+        } else if (hasMore && searchPostState.length >= 15) {
+          return Padding(
+            padding: EdgeInsets.only(top: 16.h, bottom: 16.h),
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        } else {
+          return const SizedBox.shrink();
+        }
+      },
+    );
   }
 }
