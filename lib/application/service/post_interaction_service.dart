@@ -89,3 +89,7 @@ class PostInteractionService {
     });
   }
 }
+
+final postInteractionServiceProvider = Provider<PostInteractionService>(
+  (ref) => PostInteractionService(),
+);

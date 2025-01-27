@@ -1,22 +1,16 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/post_di.dart';
-import 'package:green_heart/application/state/auth_state_provider.dart';
-import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/domain/type/post_data.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
-import 'package:green_heart/domain/type/comment_data.dart';
-import 'package:green_heart/domain/type/like.dart';
 import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/domain/type/post.dart';
-import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/application/state/user_post_scroll_state_notifier.dart';
-import 'package:green_heart/application/di/comment_di.dart';
-import 'package:green_heart/application/di/like_di.dart';
-import 'package:green_heart/application/di/block_di.dart';
 import 'package:green_heart/application/service/post_interaction_service.dart';
+import 'package:green_heart/application/service/post_data_service.dart';
 
 class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
+  late final PostDataService _postDataService;
   late final PostInteractionService _postInteractionService;
 
   @override
@@ -25,15 +19,16 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
       throw Exception('ユーザーの投稿を取得できません。再度お試しください。');
     }
 
+    _postDataService = ref.read(postDataServiceProvider);
     _postInteractionService = ref.read(postInteractionServiceProvider);
 
-    final posts = await _fetchNextBatch(arg);
-    final postData = await _createPostDataList(posts);
-    final filteredPostsByBlock = await _filterCommentsByBlock(postData);
-    return filteredPostsByBlock;
+    final posts = await _fetchNextPosts(arg);
+    final postDataList =
+        await _postDataService.createAndFilterPostDataList(posts);
+    return postDataList;
   }
 
-  Future<List<Post>> _fetchNextBatch(String uid) async {
+  Future<List<Post>> _fetchNextPosts(String uid) async {
     final userPostScrollState = ref.read(
       userPostScrollStateNotifierProvider(uid),
     );
@@ -60,13 +55,13 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
 
     state.whenData((currentPosts) async {
       try {
-        final newPosts = await _fetchNextBatch(uid);
-        final newPostData = await _createPostDataList(newPosts);
-        final filteredPostsByBlock = await _filterCommentsByBlock(newPostData);
+        final newPosts = await _fetchNextPosts(uid);
+        final newPostData =
+            await _postDataService.createAndFilterPostDataList(newPosts);
 
         final updatedPosts = [
           ...currentPosts,
-          ...filteredPostsByBlock.where((newPost) => !currentPosts
+          ...newPostData.where((newPost) => !currentPosts
               .any((currentPost) => currentPost.post.id == newPost.post.id))
         ];
         state = AsyncValue.data(updatedPosts);
@@ -85,63 +80,9 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
       ..updateLastDocument(null)
       ..updateHasMore(true);
     state = await AsyncValue.guard(() async {
-      final posts = await _fetchNextBatch(uid);
-      final postData = await _createPostDataList(posts);
-      final filteredPostsByBlock = await _filterCommentsByBlock(postData);
-      return filteredPostsByBlock;
+      final posts = await _fetchNextPosts(uid);
+      return await _postDataService.createAndFilterPostDataList(posts);
     });
-  }
-
-  Future<List<PostData>> _filterCommentsByBlock(
-    List<PostData> postDataList,
-  ) async {
-    final uid = ref.watch(authStateProvider).value?.uid;
-    if (uid == null) {
-      throw Exception('ユーザー情報が取得できません。再度お試し下さい。');
-    }
-
-    final blockList = await ref.read(blockGetUsecaseProvider).execute(uid);
-    final blockedUids = blockList.map((block) => block.blockedUid).toSet();
-    final filteredPosts = postDataList.map((postData) {
-      final comments = List<CommentData>.from(postData.comments);
-      comments.removeWhere(
-        (commentData) => blockedUids.contains(commentData.comment.uid),
-      );
-      return postData.copyWith(comments: comments);
-    }).toList();
-    return filteredPosts;
-  }
-
-  Future<List<PostData>> _createPostDataList(List<Post> posts) async {
-    List<PostData> postData = [];
-
-    final postDataFutures = posts.map((post) async {
-      final results = await Future.wait([
-        ref.read(profileGetUsecaseProvider).execute(post.uid),
-        ref.read(likeGetUsecaseProvider).execute(post.id),
-        ref.read(commentGetUsecaseProvider).execute(post.id),
-      ]);
-      final profile = results[0] as Profile;
-      final likes = results[1] as List<Like>;
-      final comments = results[2] as List<Comment>;
-
-      final commentDataFutures = comments.map((comment) async {
-        final profile =
-            await ref.read(profileGetUsecaseProvider).execute(comment.uid);
-        return CommentData(comment: comment, profile: profile);
-      });
-
-      final commentData = await Future.wait(commentDataFutures);
-      return PostData(
-        post: post,
-        userProfile: profile,
-        likes: likes,
-        comments: commentData,
-      );
-    });
-
-    postData = await Future.wait(postDataFutures);
-    return postData;
   }
 
   void addPost(PostData newPostData) {
@@ -214,8 +155,4 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
 final userPostNotifierProvider =
     AsyncNotifierProviderFamily<UserPostNotifier, List<PostData>, String?>(
   UserPostNotifier.new,
-);
-
-final postInteractionServiceProvider = Provider<PostInteractionService>(
-  (ref) => PostInteractionService(),
 );
