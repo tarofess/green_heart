@@ -12,7 +12,7 @@ class SearchPostNotifier extends AsyncNotifier<List<PostData>> {
   late final PostInteractionService _postInteractionService;
 
   @override
-  List<PostData> build() {
+  Future<List<PostData>> build() async {
     _postDataService = ref.read(postDataServiceProvider);
     _postInteractionService = ref.read(postInteractionServiceProvider);
     return [];

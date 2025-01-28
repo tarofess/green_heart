@@ -26,11 +26,12 @@ class UserPostList extends HookConsumerWidget {
 
     useEffect(() {
       void onScroll() async {
+        if (isLoadingMore.value) return;
+
         if (scrollController.position.pixels ==
-                scrollController.position.maxScrollExtent &&
-            !isLoadingMore.value) {
-          isLoadingMore.value = true;
+            scrollController.position.maxScrollExtent) {
           try {
+            isLoadingMore.value = true;
             await ref
                 .read(userPostNotifierProvider(uid).notifier)
                 .loadMore(uid);

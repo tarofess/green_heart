@@ -21,11 +21,12 @@ class TimelinePage extends HookConsumerWidget {
 
     useEffect(() {
       void onScroll() async {
+        if (isLoadingMore.value) return;
+
         if (scrollController.position.pixels ==
-                scrollController.position.maxScrollExtent &&
-            !isLoadingMore.value) {
-          isLoadingMore.value = true;
+            scrollController.position.maxScrollExtent) {
           try {
+            isLoadingMore.value = true;
             await ref.read(timelineNotifierProvider.notifier).loadMore();
           } catch (e) {
             if (context.mounted) {

@@ -29,9 +29,8 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
   }
 
   Future<List<Post>> _fetchNextPosts(String uid) async {
-    final userPostScrollState = ref.read(
-      userPostScrollStateNotifierProvider(uid),
-    );
+    final userPostScrollState =
+        ref.read(userPostScrollStateNotifierProvider(uid));
     if (!userPostScrollState.hasMore) return [];
 
     final posts = await ref.read(postGetUsecaseProvider).execute(
@@ -79,6 +78,7 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
     ref.read(userPostScrollStateNotifierProvider(uid).notifier)
       ..updateLastDocument(null)
       ..updateHasMore(true);
+
     state = await AsyncValue.guard(() async {
       final posts = await _fetchNextPosts(uid);
       return await _postDataService.createAndFilterPostDataList(posts);

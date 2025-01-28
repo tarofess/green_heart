@@ -121,10 +121,10 @@ class PostSearchResults extends HookConsumerWidget {
     ValueNotifier<bool> isSearching,
   ) async {
     isSearching.value = true;
+
     try {
-      final searchPostScrollState = ref.read(
-        searchPostScrollStateNotifierProvider,
-      );
+      final searchPostScrollState =
+          ref.read(searchPostScrollStateNotifierProvider);
 
       await ref.read(postSearchResultGetUsecaseProvider).execute(
             query,
@@ -150,30 +150,30 @@ class PostSearchResults extends HookConsumerWidget {
     WidgetRef ref,
     ValueNotifier<bool> isLoadingMore,
   ) async {
-    if (!isLoadingMore.value) {
-      isLoadingMore.value = true;
-      try {
-        final searchPostScrollState = ref.read(
-          searchPostScrollStateNotifierProvider,
-        );
+    if (isLoadingMore.value) return;
 
-        await ref.read(postSearchResultGetUsecaseProvider).execute(
-              query,
-              uid,
-              searchPostScrollState,
-              ref.read(searchPostScrollStateNotifierProvider.notifier),
-            );
-      } catch (e) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('データの読み込みに失敗しました。再試行してください。'),
-            ),
+    try {
+      isLoadingMore.value = true;
+
+      final searchPostScrollState =
+          ref.read(searchPostScrollStateNotifierProvider);
+
+      await ref.read(postSearchResultGetUsecaseProvider).execute(
+            query,
+            uid,
+            searchPostScrollState,
+            ref.read(searchPostScrollStateNotifierProvider.notifier),
           );
-        }
-      } finally {
-        isLoadingMore.value = false;
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('データの読み込みに失敗しました。再試行してください。'),
+          ),
+        );
       }
+    } finally {
+      isLoadingMore.value = false;
     }
   }
 
