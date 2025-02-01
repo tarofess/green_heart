@@ -73,24 +73,6 @@ class FirebaseBlockRepository implements BlockRepository {
   }
 
   @override
-  Future<void> deleteAllBlockByUid(String uid) async {
-    try {
-      final docRef =
-          _firestore.collection('block').where('uid', isEqualTo: uid);
-
-      final docSnapshot =
-          await docRef.get().timeout(Duration(seconds: _timeoutSeconds));
-
-      for (final doc in docSnapshot.docs) {
-        await doc.reference.delete();
-      }
-    } catch (e, stackTrace) {
-      final exception = await ExceptionHandler.handleException(e, stackTrace);
-      throw exception ?? AppException('ブロックリストの削除に失敗しました。再度お試しください。');
-    }
-  }
-
-  @override
   Future<bool> checkIfBlocked(String uid, String targetUid) async {
     final query = _firestore
         .collection('profile')

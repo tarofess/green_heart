@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:green_heart/application/interface/account_repository.dart';
 import 'package:green_heart/application/state/account_state_notifier.dart';
 import 'package:green_heart/application/usecase/account_reauth_usecase.dart';
-import 'package:green_heart/application/usecase/block_delete_all_usecase.dart';
 import 'package:green_heart/application/usecase/comment_delete_all_usecase.dart';
 import 'package:green_heart/application/usecase/follow_delete_all_usecase.dart';
 import 'package:green_heart/application/usecase/like_delete_all_usecase.dart';
@@ -19,7 +18,6 @@ class AccountDeleteUsecase {
   final LikeDeleteAllUsecase _likeDeleteAllUsecase;
   final CommentDeleteAllUsecase _commentDeleteAllUsecase;
   final FollowDeleteAllUsecase _followDeleteAllUsecase;
-  final BlockDeleteAllUsecase _blockDeleteAllUsecase;
   final ProfileDeleteUsecase _profileDeleteUsecase;
   final PostDeleteAllUsecase _postDeleteAllUsecase;
   final AccountStateNotifier _accountStateNotifier;
@@ -31,7 +29,6 @@ class AccountDeleteUsecase {
     this._likeDeleteAllUsecase,
     this._commentDeleteAllUsecase,
     this._followDeleteAllUsecase,
-    this._blockDeleteAllUsecase,
     this._profileDeleteUsecase,
     this._postDeleteAllUsecase,
     this._accountStateNotifier,
@@ -54,7 +51,6 @@ class AccountDeleteUsecase {
         _likeDeleteAllUsecase.execute(user),
         _commentDeleteAllUsecase.execute(user),
         _followDeleteAllUsecase.execute(user),
-        _blockDeleteAllUsecase.execute(user),
         _profileDeleteUsecase.execute(user, profile),
         _postDeleteAllUsecase.execute(user),
       ]);

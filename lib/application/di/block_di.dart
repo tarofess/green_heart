@@ -5,7 +5,6 @@ import 'package:green_heart/application/usecase/block_delete_usecase.dart';
 import 'package:green_heart/application/usecase/block_get_usecase.dart';
 import 'package:green_heart/infrastructure/repository/firebase_block_repository.dart';
 import 'package:green_heart/application/usecase/block_check_usecase.dart';
-import 'package:green_heart/application/usecase/block_delete_all_usecase.dart';
 import 'package:green_heart/application/state/block_notifier.dart';
 
 final blockGetUsecaseProvider = Provider<BlockGetUsecase>((ref) {
@@ -25,10 +24,6 @@ final blockDeleteUsecaseProvider = Provider<BlockDeleteUsecase>((ref) {
     FirebaseBlockRepository(),
     ref.read(blockNotifierProvider.notifier),
   );
-});
-
-final blockDeleteAllUsecaseProvider = Provider<BlockDeleteAllUsecase>((ref) {
-  return BlockDeleteAllUsecase(FirebaseBlockRepository());
 });
 
 final blockCheckUsecaseProvider = Provider<BlockCheckUsecase>((ref) {

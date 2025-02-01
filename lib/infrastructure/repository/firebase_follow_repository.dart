@@ -154,13 +154,6 @@ class FirebaseFollowRepository implements FollowRepository {
             .timeout(Duration(seconds: _timeoutSeconds));
       }
 
-      // 自分の follow サブコレクション内の情報を削除
-      for (final doc in followingSnapshot.docs) {
-        await doc.reference
-            .delete()
-            .timeout(Duration(seconds: _timeoutSeconds));
-      }
-
       // 2. 自分をフォローしているユーザーについて、各ユーザーの follow から自分の情報を削除
       final followerSnapshot = await _firestore
           .collection('profile')
@@ -176,13 +169,6 @@ class FirebaseFollowRepository implements FollowRepository {
             .doc(followerUid)
             .collection('follow')
             .doc(uid)
-            .delete()
-            .timeout(Duration(seconds: _timeoutSeconds));
-      }
-
-      // 自分の follower サブコレクション内の情報を削除
-      for (final doc in followerSnapshot.docs) {
-        await doc.reference
             .delete()
             .timeout(Duration(seconds: _timeoutSeconds));
       }
