@@ -33,26 +33,19 @@ class FollowerNotifier extends FamilyAsyncNotifier<List<FollowData>, String?> {
   }
 
   void addFollower(String myUid, String targetUid) {
-    final newFollower = Follow(
-      uid: myUid,
-      followingUid: targetUid,
-      createdAt: DateTime.now(),
-    );
-
+    final newFollower = Follow(uid: myUid, createdAt: DateTime.now());
     final myProfile = ref.read(profileNotifierProvider).value;
-
     final followData = FollowData(follow: newFollower, profile: myProfile);
+
     state.whenData((followDataList) {
       state = AsyncValue.data(followDataList..add(followData));
     });
   }
 
-  void removeFollower(String myUid, String targetUid) {
+  void removeFollower(String myUid) {
     state.whenData((followDataList) {
       final updatedState = followDataList
-          .where((followData) =>
-              !(followData.follow.followingUid == targetUid &&
-                  followData.follow.uid == myUid))
+          .where((followData) => !(followData.follow.uid == myUid))
           .toList();
       state = AsyncValue.data(updatedState);
     });

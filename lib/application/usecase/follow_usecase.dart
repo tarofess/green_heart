@@ -1,5 +1,5 @@
 import 'package:green_heart/application/interface/follow_repository.dart';
-import 'package:green_heart/application/state/following_notifier.dart';
+import 'package:green_heart/application/state/follow_notifier.dart';
 import 'package:green_heart/application/state/user_page_state_notifier.dart';
 import 'package:green_heart/domain/type/result.dart';
 import 'package:green_heart/domain/type/user_page_state.dart';
@@ -13,7 +13,7 @@ class FollowUsecase {
     String? myUid,
     String? targetUid,
     UserPageState userPageState,
-    FollowingNotifier followingNotifier,
+    FollowNotifier followNotifier,
     UserPageStateNotifier userPageStateNotifier,
   ) async {
     if (myUid == null || targetUid == null) {
@@ -23,11 +23,11 @@ class FollowUsecase {
     try {
       if (userPageState.isFollowing) {
         await _followRepository.unfollow(myUid, targetUid);
-        followingNotifier.unfollow(myUid, targetUid);
+        followNotifier.unfollow(myUid, targetUid);
         userPageStateNotifier.setIsFollowing(false);
       } else {
         final newFollow = await _followRepository.follow(myUid, targetUid);
-        await followingNotifier.follow(myUid, targetUid, newFollow);
+        await followNotifier.follow(myUid, targetUid, newFollow);
         userPageStateNotifier.setIsFollowing(true);
       }
       return const Success();

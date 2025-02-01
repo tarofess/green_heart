@@ -11,18 +11,38 @@ class FirebaseFollowRepository implements FollowRepository {
   final int _timeoutSeconds = 10;
 
   @override
-  Future<Follow> follow(String uid, String followingUid) async {
+  Future<Follow> follow(String uid, String targetUid) async {
     final follow = Follow(
-      uid: uid,
-      followingUid: followingUid,
+      uid: targetUid,
       createdAt: DateTime.now(),
     );
-    final ref = _firestore.collection('follow').doc('${uid}_$followingUid');
+    final follower = Follow(
+      uid: uid,
+      createdAt: DateTime.now(),
+    );
+
+    // 2か所に保存するための参照を作成
+    final followingRef = _firestore
+        .collection('profile')
+        .doc(uid)
+        .collection('follow')
+        .doc(targetUid);
+    final followerRef = _firestore
+        .collection('profile')
+        .doc(targetUid)
+        .collection('follower')
+        .doc(uid);
 
     try {
-      await ref
-          .set(follow.toJson())
-          .timeout(Duration(seconds: _timeoutSeconds));
+      await Future.wait([
+        followingRef
+            .set(follow.toJson())
+            .timeout(Duration(seconds: _timeoutSeconds)),
+        followerRef
+            .set(follower.toJson())
+            .timeout(Duration(seconds: _timeoutSeconds)),
+      ]);
+
       return follow;
     } catch (e, stackTrace) {
       if (e is TimeoutException) {
@@ -34,10 +54,23 @@ class FirebaseFollowRepository implements FollowRepository {
   }
 
   @override
-  Future<void> unfollow(String uid, String followingUid) async {
+  Future<void> unfollow(String uid, String targetUid) async {
+    final followingRef = _firestore
+        .collection('profile')
+        .doc(uid)
+        .collection('follow')
+        .doc(targetUid);
+    final followerRef = _firestore
+        .collection('profile')
+        .doc(targetUid)
+        .collection('follower')
+        .doc(uid);
+
     try {
-      final ref = _firestore.collection('follow').doc('${uid}_$followingUid');
-      await ref.delete().timeout(Duration(seconds: _timeoutSeconds));
+      await Future.wait([
+        followingRef.delete().timeout(Duration(seconds: _timeoutSeconds)),
+        followerRef.delete().timeout(Duration(seconds: _timeoutSeconds)),
+      ]);
     } catch (e, stackTrace) {
       if (e is TimeoutException) {
         return;
@@ -48,12 +81,17 @@ class FirebaseFollowRepository implements FollowRepository {
   }
 
   @override
-  Future<bool> isFollowing(String uid, String followingUid) async {
+  Future<bool> isFollowing(String uid, String targetUid) async {
     try {
-      final ref = _firestore.collection('follow').doc('${uid}_$followingUid');
-      final snapshot =
-          await ref.get().timeout(Duration(seconds: _timeoutSeconds));
-      return snapshot.exists;
+      final doc = await _firestore
+          .collection('profile')
+          .doc(uid)
+          .collection('follow')
+          .doc(targetUid)
+          .get()
+          .timeout(Duration(seconds: _timeoutSeconds));
+
+      return doc.exists;
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('フォロー情報の取得に失敗しました。再度お試しください。');
@@ -64,10 +102,12 @@ class FirebaseFollowRepository implements FollowRepository {
   Future<List<Follow>> getFollowers(String uid) async {
     try {
       final snapshot = await _firestore
-          .collection('follow')
-          .where('followingUid', isEqualTo: uid)
+          .collection('profile')
+          .doc(uid)
+          .collection('follower')
           .get()
           .timeout(Duration(seconds: _timeoutSeconds));
+
       return snapshot.docs.map((doc) => Follow.fromJson(doc.data())).toList();
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
@@ -76,13 +116,15 @@ class FirebaseFollowRepository implements FollowRepository {
   }
 
   @override
-  Future<List<Follow>> getFollowing(String uid) async {
+  Future<List<Follow>> getFollows(String uid) async {
     try {
       final snapshot = await _firestore
+          .collection('profile')
+          .doc(uid)
           .collection('follow')
-          .where('uid', isEqualTo: uid)
           .get()
           .timeout(Duration(seconds: _timeoutSeconds));
+
       return snapshot.docs.map((doc) => Follow.fromJson(doc.data())).toList();
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
@@ -93,23 +135,56 @@ class FirebaseFollowRepository implements FollowRepository {
   @override
   Future<void> deleteAllFollows(String uid) async {
     try {
-      final snapshot = await _firestore
+      // 1. 自分がフォロー中のユーザーについて、各ユーザーの follower から自分の情報を削除
+      final followingSnapshot = await _firestore
+          .collection('profile')
+          .doc(uid)
           .collection('follow')
-          .where('uid', isEqualTo: uid)
-          .get();
-      for (final doc in snapshot.docs) {
+          .get()
+          .timeout(Duration(seconds: _timeoutSeconds));
+
+      for (final doc in followingSnapshot.docs) {
+        final targetUid = doc.id;
+        await _firestore
+            .collection('profile')
+            .doc(targetUid)
+            .collection('follower')
+            .doc(uid)
+            .delete()
+            .timeout(Duration(seconds: _timeoutSeconds));
+      }
+
+      // 自分の follow サブコレクション内の情報を削除
+      for (final doc in followingSnapshot.docs) {
         await doc.reference
             .delete()
             .timeout(Duration(seconds: _timeoutSeconds));
       }
 
-      final snapshot2 = await _firestore
-          .collection('follow')
-          .where('followingUid', isEqualTo: uid)
+      // 2. 自分をフォローしているユーザーについて、各ユーザーの follow から自分の情報を削除
+      final followerSnapshot = await _firestore
+          .collection('profile')
+          .doc(uid)
+          .collection('follower')
           .get()
           .timeout(Duration(seconds: _timeoutSeconds));
-      for (final doc in snapshot2.docs) {
-        await doc.reference.delete();
+
+      for (final doc in followerSnapshot.docs) {
+        final followerUid = doc.id;
+        await _firestore
+            .collection('profile')
+            .doc(followerUid)
+            .collection('follow')
+            .doc(uid)
+            .delete()
+            .timeout(Duration(seconds: _timeoutSeconds));
+      }
+
+      // 自分の follower サブコレクション内の情報を削除
+      for (final doc in followerSnapshot.docs) {
+        await doc.reference
+            .delete()
+            .timeout(Duration(seconds: _timeoutSeconds));
       }
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);

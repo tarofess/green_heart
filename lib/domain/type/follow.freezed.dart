@@ -21,7 +21,6 @@ Follow _$FollowFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Follow {
   String get uid => throw _privateConstructorUsedError;
-  String get followingUid => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this Follow to a JSON map.
@@ -38,7 +37,7 @@ abstract class $FollowCopyWith<$Res> {
   factory $FollowCopyWith(Follow value, $Res Function(Follow) then) =
       _$FollowCopyWithImpl<$Res, Follow>;
   @useResult
-  $Res call({String uid, String followingUid, DateTime createdAt});
+  $Res call({String uid, DateTime createdAt});
 }
 
 /// @nodoc
@@ -57,17 +56,12 @@ class _$FollowCopyWithImpl<$Res, $Val extends Follow>
   @override
   $Res call({
     Object? uid = null,
-    Object? followingUid = null,
     Object? createdAt = null,
   }) {
     return _then(_value.copyWith(
       uid: null == uid
           ? _value.uid
           : uid // ignore: cast_nullable_to_non_nullable
-              as String,
-      followingUid: null == followingUid
-          ? _value.followingUid
-          : followingUid // ignore: cast_nullable_to_non_nullable
               as String,
       createdAt: null == createdAt
           ? _value.createdAt
@@ -84,7 +78,7 @@ abstract class _$$FollowImplCopyWith<$Res> implements $FollowCopyWith<$Res> {
       __$$FollowImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String uid, String followingUid, DateTime createdAt});
+  $Res call({String uid, DateTime createdAt});
 }
 
 /// @nodoc
@@ -101,17 +95,12 @@ class __$$FollowImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? uid = null,
-    Object? followingUid = null,
     Object? createdAt = null,
   }) {
     return _then(_$FollowImpl(
       uid: null == uid
           ? _value.uid
           : uid // ignore: cast_nullable_to_non_nullable
-              as String,
-      followingUid: null == followingUid
-          ? _value.followingUid
-          : followingUid // ignore: cast_nullable_to_non_nullable
               as String,
       createdAt: null == createdAt
           ? _value.createdAt
@@ -124,8 +113,7 @@ class __$$FollowImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$FollowImpl implements _Follow {
-  const _$FollowImpl(
-      {required this.uid, required this.followingUid, required this.createdAt});
+  const _$FollowImpl({required this.uid, required this.createdAt});
 
   factory _$FollowImpl.fromJson(Map<String, dynamic> json) =>
       _$$FollowImplFromJson(json);
@@ -133,13 +121,11 @@ class _$FollowImpl implements _Follow {
   @override
   final String uid;
   @override
-  final String followingUid;
-  @override
   final DateTime createdAt;
 
   @override
   String toString() {
-    return 'Follow(uid: $uid, followingUid: $followingUid, createdAt: $createdAt)';
+    return 'Follow(uid: $uid, createdAt: $createdAt)';
   }
 
   @override
@@ -148,15 +134,13 @@ class _$FollowImpl implements _Follow {
         (other.runtimeType == runtimeType &&
             other is _$FollowImpl &&
             (identical(other.uid, uid) || other.uid == uid) &&
-            (identical(other.followingUid, followingUid) ||
-                other.followingUid == followingUid) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, uid, followingUid, createdAt);
+  int get hashCode => Object.hash(runtimeType, uid, createdAt);
 
   /// Create a copy of Follow
   /// with the given fields replaced by the non-null parameter values.
@@ -177,15 +161,12 @@ class _$FollowImpl implements _Follow {
 abstract class _Follow implements Follow {
   const factory _Follow(
       {required final String uid,
-      required final String followingUid,
       required final DateTime createdAt}) = _$FollowImpl;
 
   factory _Follow.fromJson(Map<String, dynamic> json) = _$FollowImpl.fromJson;
 
   @override
   String get uid;
-  @override
-  String get followingUid;
   @override
   DateTime get createdAt;
 

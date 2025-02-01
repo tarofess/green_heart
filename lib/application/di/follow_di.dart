@@ -1,19 +1,19 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/infrastructure/repository/firebase_follow_repository.dart';
-import 'package:green_heart/application/usecase/following_check_usecase.dart';
-import 'package:green_heart/application/usecase/following_get_usecase.dart';
+import 'package:green_heart/application/usecase/follow_check_usecase.dart';
+import 'package:green_heart/application/usecase/follow_get_usecase.dart';
 import 'package:green_heart/application/usecase/follower_get_usecase.dart';
 import 'package:green_heart/application/usecase/follow_delete_all_usecase.dart';
 import 'package:green_heart/application/usecase/follow_usecase.dart';
 import 'package:green_heart/application/usecase/unfollow_usecase.dart';
 
 final followCheckUsecaseProvider = Provider(
-  (ref) => FollowingCheckUsecase(FirebaseFollowRepository()),
+  (ref) => FollowCheckUsecase(FirebaseFollowRepository()),
 );
 
-final followingGetUsecaseProvider = Provider(
-  (ref) => FollowingGetUsecase(FirebaseFollowRepository()),
+final followGetUsecaseProvider = Provider(
+  (ref) => FollowGetUsecase(FirebaseFollowRepository()),
 );
 
 final followerGetUsecaseProvider = Provider(

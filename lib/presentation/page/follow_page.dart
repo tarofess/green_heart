@@ -71,5 +71,5 @@ class FollowPage extends ConsumerWidget {
 
 enum FollowType {
   follower,
-  following,
+  follow,
 }

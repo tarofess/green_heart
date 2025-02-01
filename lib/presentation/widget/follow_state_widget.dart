@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/follower_notifier.dart';
-import 'package:green_heart/application/state/following_notifier.dart';
+import 'package:green_heart/application/state/follow_notifier.dart';
 import 'package:green_heart/presentation/widget/async_error_widget.dart';
 import 'package:green_heart/presentation/page/follow_page.dart';
 
@@ -16,12 +16,12 @@ class FollowStateWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final followerState = ref.watch(followerNotifierProvider(uid));
-    final followingState = ref.watch(followingNotifierProvider(uid));
+    final followState = ref.watch(followNotifierProvider(uid));
 
     return followerState.when(
       data: (follower) {
-        return followingState.when(
-          data: (following) {
+        return followState.when(
+          data: (follow) {
             return SizedBox(
               height: 120.h,
               child: Column(
@@ -58,8 +58,8 @@ class FollowStateWidget extends ConsumerWidget {
                       GestureDetector(
                         onTap: () {
                           context.push('/follow', extra: {
-                            'follows': followingState.value,
-                            'followType': FollowType.following,
+                            'follows': followState.value,
+                            'followType': FollowType.follow,
                           });
                         },
                         child: Column(
@@ -71,7 +71,7 @@ class FollowStateWidget extends ConsumerWidget {
                               ),
                             ),
                             Text(
-                              following.length.toString(),
+                              follow.length.toString(),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16.sp,
@@ -89,7 +89,7 @@ class FollowStateWidget extends ConsumerWidget {
           loading: () => const SizedBox(),
           error: (e, _) => AsyncErrorWidget(
             error: e,
-            retry: () => ref.refresh(followingNotifierProvider(uid)),
+            retry: () => ref.refresh(followNotifierProvider(uid)),
           ),
         );
       },

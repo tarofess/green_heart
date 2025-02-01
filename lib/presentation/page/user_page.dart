@@ -20,7 +20,7 @@ import 'package:green_heart/application/state/user_page_state_notifier.dart';
 import 'package:green_heart/presentation/widget/async_error_widget.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/domain/type/user_page_state.dart';
-import 'package:green_heart/application/state/following_notifier.dart';
+import 'package:green_heart/application/state/follow_notifier.dart';
 import 'package:green_heart/application/di/block_di.dart';
 import 'package:green_heart/application/di/follow_di.dart';
 import 'package:green_heart/domain/type/result.dart';
@@ -223,7 +223,7 @@ class UserPage extends HookConsumerWidget {
                           myUid,
                           uid,
                           userPageState,
-                          ref.read(followingNotifierProvider(myUid).notifier),
+                          ref.read(followNotifierProvider(myUid).notifier),
                           ref.read(
                             userPageStateNotifierProvider(uid).notifier,
                           ),
@@ -434,8 +434,8 @@ class UserPage extends HookConsumerWidget {
                           myUid,
                           uid,
                           userPageState,
-                          ref.read(followingNotifierProvider(myUid).notifier),
-                          ref.read(followingNotifierProvider(uid).notifier),
+                          ref.read(followNotifierProvider(myUid).notifier),
+                          ref.read(followNotifierProvider(uid).notifier),
                           ref.read(userPageStateNotifierProvider(uid).notifier),
                         );
                 return unfollowResult;

@@ -7,23 +7,22 @@ import 'package:green_heart/domain/type/follow_data.dart';
 import 'package:green_heart/domain/type/follow.dart';
 import 'package:green_heart/application/state/follower_notifier.dart';
 
-class FollowingNotifier extends FamilyAsyncNotifier<List<FollowData>, String?> {
+class FollowNotifier extends FamilyAsyncNotifier<List<FollowData>, String?> {
   @override
   Future<List<FollowData>> build(String? arg) async {
     if (arg == null) {
       throw AppException('ユーザー情報の取得に失敗しました。再度お試しください。');
     }
 
-    final follows = await ref.read(followingGetUsecaseProvider).execute(arg);
+    final follows = await ref.read(followGetUsecaseProvider).execute(arg);
     final followDataList = await _createFollowDataList(follows);
     return followDataList;
   }
 
   Future<List<FollowData>> _createFollowDataList(List<Follow> follows) async {
     final followDataList = follows.map((follow) async {
-      final profile = await ref
-          .read(profileGetUsecaseProvider)
-          .execute(follow.followingUid);
+      final profile =
+          await ref.read(profileGetUsecaseProvider).execute(follow.uid);
       return FollowData(
         follow: follow,
         profile: profile,
@@ -34,9 +33,8 @@ class FollowingNotifier extends FamilyAsyncNotifier<List<FollowData>, String?> {
   }
 
   Future<void> follow(String myUid, String targetUid, Follow newFollow) async {
-    final profile = await ref.read(profileGetUsecaseProvider).execute(
-          targetUid,
-        );
+    final profile =
+        await ref.read(profileGetUsecaseProvider).execute(targetUid);
 
     if (profile == null) {
       throw AppException('フォローされるユーザーが存在しません。再度お試しください。');
@@ -56,21 +54,18 @@ class FollowingNotifier extends FamilyAsyncNotifier<List<FollowData>, String?> {
   void unfollow(String myUid, String targetUid) {
     state.whenData((followDataList) {
       final updatedState = followDataList
-          .where((followData) =>
-              !(followData.follow.followingUid == targetUid &&
-                  followData.follow.uid == myUid))
+          .where((followData) => !(followData.follow.uid == targetUid))
           .toList();
       state = AsyncValue.data(updatedState);
     });
 
     ref.read(followerNotifierProvider(targetUid).notifier).removeFollower(
           myUid,
-          targetUid,
         );
   }
 }
 
-final followingNotifierProvider =
-    AsyncNotifierProviderFamily<FollowingNotifier, List<FollowData>, String?>(
-  FollowingNotifier.new,
+final followNotifierProvider =
+    AsyncNotifierProviderFamily<FollowNotifier, List<FollowData>, String?>(
+  FollowNotifier.new,
 );
