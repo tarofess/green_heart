@@ -6,20 +6,25 @@ import 'package:green_heart/domain/type/notification.dart';
 import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 
 class FirebaseNotificationRepository implements NotificationRepository {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final int _timeoutSeconds = 10;
 
   @override
   Future<Notification?> getNotificationByUid(String uid) async {
     try {
-      final snapshot = await FirebaseFirestore.instance
+      final snapshot = await _firestore
+          .collection('profile')
+          .doc(uid)
           .collection('notification')
           .doc(uid)
           .get()
           .timeout(Duration(seconds: _timeoutSeconds));
-      if (snapshot.exists) {
-        return Notification.fromJson(snapshot.data()!);
+
+      if (!snapshot.exists) {
+        return null;
       }
-      return null;
+
+      return Notification.fromJson(snapshot.data()!);
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('通知情報の取得に失敗しました。');
@@ -35,7 +40,9 @@ class FirebaseNotificationRepository implements NotificationRepository {
         updatedAt: DateTime.now(),
       );
 
-      await FirebaseFirestore.instance
+      await _firestore
+          .collection('profile')
+          .doc(uid)
           .collection('notification')
           .doc(uid)
           .set(notification.toJson())
@@ -49,7 +56,9 @@ class FirebaseNotificationRepository implements NotificationRepository {
   @override
   Future<void> deleteNotification(String uid) async {
     try {
-      await FirebaseFirestore.instance
+      await _firestore
+          .collection('profile')
+          .doc(uid)
           .collection('notification')
           .doc(uid)
           .delete()
