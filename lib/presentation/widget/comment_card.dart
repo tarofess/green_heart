@@ -245,10 +245,9 @@ class CommentCard extends HookConsumerWidget {
                 : replyComment.comment.id;
 
             return ref.read(commentDeleteUsecaseProvider).execute(
+                  postData.post.id,
                   commentId,
-                  ref.read(
-                    commentNotifierProvider(postData.post.id).notifier,
-                  ),
+                  ref.read(commentNotifierProvider(postData.post.id).notifier),
                 );
           });
 

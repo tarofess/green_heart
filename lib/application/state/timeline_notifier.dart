@@ -80,12 +80,13 @@ class TimelineNotifier extends AsyncNotifier<List<PostData>> {
     });
   }
 
-  void addComment(Comment comment) {
+  void addComment(String postId, Comment comment) {
     final profile = ref.read(profileNotifierProvider).value;
     if (profile == null) {
       throw Exception('プロフィール情報が取得できませんでした。再度お試しください。');
     }
-    _postInteractionService.addComment(state, comment, profile, (updatedPosts) {
+    _postInteractionService.addComment(state, postId, comment, profile,
+        (updatedPosts) {
       state = AsyncValue.data(updatedPosts);
     });
   }

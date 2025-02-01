@@ -6,7 +6,7 @@ class CommentGetReplyUsecase {
 
   CommentGetReplyUsecase(this._commentRepository);
 
-  Future<List<Comment>> execute(String parentCommentId) {
-    return _commentRepository.getReplyComments(parentCommentId);
+  Future<List<Comment>> execute(String postId, String parentCommentId) {
+    return _commentRepository.getReplyComments(postId, parentCommentId);
   }
 }

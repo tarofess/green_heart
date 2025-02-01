@@ -41,15 +41,25 @@ class PostManagerNotifier extends Notifier {
   void addComment(Comment newComment, PostData postData) {
     final myUid = ref.watch(authStateProvider).value?.uid;
     if (postData.post.uid == myUid) {
-      ref.read(userPostNotifierProvider(myUid).notifier).addComment(newComment);
+      ref.read(userPostNotifierProvider(myUid).notifier).addComment(
+            postData.post.id,
+            newComment,
+          );
     } else {
       ref.read(userPostNotifierProvider(postData.post.uid).notifier).addComment(
+            postData.post.id,
             newComment,
           );
     }
 
-    ref.read(timelineNotifierProvider.notifier).addComment(newComment);
-    ref.read(searchPostNotifierProvider.notifier).addComment(newComment);
+    ref.read(timelineNotifierProvider.notifier).addComment(
+          postData.post.id,
+          newComment,
+        );
+    ref.read(searchPostNotifierProvider.notifier).addComment(
+          postData.post.id,
+          newComment,
+        );
   }
 
   void deleteComment(String commentId) {

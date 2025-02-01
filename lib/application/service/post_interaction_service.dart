@@ -50,13 +50,14 @@ class PostInteractionService {
 
   void addComment(
     AsyncValue<List<PostData>> state,
+    String postId,
     Comment comment,
     Profile profile,
     Function(List<PostData>) onUpdate,
   ) {
     state.whenData((postDataList) {
       final updatedPostData = postDataList.map((postData) {
-        if (postData.post.id == comment.postId) {
+        if (postData.post.id == postId) {
           final comments = List<CommentData>.from(postData.comments);
           comments.add(CommentData(
             comment: comment,

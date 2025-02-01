@@ -16,28 +16,32 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
   Future<List<CommentData>> build(String arg) async {
     final comments = await ref.read(commentGetUsecaseProvider).execute(arg);
     final filteredComments = await _filterBlockedComments(comments);
-    return _createCommentDataList(filteredComments);
+    return _createCommentDataList(filteredComments, arg);
   }
 
   Future<List<CommentData>> _createCommentDataList(
     List<Comment> comments,
+    String postId,
   ) async {
     return Future.wait(comments
         .where((comment) => comment.parentCommentId == null)
-        .map((comment) => _createCommentData(comment)));
+        .map((comment) => _createCommentData(comment, postId)));
   }
 
-  Future<CommentData> _createCommentData(Comment comment) async {
+  Future<CommentData> _createCommentData(Comment comment, String postId) async {
     final results = await Future.wait([
       ref.read(profileGetUsecaseProvider).execute(comment.uid),
-      ref.read(commentGetReplyUsecaseProvider).execute(comment.id),
+      ref.read(commentGetReplyUsecaseProvider).execute(
+            postId,
+            comment.id,
+          ),
     ]);
 
     final profile = results[0] as Profile?;
     final replyComments = results[1] as List<Comment>;
 
     final replyCommentData = await Future.wait(
-      replyComments.map((reply) => _createCommentData(reply)),
+      replyComments.map((reply) => _createCommentData(reply, postId)),
     );
 
     return CommentData(

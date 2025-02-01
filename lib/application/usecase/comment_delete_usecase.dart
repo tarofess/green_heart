@@ -8,11 +8,12 @@ class CommentDeleteUsecase {
   CommentDeleteUsecase(this._commentRepository);
 
   Future<Result> execute(
+    String postId,
     String commentId,
     CommentNotifier commentNotifier,
   ) async {
     try {
-      await _commentRepository.deleteComment(commentId);
+      await _commentRepository.deleteComment(postId, commentId);
       commentNotifier.deleteComment(commentId);
       return const Success();
     } catch (e) {
