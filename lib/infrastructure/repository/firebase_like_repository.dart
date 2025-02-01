@@ -12,19 +12,20 @@ class FirebaseLikeRepository implements LikeRepository {
   @override
   Future<void> toggleLike(String postId, String uid) async {
     try {
-      final ref = _firestore.collection('like').doc('${postId}_$uid');
+      final ref =
+          _firestore.collection('post').doc(postId).collection('like').doc(uid);
       final docSnapshot =
           await ref.get().timeout(Duration(seconds: _timeoutSeconds));
 
       if (docSnapshot.exists) {
+        // すでにいいね済みなら削除
         await ref.delete().timeout(Duration(seconds: _timeoutSeconds));
       } else {
+        // いいねしていなければ追加
         final like = Like(
-          postId: postId,
           uid: uid,
           createdAt: DateTime.now(),
         );
-
         await ref
             .set(like.toJson())
             .timeout(Duration(seconds: _timeoutSeconds));
@@ -38,14 +39,15 @@ class FirebaseLikeRepository implements LikeRepository {
   @override
   Future<List<Like>> getLikes(String postId) async {
     try {
-      final docRef = _firestore
+      final querySnapshot = await _firestore
+          .collection('post')
+          .doc(postId)
           .collection('like')
-          .where('postId', isEqualTo: postId)
-          .orderBy('createdAt', descending: true);
-      final docSnapshot =
-          await docRef.get().timeout(Duration(seconds: _timeoutSeconds));
+          .orderBy('createdAt', descending: true)
+          .get()
+          .timeout(Duration(seconds: _timeoutSeconds));
       final likes =
-          docSnapshot.docs.map((doc) => Like.fromJson(doc.data())).toList();
+          querySnapshot.docs.map((doc) => Like.fromJson(doc.data())).toList();
 
       return likes;
     } catch (e, stackTrace) {
@@ -57,15 +59,16 @@ class FirebaseLikeRepository implements LikeRepository {
   @override
   Future<void> deleteAllLikesByUid(String uid) async {
     try {
-      final docRef = _firestore.collection('like').where('uid', isEqualTo: uid);
-      final docSnapshot =
-          await docRef.get().timeout(Duration(seconds: _timeoutSeconds));
+      final querySnapshot = await _firestore
+          .collectionGroup('like')
+          .where(FieldPath.documentId, isEqualTo: uid)
+          .get()
+          .timeout(Duration(seconds: _timeoutSeconds));
 
       final batch = _firestore.batch();
-      for (var doc in docSnapshot.docs) {
+      for (var doc in querySnapshot.docs) {
         batch.delete(doc.reference);
       }
-
       await batch.commit().timeout(Duration(seconds: _timeoutSeconds));
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);

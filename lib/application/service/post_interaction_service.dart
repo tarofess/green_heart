@@ -36,7 +36,6 @@ class PostInteractionService {
           } else {
             likes.add(Like(
               uid: uid,
-              postId: postId,
               createdAt: DateTime.now(),
             ));
           }

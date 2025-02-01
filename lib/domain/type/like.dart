@@ -6,7 +6,6 @@ part 'like.g.dart';
 @freezed
 class Like with _$Like {
   const factory Like({
-    required String postId,
     required String uid,
     required DateTime createdAt,
   }) = _Like;
