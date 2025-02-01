@@ -57,8 +57,7 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
     final blockList =
         await ref.read(blockGetUsecaseProvider).execute(currentUid);
     return comments
-        .where((comment) =>
-            !blockList.any((block) => block.blockedUid == comment.uid))
+        .where((comment) => !blockList.any((block) => block.uid == comment.uid))
         .toList();
   }
 

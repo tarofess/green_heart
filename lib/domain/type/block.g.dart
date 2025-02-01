@@ -8,13 +8,11 @@ part of 'block.dart';
 
 _$BlockImpl _$$BlockImplFromJson(Map<String, dynamic> json) => _$BlockImpl(
       uid: json['uid'] as String,
-      blockedUid: json['blockedUid'] as String,
-      blockedAt: DateTime.parse(json['blockedAt'] as String),
+      createdAt: DateTime.parse(json['createdAt'] as String),
     );
 
 Map<String, dynamic> _$$BlockImplToJson(_$BlockImpl instance) =>
     <String, dynamic>{
       'uid': instance.uid,
-      'blockedUid': instance.blockedUid,
-      'blockedAt': instance.blockedAt.toIso8601String(),
+      'createdAt': instance.createdAt.toIso8601String(),
     };

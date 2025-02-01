@@ -76,14 +76,13 @@ class PostDataService {
     }
 
     final blockList = await _blockGetUsecase.execute(_uid);
-    final blockedUids = blockList.map((block) => block.blockedUid).toSet();
+    final targetUids = blockList.map((block) => block.uid).toSet();
 
     return postData.where((postData) {
-      if (blockedUids.contains(postData.post.uid)) return false;
+      if (targetUids.contains(postData.post.uid)) return false;
 
       final filteredComments = postData.comments
-          .where(
-              (commentData) => !blockedUids.contains(commentData.comment.uid))
+          .where((commentData) => !targetUids.contains(commentData.comment.uid))
           .toList();
 
       postData = postData.copyWith(comments: filteredComments);

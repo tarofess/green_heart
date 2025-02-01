@@ -21,8 +21,7 @@ Block _$BlockFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Block {
   String get uid => throw _privateConstructorUsedError;
-  String get blockedUid => throw _privateConstructorUsedError;
-  DateTime get blockedAt => throw _privateConstructorUsedError;
+  DateTime get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this Block to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -38,7 +37,7 @@ abstract class $BlockCopyWith<$Res> {
   factory $BlockCopyWith(Block value, $Res Function(Block) then) =
       _$BlockCopyWithImpl<$Res, Block>;
   @useResult
-  $Res call({String uid, String blockedUid, DateTime blockedAt});
+  $Res call({String uid, DateTime createdAt});
 }
 
 /// @nodoc
@@ -57,21 +56,16 @@ class _$BlockCopyWithImpl<$Res, $Val extends Block>
   @override
   $Res call({
     Object? uid = null,
-    Object? blockedUid = null,
-    Object? blockedAt = null,
+    Object? createdAt = null,
   }) {
     return _then(_value.copyWith(
       uid: null == uid
           ? _value.uid
           : uid // ignore: cast_nullable_to_non_nullable
               as String,
-      blockedUid: null == blockedUid
-          ? _value.blockedUid
-          : blockedUid // ignore: cast_nullable_to_non_nullable
-              as String,
-      blockedAt: null == blockedAt
-          ? _value.blockedAt
-          : blockedAt // ignore: cast_nullable_to_non_nullable
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
     ) as $Val);
   }
@@ -84,7 +78,7 @@ abstract class _$$BlockImplCopyWith<$Res> implements $BlockCopyWith<$Res> {
       __$$BlockImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String uid, String blockedUid, DateTime blockedAt});
+  $Res call({String uid, DateTime createdAt});
 }
 
 /// @nodoc
@@ -101,21 +95,16 @@ class __$$BlockImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? uid = null,
-    Object? blockedUid = null,
-    Object? blockedAt = null,
+    Object? createdAt = null,
   }) {
     return _then(_$BlockImpl(
       uid: null == uid
           ? _value.uid
           : uid // ignore: cast_nullable_to_non_nullable
               as String,
-      blockedUid: null == blockedUid
-          ? _value.blockedUid
-          : blockedUid // ignore: cast_nullable_to_non_nullable
-              as String,
-      blockedAt: null == blockedAt
-          ? _value.blockedAt
-          : blockedAt // ignore: cast_nullable_to_non_nullable
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
     ));
   }
@@ -124,8 +113,7 @@ class __$$BlockImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$BlockImpl implements _Block {
-  const _$BlockImpl(
-      {required this.uid, required this.blockedUid, required this.blockedAt});
+  const _$BlockImpl({required this.uid, required this.createdAt});
 
   factory _$BlockImpl.fromJson(Map<String, dynamic> json) =>
       _$$BlockImplFromJson(json);
@@ -133,13 +121,11 @@ class _$BlockImpl implements _Block {
   @override
   final String uid;
   @override
-  final String blockedUid;
-  @override
-  final DateTime blockedAt;
+  final DateTime createdAt;
 
   @override
   String toString() {
-    return 'Block(uid: $uid, blockedUid: $blockedUid, blockedAt: $blockedAt)';
+    return 'Block(uid: $uid, createdAt: $createdAt)';
   }
 
   @override
@@ -148,15 +134,13 @@ class _$BlockImpl implements _Block {
         (other.runtimeType == runtimeType &&
             other is _$BlockImpl &&
             (identical(other.uid, uid) || other.uid == uid) &&
-            (identical(other.blockedUid, blockedUid) ||
-                other.blockedUid == blockedUid) &&
-            (identical(other.blockedAt, blockedAt) ||
-                other.blockedAt == blockedAt));
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, uid, blockedUid, blockedAt);
+  int get hashCode => Object.hash(runtimeType, uid, createdAt);
 
   /// Create a copy of Block
   /// with the given fields replaced by the non-null parameter values.
@@ -177,17 +161,14 @@ class _$BlockImpl implements _Block {
 abstract class _Block implements Block {
   const factory _Block(
       {required final String uid,
-      required final String blockedUid,
-      required final DateTime blockedAt}) = _$BlockImpl;
+      required final DateTime createdAt}) = _$BlockImpl;
 
   factory _Block.fromJson(Map<String, dynamic> json) = _$BlockImpl.fromJson;
 
   @override
   String get uid;
   @override
-  String get blockedUid;
-  @override
-  DateTime get blockedAt;
+  DateTime get createdAt;
 
   /// Create a copy of Block
   /// with the given fields replaced by the non-null parameter values.

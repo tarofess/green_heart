@@ -9,19 +9,15 @@ class BlockAddUsecase {
 
   BlockAddUsecase(this._blockRepository, this._blockNotifier);
 
-  Future<Result> execute(String? myUid, String? targetUid) async {
+  Future<Result> execute(String? uid, String? targetUid) async {
     try {
-      if (myUid == null || targetUid == null) {
+      if (uid == null || targetUid == null) {
         return const Failure('ユーザーが存在しないのでブロックリストを取得できません。再度お試しください。');
       }
 
-      final newBlock = Block(
-        uid: myUid,
-        blockedUid: targetUid,
-        blockedAt: DateTime.now(),
-      );
+      final newBlock = Block(uid: targetUid, createdAt: DateTime.now());
 
-      await _blockRepository.addBlock(newBlock);
+      await _blockRepository.addBlock(uid, newBlock);
       await _blockNotifier.addBlock(targetUid, newBlock);
 
       return const Success();

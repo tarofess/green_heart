@@ -11,9 +11,14 @@ class FirebaseBlockRepository implements BlockRepository {
   final int _timeoutSeconds = 10;
 
   @override
-  Future<void> addBlock(Block block) async {
+  Future<void> addBlock(String uid, Block block) async {
     try {
-      final ref = _firestore.collection('block').doc();
+      final ref = _firestore
+          .collection('profile')
+          .doc(uid)
+          .collection('block')
+          .doc(block.uid);
+
       await ref.set(block.toJson()).timeout(Duration(seconds: _timeoutSeconds));
     } catch (e, stackTrace) {
       if (e is TimeoutException) {
@@ -27,12 +32,14 @@ class FirebaseBlockRepository implements BlockRepository {
   @override
   Future<List<Block>> getBlockByUid(String uid) async {
     try {
-      final docRef =
-          _firestore.collection('block').where('uid', isEqualTo: uid);
-      final docSnapshot = await docRef.get().timeout(
-            Duration(seconds: _timeoutSeconds),
-          );
-      return docSnapshot.docs.map((doc) => Block.fromJson(doc.data())).toList();
+      final ref = _firestore.collection('profile').doc(uid).collection('block');
+
+      final querySnapshot =
+          await ref.get().timeout(Duration(seconds: _timeoutSeconds));
+
+      return querySnapshot.docs
+          .map((doc) => Block.fromJson(doc.data()))
+          .toList();
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('ブロックリストの取得に失敗しました。再度お試しください。');
@@ -40,15 +47,17 @@ class FirebaseBlockRepository implements BlockRepository {
   }
 
   @override
-  Future<void> deleteBlockByUid(String uid, String blockedUid) async {
+  Future<void> deleteBlockByUid(String uid, String targetUid) async {
     try {
-      final docRef = _firestore
+      final ref = _firestore
+          .collection('profile')
+          .doc(uid)
           .collection('block')
-          .where('uid', isEqualTo: uid)
-          .where('blockedUid', isEqualTo: blockedUid);
-      final docSnapshot = await docRef.get().timeout(
-            Duration(seconds: _timeoutSeconds),
-          );
+          .where('uid', isEqualTo: targetUid);
+
+      final docSnapshot =
+          await ref.get().timeout(Duration(seconds: _timeoutSeconds));
+
       for (final doc in docSnapshot.docs) {
         await doc.reference
             .delete()
@@ -68,8 +77,10 @@ class FirebaseBlockRepository implements BlockRepository {
     try {
       final docRef =
           _firestore.collection('block').where('uid', isEqualTo: uid);
+
       final docSnapshot =
           await docRef.get().timeout(Duration(seconds: _timeoutSeconds));
+
       for (final doc in docSnapshot.docs) {
         await doc.reference.delete();
       }
@@ -80,13 +91,16 @@ class FirebaseBlockRepository implements BlockRepository {
   }
 
   @override
-  Future<bool> checkIfBlocked(String currentUserId, String targetUserId) async {
+  Future<bool> checkIfBlocked(String uid, String targetUid) async {
     final query = _firestore
+        .collection('profile')
+        .doc(uid)
         .collection('block')
-        .where('uid', isEqualTo: currentUserId)
-        .where('blockedUid', isEqualTo: targetUserId);
+        .where('uid', isEqualTo: targetUid);
+
     final snapshot =
         await query.get().timeout(Duration(seconds: _timeoutSeconds));
+
     return snapshot.docs.isNotEmpty;
   }
 }

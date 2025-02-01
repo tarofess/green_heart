@@ -23,7 +23,7 @@ class BlockNotifier extends AsyncNotifier<List<BlockData>> {
 
     final task = blocks.map((block) async {
       final profile =
-          await ref.read(profileGetUsecaseProvider).execute(block.blockedUid);
+          await ref.read(profileGetUsecaseProvider).execute(block.uid);
       return BlockData(
         block: block,
         profile: profile,
@@ -51,7 +51,7 @@ class BlockNotifier extends AsyncNotifier<List<BlockData>> {
   void deleteBlock(String targetUid) {
     state.whenData((currentBlocks) {
       final updatedBlock = currentBlocks
-          .where((blockData) => blockData.block.blockedUid != targetUid)
+          .where((blockData) => blockData.block.uid != targetUid)
           .toList();
       state = AsyncValue.data(updatedBlock);
     });

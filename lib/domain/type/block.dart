@@ -7,8 +7,7 @@ part 'block.g.dart';
 class Block with _$Block {
   const factory Block({
     required String uid,
-    required String blockedUid,
-    required DateTime blockedAt,
+    required DateTime createdAt,
   }) = _Block;
 
   factory Block.fromJson(Map<String, dynamic> json) => _$BlockFromJson(json);
