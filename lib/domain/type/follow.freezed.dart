@@ -21,6 +21,8 @@ Follow _$FollowFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Follow {
   String get uid => throw _privateConstructorUsedError;
+  String get userName => throw _privateConstructorUsedError;
+  String? get userImage => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this Follow to a JSON map.
@@ -37,7 +39,8 @@ abstract class $FollowCopyWith<$Res> {
   factory $FollowCopyWith(Follow value, $Res Function(Follow) then) =
       _$FollowCopyWithImpl<$Res, Follow>;
   @useResult
-  $Res call({String uid, DateTime createdAt});
+  $Res call(
+      {String uid, String userName, String? userImage, DateTime createdAt});
 }
 
 /// @nodoc
@@ -56,6 +59,8 @@ class _$FollowCopyWithImpl<$Res, $Val extends Follow>
   @override
   $Res call({
     Object? uid = null,
+    Object? userName = null,
+    Object? userImage = freezed,
     Object? createdAt = null,
   }) {
     return _then(_value.copyWith(
@@ -63,6 +68,14 @@ class _$FollowCopyWithImpl<$Res, $Val extends Follow>
           ? _value.uid
           : uid // ignore: cast_nullable_to_non_nullable
               as String,
+      userName: null == userName
+          ? _value.userName
+          : userName // ignore: cast_nullable_to_non_nullable
+              as String,
+      userImage: freezed == userImage
+          ? _value.userImage
+          : userImage // ignore: cast_nullable_to_non_nullable
+              as String?,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -78,7 +91,8 @@ abstract class _$$FollowImplCopyWith<$Res> implements $FollowCopyWith<$Res> {
       __$$FollowImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String uid, DateTime createdAt});
+  $Res call(
+      {String uid, String userName, String? userImage, DateTime createdAt});
 }
 
 /// @nodoc
@@ -95,6 +109,8 @@ class __$$FollowImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? uid = null,
+    Object? userName = null,
+    Object? userImage = freezed,
     Object? createdAt = null,
   }) {
     return _then(_$FollowImpl(
@@ -102,6 +118,14 @@ class __$$FollowImplCopyWithImpl<$Res>
           ? _value.uid
           : uid // ignore: cast_nullable_to_non_nullable
               as String,
+      userName: null == userName
+          ? _value.userName
+          : userName // ignore: cast_nullable_to_non_nullable
+              as String,
+      userImage: freezed == userImage
+          ? _value.userImage
+          : userImage // ignore: cast_nullable_to_non_nullable
+              as String?,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -113,7 +137,11 @@ class __$$FollowImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$FollowImpl implements _Follow {
-  const _$FollowImpl({required this.uid, required this.createdAt});
+  const _$FollowImpl(
+      {required this.uid,
+      required this.userName,
+      required this.userImage,
+      required this.createdAt});
 
   factory _$FollowImpl.fromJson(Map<String, dynamic> json) =>
       _$$FollowImplFromJson(json);
@@ -121,11 +149,15 @@ class _$FollowImpl implements _Follow {
   @override
   final String uid;
   @override
+  final String userName;
+  @override
+  final String? userImage;
+  @override
   final DateTime createdAt;
 
   @override
   String toString() {
-    return 'Follow(uid: $uid, createdAt: $createdAt)';
+    return 'Follow(uid: $uid, userName: $userName, userImage: $userImage, createdAt: $createdAt)';
   }
 
   @override
@@ -134,13 +166,18 @@ class _$FollowImpl implements _Follow {
         (other.runtimeType == runtimeType &&
             other is _$FollowImpl &&
             (identical(other.uid, uid) || other.uid == uid) &&
+            (identical(other.userName, userName) ||
+                other.userName == userName) &&
+            (identical(other.userImage, userImage) ||
+                other.userImage == userImage) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, uid, createdAt);
+  int get hashCode =>
+      Object.hash(runtimeType, uid, userName, userImage, createdAt);
 
   /// Create a copy of Follow
   /// with the given fields replaced by the non-null parameter values.
@@ -161,12 +198,18 @@ class _$FollowImpl implements _Follow {
 abstract class _Follow implements Follow {
   const factory _Follow(
       {required final String uid,
+      required final String userName,
+      required final String? userImage,
       required final DateTime createdAt}) = _$FollowImpl;
 
   factory _Follow.fromJson(Map<String, dynamic> json) = _$FollowImpl.fromJson;
 
   @override
   String get uid;
+  @override
+  String get userName;
+  @override
+  String? get userImage;
   @override
   DateTime get createdAt;
 

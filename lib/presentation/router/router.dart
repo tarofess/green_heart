@@ -15,11 +15,11 @@ import 'package:green_heart/presentation/page/profile_edit_page.dart';
 import 'package:green_heart/presentation/page/user_page.dart';
 import 'package:green_heart/application/state/account_state_notifier.dart';
 import 'package:green_heart/presentation/page/block_list_page.dart';
-import 'package:green_heart/domain/type/follow_data.dart';
 import 'package:green_heart/presentation/page/follow_page.dart';
 import 'package:green_heart/domain/type/post_data.dart';
 import 'package:green_heart/presentation/page/user_diary_detail_page.dart';
 import 'package:green_heart/application/di/notification_di.dart';
+import 'package:green_heart/domain/type/follow.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -98,7 +98,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final Map<String, dynamic> extra =
               state.extra as Map<String, dynamic>;
-          final follows = extra['follows'] as List<FollowData>;
+          final follows = extra['follows'] as List<Follow>;
           final followType = extra['followType'] as FollowType;
           return FollowPage(
             follows: follows,

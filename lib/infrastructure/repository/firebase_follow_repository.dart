@@ -11,16 +11,12 @@ class FirebaseFollowRepository implements FollowRepository {
   final int _timeoutSeconds = 10;
 
   @override
-  Future<Follow> follow(String uid, String targetUid) async {
-    final follow = Follow(
-      uid: targetUid,
-      createdAt: DateTime.now(),
-    );
-    final follower = Follow(
-      uid: uid,
-      createdAt: DateTime.now(),
-    );
-
+  Future<void> follow(
+    String uid,
+    String targetUid,
+    Follow follow,
+    Follow follower,
+  ) async {
     // 2か所に保存するための参照を作成
     final followingRef = _firestore
         .collection('profile')
@@ -42,11 +38,9 @@ class FirebaseFollowRepository implements FollowRepository {
             .set(follower.toJson())
             .timeout(Duration(seconds: _timeoutSeconds)),
       ]);
-
-      return follow;
     } catch (e, stackTrace) {
       if (e is TimeoutException) {
-        return follow;
+        return;
       }
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('フォローに失敗しました。再度お試しください。');

@@ -7,6 +7,8 @@ part 'follow.g.dart';
 class Follow with _$Follow {
   const factory Follow({
     required String uid,
+    required String userName,
+    required String? userImage,
     required DateTime createdAt,
   }) = _Follow;
 

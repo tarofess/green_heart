@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/profile.dart';
@@ -219,10 +220,12 @@ class UserPage extends HookConsumerWidget {
                     backgroundColor: Colors.white10,
                   ).during(() async {
                     final myUid = ref.watch(authStateProvider).value?.uid;
+                    final profile = ref.watch(profileNotifierProvider).value;
                     return ref.read(followUsecaseProvider).execute(
                           myUid,
                           uid,
                           userPageState,
+                          profile,
                           ref.read(followNotifierProvider(myUid).notifier),
                           ref.read(
                             userPageStateNotifierProvider(uid).notifier,
