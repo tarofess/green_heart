@@ -61,7 +61,6 @@ class PostInteractionService {
           final comments = List<CommentData>.from(postData.comments);
           comments.add(CommentData(
             comment: comment,
-            profile: profile,
           ));
           return postData.copyWith(comments: comments);
         }

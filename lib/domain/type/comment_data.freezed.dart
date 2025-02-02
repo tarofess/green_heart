@@ -17,7 +17,6 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$CommentData {
   Comment get comment => throw _privateConstructorUsedError;
-  Profile? get profile => throw _privateConstructorUsedError;
   List<CommentData> get replyComments => throw _privateConstructorUsedError;
   bool get isMe => throw _privateConstructorUsedError;
 
@@ -34,14 +33,9 @@ abstract class $CommentDataCopyWith<$Res> {
           CommentData value, $Res Function(CommentData) then) =
       _$CommentDataCopyWithImpl<$Res, CommentData>;
   @useResult
-  $Res call(
-      {Comment comment,
-      Profile? profile,
-      List<CommentData> replyComments,
-      bool isMe});
+  $Res call({Comment comment, List<CommentData> replyComments, bool isMe});
 
   $CommentCopyWith<$Res> get comment;
-  $ProfileCopyWith<$Res>? get profile;
 }
 
 /// @nodoc
@@ -60,7 +54,6 @@ class _$CommentDataCopyWithImpl<$Res, $Val extends CommentData>
   @override
   $Res call({
     Object? comment = null,
-    Object? profile = freezed,
     Object? replyComments = null,
     Object? isMe = null,
   }) {
@@ -69,10 +62,6 @@ class _$CommentDataCopyWithImpl<$Res, $Val extends CommentData>
           ? _value.comment
           : comment // ignore: cast_nullable_to_non_nullable
               as Comment,
-      profile: freezed == profile
-          ? _value.profile
-          : profile // ignore: cast_nullable_to_non_nullable
-              as Profile?,
       replyComments: null == replyComments
           ? _value.replyComments
           : replyComments // ignore: cast_nullable_to_non_nullable
@@ -93,20 +82,6 @@ class _$CommentDataCopyWithImpl<$Res, $Val extends CommentData>
       return _then(_value.copyWith(comment: value) as $Val);
     });
   }
-
-  /// Create a copy of CommentData
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $ProfileCopyWith<$Res>? get profile {
-    if (_value.profile == null) {
-      return null;
-    }
-
-    return $ProfileCopyWith<$Res>(_value.profile!, (value) {
-      return _then(_value.copyWith(profile: value) as $Val);
-    });
-  }
 }
 
 /// @nodoc
@@ -117,16 +92,10 @@ abstract class _$$CommentDataImplCopyWith<$Res>
       __$$CommentDataImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {Comment comment,
-      Profile? profile,
-      List<CommentData> replyComments,
-      bool isMe});
+  $Res call({Comment comment, List<CommentData> replyComments, bool isMe});
 
   @override
   $CommentCopyWith<$Res> get comment;
-  @override
-  $ProfileCopyWith<$Res>? get profile;
 }
 
 /// @nodoc
@@ -143,7 +112,6 @@ class __$$CommentDataImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? comment = null,
-    Object? profile = freezed,
     Object? replyComments = null,
     Object? isMe = null,
   }) {
@@ -152,10 +120,6 @@ class __$$CommentDataImplCopyWithImpl<$Res>
           ? _value.comment
           : comment // ignore: cast_nullable_to_non_nullable
               as Comment,
-      profile: freezed == profile
-          ? _value.profile
-          : profile // ignore: cast_nullable_to_non_nullable
-              as Profile?,
       replyComments: null == replyComments
           ? _value._replyComments
           : replyComments // ignore: cast_nullable_to_non_nullable
@@ -173,15 +137,12 @@ class __$$CommentDataImplCopyWithImpl<$Res>
 class _$CommentDataImpl implements _CommentData {
   const _$CommentDataImpl(
       {required this.comment,
-      required this.profile,
       final List<CommentData> replyComments = const [],
       this.isMe = false})
       : _replyComments = replyComments;
 
   @override
   final Comment comment;
-  @override
-  final Profile? profile;
   final List<CommentData> _replyComments;
   @override
   @JsonKey()
@@ -197,7 +158,7 @@ class _$CommentDataImpl implements _CommentData {
 
   @override
   String toString() {
-    return 'CommentData(comment: $comment, profile: $profile, replyComments: $replyComments, isMe: $isMe)';
+    return 'CommentData(comment: $comment, replyComments: $replyComments, isMe: $isMe)';
   }
 
   @override
@@ -206,14 +167,13 @@ class _$CommentDataImpl implements _CommentData {
         (other.runtimeType == runtimeType &&
             other is _$CommentDataImpl &&
             (identical(other.comment, comment) || other.comment == comment) &&
-            (identical(other.profile, profile) || other.profile == profile) &&
             const DeepCollectionEquality()
                 .equals(other._replyComments, _replyComments) &&
             (identical(other.isMe, isMe) || other.isMe == isMe));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, comment, profile,
+  int get hashCode => Object.hash(runtimeType, comment,
       const DeepCollectionEquality().hash(_replyComments), isMe);
 
   /// Create a copy of CommentData
@@ -228,14 +188,11 @@ class _$CommentDataImpl implements _CommentData {
 abstract class _CommentData implements CommentData {
   const factory _CommentData(
       {required final Comment comment,
-      required final Profile? profile,
       final List<CommentData> replyComments,
       final bool isMe}) = _$CommentDataImpl;
 
   @override
   Comment get comment;
-  @override
-  Profile? get profile;
   @override
   List<CommentData> get replyComments;
   @override

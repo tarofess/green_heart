@@ -16,6 +16,7 @@ import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/domain/type/post_data.dart';
 import 'package:green_heart/application/di/comment_di.dart';
 import 'package:green_heart/domain/type/result.dart';
+import 'package:green_heart/application/state/profile_notifier.dart';
 
 class CommentPage extends HookConsumerWidget {
   const CommentPage({
@@ -178,17 +179,20 @@ class CommentPage extends HookConsumerWidget {
                 final result = await LoadingOverlay.of(
                   context,
                   backgroundColor: Colors.white10,
-                ).during(
-                  () async => ref.read(commentAddUsecaseProvider).execute(
+                ).during(() async {
+                  final profile = ref.watch(profileNotifierProvider).value;
+                  return ref.read(commentAddUsecaseProvider).execute(
                         uid,
                         postData,
                         commentTextController.text,
                         commentPageState.parentCommentId,
+                        profile?.name ?? '',
+                        profile?.imageUrl,
                         ref.read(
                           commentNotifierProvider(postData.post.id).notifier,
                         ),
-                      ),
-                );
+                      );
+                });
 
                 switch (result) {
                   case Success():

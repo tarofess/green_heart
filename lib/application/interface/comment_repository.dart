@@ -6,6 +6,8 @@ abstract class CommentRepository {
     String postId,
     String content,
     String? parentCommentId,
+    String userName,
+    String? userImage,
   );
   Future<List<Comment>> getComments(String postId);
   Future<List<Comment>> getReplyComments(String postId, String parentCommentId);

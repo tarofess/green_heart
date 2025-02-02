@@ -13,6 +13,8 @@ class CommentAddUsecase {
     PostData postData,
     String content,
     String? parentCommentId,
+    String userName,
+    String? userImage,
     CommentNotifier commentNotifier,
   ) async {
     try {
@@ -21,6 +23,8 @@ class CommentAddUsecase {
         postData.post.id,
         content,
         parentCommentId,
+        userName,
+        userImage,
       );
 
       commentNotifier.addComment(newComment, postData, parentCommentId);

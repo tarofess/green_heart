@@ -138,10 +138,10 @@ class CommentCard extends HookConsumerWidget {
         onTap: () {
           context.push('/user', extra: {'uid': commentData.comment.uid});
         },
-        child: commentData.profile?.imageUrl == null
+        child: commentData.comment.userImage == null
             ? const UserEmptyImage(radius: 24)
             : UserFirebaseImage(
-                imageUrl: commentData.profile?.imageUrl,
+                imageUrl: commentData.comment.userImage,
                 radius: 48,
               ),
       );
@@ -150,10 +150,10 @@ class CommentCard extends HookConsumerWidget {
         onTap: () {
           context.push('/user', extra: {'uid': replyComment.comment.uid});
         },
-        child: replyComment!.profile?.imageUrl == null
+        child: replyComment!.comment.userImage == null
             ? const UserEmptyImage(radius: 24)
             : UserFirebaseImage(
-                imageUrl: replyComment.profile?.imageUrl,
+                imageUrl: replyComment.comment.userImage,
                 radius: 48,
               ),
       );
@@ -163,8 +163,8 @@ class CommentCard extends HookConsumerWidget {
   Widget _buildUserName([CommentData? replyComment]) {
     return Text(
       replyComment == null
-          ? commentData.profile?.name ?? ''
-          : replyComment.profile?.name ?? '',
+          ? commentData.comment.userName
+          : replyComment.comment.userName,
       style: TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 16.sp,
@@ -200,7 +200,7 @@ class CommentCard extends HookConsumerWidget {
           onPressed: () {
             ref.read(commentPageNotifierProvider.notifier).startReply(
                   commentData.comment.id,
-                  commentData.profile?.name,
+                  commentData.comment.userName,
                 );
             focusNode.requestFocus();
           },

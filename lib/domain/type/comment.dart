@@ -9,8 +9,10 @@ class Comment with _$Comment {
     required String id,
     required String uid,
     required String content,
-    required DateTime createdAt,
     String? parentCommentId,
+    required String userName,
+    required String? userImage,
+    required DateTime createdAt,
   }) = _Comment;
 
   factory Comment.fromJson(Map<String, dynamic> json) =>

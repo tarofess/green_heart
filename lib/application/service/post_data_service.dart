@@ -63,8 +63,7 @@ class PostDataService {
     List<Comment> comments,
   ) async {
     final commentDataFutures = comments.map((comment) async {
-      final profile = await _profileGetUsecase.execute(comment.uid);
-      return CommentData(comment: comment, profile: profile);
+      return CommentData(comment: comment);
     });
 
     return Future.wait(commentDataFutures);

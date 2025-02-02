@@ -16,6 +16,8 @@ class FirebaseCommentRepository implements CommentRepository {
     String postId,
     String content,
     String? parentCommentId,
+    String userName,
+    String? userImage,
   ) async {
     final docRef =
         _firestore.collection('post').doc(postId).collection('comment').doc();
@@ -23,8 +25,10 @@ class FirebaseCommentRepository implements CommentRepository {
       id: docRef.id,
       uid: uid,
       content: content,
-      createdAt: DateTime.now(),
       parentCommentId: parentCommentId,
+      userName: userName,
+      userImage: userImage,
+      createdAt: DateTime.now(),
     );
 
     try {

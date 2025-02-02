@@ -23,8 +23,10 @@ mixin _$Comment {
   String get id => throw _privateConstructorUsedError;
   String get uid => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
-  DateTime get createdAt => throw _privateConstructorUsedError;
   String? get parentCommentId => throw _privateConstructorUsedError;
+  String get userName => throw _privateConstructorUsedError;
+  String? get userImage => throw _privateConstructorUsedError;
+  DateTime get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this Comment to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -44,8 +46,10 @@ abstract class $CommentCopyWith<$Res> {
       {String id,
       String uid,
       String content,
-      DateTime createdAt,
-      String? parentCommentId});
+      String? parentCommentId,
+      String userName,
+      String? userImage,
+      DateTime createdAt});
 }
 
 /// @nodoc
@@ -66,8 +70,10 @@ class _$CommentCopyWithImpl<$Res, $Val extends Comment>
     Object? id = null,
     Object? uid = null,
     Object? content = null,
-    Object? createdAt = null,
     Object? parentCommentId = freezed,
+    Object? userName = null,
+    Object? userImage = freezed,
+    Object? createdAt = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -82,14 +88,22 @@ class _$CommentCopyWithImpl<$Res, $Val extends Comment>
           ? _value.content
           : content // ignore: cast_nullable_to_non_nullable
               as String,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
       parentCommentId: freezed == parentCommentId
           ? _value.parentCommentId
           : parentCommentId // ignore: cast_nullable_to_non_nullable
               as String?,
+      userName: null == userName
+          ? _value.userName
+          : userName // ignore: cast_nullable_to_non_nullable
+              as String,
+      userImage: freezed == userImage
+          ? _value.userImage
+          : userImage // ignore: cast_nullable_to_non_nullable
+              as String?,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
     ) as $Val);
   }
 }
@@ -105,8 +119,10 @@ abstract class _$$CommentImplCopyWith<$Res> implements $CommentCopyWith<$Res> {
       {String id,
       String uid,
       String content,
-      DateTime createdAt,
-      String? parentCommentId});
+      String? parentCommentId,
+      String userName,
+      String? userImage,
+      DateTime createdAt});
 }
 
 /// @nodoc
@@ -125,8 +141,10 @@ class __$$CommentImplCopyWithImpl<$Res>
     Object? id = null,
     Object? uid = null,
     Object? content = null,
-    Object? createdAt = null,
     Object? parentCommentId = freezed,
+    Object? userName = null,
+    Object? userImage = freezed,
+    Object? createdAt = null,
   }) {
     return _then(_$CommentImpl(
       id: null == id
@@ -141,14 +159,22 @@ class __$$CommentImplCopyWithImpl<$Res>
           ? _value.content
           : content // ignore: cast_nullable_to_non_nullable
               as String,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
       parentCommentId: freezed == parentCommentId
           ? _value.parentCommentId
           : parentCommentId // ignore: cast_nullable_to_non_nullable
               as String?,
+      userName: null == userName
+          ? _value.userName
+          : userName // ignore: cast_nullable_to_non_nullable
+              as String,
+      userImage: freezed == userImage
+          ? _value.userImage
+          : userImage // ignore: cast_nullable_to_non_nullable
+              as String?,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
     ));
   }
 }
@@ -160,8 +186,10 @@ class _$CommentImpl implements _Comment {
       {required this.id,
       required this.uid,
       required this.content,
-      required this.createdAt,
-      this.parentCommentId});
+      this.parentCommentId,
+      required this.userName,
+      required this.userImage,
+      required this.createdAt});
 
   factory _$CommentImpl.fromJson(Map<String, dynamic> json) =>
       _$$CommentImplFromJson(json);
@@ -173,13 +201,17 @@ class _$CommentImpl implements _Comment {
   @override
   final String content;
   @override
-  final DateTime createdAt;
-  @override
   final String? parentCommentId;
+  @override
+  final String userName;
+  @override
+  final String? userImage;
+  @override
+  final DateTime createdAt;
 
   @override
   String toString() {
-    return 'Comment(id: $id, uid: $uid, content: $content, createdAt: $createdAt, parentCommentId: $parentCommentId)';
+    return 'Comment(id: $id, uid: $uid, content: $content, parentCommentId: $parentCommentId, userName: $userName, userImage: $userImage, createdAt: $createdAt)';
   }
 
   @override
@@ -190,16 +222,20 @@ class _$CommentImpl implements _Comment {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.uid, uid) || other.uid == uid) &&
             (identical(other.content, content) || other.content == content) &&
-            (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt) &&
             (identical(other.parentCommentId, parentCommentId) ||
-                other.parentCommentId == parentCommentId));
+                other.parentCommentId == parentCommentId) &&
+            (identical(other.userName, userName) ||
+                other.userName == userName) &&
+            (identical(other.userImage, userImage) ||
+                other.userImage == userImage) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, uid, content, createdAt, parentCommentId);
+  int get hashCode => Object.hash(runtimeType, id, uid, content,
+      parentCommentId, userName, userImage, createdAt);
 
   /// Create a copy of Comment
   /// with the given fields replaced by the non-null parameter values.
@@ -222,8 +258,10 @@ abstract class _Comment implements Comment {
       {required final String id,
       required final String uid,
       required final String content,
-      required final DateTime createdAt,
-      final String? parentCommentId}) = _$CommentImpl;
+      final String? parentCommentId,
+      required final String userName,
+      required final String? userImage,
+      required final DateTime createdAt}) = _$CommentImpl;
 
   factory _Comment.fromJson(Map<String, dynamic> json) = _$CommentImpl.fromJson;
 
@@ -234,9 +272,13 @@ abstract class _Comment implements Comment {
   @override
   String get content;
   @override
-  DateTime get createdAt;
-  @override
   String? get parentCommentId;
+  @override
+  String get userName;
+  @override
+  String? get userImage;
+  @override
+  DateTime get createdAt;
 
   /// Create a copy of Comment
   /// with the given fields replaced by the non-null parameter values.

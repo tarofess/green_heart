@@ -1,15 +1,12 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/domain/type/comment_data.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/di/comment_di.dart';
-import 'package:green_heart/domain/type/profile.dart';
 import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/application/state/post_manager_notifier.dart';
 import 'package:green_heart/application/di/block_di.dart';
 import 'package:green_heart/domain/type/post_data.dart';
-import 'package:green_heart/application/state/profile_notifier.dart';
 
 class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
   @override
@@ -29,16 +26,9 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
   }
 
   Future<CommentData> _createCommentData(Comment comment, String postId) async {
-    final results = await Future.wait([
-      ref.read(profileGetUsecaseProvider).execute(comment.uid),
-      ref.read(commentGetReplyUsecaseProvider).execute(
-            postId,
-            comment.id,
-          ),
-    ]);
-
-    final profile = results[0] as Profile?;
-    final replyComments = results[1] as List<Comment>;
+    final replyComments = await ref
+        .read(commentGetReplyUsecaseProvider)
+        .execute(postId, comment.id);
 
     final replyCommentData = await Future.wait(
       replyComments.map((reply) => _createCommentData(reply, postId)),
@@ -46,7 +36,6 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
 
     return CommentData(
       comment: comment,
-      profile: profile,
       replyComments: replyCommentData,
       isMe: ref.watch(authStateProvider).value?.uid == comment.uid,
     );
@@ -72,7 +61,6 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
   ) {
     final newCommentData = CommentData(
       comment: newComment,
-      profile: ref.read(profileNotifierProvider).value,
       replyComments: [],
       isMe: true,
     );
