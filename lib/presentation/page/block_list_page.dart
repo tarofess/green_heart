@@ -39,21 +39,21 @@ class BlockListPage extends ConsumerWidget {
               itemCount: blockList.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  key: ValueKey(blockList[index].profile?.uid),
-                  leading: blockList[index].profile?.imageUrl == null
+                  key: ValueKey(blockList[index].uid),
+                  leading: blockList[index].userImage == null
                       ? const UserEmptyImage(radius: 21)
                       : UserFirebaseImage(
-                          imageUrl: blockList[index].profile?.imageUrl,
+                          imageUrl: blockList[index].userImage,
                           radius: 42,
                         ),
                   title: Text(
-                    blockList[index].profile?.name ?? '',
+                    blockList[index].userName,
                     style: TextStyle(fontSize: 16.sp),
                   ),
                   onTap: () {
                     context.push(
                       '/user',
-                      extra: {'uid': blockList[index].profile?.uid},
+                      extra: {'uid': blockList[index].uid},
                     );
                   },
                 );

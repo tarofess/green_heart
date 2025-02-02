@@ -426,6 +426,7 @@ class UserPage extends HookConsumerWidget {
                     await ref.read(blockAddUsecaseProvider).execute(
                           myUid,
                           uid,
+                          userPageState.profile,
                         );
                 if (blockResult is Failure) return blockResult;
 
