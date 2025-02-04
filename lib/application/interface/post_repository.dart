@@ -11,6 +11,8 @@ abstract class PostRepository {
     String uid,
     String content,
     List<String> imageUrls,
+    String userName,
+    String? userImage,
     DateTime selectedDay,
   );
   Future<List<Post>> getPostsByUid(

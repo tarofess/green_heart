@@ -14,6 +14,10 @@ _$PostImpl _$$PostImplFromJson(Map<String, dynamic> json) => _$PostImpl(
               ?.map((e) => e as String)
               .toList() ??
           const [],
+      userName: json['userName'] as String,
+      userImage: json['userImage'] as String?,
+      likeCount: (json['likeCount'] as num?)?.toInt() ?? 0,
+      commentCount: (json['commentCount'] as num?)?.toInt() ?? 0,
       releaseDate: DateTime.parse(json['releaseDate'] as String),
       createdAt: DateTime.parse(json['createdAt'] as String),
     );
@@ -24,6 +28,10 @@ Map<String, dynamic> _$$PostImplToJson(_$PostImpl instance) =>
       'uid': instance.uid,
       'content': instance.content,
       'imageUrls': instance.imageUrls,
+      'userName': instance.userName,
+      'userImage': instance.userImage,
+      'likeCount': instance.likeCount,
+      'commentCount': instance.commentCount,
       'releaseDate': instance.releaseDate.toIso8601String(),
       'createdAt': instance.createdAt.toIso8601String(),
     };

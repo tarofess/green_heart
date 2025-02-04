@@ -1,7 +1,6 @@
 import 'package:green_heart/application/interface/post_repository.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/usecase/profile_get_usecase.dart';
-import 'package:green_heart/domain/type/post_data.dart';
 import 'package:green_heart/domain/type/result.dart';
 
 class PostAddUsecase {
@@ -25,24 +24,19 @@ class PostAddUsecase {
       if (uid == null) {
         return const Failure('投稿ができません。アカウントがログアウトされている可能性があります。');
       }
+
+      final profile = await _profileGetUsecase.execute(uid);
       final imageUrls = await _postRepository.uploadImages(uid, paths);
       final newPost = await _postRepository.addPost(
         uid,
         content,
         imageUrls,
+        profile?.name ?? '',
+        profile?.imageUrl,
         selectedDay,
       );
 
-      final profile = await _profileGetUsecase.execute(uid);
-
-      final newPostData = PostData(
-        post: newPost,
-        userProfile: profile,
-        likes: [],
-        comments: [],
-      );
-
-      _userPostNotifier.addPost(newPostData);
+      _userPostNotifier.addPost(newPost);
 
       return const Success();
     } catch (e) {

@@ -10,25 +10,33 @@ class FirebaseLikeRepository implements LikeRepository {
   final int _timeoutSeconds = 15;
 
   @override
-  Future<void> toggleLike(String postId, String uid) async {
+  Future<bool> toggleLike(String postId, String uid) async {
     try {
-      final ref =
+      final likeRef =
           _firestore.collection('post').doc(postId).collection('like').doc(uid);
+      final postRef = _firestore.collection('post').doc(postId);
       final docSnapshot =
-          await ref.get().timeout(Duration(seconds: _timeoutSeconds));
+          await likeRef.get().timeout(Duration(seconds: _timeoutSeconds));
 
       if (docSnapshot.exists) {
         // すでにいいね済みなら削除
-        await ref.delete().timeout(Duration(seconds: _timeoutSeconds));
+        await likeRef.delete().timeout(Duration(seconds: _timeoutSeconds));
+        await postRef.update(
+          {'likeCount': FieldValue.increment(-1)},
+        ).timeout(Duration(seconds: _timeoutSeconds));
+
+        return false;
       } else {
         // いいねしていなければ追加
-        final like = Like(
-          uid: uid,
-          createdAt: DateTime.now(),
-        );
-        await ref
+        final like = Like(uid: uid, createdAt: DateTime.now());
+        await likeRef
             .set(like.toJson())
             .timeout(Duration(seconds: _timeoutSeconds));
+        await postRef.update(
+          {'likeCount': FieldValue.increment(1)},
+        ).timeout(Duration(seconds: _timeoutSeconds));
+
+        return true;
       }
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
@@ -37,19 +45,14 @@ class FirebaseLikeRepository implements LikeRepository {
   }
 
   @override
-  Future<List<Like>> getLikes(String postId) async {
+  Future<bool> checkIfLiked(String postId, String uid) async {
     try {
-      final querySnapshot = await _firestore
-          .collection('post')
-          .doc(postId)
-          .collection('like')
-          .orderBy('createdAt', descending: true)
-          .get()
-          .timeout(Duration(seconds: _timeoutSeconds));
-      final likes =
-          querySnapshot.docs.map((doc) => Like.fromJson(doc.data())).toList();
+      final ref =
+          _firestore.collection('post').doc(postId).collection('like').doc(uid);
+      final docSnapshot =
+          await ref.get().timeout(Duration(seconds: _timeoutSeconds));
 
-      return likes;
+      return docSnapshot.exists;
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('いいねの取得に失敗しました。再度お試しください。');

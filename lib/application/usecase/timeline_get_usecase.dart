@@ -11,8 +11,8 @@ class TimelineGetUsecase {
   Future<List<Post>> execute(
     TimeLineScrollState timeLineScrollState,
     TimelineScrollStateNotifier timelineScrollStateNotifier,
-  ) {
-    return _repository.getTimelinePosts(
+  ) async {
+    return await _repository.getTimelinePosts(
       timeLineScrollState,
       timelineScrollStateNotifier,
     );

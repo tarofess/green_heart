@@ -13,24 +13,24 @@ import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/domain/type/comment_page_state.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
-import 'package:green_heart/domain/type/post_data.dart';
 import 'package:green_heart/application/di/comment_di.dart';
 import 'package:green_heart/domain/type/result.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
+import 'package:green_heart/domain/type/post.dart';
 
 class CommentPage extends HookConsumerWidget {
   const CommentPage({
     super.key,
-    required this.postData,
+    required this.post,
     required this.focusNode,
   });
 
-  final PostData postData;
+  final Post post;
   final FocusNode focusNode;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final commentState = ref.watch(commentNotifierProvider(postData.post.id));
+    final commentState = ref.watch(commentNotifierProvider(post.id));
     final commentPageState = ref.watch(commentPageNotifierProvider);
     final commentTextController = useTextEditingController();
 
@@ -75,9 +75,7 @@ class CommentPage extends HookConsumerWidget {
             return AsyncErrorWidget(
               error: e,
               retry: () => ref.refresh(
-                commentNotifierProvider(
-                  postData.post.id,
-                ),
+                commentNotifierProvider(post.id),
               ),
             );
           },
@@ -88,7 +86,7 @@ class CommentPage extends HookConsumerWidget {
 
   Future<void> _refreshComments(WidgetRef ref) async {
     // ignore: unused_result
-    ref.refresh(commentNotifierProvider(postData.post.id));
+    ref.refresh(commentNotifierProvider(post.id));
   }
 
   Widget _buildEmptyCommentMessage() {
@@ -129,7 +127,7 @@ class CommentPage extends HookConsumerWidget {
         return CommentCard(
           key: ValueKey(comments[index].comment.id),
           commentData: comments[index],
-          postData: postData,
+          post: post,
           focusNode: focusNode,
         );
       },
@@ -183,14 +181,12 @@ class CommentPage extends HookConsumerWidget {
                   final profile = ref.watch(profileNotifierProvider).value;
                   return ref.read(commentAddUsecaseProvider).execute(
                         uid,
-                        postData,
+                        post,
                         commentTextController.text,
                         commentPageState.parentCommentId,
                         profile?.name ?? '',
                         profile?.imageUrl,
-                        ref.read(
-                          commentNotifierProvider(postData.post.id).notifier,
-                        ),
+                        ref.read(commentNotifierProvider(post.id).notifier),
                       );
                 });
 

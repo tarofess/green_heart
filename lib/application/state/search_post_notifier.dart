@@ -1,26 +1,27 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:green_heart/domain/type/post_data.dart';
 import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/domain/type/post.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/application/service/post_interaction_service.dart';
 import 'package:green_heart/application/service/post_data_service.dart';
 
-class SearchPostNotifier extends AsyncNotifier<List<PostData>> {
+class SearchPostNotifier extends AsyncNotifier<List<Post>> {
   late final PostDataService _postDataService;
   late final PostInteractionService _postInteractionService;
 
   @override
-  Future<List<PostData>> build() async {
+  Future<List<Post>> build() async {
     _postDataService = ref.read(postDataServiceProvider);
     _postInteractionService = ref.read(postInteractionServiceProvider);
     return [];
   }
 
   Future<void> setPostsBySearchWord(List<Post> posts) async {
-    final postData = await _postDataService.createAndFilterPostDataList(posts);
-    state = AsyncValue.data([...state.value ?? [], ...postData]);
+    final filteredPosts = await _postDataService.filterByBlock(posts);
+    final updatedPosts =
+        await _postDataService.updateIsLikedStatus(filteredPosts);
+    state = AsyncValue.data([...state.value ?? [], ...updatedPosts]);
   }
 
   void deletePost(String postId) {
@@ -29,8 +30,9 @@ class SearchPostNotifier extends AsyncNotifier<List<PostData>> {
     });
   }
 
-  void toggleLike(String postId, String uid) {
-    _postInteractionService.toggleLike(state, postId, uid, (updatedPosts) {
+  void toggleLike(String postId, String uid, bool didLike) {
+    _postInteractionService.toggleLike(state, postId, uid, didLike,
+        (updatedPosts) {
       state = AsyncValue.data(updatedPosts);
     });
   }
@@ -46,8 +48,9 @@ class SearchPostNotifier extends AsyncNotifier<List<PostData>> {
     });
   }
 
-  void deleteComment(String commentId) {
-    _postInteractionService.deleteComment(state, commentId, (updatedPosts) {
+  void deleteComment(String postId, int deletedCommentCount) {
+    _postInteractionService.deleteComment(state, postId, deletedCommentCount,
+        (updatedPosts) {
       state = AsyncValue.data(updatedPosts);
     });
   }
@@ -58,6 +61,6 @@ class SearchPostNotifier extends AsyncNotifier<List<PostData>> {
 }
 
 final searchPostNotifierProvider =
-    AsyncNotifierProvider<SearchPostNotifier, List<PostData>>(
+    AsyncNotifierProvider<SearchPostNotifier, List<Post>>(
   () => SearchPostNotifier(),
 );

@@ -6,7 +6,7 @@ class FollowerGetUsecase {
 
   FollowerGetUsecase(this._followRepository);
 
-  Future<List<Follow>> execute(String uid) {
-    return _followRepository.getFollowers(uid);
+  Future<List<Follow>> execute(String uid) async {
+    return await _followRepository.getFollowers(uid);
   }
 }

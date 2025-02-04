@@ -13,8 +13,12 @@ class CommentDeleteUsecase {
     CommentNotifier commentNotifier,
   ) async {
     try {
-      await _commentRepository.deleteComment(postId, commentId);
-      commentNotifier.deleteComment(commentId);
+      final deletedCommentsCount = await _commentRepository.deleteComment(
+        postId,
+        commentId,
+      );
+
+      commentNotifier.deleteComment(postId, commentId, deletedCommentsCount);
       return const Success();
     } catch (e) {
       return Failure(e.toString(), e as Exception?);

@@ -24,8 +24,14 @@ mixin _$Post {
   String get uid => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
   List<String> get imageUrls => throw _privateConstructorUsedError;
+  String get userName => throw _privateConstructorUsedError;
+  String? get userImage => throw _privateConstructorUsedError;
+  int get likeCount => throw _privateConstructorUsedError;
+  int get commentCount => throw _privateConstructorUsedError;
   DateTime get releaseDate => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  bool get isLiked => throw _privateConstructorUsedError;
 
   /// Serializes this Post to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -46,8 +52,13 @@ abstract class $PostCopyWith<$Res> {
       String uid,
       String content,
       List<String> imageUrls,
+      String userName,
+      String? userImage,
+      int likeCount,
+      int commentCount,
       DateTime releaseDate,
-      DateTime createdAt});
+      DateTime createdAt,
+      @JsonKey(includeFromJson: false, includeToJson: false) bool isLiked});
 }
 
 /// @nodoc
@@ -69,8 +80,13 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
     Object? uid = null,
     Object? content = null,
     Object? imageUrls = null,
+    Object? userName = null,
+    Object? userImage = freezed,
+    Object? likeCount = null,
+    Object? commentCount = null,
     Object? releaseDate = null,
     Object? createdAt = null,
+    Object? isLiked = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -89,6 +105,22 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
           ? _value.imageUrls
           : imageUrls // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      userName: null == userName
+          ? _value.userName
+          : userName // ignore: cast_nullable_to_non_nullable
+              as String,
+      userImage: freezed == userImage
+          ? _value.userImage
+          : userImage // ignore: cast_nullable_to_non_nullable
+              as String?,
+      likeCount: null == likeCount
+          ? _value.likeCount
+          : likeCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      commentCount: null == commentCount
+          ? _value.commentCount
+          : commentCount // ignore: cast_nullable_to_non_nullable
+              as int,
       releaseDate: null == releaseDate
           ? _value.releaseDate
           : releaseDate // ignore: cast_nullable_to_non_nullable
@@ -97,6 +129,10 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      isLiked: null == isLiked
+          ? _value.isLiked
+          : isLiked // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -113,8 +149,13 @@ abstract class _$$PostImplCopyWith<$Res> implements $PostCopyWith<$Res> {
       String uid,
       String content,
       List<String> imageUrls,
+      String userName,
+      String? userImage,
+      int likeCount,
+      int commentCount,
       DateTime releaseDate,
-      DateTime createdAt});
+      DateTime createdAt,
+      @JsonKey(includeFromJson: false, includeToJson: false) bool isLiked});
 }
 
 /// @nodoc
@@ -133,8 +174,13 @@ class __$$PostImplCopyWithImpl<$Res>
     Object? uid = null,
     Object? content = null,
     Object? imageUrls = null,
+    Object? userName = null,
+    Object? userImage = freezed,
+    Object? likeCount = null,
+    Object? commentCount = null,
     Object? releaseDate = null,
     Object? createdAt = null,
+    Object? isLiked = null,
   }) {
     return _then(_$PostImpl(
       id: null == id
@@ -153,6 +199,22 @@ class __$$PostImplCopyWithImpl<$Res>
           ? _value._imageUrls
           : imageUrls // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      userName: null == userName
+          ? _value.userName
+          : userName // ignore: cast_nullable_to_non_nullable
+              as String,
+      userImage: freezed == userImage
+          ? _value.userImage
+          : userImage // ignore: cast_nullable_to_non_nullable
+              as String?,
+      likeCount: null == likeCount
+          ? _value.likeCount
+          : likeCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      commentCount: null == commentCount
+          ? _value.commentCount
+          : commentCount // ignore: cast_nullable_to_non_nullable
+              as int,
       releaseDate: null == releaseDate
           ? _value.releaseDate
           : releaseDate // ignore: cast_nullable_to_non_nullable
@@ -161,6 +223,10 @@ class __$$PostImplCopyWithImpl<$Res>
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      isLiked: null == isLiked
+          ? _value.isLiked
+          : isLiked // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -173,8 +239,14 @@ class _$PostImpl implements _Post {
       required this.uid,
       required this.content,
       final List<String> imageUrls = const [],
+      required this.userName,
+      required this.userImage,
+      this.likeCount = 0,
+      this.commentCount = 0,
       required this.releaseDate,
-      required this.createdAt})
+      required this.createdAt,
+      @JsonKey(includeFromJson: false, includeToJson: false)
+      this.isLiked = false})
       : _imageUrls = imageUrls;
 
   factory _$PostImpl.fromJson(Map<String, dynamic> json) =>
@@ -196,13 +268,26 @@ class _$PostImpl implements _Post {
   }
 
   @override
+  final String userName;
+  @override
+  final String? userImage;
+  @override
+  @JsonKey()
+  final int likeCount;
+  @override
+  @JsonKey()
+  final int commentCount;
+  @override
   final DateTime releaseDate;
   @override
   final DateTime createdAt;
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  final bool isLiked;
 
   @override
   String toString() {
-    return 'Post(id: $id, uid: $uid, content: $content, imageUrls: $imageUrls, releaseDate: $releaseDate, createdAt: $createdAt)';
+    return 'Post(id: $id, uid: $uid, content: $content, imageUrls: $imageUrls, userName: $userName, userImage: $userImage, likeCount: $likeCount, commentCount: $commentCount, releaseDate: $releaseDate, createdAt: $createdAt, isLiked: $isLiked)';
   }
 
   @override
@@ -215,16 +300,36 @@ class _$PostImpl implements _Post {
             (identical(other.content, content) || other.content == content) &&
             const DeepCollectionEquality()
                 .equals(other._imageUrls, _imageUrls) &&
+            (identical(other.userName, userName) ||
+                other.userName == userName) &&
+            (identical(other.userImage, userImage) ||
+                other.userImage == userImage) &&
+            (identical(other.likeCount, likeCount) ||
+                other.likeCount == likeCount) &&
+            (identical(other.commentCount, commentCount) ||
+                other.commentCount == commentCount) &&
             (identical(other.releaseDate, releaseDate) ||
                 other.releaseDate == releaseDate) &&
             (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt));
+                other.createdAt == createdAt) &&
+            (identical(other.isLiked, isLiked) || other.isLiked == isLiked));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, uid, content,
-      const DeepCollectionEquality().hash(_imageUrls), releaseDate, createdAt);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      uid,
+      content,
+      const DeepCollectionEquality().hash(_imageUrls),
+      userName,
+      userImage,
+      likeCount,
+      commentCount,
+      releaseDate,
+      createdAt,
+      isLiked);
 
   /// Create a copy of Post
   /// with the given fields replaced by the non-null parameter values.
@@ -248,8 +353,14 @@ abstract class _Post implements Post {
       required final String uid,
       required final String content,
       final List<String> imageUrls,
+      required final String userName,
+      required final String? userImage,
+      final int likeCount,
+      final int commentCount,
       required final DateTime releaseDate,
-      required final DateTime createdAt}) = _$PostImpl;
+      required final DateTime createdAt,
+      @JsonKey(includeFromJson: false, includeToJson: false)
+      final bool isLiked}) = _$PostImpl;
 
   factory _Post.fromJson(Map<String, dynamic> json) = _$PostImpl.fromJson;
 
@@ -262,9 +373,20 @@ abstract class _Post implements Post {
   @override
   List<String> get imageUrls;
   @override
+  String get userName;
+  @override
+  String? get userImage;
+  @override
+  int get likeCount;
+  @override
+  int get commentCount;
+  @override
   DateTime get releaseDate;
   @override
   DateTime get createdAt;
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  bool get isLiked;
 
   /// Create a copy of Post
   /// with the given fields replaced by the non-null parameter values.

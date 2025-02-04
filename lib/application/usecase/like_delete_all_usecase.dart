@@ -8,9 +8,9 @@ class LikeDeleteAllUsecase {
 
   LikeDeleteAllUsecase(this._likeRepository);
 
-  Future<void> execute(User user) {
+  Future<void> execute(User user) async {
     try {
-      return _likeRepository.deleteAllLikesByUid(user.uid);
+      return await _likeRepository.deleteAllLikesByUid(user.uid);
     } catch (e) {
       throw AppException('いいねの削除に失敗しました。再度お試しください。');
     }

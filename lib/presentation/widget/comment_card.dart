@@ -15,20 +15,20 @@ import 'package:green_heart/presentation/dialog/report_dialog.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
 import 'package:green_heart/presentation/widget/user_empty_image.dart';
 import 'package:green_heart/presentation/widget/user_firebase_image.dart';
-import 'package:green_heart/domain/type/post_data.dart';
 import 'package:green_heart/application/di/comment_di.dart';
 import 'package:green_heart/domain/type/result.dart';
+import 'package:green_heart/domain/type/post.dart';
 
 class CommentCard extends HookConsumerWidget {
   const CommentCard({
     super.key,
     required this.commentData,
-    required this.postData,
+    required this.post,
     required this.focusNode,
   });
 
   final CommentData commentData;
-  final PostData postData;
+  final Post post;
   final FocusNode focusNode;
 
   @override
@@ -245,9 +245,9 @@ class CommentCard extends HookConsumerWidget {
                 : replyComment.comment.id;
 
             return ref.read(commentDeleteUsecaseProvider).execute(
-                  postData.post.id,
+                  post.id,
                   commentId,
-                  ref.read(commentNotifierProvider(postData.post.id).notifier),
+                  ref.read(commentNotifierProvider(post.id).notifier),
                 );
           });
 

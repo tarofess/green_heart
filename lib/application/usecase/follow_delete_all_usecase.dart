@@ -8,9 +8,9 @@ class FollowDeleteAllUsecase {
 
   FollowDeleteAllUsecase(this._followRepository);
 
-  Future<void> execute(User user) {
+  Future<void> execute(User user) async {
     try {
-      return _followRepository.deleteAllFollows(user.uid);
+      return await _followRepository.deleteAllFollows(user.uid);
     } catch (e) {
       throw AppException('フォローの削除に失敗しました。再度お試しください。');
     }

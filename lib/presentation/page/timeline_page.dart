@@ -84,8 +84,8 @@ class TimelinePage extends HookConsumerWidget {
                   return Padding(
                     padding: EdgeInsets.only(left: 8.w, right: 8.w, top: 4.h),
                     child: PostCard(
-                      key: ValueKey(timeline[index].post.id),
-                      postData: timeline[index],
+                      key: ValueKey(timeline[index].id),
+                      post: timeline[index],
                     ),
                   );
                 } else {

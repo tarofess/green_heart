@@ -12,8 +12,8 @@ class PostGetUsecase {
     String uid,
     UserPostScrollState userPostScrollState,
     UserPostScrollStateNotifier userPostScrollStateNotifier,
-  ) {
-    return _postRepository.getPostsByUid(
+  ) async {
+    return await _postRepository.getPostsByUid(
       uid,
       userPostScrollState,
       userPostScrollStateNotifier,

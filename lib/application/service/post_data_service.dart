@@ -1,75 +1,20 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/block_di.dart';
-import 'package:green_heart/application/di/comment_di.dart';
-import 'package:green_heart/application/di/like_di.dart';
-import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/usecase/block_get_usecase.dart';
-import 'package:green_heart/application/usecase/comment_get_usecase.dart';
-import 'package:green_heart/application/usecase/like_get_usecase.dart';
-import 'package:green_heart/application/usecase/profile_get_usecase.dart';
-import 'package:green_heart/domain/type/like.dart';
-import 'package:green_heart/domain/type/post_data.dart';
 import 'package:green_heart/domain/type/post.dart';
-import 'package:green_heart/domain/type/comment.dart';
-import 'package:green_heart/domain/type/comment_data.dart';
-import 'package:green_heart/domain/type/profile.dart';
+import 'package:green_heart/application/di/like_di.dart';
+import 'package:green_heart/application/usecase/like_check_usecase.dart';
 
 class PostDataService {
-  final ProfileGetUsecase _profileGetUsecase;
-  final LikeGetUsecase _likeGetUsecase;
-  final CommentGetUsecase _commentGetUsecase;
   final BlockGetUsecase _blockGetUsecase;
+  final LikeCheckUsecase _likeCheckUsecase;
   final String? _uid;
 
-  PostDataService(
-    this._profileGetUsecase,
-    this._likeGetUsecase,
-    this._commentGetUsecase,
-    this._blockGetUsecase,
-    this._uid,
-  );
+  PostDataService(this._blockGetUsecase, this._likeCheckUsecase, this._uid);
 
-  Future<List<PostData>> createAndFilterPostDataList(List<Post> posts) async {
-    final postData = await createPostDataList(posts);
-    return filterByBlock(postData);
-  }
-
-  Future<List<PostData>> createPostDataList(List<Post> posts) async {
-    final postDataFutures = posts.map((post) async {
-      final results = await Future.wait([
-        _profileGetUsecase.execute(post.uid),
-        _likeGetUsecase.execute(post.id),
-        _commentGetUsecase.execute(post.id),
-      ]);
-
-      final commentData = await _createCommentDataList(
-        results[2] as List<Comment>,
-      );
-
-      return PostData(
-        post: post,
-        userProfile: results[0] as Profile,
-        likes: results[1] as List<Like>,
-        comments: commentData,
-      );
-    });
-
-    return Future.wait(postDataFutures);
-  }
-
-  Future<List<CommentData>> _createCommentDataList(
-    List<Comment> comments,
-  ) async {
-    final commentDataFutures = comments.map((comment) async {
-      return CommentData(comment: comment);
-    });
-
-    return Future.wait(commentDataFutures);
-  }
-
-  Future<List<PostData>> filterByBlock(List<PostData> postData) async {
+  Future<List<Post>> filterByBlock(List<Post> posts) async {
     if (_uid == null) {
       throw Exception('ユーザーが存在しないため投稿を取得できません。再度お試しください。');
     }
@@ -77,23 +22,31 @@ class PostDataService {
     final blockList = await _blockGetUsecase.execute(_uid);
     final targetUids = blockList.map((block) => block.uid).toSet();
 
-    return postData.where((postData) {
-      if (targetUids.contains(postData.post.uid)) return false;
-
-      final filteredComments = postData.comments
-          .where((commentData) => !targetUids.contains(commentData.comment.uid))
-          .toList();
-
-      postData = postData.copyWith(comments: filteredComments);
+    return posts.where((post) {
+      if (targetUids.contains(post.uid)) return false;
       return true;
     }).toList();
+  }
+
+  Future<List<Post>> updateIsLikedStatus(List<Post> posts) async {
+    final List<Post> updatedPosts = [];
+
+    if (_uid == null) {
+      throw Exception('ユーザーが存在しないため投稿を取得できません。再度お試しください。');
+    }
+
+    for (var post in posts) {
+      final isLiked = await _likeCheckUsecase.execute(post.id, _uid);
+      post = post.copyWith(isLiked: isLiked);
+      updatedPosts.add(post);
+    }
+
+    return updatedPosts;
   }
 }
 
 final postDataServiceProvider = Provider((ref) => PostDataService(
-      ref.read(profileGetUsecaseProvider),
-      ref.read(likeGetUsecaseProvider),
-      ref.read(commentGetUsecaseProvider),
       ref.read(blockGetUsecaseProvider),
+      ref.read(likeCheckUsecaseProvider),
       ref.read(authStateProvider).value?.uid,
     ));

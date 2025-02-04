@@ -4,69 +4,81 @@ import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/state/timeline_notifier.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/domain/type/comment.dart';
-import 'package:green_heart/domain/type/post_data.dart';
 import 'package:green_heart/application/state/search_post_notifier.dart';
+import 'package:green_heart/domain/type/post.dart';
 
 class PostManagerNotifier extends Notifier {
   @override
   void build() {}
 
-  void deletePost(String uid, PostData postData) {
+  void deletePost(String uid, Post post) {
     ref.read(userPostNotifierProvider(uid).notifier).deletePost(
-          postData.post.id,
+          post.id,
         );
     ref.read(timelineNotifierProvider.notifier).deletePost(
-          postData.post.id,
+          post.id,
         );
     ref.read(searchPostNotifierProvider.notifier).deletePost(
-          postData.post.id,
+          post.id,
         );
   }
 
-  void toggleLike(PostData postData, String uid) {
-    ref.read(userPostNotifierProvider(postData.post.uid).notifier).toggleLike(
-          postData.post.id,
+  void toggleLike(Post post, String uid, bool didLike) {
+    ref.read(userPostNotifierProvider(post.uid).notifier).toggleLike(
+          post.id,
           uid,
+          didLike,
         );
     ref.read(timelineNotifierProvider.notifier).toggleLike(
-          postData.post.id,
+          post.id,
           uid,
+          didLike,
         );
     ref.read(searchPostNotifierProvider.notifier).toggleLike(
-          postData.post.id,
+          post.id,
           uid,
+          didLike,
         );
   }
 
-  void addComment(Comment newComment, PostData postData) {
+  void addComment(Comment newComment, Post post) {
     final myUid = ref.watch(authStateProvider).value?.uid;
-    if (postData.post.uid == myUid) {
+    if (post.uid == myUid) {
       ref.read(userPostNotifierProvider(myUid).notifier).addComment(
-            postData.post.id,
+            post.id,
             newComment,
           );
     } else {
-      ref.read(userPostNotifierProvider(postData.post.uid).notifier).addComment(
-            postData.post.id,
+      ref.read(userPostNotifierProvider(post.uid).notifier).addComment(
+            post.id,
             newComment,
           );
     }
 
     ref.read(timelineNotifierProvider.notifier).addComment(
-          postData.post.id,
+          post.id,
           newComment,
         );
     ref.read(searchPostNotifierProvider.notifier).addComment(
-          postData.post.id,
+          post.id,
           newComment,
         );
   }
 
-  void deleteComment(String commentId) {
+  void deleteComment(String postId, int deletedCommentCount) {
     final uid = ref.watch(authStateProvider).value?.uid;
-    ref.read(userPostNotifierProvider(uid).notifier).deleteComment(commentId);
-    ref.read(timelineNotifierProvider.notifier).deleteComment(commentId);
-    ref.read(searchPostNotifierProvider.notifier).deleteComment(commentId);
+    ref.read(userPostNotifierProvider(uid).notifier).deleteComment(
+          postId,
+          deletedCommentCount,
+        );
+    ref.read(timelineNotifierProvider.notifier).deleteComment(
+          postId,
+          deletedCommentCount,
+        );
+    ref.read(searchPostNotifierProvider.notifier).deleteComment(
+          postId,
+          deletedCommentCount,
+        );
   }
 }
 

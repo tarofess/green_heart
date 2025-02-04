@@ -1,7 +1,6 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/post_di.dart';
-import 'package:green_heart/domain/type/post_data.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/domain/type/post.dart';
@@ -9,12 +8,12 @@ import 'package:green_heart/application/state/user_post_scroll_state_notifier.da
 import 'package:green_heart/application/service/post_interaction_service.dart';
 import 'package:green_heart/application/service/post_data_service.dart';
 
-class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
+class UserPostNotifier extends FamilyAsyncNotifier<List<Post>, String?> {
   late final PostDataService _postDataService;
   late final PostInteractionService _postInteractionService;
 
   @override
-  Future<List<PostData>> build(String? arg) async {
+  Future<List<Post>> build(String? arg) async {
     if (arg == null) {
       throw Exception('ユーザーの投稿を取得できません。再度お試しください。');
     }
@@ -23,9 +22,10 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
     _postInteractionService = ref.read(postInteractionServiceProvider);
 
     final posts = await _fetchNextPosts(arg);
-    final postDataList =
-        await _postDataService.createAndFilterPostDataList(posts);
-    return postDataList;
+    final updatedPosts = await _postDataService.updateIsLikedStatus(posts);
+    final filteredPosts = await _postDataService.filterByBlock(updatedPosts);
+
+    return filteredPosts;
   }
 
   Future<List<Post>> _fetchNextPosts(String uid) async {
@@ -55,13 +55,12 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
     state.whenData((currentPosts) async {
       try {
         final newPosts = await _fetchNextPosts(uid);
-        final newPostData =
-            await _postDataService.createAndFilterPostDataList(newPosts);
+        final newPostData = await _postDataService.filterByBlock(newPosts);
 
         final updatedPosts = [
           ...currentPosts,
-          ...newPostData.where((newPost) => !currentPosts
-              .any((currentPost) => currentPost.post.id == newPost.post.id))
+          ...newPostData.where((newPost) =>
+              !currentPosts.any((currentPost) => currentPost.id == newPost.id))
         ];
         state = AsyncValue.data(updatedPosts);
       } catch (e) {
@@ -81,12 +80,12 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
 
     state = await AsyncValue.guard(() async {
       final posts = await _fetchNextPosts(uid);
-      return await _postDataService.createAndFilterPostDataList(posts);
+      return await _postDataService.filterByBlock(posts);
     });
   }
 
-  void addPost(PostData newPostData) {
-    state = state.whenData((posts) => [newPostData, ...posts]);
+  void addPost(Post newPost) {
+    state = state.whenData((posts) => [newPost, ...posts]);
   }
 
   void deletePost(String postId) {
@@ -95,8 +94,9 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
     });
   }
 
-  void toggleLike(String postId, String uid) {
-    _postInteractionService.toggleLike(state, postId, uid, (updatedPosts) {
+  void toggleLike(String postId, String uid, bool didLike) {
+    _postInteractionService.toggleLike(state, postId, uid, didLike,
+        (updatedPosts) {
       state = AsyncValue.data(updatedPosts);
     });
   }
@@ -112,8 +112,9 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
     });
   }
 
-  void deleteComment(String commentId) {
-    _postInteractionService.deleteComment(state, commentId, (updatedPosts) {
+  void deleteComment(String postId, int deletedCommentCount) {
+    _postInteractionService.deleteComment(state, postId, deletedCommentCount,
+        (updatedPosts) {
       state = AsyncValue.data(updatedPosts);
     });
   }
@@ -124,13 +125,12 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
   }
 
   void updateProfileName(String uid, String name) {
-    state.whenData((postDataList) {
-      final updatedPostData = postDataList.map((postData) {
-        if (postData.userProfile?.uid == uid) {
-          final updatedProfile = postData.userProfile?.copyWith(name: name);
-          return postData.copyWith(userProfile: updatedProfile);
+    state.whenData((posts) {
+      final updatedPostData = posts.map((post) {
+        if (post.uid == uid) {
+          return post.copyWith(userName: name);
         }
-        return postData;
+        return post;
       }).toList();
 
       state = AsyncValue.data(updatedPostData);
@@ -138,14 +138,12 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
   }
 
   void updateProfileImage(String uid, String? imageUrl) {
-    state.whenData((postDataList) {
-      final updatedPostData = postDataList.map((postData) {
-        if (postData.userProfile?.uid == uid) {
-          final updatedProfile =
-              postData.userProfile?.copyWith(imageUrl: imageUrl);
-          return postData.copyWith(userProfile: updatedProfile);
+    state.whenData((posts) {
+      final updatedPostData = posts.map((post) {
+        if (post.uid == uid) {
+          return post.copyWith(userImage: imageUrl);
         }
-        return postData;
+        return post;
       }).toList();
 
       state = AsyncValue.data(updatedPostData);
@@ -154,6 +152,6 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<PostData>, String?> {
 }
 
 final userPostNotifierProvider =
-    AsyncNotifierProviderFamily<UserPostNotifier, List<PostData>, String?>(
+    AsyncNotifierProviderFamily<UserPostNotifier, List<Post>, String?>(
   UserPostNotifier.new,
 );

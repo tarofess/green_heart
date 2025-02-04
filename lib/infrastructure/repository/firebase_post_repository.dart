@@ -26,6 +26,8 @@ class FirebasePostRepository implements PostRepository {
     String uid,
     String content,
     List<String> imageUrls,
+    String userName,
+    String? userImage,
     DateTime selectedDay,
   ) async {
     final docRef = _firestore.collection('post').doc();
@@ -34,6 +36,8 @@ class FirebasePostRepository implements PostRepository {
       uid: uid,
       content: content,
       imageUrls: imageUrls,
+      userName: userName,
+      userImage: userImage,
       releaseDate: selectedDay,
       createdAt: DateTime.now(),
     );

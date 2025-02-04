@@ -6,7 +6,7 @@ import 'package:green_heart/application/di/comment_di.dart';
 import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/application/state/post_manager_notifier.dart';
 import 'package:green_heart/application/di/block_di.dart';
-import 'package:green_heart/domain/type/post_data.dart';
+import 'package:green_heart/domain/type/post.dart';
 
 class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
   @override
@@ -54,11 +54,7 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
         .toList();
   }
 
-  void addComment(
-    Comment newComment,
-    PostData postData,
-    String? parentCommentId,
-  ) {
+  void addComment(Comment newComment, String? parentCommentId, Post post) {
     final newCommentData = CommentData(
       comment: newComment,
       replyComments: [],
@@ -80,13 +76,10 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
       }
     });
 
-    ref.read(postManagerNotifierProvider.notifier).addComment(
-          newComment,
-          postData,
-        );
+    ref.read(postManagerNotifierProvider.notifier).addComment(newComment, post);
   }
 
-  void deleteComment(String commentId) {
+  void deleteComment(String postId, String commentId, int deletedCommentCount) {
     state = state.whenData((comments) => comments
         .map((commentData) {
           final updatedReplies = commentData.replyComments
@@ -102,7 +95,10 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
         .whereType<CommentData>()
         .toList());
 
-    ref.read(postManagerNotifierProvider.notifier).deleteComment(commentId);
+    ref.read(postManagerNotifierProvider.notifier).deleteComment(
+          postId,
+          deletedCommentCount,
+        );
   }
 }
 

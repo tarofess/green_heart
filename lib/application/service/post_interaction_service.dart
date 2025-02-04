@@ -1,47 +1,44 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/comment.dart';
-import 'package:green_heart/domain/type/comment_data.dart';
-import 'package:green_heart/domain/type/like.dart';
-import 'package:green_heart/domain/type/post_data.dart';
 import 'package:green_heart/domain/type/profile.dart';
+import 'package:green_heart/domain/type/post.dart';
 
 class PostInteractionService {
   void deletePost(
-    AsyncValue<List<PostData>> state,
+    AsyncValue<List<Post>> state,
     String postId,
-    Function(List<PostData>) onUpdate,
+    Function(List<Post>) onUpdate,
   ) {
-    state.whenData((postData) {
-      final updatedPostData =
-          postData.where((postData) => postData.post.id != postId).toList();
+    state.whenData((posts) {
+      final updatedPostData = posts.where((post) => post.id != postId).toList();
       onUpdate(updatedPostData);
     });
   }
 
   void toggleLike(
-    AsyncValue<List<PostData>> state,
+    AsyncValue<List<Post>> state,
     String postId,
     String uid,
-    Function(List<PostData>) onUpdate,
+    bool didLike,
+    Function(List<Post>) onUpdate,
   ) {
-    state.whenData((postDataList) {
-      final updatedPostData = postDataList.map((postData) {
-        if (postData.post.id == postId) {
-          final likes = List<Like>.from(postData.likes);
-          final isLiked = likes.any((element) => element.uid == uid);
-
-          if (isLiked) {
-            likes.removeWhere((element) => element.uid == uid);
+    state.whenData((posts) {
+      final updatedPostData = posts.map((post) {
+        if (post.id == postId) {
+          if (didLike) {
+            return post.copyWith(
+              likeCount: post.likeCount + 1,
+              isLiked: true,
+            );
           } else {
-            likes.add(Like(
-              uid: uid,
-              createdAt: DateTime.now(),
-            ));
+            return post.copyWith(
+              likeCount: post.likeCount - 1,
+              isLiked: false,
+            );
           }
-          return postData.copyWith(likes: likes);
         }
-        return postData;
+        return post;
       }).toList();
 
       onUpdate(updatedPostData);
@@ -49,22 +46,18 @@ class PostInteractionService {
   }
 
   void addComment(
-    AsyncValue<List<PostData>> state,
+    AsyncValue<List<Post>> state,
     String postId,
     Comment comment,
     Profile profile,
-    Function(List<PostData>) onUpdate,
+    Function(List<Post>) onUpdate,
   ) {
-    state.whenData((postDataList) {
-      final updatedPostData = postDataList.map((postData) {
-        if (postData.post.id == postId) {
-          final comments = List<CommentData>.from(postData.comments);
-          comments.add(CommentData(
-            comment: comment,
-          ));
-          return postData.copyWith(comments: comments);
+    state.whenData((posts) {
+      final updatedPostData = posts.map((post) {
+        if (post.id == postId) {
+          return post.copyWith(commentCount: post.commentCount + 1);
         }
-        return postData;
+        return post;
       }).toList();
 
       onUpdate(updatedPostData);
@@ -72,17 +65,19 @@ class PostInteractionService {
   }
 
   void deleteComment(
-    AsyncValue<List<PostData>> state,
-    String commentId,
-    Function(List<PostData>) onUpdate,
+    AsyncValue<List<Post>> state,
+    String postId,
+    int deletedCommentCount,
+    Function(List<Post>) onUpdate,
   ) {
-    state.whenData((postDataList) {
-      final updatedPostData = postDataList.map((postData) {
-        final comments = List<CommentData>.from(postData.comments);
-        comments.removeWhere((commentData) =>
-            commentData.comment.id == commentId ||
-            commentData.comment.parentCommentId == commentId);
-        return postData.copyWith(comments: comments);
+    state.whenData((posts) {
+      final updatedPostData = posts.map((post) {
+        if (post.id == postId) {
+          return post.copyWith(
+            commentCount: post.commentCount - deletedCommentCount,
+          );
+        }
+        return post;
       }).toList();
 
       onUpdate(updatedPostData);

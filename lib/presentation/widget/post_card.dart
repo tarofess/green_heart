@@ -8,7 +8,6 @@ import 'package:green_heart/presentation/page/comment_page.dart';
 import 'package:green_heart/domain/util/date_util.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/di/post_di.dart';
-import 'package:green_heart/domain/type/post_data.dart';
 import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/presentation/dialog/report_dialog.dart';
@@ -19,11 +18,12 @@ import 'package:green_heart/presentation/widget/user_empty_image.dart';
 import 'package:green_heart/presentation/widget/user_firebase_image.dart';
 import 'package:green_heart/domain/type/result.dart';
 import 'package:green_heart/application/state/comment_page_notifier.dart';
+import 'package:green_heart/domain/type/post.dart';
 
 class PostCard extends ConsumerWidget {
-  PostCard({super.key, required this.postData, this.uidInPreviosPage});
+  PostCard({super.key, required this.post, this.uidInPreviosPage});
 
-  final PostData postData;
+  final Post post;
   final FocusNode focusNode = FocusNode();
   final String? uidInPreviosPage;
 
@@ -40,7 +40,7 @@ class PostCard extends ConsumerWidget {
             SizedBox(height: 16.h),
             _buildTextContent(),
             SizedBox(height: 16.h),
-            _buildImage(postData.post.imageUrls),
+            _buildImage(post.imageUrls),
             SizedBox(height: 8.h),
             _buildActionButtons(context, ref),
           ],
@@ -53,23 +53,22 @@ class PostCard extends ConsumerWidget {
     return Row(
       children: [
         GestureDetector(
-            child: postData.userProfile?.imageUrl == null
+            child: post.userImage == null
                 ? const UserEmptyImage(radius: 24)
                 : UserFirebaseImage(
-                    imageUrl: postData.userProfile?.imageUrl,
+                    imageUrl: post.userImage,
                     radius: 48,
                   ),
             onTap: () {
               final uid = ref.watch(authStateProvider).value?.uid;
-              if (postData.post.uid != uid &&
-                  uidInPreviosPage != postData.post.uid) {
-                context.push('/user', extra: {'uid': postData.post.uid});
+              if (post.uid != uid && uidInPreviosPage != post.uid) {
+                context.push('/user', extra: {'uid': post.uid});
               }
             }),
         SizedBox(width: 8.h),
         Expanded(
           child: Text(
-            postData.userProfile?.name ?? '',
+            post.userName,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 14.sp,
@@ -83,9 +82,9 @@ class PostCard extends ConsumerWidget {
   }
 
   Widget _buildTextContent() {
-    return postData.post.content.isEmpty
+    return post.content.isEmpty
         ? const SizedBox()
-        : Text(postData.post.content, style: TextStyle(fontSize: 14.sp));
+        : Text(post.content, style: TextStyle(fontSize: 14.sp));
   }
 
   Widget _buildImage(List<String> postImages) {
@@ -135,13 +134,13 @@ class PostCard extends ConsumerWidget {
             SizedBox(width: 16.w),
             _buildCommentWidget(context, ref),
             SizedBox(width: 24.w),
-            postData.post.uid == myUid
+            post.uid == myUid
                 ? _buildDeletePostButton(context, ref, myUid)
                 : _buildReportButton(context, ref),
           ],
         ),
         Text(
-          DateUtil.formatPostTime(postData.post.releaseDate),
+          DateUtil.formatPostTime(post.releaseDate),
           style: TextStyle(fontSize: 12.sp, color: Colors.black),
         ),
       ],
@@ -154,18 +153,12 @@ class PostCard extends ConsumerWidget {
         children: [
           Icon(
             size: 24.r,
-            postData.likes.any((like) =>
-                    like.uid == ref.watch(authStateProvider).value?.uid)
-                ? Icons.favorite
-                : Icons.favorite_border,
-            color: postData.likes.any((like) =>
-                    like.uid == ref.watch(authStateProvider).value?.uid)
-                ? Colors.red
-                : null,
+            post.isLiked ? Icons.favorite : Icons.favorite_border,
+            color: post.isLiked ? Colors.red : null,
           ),
           SizedBox(width: 8.w),
           Text(
-            postData.likes.length.toString(),
+            post.likeCount.toString(),
             style: TextStyle(fontSize: 14.sp),
           ),
         ],
@@ -178,7 +171,7 @@ class PostCard extends ConsumerWidget {
           context,
           backgroundColor: Colors.white10,
         ).during(
-          () => ref.read(likeToggleUsecaseProvider).execute(postData, uid),
+          () => ref.read(likeToggleUsecaseProvider).execute(post, uid),
         );
 
         switch (result) {
@@ -207,7 +200,7 @@ class PostCard extends ConsumerWidget {
           ),
           SizedBox(width: 8.w),
           Text(
-            postData.comments.length.toString(),
+            post.commentCount.toString(),
             style: TextStyle(fontSize: 14.sp),
           ),
         ],
@@ -234,7 +227,7 @@ class PostCard extends ConsumerWidget {
                     top: Radius.circular(20.r),
                   ),
                   child: CommentPage(
-                    postData: postData,
+                    post: post,
                     focusNode: focusNode,
                   ),
                 );
@@ -277,7 +270,7 @@ class PostCard extends ConsumerWidget {
             context,
             backgroundColor: Colors.white10,
           ).during(
-            () => ref.read(postDeleteUsecaseProvider).execute(postData, uid),
+            () => ref.read(postDeleteUsecaseProvider).execute(post, uid),
           );
 
           switch (result) {
@@ -329,7 +322,7 @@ class PostCard extends ConsumerWidget {
             () => ref.read(reportAddUsecaseProvider).execute(
                   uid,
                   reportText,
-                  reportedPostId: postData.post.id,
+                  reportedPostId: post.id,
                   reportedCommentId: null,
                   reportedUserId: null,
                 ),

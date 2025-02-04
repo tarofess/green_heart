@@ -8,8 +8,8 @@ import 'package:green_heart/application/state/search_post_notifier.dart';
 import 'package:green_heart/application/state/search_post_scroll_state_notifier.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/application/di/post_di.dart';
-import 'package:green_heart/domain/type/post_data.dart';
 import 'package:green_heart/presentation/widget/async_error_widget.dart';
+import 'package:green_heart/domain/type/post.dart';
 
 class PostSearch extends SearchDelegate<String> {
   PostSearch({this.uid});
@@ -178,7 +178,7 @@ class PostSearchResults extends HookConsumerWidget {
   }
 
   Widget _buildPostList({
-    required List<PostData> searchPostState,
+    required List<Post> searchPostState,
     required ScrollController scrollController,
     required ValueNotifier<bool> isLoadingMore,
     required bool hasMore,
@@ -191,8 +191,8 @@ class PostSearchResults extends HookConsumerWidget {
           return Padding(
             padding: EdgeInsets.only(left: 8.w, right: 8.w, top: 0.h),
             child: PostCard(
-              key: ValueKey(searchPostState[index].post.id),
-              postData: searchPostState[index],
+              key: ValueKey(searchPostState[index].id),
+              post: searchPostState[index],
             ),
           );
         } else if (hasMore && searchPostState.length >= 15) {

@@ -6,10 +6,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import 'package:green_heart/application/state/user_post_notifier.dart';
-import 'package:green_heart/domain/type/post_data.dart';
 import 'package:green_heart/presentation/widget/async_error_widget.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
+import 'package:green_heart/domain/type/post.dart';
 
 class UserDiary extends HookConsumerWidget {
   const UserDiary({super.key, required this.uid});
@@ -55,7 +55,7 @@ class UserDiary extends HookConsumerWidget {
   Widget _buildCalendar(
     BuildContext context,
     WidgetRef ref,
-    List<PostData> userPosts,
+    List<Post> userPosts,
     ValueNotifier<DateTime> selectedDay,
     ValueNotifier<DateTime> focusedDay,
   ) {
@@ -70,10 +70,10 @@ class UserDiary extends HookConsumerWidget {
         rowHeight: 52.h,
         eventLoader: (day) {
           return userPosts
-              .where((postData) =>
-                  postData.post.releaseDate.year == day.year &&
-                  postData.post.releaseDate.month == day.month &&
-                  postData.post.releaseDate.day == day.day)
+              .where((post) =>
+                  post.releaseDate.year == day.year &&
+                  post.releaseDate.month == day.month &&
+                  post.releaseDate.day == day.day)
               .toList();
         },
         onDaySelected: (tappedDay, focused) {
@@ -82,16 +82,16 @@ class UserDiary extends HookConsumerWidget {
 
           final myUid = ref.watch(authStateProvider).value?.uid;
           if (userPosts.any(
-            (postData) => isSameDay(postData.post.releaseDate, tappedDay),
+            (post) => isSameDay(post.releaseDate, tappedDay),
           )) {
             context.push('/user_diary_detail', extra: {
-              'selectedPostData': userPosts.firstWhere(
-                (postData) => isSameDay(postData.post.releaseDate, tappedDay),
+              'selectedPost': userPosts.firstWhere(
+                (post) => isSameDay(post.releaseDate, tappedDay),
               ),
             });
           } else if (myUid == uid &&
               userPosts.any(
-                (postData) => !isSameDay(postData.post.releaseDate, tappedDay),
+                (post) => !isSameDay(post.releaseDate, tappedDay),
               )) {
             context.go('/post', extra: {'selectedDay': selectedDay.value});
           } else if (myUid == uid && userPosts.isEmpty) {
@@ -100,9 +100,7 @@ class UserDiary extends HookConsumerWidget {
         },
         onPageChanged: (firstDayInMonth) async {
           final hasPostInFocusedDay = userPosts.any(
-            (postData) => postData.post.releaseDate.isAtSameMomentAs(
-              firstDayInMonth,
-            ),
+            (post) => post.releaseDate.isAtSameMomentAs(firstDayInMonth),
           );
 
           if (!hasPostInFocusedDay) {

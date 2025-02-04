@@ -1,7 +1,6 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/post_di.dart';
-import 'package:green_heart/domain/type/post_data.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/domain/type/post.dart';
@@ -9,19 +8,20 @@ import 'package:green_heart/application/state/timeline_scroll_state_notifier.dar
 import 'package:green_heart/application/service/post_interaction_service.dart';
 import 'package:green_heart/application/service/post_data_service.dart';
 
-class TimelineNotifier extends AsyncNotifier<List<PostData>> {
+class TimelineNotifier extends AsyncNotifier<List<Post>> {
   late final PostDataService _postDataService;
   late final PostInteractionService _postInteractionService;
 
   @override
-  Future<List<PostData>> build() async {
+  Future<List<Post>> build() async {
     _postDataService = ref.read(postDataServiceProvider);
     _postInteractionService = ref.read(postInteractionServiceProvider);
 
     final posts = await _fetchNextPosts();
-    final postDataList =
-        await _postDataService.createAndFilterPostDataList(posts);
-    return postDataList;
+    final updatedPosts = await _postDataService.updateIsLikedStatus(posts);
+    final filteredPosts = await _postDataService.filterByBlock(updatedPosts);
+
+    return filteredPosts;
   }
 
   Future<List<Post>> _fetchNextPosts() async {
@@ -42,13 +42,12 @@ class TimelineNotifier extends AsyncNotifier<List<PostData>> {
     state.whenData((currentPosts) async {
       try {
         final newPosts = await _fetchNextPosts();
-        final newPostData =
-            await _postDataService.createAndFilterPostDataList(newPosts);
+        final newPostData = await _postDataService.filterByBlock(newPosts);
 
         final updatedPosts = [
           ...currentPosts,
-          ...newPostData.where((newPost) => !currentPosts
-              .any((currentPost) => currentPost.post.id == newPost.post.id))
+          ...newPostData.where((newPost) =>
+              !currentPosts.any((currentPost) => currentPost.id == newPost.id))
         ];
         state = AsyncValue.data(updatedPosts);
       } catch (e) {
@@ -64,7 +63,7 @@ class TimelineNotifier extends AsyncNotifier<List<PostData>> {
 
     state = await AsyncValue.guard(() async {
       final posts = await _fetchNextPosts();
-      return await _postDataService.createAndFilterPostDataList(posts);
+      return await _postDataService.filterByBlock(posts);
     });
   }
 
@@ -74,8 +73,9 @@ class TimelineNotifier extends AsyncNotifier<List<PostData>> {
     });
   }
 
-  void toggleLike(String postId, String uid) {
-    _postInteractionService.toggleLike(state, postId, uid, (updatedPosts) {
+  void toggleLike(String postId, String uid, bool didLike) {
+    _postInteractionService.toggleLike(state, postId, uid, didLike,
+        (updatedPosts) {
       state = AsyncValue.data(updatedPosts);
     });
   }
@@ -91,14 +91,15 @@ class TimelineNotifier extends AsyncNotifier<List<PostData>> {
     });
   }
 
-  void deleteComment(String commentId) {
-    _postInteractionService.deleteComment(state, commentId, (updatedPosts) {
+  void deleteComment(String postId, int deletedCommentCount) {
+    _postInteractionService.deleteComment(state, postId, deletedCommentCount,
+        (updatedPosts) {
       state = AsyncValue.data(updatedPosts);
     });
   }
 }
 
 final timelineNotifierProvider =
-    AsyncNotifierProvider<TimelineNotifier, List<PostData>>(
+    AsyncNotifierProvider<TimelineNotifier, List<Post>>(
   () => TimelineNotifier(),
 );

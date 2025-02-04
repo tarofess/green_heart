@@ -8,9 +8,9 @@ class CommentDeleteAllUsecase {
 
   CommentDeleteAllUsecase(this._commentRepository);
 
-  Future<void> execute(User user) {
+  Future<void> execute(User user) async {
     try {
-      return _commentRepository.deleteAllCommentByUid(user.uid);
+      return await _commentRepository.deleteAllCommentByUid(user.uid);
     } catch (e) {
       throw AppException('コメントの削除に失敗しました。再度お試しください。');
     }
