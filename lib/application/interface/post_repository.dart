@@ -32,7 +32,4 @@ abstract class PostRepository {
   );
   Future<List<String>> uploadImages(String uid, List<String> paths);
   Future<void> deletePost(String postId);
-  Future<void> deleteAllPostsByUid(String uid);
-  Future<void> deleteImages(List<String> imageUrls);
-  Future<void> deleteAllImagesByUid(String uid);
 }

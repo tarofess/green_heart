@@ -13,5 +13,4 @@ abstract class CommentRepository {
   Future<List<Comment>> getReplyComments(String postId, String parentCommentId);
   Future<int> deleteComment(String postId, String commentId);
   Future<void> deleteReplyComment(String postId, String commentId);
-  Future<void> deleteAllCommentByUid(String uid);
 }

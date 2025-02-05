@@ -89,17 +89,6 @@ class FirebaseProfileRepository implements ProfileRepository {
   }
 
   @override
-  Future<void> deleteProfile(String uid) async {
-    try {
-      final docRef = _firestore.collection('profile').doc(uid);
-      await docRef.delete().timeout(Duration(seconds: _timeoutSeconds));
-    } catch (e, stackTrace) {
-      final exception = await ExceptionHandler.handleException(e, stackTrace);
-      throw exception ?? AppException('プロフィールの削除に失敗しました。再度お試しください。');
-    }
-  }
-
-  @override
   Future<void> deleteImage(String? imageUrl) async {
     if (imageUrl == null) return;
     try {

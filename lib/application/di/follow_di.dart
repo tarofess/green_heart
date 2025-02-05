@@ -4,7 +4,6 @@ import 'package:green_heart/infrastructure/repository/firebase_follow_repository
 import 'package:green_heart/application/usecase/follow_check_usecase.dart';
 import 'package:green_heart/application/usecase/follow_get_usecase.dart';
 import 'package:green_heart/application/usecase/follower_get_usecase.dart';
-import 'package:green_heart/application/usecase/follow_delete_all_usecase.dart';
 import 'package:green_heart/application/usecase/follow_usecase.dart';
 import 'package:green_heart/application/usecase/unfollow_usecase.dart';
 
@@ -18,10 +17,6 @@ final followGetUsecaseProvider = Provider(
 
 final followerGetUsecaseProvider = Provider(
   (ref) => FollowerGetUsecase(FirebaseFollowRepository()),
-);
-
-final followDeleteAllUsecaseProvider = Provider(
-  (ref) => FollowDeleteAllUsecase(FirebaseFollowRepository()),
 );
 
 final followUsecaseProvider = Provider(

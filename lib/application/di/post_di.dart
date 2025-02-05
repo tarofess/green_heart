@@ -5,7 +5,6 @@ import 'package:green_heart/infrastructure/repository/firebase_post_repository.d
 import 'package:green_heart/application/usecase/post_get_usecase.dart';
 import 'package:green_heart/application/usecase/timeline_get_usecase.dart';
 import 'package:green_heart/application/usecase/post_delete_usecase.dart';
-import 'package:green_heart/application/usecase/post_delete_all_usecase.dart';
 import 'package:green_heart/application/usecase/post_search_result_get_usecase.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
@@ -33,10 +32,6 @@ final postDeleteUsecaseProvider = Provider(
     FirebasePostRepository(),
     ref.read(postManagerNotifierProvider.notifier),
   ),
-);
-
-final postDeleteAllUsecaseProvider = Provider(
-  (ref) => PostDeleteAllUsecase(FirebasePostRepository()),
 );
 
 final timelineGetUsecaseProvider = Provider(

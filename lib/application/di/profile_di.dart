@@ -6,7 +6,6 @@ import 'package:green_heart/infrastructure/repository/firebase_profile_repositor
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/application/state/user_post_notifier.dart';
-import 'package:green_heart/application/usecase/profile_delete_usecase.dart';
 
 final profileSaveUsecaseProvider = Provider(
   (ref) {
@@ -21,8 +20,4 @@ final profileSaveUsecaseProvider = Provider(
 
 final profileGetUsecaseProvider = Provider(
   (ref) => ProfileGetUsecase(FirebaseProfileRepository()),
-);
-
-final profileDeleteUsecaseProvider = Provider(
-  (ref) => ProfileDeleteUsecase(FirebaseProfileRepository()),
 );

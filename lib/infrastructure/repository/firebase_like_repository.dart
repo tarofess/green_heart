@@ -58,24 +58,4 @@ class FirebaseLikeRepository implements LikeRepository {
       throw exception ?? AppException('いいねの取得に失敗しました。再度お試しください。');
     }
   }
-
-  @override
-  Future<void> deleteAllLikesByUid(String uid) async {
-    try {
-      final querySnapshot = await _firestore
-          .collectionGroup('like')
-          .where(FieldPath.documentId, isEqualTo: uid)
-          .get()
-          .timeout(Duration(seconds: _timeoutSeconds));
-
-      final batch = _firestore.batch();
-      for (var doc in querySnapshot.docs) {
-        batch.delete(doc.reference);
-      }
-      await batch.commit().timeout(Duration(seconds: _timeoutSeconds));
-    } catch (e, stackTrace) {
-      final exception = await ExceptionHandler.handleException(e, stackTrace);
-      throw exception ?? AppException('いいねの削除に失敗しました。再度お試しください。');
-    }
-  }
 }
