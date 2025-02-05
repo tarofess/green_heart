@@ -42,11 +42,14 @@ class TimelineNotifier extends AsyncNotifier<List<Post>> {
     state.whenData((currentPosts) async {
       try {
         final newPosts = await _fetchNextPosts();
-        final newPostData = await _postDataService.filterByBlock(newPosts);
+        final updatedLikePosts =
+            await _postDataService.updateIsLikedStatus(newPosts);
+        final filteredPosts =
+            await _postDataService.filterByBlock(updatedLikePosts);
 
         final updatedPosts = [
           ...currentPosts,
-          ...newPostData.where((newPost) =>
+          ...filteredPosts.where((newPost) =>
               !currentPosts.any((currentPost) => currentPost.id == newPost.id))
         ];
         state = AsyncValue.data(updatedPosts);
@@ -63,7 +66,9 @@ class TimelineNotifier extends AsyncNotifier<List<Post>> {
 
     state = await AsyncValue.guard(() async {
       final posts = await _fetchNextPosts();
-      return await _postDataService.filterByBlock(posts);
+      final updatedLikePosts =
+          await _postDataService.updateIsLikedStatus(posts);
+      return await _postDataService.filterByBlock(updatedLikePosts);
     });
   }
 
