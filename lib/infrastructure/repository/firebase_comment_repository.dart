@@ -21,7 +21,6 @@ class FirebaseCommentRepository implements CommentRepository {
   ) async {
     final commentRef =
         _firestore.collection('post').doc(postId).collection('comment').doc();
-    final postRef = _firestore.collection('post').doc(postId);
 
     final comment = Comment(
       id: commentRef.id,
@@ -37,9 +36,6 @@ class FirebaseCommentRepository implements CommentRepository {
       await commentRef
           .set(comment.toJson())
           .timeout(Duration(seconds: _timeoutSeconds));
-      await postRef.update({
-        'commentCount': FieldValue.increment(1),
-      }).timeout(Duration(seconds: _timeoutSeconds));
 
       return comment;
     } catch (e, stackTrace) {
@@ -105,7 +101,6 @@ class FirebaseCommentRepository implements CommentRepository {
           .doc(postId)
           .collection('comment')
           .doc(commentId);
-      final postRef = _firestore.collection('post').doc(postId);
 
       await commentRef.delete().timeout(Duration(seconds: _timeoutSeconds));
 
@@ -115,12 +110,8 @@ class FirebaseCommentRepository implements CommentRepository {
         await deleteReplyComment(postId, replyComment.id);
       }
 
-      // 投稿のコメント数を適切な数に更新するために使われる変数
+      // 投稿の状態管理コメント数を適切な数に更新するために使われる変数
       final deletedComentCount = replyComments.length + 1;
-
-      await postRef.update({
-        'commentCount': FieldValue.increment(-deletedComentCount),
-      }).timeout(Duration(seconds: _timeoutSeconds));
 
       return deletedComentCount;
     } catch (e, stackTrace) {

@@ -14,16 +14,12 @@ class FirebaseLikeRepository implements LikeRepository {
     try {
       final likeRef =
           _firestore.collection('post').doc(postId).collection('like').doc(uid);
-      final postRef = _firestore.collection('post').doc(postId);
       final docSnapshot =
           await likeRef.get().timeout(Duration(seconds: _timeoutSeconds));
 
       if (docSnapshot.exists) {
         // すでにいいね済みなら削除
         await likeRef.delete().timeout(Duration(seconds: _timeoutSeconds));
-        await postRef.update(
-          {'likeCount': FieldValue.increment(-1)},
-        ).timeout(Duration(seconds: _timeoutSeconds));
 
         return false;
       } else {
@@ -32,9 +28,6 @@ class FirebaseLikeRepository implements LikeRepository {
         await likeRef
             .set(like.toJson())
             .timeout(Duration(seconds: _timeoutSeconds));
-        await postRef.update(
-          {'likeCount': FieldValue.increment(1)},
-        ).timeout(Duration(seconds: _timeoutSeconds));
 
         return true;
       }

@@ -214,3 +214,46 @@ function extractFilePathFromUrl(url: string): string {
     return decodeURIComponent(encodedPath);
 }
 
+// コメント作成時に、親の post の commentCount を +1 する
+export const onCommentCreated = functions.firestore
+    .document('post/{postId}/comment/{commentId}')
+    .onCreate(async (snap, context) => {
+        const { postId } = context.params;
+        const postRef = admin.firestore().collection('post').doc(postId);
+        return postRef.update({
+            commentCount: admin.firestore.FieldValue.increment(1)
+        });
+    });
+
+// コメント削除時に、親の post の commentCount を -1 する
+export const onCommentDeleted = functions.firestore
+    .document('post/{postId}/comment/{commentId}')
+    .onDelete(async (snap, context) => {
+        const { postId } = context.params;
+        const postRef = admin.firestore().collection('post').doc(postId);
+        return postRef.update({
+            commentCount: admin.firestore.FieldValue.increment(-1)
+        });
+    });
+
+// いいね作成時に、親の post の likeCount を +1 する
+export const onLikeCreated = functions.firestore
+    .document('post/{postId}/like/{likeId}')
+    .onCreate(async (snap, context) => {
+        const { postId } = context.params;
+        const postRef = admin.firestore().collection('post').doc(postId);
+        return postRef.update({
+            likeCount: admin.firestore.FieldValue.increment(1)
+        });
+    });
+
+// いいね削除時に、親の post の likeCount を -1 する
+export const onLikeDeleted = functions.firestore
+    .document('post/{postId}/like/{likeId}')
+    .onDelete(async (snap, context) => {
+        const { postId } = context.params;
+        const postRef = admin.firestore().collection('post').doc(postId);
+        return postRef.update({
+            likeCount: admin.firestore.FieldValue.increment(-1)
+        });
+    });
