@@ -35,29 +35,35 @@ class BlockListPage extends ConsumerWidget {
                 ),
               );
             }
-            return ListView.builder(
-              itemCount: blockList.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  key: ValueKey(blockList[index].uid),
-                  leading: blockList[index].userImage == null
-                      ? const UserEmptyImage(radius: 21)
-                      : UserFirebaseImage(
-                          imageUrl: blockList[index].userImage,
-                          radius: 42,
-                        ),
-                  title: Text(
-                    blockList[index].userName,
-                    style: TextStyle(fontSize: 16.sp),
-                  ),
-                  onTap: () {
-                    context.push(
-                      '/user',
-                      extra: {'uid': blockList[index].uid},
-                    );
-                  },
-                );
+            return RefreshIndicator(
+              onRefresh: () async {
+                // ignore: unused_result
+                ref.refresh(blockNotifierProvider);
               },
+              child: ListView.builder(
+                itemCount: blockList.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    key: ValueKey(blockList[index].uid),
+                    leading: blockList[index].userImage == null
+                        ? const UserEmptyImage(radius: 21)
+                        : UserFirebaseImage(
+                            imageUrl: blockList[index].userImage,
+                            radius: 42,
+                          ),
+                    title: Text(
+                      blockList[index].userName,
+                      style: TextStyle(fontSize: 16.sp),
+                    ),
+                    onTap: () {
+                      context.push(
+                        '/user',
+                        extra: {'uid': blockList[index].uid},
+                      );
+                    },
+                  );
+                },
+              ),
             );
           },
           loading: () {
