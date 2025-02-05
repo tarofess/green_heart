@@ -107,24 +107,58 @@ export const onAccountDelete = functions.auth.user().onDelete(async (user) => {
     console.log(`Authentication user deleted: ${uid}`);
     const deletePromises: Promise<any>[] = [];
 
-    try {
-        // 1. profile ドキュメントとそのサブコレクション（follow, follower, block, notification）の削除
-        const profileRef = db.collection('profile').doc(uid);
-        console.log(`Deleting profile and its subcollections for uid: ${uid}`);
-        // recursiveDelete を利用すると、サブコレクションもまとめて削除可能（Firebase Admin SDK v9以降）
-        deletePromises.push(db.recursiveDelete(profileRef));
+    const bucket = admin.storage().bucket();
 
-        // 2. ユーザーが投稿した post の削除（サブコレクション like, comment も削除）
+    try {
+        // 1. プロフィール画像の削除
+        const profileRef = db.collection('profile').doc(uid);
+        const profileSnap = await profileRef.get();
+        if (profileSnap.exists) {
+            const profileData = profileSnap.data();
+            if (profileData && profileData.imageUrl) {
+                const filePath = extractFilePathFromUrl(profileData.imageUrl);
+                if (filePath) {
+                    console.log(`Deleting profile image file: ${filePath}`);
+                    // Storage上のファイルを削除
+                    deletePromises.push(bucket.file(filePath).delete().catch(err => {
+                        console.error(`Error deleting profile image (${filePath}):`, err);
+                    }));
+                }
+            }
+        }
+
+        // 2. ユーザーが投稿した画像の削除
         const postsSnapshot = await db.collection('post')
             .where('uid', '==', uid)
             .get();
         console.log(`Found ${postsSnapshot.size} posts by uid: ${uid}`);
         postsSnapshot.forEach((doc) => {
-            // recursiveDelete により、post ドキュメントとそのサブコレクションを削除
+            const postData = doc.data();
+
+            if (postData.imageUrls && Array.isArray(postData.imageUrls)) {
+                postData.imageUrls.forEach((url: string) => {
+                    const filePath = extractFilePathFromUrl(url);
+                    if (filePath) {
+                        console.log(`Deleting post image file: ${filePath}`);
+                        deletePromises.push(bucket.file(filePath).delete().catch(err => {
+                            console.error(`Error deleting post image (${filePath}):`, err);
+                        }));
+                    }
+                });
+            }
+        });
+
+        // 3. Firestore上の関連データ削除処理
+        // 3-1. プロフィールドキュメントとそのサブコレクション（follow, follower, block, notification）の削除
+        console.log(`Deleting profile and its subcollections for uid: ${uid}`);
+        deletePromises.push(db.recursiveDelete(profileRef));
+
+        // 3-2. ユーザーが投稿したpostの削除（サブコレクション like, comment も削除）
+        postsSnapshot.forEach((doc) => {
             deletePromises.push(db.recursiveDelete(doc.ref));
         });
 
-        // 3. 他ユーザーの投稿内サブコレクション（like）で、ユーザーがいいねしたデータの削除
+        // 3-3. 他ユーザーの投稿内サブコレクション(like)で、ユーザーがいいねしたデータの削除
         const likesSnapshot = await db.collectionGroup('like')
             .where('uid', '==', uid)
             .get();
@@ -133,7 +167,7 @@ export const onAccountDelete = functions.auth.user().onDelete(async (user) => {
             deletePromises.push(doc.ref.delete());
         });
 
-        // 4. 他ユーザーの投稿内サブコレクション（comment）で、ユーザーが投稿したコメントの削除
+        // 3-4. 他ユーザーの投稿内サブコレクション(comment)で、ユーザーが投稿したコメントの削除
         const commentsSnapshot = await db.collectionGroup('comment')
             .where('uid', '==', uid)
             .get();
@@ -142,7 +176,7 @@ export const onAccountDelete = functions.auth.user().onDelete(async (user) => {
             deletePromises.push(doc.ref.delete());
         });
 
-        // 5. 他ユーザーの profile のサブコレクション（follow）で、ユーザーをフォローしているものを削除
+        // 3-5. 他ユーザーのprofileのサブコレクション(follow)で、ユーザーをフォローしているデータの削除
         const followSnapshot = await db.collectionGroup('follow')
             .where('uid', '==', uid)
             .get();
@@ -151,7 +185,7 @@ export const onAccountDelete = functions.auth.user().onDelete(async (user) => {
             deletePromises.push(doc.ref.delete());
         });
 
-        // 6. 他ユーザーの profile のサブコレクション（follower）で、ユーザーにフォローされているものを削除
+        // 3-6. 他ユーザーのprofileのサブコレクション(follower)で、ユーザーにフォローされているデータの削除
         const followerSnapshot = await db.collectionGroup('follower')
             .where('uid', '==', uid)
             .get();
@@ -166,3 +200,17 @@ export const onAccountDelete = functions.auth.user().onDelete(async (user) => {
         console.error(`Error deleting related data for uid ${uid}:`, error);
     }
 });
+
+// ヘルパー関数：画像URLからStorage上のファイルパスを抽出する
+function extractFilePathFromUrl(url: string): string {
+    const marker = '/o/';
+    const markerIndex = url.indexOf(marker);
+    if (markerIndex === -1) {
+        return '';
+    }
+    const start = markerIndex + marker.length;
+    const end = url.indexOf('?', start);
+    const encodedPath = end === -1 ? url.substring(start) : url.substring(start, end);
+    return decodeURIComponent(encodedPath);
+}
+
