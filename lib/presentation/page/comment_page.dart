@@ -69,7 +69,10 @@ class CommentPage extends HookConsumerWidget {
             );
           },
           loading: () {
-            return const LoadingIndicator(message: 'コメント取得中');
+            return const LoadingIndicator(
+              message: 'コメント取得中',
+              backgroundColor: Colors.white10,
+            );
           },
           error: (e, stackTrace) {
             return AsyncErrorWidget(

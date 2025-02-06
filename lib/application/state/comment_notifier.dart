@@ -8,7 +8,8 @@ import 'package:green_heart/application/state/post_manager_notifier.dart';
 import 'package:green_heart/application/di/block_di.dart';
 import 'package:green_heart/domain/type/post.dart';
 
-class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
+class CommentNotifier
+    extends AutoDisposeFamilyAsyncNotifier<List<CommentData>, String> {
   @override
   Future<List<CommentData>> build(String arg) async {
     final comments = await ref.read(commentGetUsecaseProvider).execute(arg);
@@ -102,7 +103,7 @@ class CommentNotifier extends FamilyAsyncNotifier<List<CommentData>, String> {
   }
 }
 
-final commentNotifierProvider =
-    AsyncNotifierProviderFamily<CommentNotifier, List<CommentData>, String>(
+final commentNotifierProvider = AutoDisposeAsyncNotifierProviderFamily<
+    CommentNotifier, List<CommentData>, String>(
   CommentNotifier.new,
 );
