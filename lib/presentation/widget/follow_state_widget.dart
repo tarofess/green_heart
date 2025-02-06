@@ -33,8 +33,8 @@ class FollowStateWidget extends ConsumerWidget {
                       GestureDetector(
                         onTap: () {
                           context.push('/follow', extra: {
-                            'follows': followerState.value,
                             'followType': FollowType.follower,
+                            'uid': uid,
                           });
                         },
                         child: Column(
@@ -58,8 +58,8 @@ class FollowStateWidget extends ConsumerWidget {
                       GestureDetector(
                         onTap: () {
                           context.push('/follow', extra: {
-                            'follows': followState.value,
                             'followType': FollowType.follow,
+                            'uid': uid,
                           });
                         },
                         child: Column(

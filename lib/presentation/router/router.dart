@@ -18,7 +18,6 @@ import 'package:green_heart/presentation/page/block_list_page.dart';
 import 'package:green_heart/presentation/page/follow_page.dart';
 import 'package:green_heart/presentation/page/user_diary_detail_page.dart';
 import 'package:green_heart/application/di/notification_di.dart';
-import 'package:green_heart/domain/type/follow.dart';
 import 'package:green_heart/domain/type/post.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -98,12 +97,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final Map<String, dynamic> extra =
               state.extra as Map<String, dynamic>;
-          final follows = extra['follows'] as List<Follow>;
           final followType = extra['followType'] as FollowType;
-          return FollowPage(
-            follows: follows,
-            followType: followType,
-          );
+          final uid = extra['uid'] as String;
+          return FollowPage(followType: followType, uid: uid);
         },
       ),
       GoRoute(
