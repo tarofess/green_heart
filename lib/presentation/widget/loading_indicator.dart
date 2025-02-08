@@ -70,7 +70,7 @@ class LoadingIndicatorState extends State<LoadingIndicator> {
               ),
               SizedBox(height: 20.h),
               widget.message == null
-                  ? const SizedBox()
+                  ? const SizedBox.shrink()
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -83,9 +83,8 @@ class LoadingIndicatorState extends State<LoadingIndicator> {
                                 .bodyMedium
                                 ?.copyWith(
                                   color: Colors.white,
-                                  decoration: TextDecoration.none,
-                                  fontSize: 16.sp,
                                   fontWeight: FontWeight.bold,
+                                  decoration: TextDecoration.none,
                                 ),
                           ),
                         ),
@@ -99,8 +98,6 @@ class LoadingIndicatorState extends State<LoadingIndicator> {
                                 ?.copyWith(
                                   color: Colors.white,
                                   decoration: TextDecoration.none,
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.bold,
                                 ),
                           ),
                         ),

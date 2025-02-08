@@ -60,16 +60,14 @@ class CommentCard extends HookConsumerWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    child: _buildUserName(),
-                  ),
+                  Expanded(child: _buildUserName()),
                   SizedBox(width: 8.w),
                   _buildCommentedDate(),
                 ],
               ),
-              SizedBox(height: 4.h),
-              _buildCommentText(commentData.comment.content),
               SizedBox(height: 8.h),
+              _buildCommentText(commentData.comment.content),
+              SizedBox(height: 4.h),
               _buildActions(context, ref, CommentType.comment),
             ],
           ),
@@ -81,7 +79,7 @@ class CommentCard extends HookConsumerWidget {
   Widget _buildChildComment(
       BuildContext context, WidgetRef ref, CommentData replyComment) {
     return Padding(
-      padding: EdgeInsets.only(left: 24.w),
+      padding: EdgeInsets.only(left: 24.w, top: 8.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -101,9 +99,9 @@ class CommentCard extends HookConsumerWidget {
                     _buildCommentedDate(replyComment),
                   ],
                 ),
-                SizedBox(height: 4.h),
-                _buildCommentText(replyComment.comment.content),
                 SizedBox(height: 8.h),
+                _buildCommentText(replyComment.comment.content),
+                SizedBox(height: 4.h),
                 _buildActions(
                   context,
                   ref,
@@ -121,10 +119,7 @@ class CommentCard extends HookConsumerWidget {
   Widget _buildCommentText(String comment) {
     return Padding(
       padding: EdgeInsets.only(right: 16.w),
-      child: Text(
-        comment,
-        style: TextStyle(fontSize: 14.sp),
-      ),
+      child: Text(comment),
     );
   }
 
@@ -165,12 +160,9 @@ class CommentCard extends HookConsumerWidget {
       replyComment == null
           ? commentData.comment.userName
           : replyComment.comment.userName,
-      style: TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 16.sp,
-      ),
       overflow: TextOverflow.ellipsis,
       maxLines: 1,
+      style: const TextStyle(fontWeight: FontWeight.bold),
     );
   }
 
@@ -181,10 +173,7 @@ class CommentCard extends HookConsumerWidget {
             ? commentData.comment.createdAt
             : replyComment.comment.createdAt,
       ),
-      style: TextStyle(
-        color: Colors.grey,
-        fontSize: 14.sp,
-      ),
+      style: const TextStyle(color: Colors.grey),
     );
   }
 
@@ -204,9 +193,9 @@ class CommentCard extends HookConsumerWidget {
                 );
             focusNode.requestFocus();
           },
-          child: Text(
+          child: const Text(
             '返信する',
-            style: TextStyle(fontSize: 14.sp),
+            style: TextStyle(fontWeight: FontWeight.normal),
           ),
         ),
         if (commentType == CommentType.comment && commentData.isMe)
@@ -266,9 +255,9 @@ class CommentCard extends HookConsumerWidget {
           }
         }
       },
-      child: Text(
+      child: const Text(
         '削除',
-        style: TextStyle(fontSize: 14.sp),
+        style: TextStyle(fontWeight: FontWeight.normal),
       ),
     );
   }
@@ -300,12 +289,7 @@ class CommentCard extends HookConsumerWidget {
             case Success():
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'コメントを通報しました。',
-                      style: TextStyle(fontSize: 14.sp),
-                    ),
-                  ),
+                  const SnackBar(content: Text('コメントを通報しました。')),
                 );
               }
               break;
@@ -321,7 +305,10 @@ class CommentCard extends HookConsumerWidget {
           }
         }
       },
-      child: Text('通報', style: TextStyle(fontSize: 14.sp)),
+      child: const Text(
+        '通報',
+        style: TextStyle(fontWeight: FontWeight.normal),
+      ),
     );
   }
 }

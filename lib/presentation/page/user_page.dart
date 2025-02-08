@@ -34,7 +34,8 @@ class UserPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userPageStateProvider = ref.watch(userPageStateNotifierProvider(uid));
-    final scrollController = useScrollController();
+    final customScrollViewScrollController = useScrollController();
+    final userPageTabScrollController = useScrollController();
 
     return userPageStateProvider.when(
       data: (userPageState) {
@@ -49,7 +50,8 @@ class UserPage extends HookConsumerWidget {
                     context,
                     ref,
                     userPageState,
-                    scrollController,
+                    customScrollViewScrollController,
+                    userPageTabScrollController,
                   ),
           ),
         );
@@ -83,10 +85,9 @@ class UserPage extends HookConsumerWidget {
           width: 100.w,
         ),
       ),
-      toolbarHeight: 58.h,
       actions: [
         userPageState.isBlocked
-            ? const SizedBox()
+            ? const SizedBox.shrink()
             : IconButton(
                 icon: Icon(Icons.search, size: 24.r),
                 onPressed: () {
@@ -107,65 +108,64 @@ class UserPage extends HookConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     UserPageState userPageState,
-    ScrollController scrollController,
+    ScrollController customScrollViewScrollController,
+    ScrollController userPageTabScrollController,
   ) {
-    return DefaultTabController(
-      length: 2,
-      child: RefreshIndicator(
-        onRefresh: () async {
-          // ignore: unused_result
-          ref.refresh(userPageStateNotifierProvider(uid));
-        },
-        child: CustomScrollView(
-          controller: scrollController,
-          slivers: [
-            SliverToBoxAdapter(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            _buildUserImage(
-                              context,
-                              ref,
-                              userPageState.profile,
-                            ),
-                            Expanded(
-                              child: FollowStateWidget(uid: uid),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 20.h),
-                        _buildUserName(context, ref, userPageState.profile),
-                        SizedBox(height: 16.h),
-                        _buildUserBio(context, ref, userPageState.profile),
-                        userPageState.profile?.birthday == null
-                            ? const SizedBox()
-                            : SizedBox(height: 24.h),
-                        _buildBirthDate(context, ref, userPageState.profile),
-                        uid == ref.watch(authStateProvider).value?.uid
-                            ? const SizedBox()
-                            : SizedBox(height: 24.h),
-                        _buildFollowButton(context, ref, userPageState),
-                      ],
-                    ),
+    return RefreshIndicator(
+      onRefresh: () async {
+        // ignore: unused_result
+        ref.refresh(userPageStateNotifierProvider(uid));
+      },
+      child: CustomScrollView(
+        controller: customScrollViewScrollController,
+        slivers: [
+          SliverToBoxAdapter(
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          _buildUserImage(
+                            context,
+                            ref,
+                            userPageState.profile,
+                          ),
+                          Expanded(child: FollowStateWidget(uid: uid)),
+                        ],
+                      ),
+                      SizedBox(height: 20.h),
+                      _buildUserName(context, ref, userPageState.profile),
+                      userPageState.profile?.bio == null ||
+                              userPageState.profile?.bio.isEmpty == true
+                          ? const SizedBox.shrink()
+                          : SizedBox(height: 16.h),
+                      _buildUserBio(context, ref, userPageState.profile),
+                      userPageState.profile?.birthday == null
+                          ? const SizedBox.shrink()
+                          : SizedBox(height: 24.h),
+                      _buildBirthDate(context, ref, userPageState.profile),
+                      uid == ref.watch(authStateProvider).value?.uid
+                          ? const SizedBox.shrink()
+                          : SizedBox(height: 24.h),
+                      _buildFollowButton(context, ref, userPageState),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            SliverToBoxAdapter(child: SizedBox(height: 8.h)),
-            SliverFillRemaining(
-              child: UserPageTab(
-                uid: uid,
-                scrollController: scrollController,
-              ),
+          ),
+          SliverToBoxAdapter(child: SizedBox(height: 16.h)),
+          SliverFillRemaining(
+            child: UserPageTab(
+              uid: uid,
+              scrollController: userPageTabScrollController,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -181,11 +181,14 @@ class UserPage extends HookConsumerWidget {
   }
 
   Widget _buildUserName(BuildContext context, WidgetRef ref, Profile? profile) {
-    return Text(
-      profile?.name ?? '',
-      style: TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 18.sp,
+    return Padding(
+      padding: EdgeInsets.only(left: 8.w),
+      child: Text(
+        profile?.name ?? '',
+        style: Theme.of(context)
+            .textTheme
+            .bodyLarge!
+            .copyWith(fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -193,21 +196,16 @@ class UserPage extends HookConsumerWidget {
   Widget _buildBirthDate(
       BuildContext context, WidgetRef ref, Profile? profile) {
     return profile?.birthday == null
-        ? const SizedBox()
+        ? const SizedBox.shrink()
         : Text(
             '誕生日: ${DateUtil.convertToJapaneseDate(profile?.birthday!)}',
-            style: TextStyle(fontSize: 13.sp),
+            style: Theme.of(context).textTheme.bodySmall,
           );
   }
 
   Widget _buildUserBio(BuildContext context, WidgetRef ref, Profile? profile) {
     final bio = profile?.bio;
-    return bio == null || bio.isEmpty
-        ? const SizedBox()
-        : Text(
-            bio,
-            style: TextStyle(fontSize: 16.sp),
-          );
+    return bio == null || bio.isEmpty ? const SizedBox.shrink() : Text(bio);
   }
 
   Widget _buildFollowButton(
@@ -216,7 +214,7 @@ class UserPage extends HookConsumerWidget {
     UserPageState userPageState,
   ) {
     return uid == ref.watch(authStateProvider).value?.uid
-        ? const SizedBox()
+        ? const SizedBox.shrink()
         : Center(
             child: SizedBox(
               width: double.infinity,
@@ -255,17 +253,12 @@ class UserPage extends HookConsumerWidget {
                   }
                 },
                 style: userPageState.isFollowing
-                    ? ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                      )
+                    ? ElevatedButton.styleFrom(backgroundColor: Colors.green)
                     : null,
                 child: Text(
                   userPageState.isFollowing ? 'フォロー中' : 'フォローする',
                   style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.bold,
-                    color: userPageState.isFollowing ? Colors.white : null,
-                  ),
+                      color: userPageState.isFollowing ? Colors.white : null),
                 ),
               ),
             ),
@@ -285,13 +278,7 @@ class UserPage extends HookConsumerWidget {
           children: [
             _buildUserImage(context, ref, userPageState.profile),
             SizedBox(height: 32.h),
-            Text(
-              'あなたは${userPageState.profile?.name}をブロックしています。',
-              style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            Text('あなたは${userPageState.profile?.name}をブロックしています'),
           ],
         ),
       ),
@@ -333,7 +320,6 @@ class UserPage extends HookConsumerWidget {
                   SnackBar(
                     content: Text(
                       '${userPageState.profile?.name}のブロックを解除しました。',
-                      style: TextStyle(fontSize: 14.sp),
                     ),
                   ),
                 );
@@ -391,12 +377,7 @@ class UserPage extends HookConsumerWidget {
                 case Success():
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'ユーザーを通報しました。',
-                          style: TextStyle(fontSize: 14.sp),
-                        ),
-                      ),
+                      const SnackBar(content: Text('ユーザーを通報しました。')),
                     );
                   }
                   break;
@@ -459,7 +440,6 @@ class UserPage extends HookConsumerWidget {
                       SnackBar(
                         content: Text(
                           '${userPageState.profile?.name}をブロックしました。',
-                          style: TextStyle(fontSize: 14.sp),
                         ),
                       ),
                     );
@@ -483,19 +463,13 @@ class UserPage extends HookConsumerWidget {
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-        PopupMenuItem<String>(
+        const PopupMenuItem<String>(
           value: 'report',
-          child: Text(
-            '通報する',
-            style: TextStyle(fontSize: 14.sp),
-          ),
+          child: Text('通報する'),
         ),
-        PopupMenuItem<String>(
+        const PopupMenuItem<String>(
           value: 'block',
-          child: Text(
-            'ブロックする',
-            style: TextStyle(fontSize: 14.sp),
-          ),
+          child: Text('ブロックする'),
         ),
       ],
     );

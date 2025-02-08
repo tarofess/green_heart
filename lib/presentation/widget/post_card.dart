@@ -69,12 +69,9 @@ class PostCard extends ConsumerWidget {
         Expanded(
           child: Text(
             post.userName,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14.sp,
-            ),
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
       ],
@@ -82,9 +79,7 @@ class PostCard extends ConsumerWidget {
   }
 
   Widget _buildTextContent() {
-    return post.content.isEmpty
-        ? const SizedBox()
-        : Text(post.content, style: TextStyle(fontSize: 14.sp));
+    return post.content.isEmpty ? const SizedBox.shrink() : Text(post.content);
   }
 
   Widget _buildImage(List<String> postImages) {
@@ -120,7 +115,7 @@ class PostCard extends ConsumerWidget {
               },
             ),
           )
-        : const SizedBox();
+        : const SizedBox.shrink();
   }
 
   Widget _buildActionButtons(BuildContext context, WidgetRef ref) {
@@ -159,7 +154,7 @@ class PostCard extends ConsumerWidget {
           SizedBox(width: 8.w),
           Text(
             post.likeCount.toString(),
-            style: TextStyle(fontSize: 14.sp),
+            style: Theme.of(context).textTheme.bodySmall,
           ),
         ],
       ),
@@ -201,7 +196,7 @@ class PostCard extends ConsumerWidget {
           SizedBox(width: 8.w),
           Text(
             post.commentCount.toString(),
-            style: TextStyle(fontSize: 14.sp),
+            style: Theme.of(context).textTheme.bodySmall,
           ),
         ],
       ),
@@ -277,12 +272,7 @@ class PostCard extends ConsumerWidget {
             case Success():
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      '投稿を削除しました。',
-                      style: TextStyle(fontSize: 14.sp),
-                    ),
-                  ),
+                  const SnackBar(content: Text('投稿を削除しました。')),
                 );
               }
               break;
@@ -332,11 +322,8 @@ class PostCard extends ConsumerWidget {
             case Success():
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      '投稿を通報しました。',
-                      style: TextStyle(fontSize: 14.sp),
-                    ),
+                  const SnackBar(
+                    content: Text('投稿を通報しました。'),
                   ),
                 );
               }

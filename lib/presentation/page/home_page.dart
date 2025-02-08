@@ -16,11 +16,7 @@ class HomePage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'ホーム',
-          style: TextStyle(fontSize: 21.sp),
-        ),
-        toolbarHeight: 58.h,
+        title: const Text('ホーム'),
         leading: IconButton(
           icon: Icon(Icons.menu, size: 24.r),
           onPressed: () => context.push('/settings'),

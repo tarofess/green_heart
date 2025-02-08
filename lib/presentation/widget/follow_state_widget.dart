@@ -39,17 +39,11 @@ class FollowStateWidget extends ConsumerWidget {
                         },
                         child: Column(
                           children: [
-                            Text(
-                              'フォロワー',
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                              ),
-                            ),
+                            const Text('フォロワー'),
                             Text(
                               follower.length.toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 16.sp,
                               ),
                             ),
                           ],
@@ -64,17 +58,11 @@ class FollowStateWidget extends ConsumerWidget {
                         },
                         child: Column(
                           children: [
-                            Text(
-                              'フォロー中',
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                              ),
-                            ),
+                            const Text('フォロー中'),
                             Text(
                               follow.length.toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 16.sp,
                               ),
                             ),
                           ],
@@ -86,14 +74,14 @@ class FollowStateWidget extends ConsumerWidget {
               ),
             );
           },
-          loading: () => const SizedBox(),
+          loading: () => const SizedBox.shrink(),
           error: (e, _) => AsyncErrorWidget(
             error: e,
             retry: () => ref.refresh(followNotifierProvider(uid)),
           ),
         );
       },
-      loading: () => const SizedBox(),
+      loading: () => const SizedBox.shrink(),
       error: (e, _) => AsyncErrorWidget(
         error: e,
         retry: () => ref.refresh(followerNotifierProvider(uid)),

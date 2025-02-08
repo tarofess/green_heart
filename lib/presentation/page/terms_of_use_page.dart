@@ -21,18 +21,9 @@ class TermsOfUsePage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    '利用規約',
-                    style: TextStyle(
-                      fontSize: 24.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  const Text('利用規約'),
                   SizedBox(height: 16.h),
-                  Text(
-                    appInfo.termsOfUse,
-                    style: TextStyle(fontSize: 16.sp),
-                  ),
+                  Text(appInfo.termsOfUse),
                 ],
               ),
             ),

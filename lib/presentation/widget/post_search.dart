@@ -47,7 +47,7 @@ class PostSearch extends SearchDelegate<String> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return const SizedBox();
+    return const SizedBox.shrink();
   }
 
   @override

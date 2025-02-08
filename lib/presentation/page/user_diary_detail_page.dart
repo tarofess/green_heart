@@ -26,7 +26,6 @@ class UserDiaryDetailPage extends ConsumerWidget {
           '${selectedPost.releaseDate.year}年'
           '${selectedPost.releaseDate.month}月'
           '${selectedPost.releaseDate.day}日',
-          style: TextStyle(fontSize: 21.sp),
         ),
       ),
       body: SafeArea(
@@ -36,16 +35,15 @@ class UserDiaryDetailPage extends ConsumerWidget {
               (posts) => posts.id == selectedPost.id,
             );
             return postData == null
-                ? Center(
-                    child: Text(
-                      'データがありません',
-                      style: TextStyle(fontSize: 16.sp),
-                    ),
-                  )
+                ? const Center(child: Text('データがありません'))
                 : SingleChildScrollView(
                     child: Padding(
                       padding: EdgeInsets.only(
-                          top: 0.h, bottom: 8.h, left: 8.w, right: 8.w),
+                        top: 0.h,
+                        bottom: 8.h,
+                        left: 8.w,
+                        right: 8.w,
+                      ),
                       child: PostCard(post: postData),
                     ),
                   );

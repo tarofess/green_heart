@@ -47,11 +47,7 @@ class TimelinePage extends HookConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.lightGreen[100],
       appBar: AppBar(
-        title: Text(
-          'みんなの投稿',
-          style: TextStyle(fontSize: 21.sp),
-        ),
-        toolbarHeight: 58.h,
+        title: const Text('みんなの投稿'),
         leadingWidth: 42.w,
         leading: Padding(
           padding: EdgeInsets.only(left: 12.w),

@@ -15,11 +15,11 @@ class AsyncErrorWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('$error', style: TextStyle(fontSize: 16.sp)),
+            Text('$error'),
             SizedBox(height: 16.h),
             ElevatedButton(
               onPressed: retry,
-              child: Text('リトライ', style: TextStyle(fontSize: 16.sp)),
+              child: const Text('リトライ'),
             ),
           ],
         ),

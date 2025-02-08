@@ -30,7 +30,10 @@ Future<void> showProfileImageActionSheet(
           children: [
             ListTile(
               leading: Icon(Icons.camera_alt, size: 24.r),
-              title: Text('写真を撮る', style: TextStyle(fontSize: 14.sp)),
+              title: Text(
+                '写真を撮る',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               onTap: () async {
                 if (await PermissionUtil.requestCameraPermission(context)) {
                   final result =
@@ -55,7 +58,10 @@ Future<void> showProfileImageActionSheet(
             ),
             ListTile(
               leading: Icon(Icons.photo_library, size: 24.r),
-              title: Text('カメラフォルダから選択する', style: TextStyle(fontSize: 14.sp)),
+              title: Text(
+                'カメラフォルダから選択する',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               onTap: () async {
                 if (await PermissionUtil.requestStoragePermission(context)) {
                   final result =
@@ -80,7 +86,10 @@ Future<void> showProfileImageActionSheet(
             ),
             ListTile(
               leading: Icon(Icons.cancel, size: 24.r),
-              title: Text('画像を削除する', style: TextStyle(fontSize: 14.sp)),
+              title: Text(
+                '画像を削除する',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               onTap: () {
                 imagePath.value = null;
                 Navigator.pop(context);

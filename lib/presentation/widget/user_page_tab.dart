@@ -16,13 +16,16 @@ class UserPageTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isTablet = MediaQuery.of(context).size.width >= 600;
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          toolbarHeight: 0,
+          leading: const SizedBox.shrink(),
+          toolbarHeight: 0.h,
           bottom: TabBar(
-            labelStyle: TextStyle(fontSize: 14.sp),
+            labelStyle: isTablet ? TextStyle(fontSize: 13.sp) : null,
             tabs: const [
               Tab(text: '日誌'),
               Tab(text: '投稿一覧'),

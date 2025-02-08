@@ -65,7 +65,10 @@ class UserDiary extends HookConsumerWidget {
         firstDay: DateTime.utc(2024, 1, 1),
         lastDay: DateTime.utc(2124, 12, 31),
         focusedDay: focusedDay.value,
-        headerStyle: const HeaderStyle(formatButtonVisible: false),
+        headerStyle: HeaderStyle(
+          formatButtonVisible: false,
+          titleTextStyle: TextStyle(fontSize: 16.sp),
+        ),
         locale: 'ja_JP',
         rowHeight: 52.h,
         eventLoader: (day) {
@@ -113,24 +116,18 @@ class UserDiary extends HookConsumerWidget {
         selectedDayPredicate: (day) {
           return isSameDay(selectedDay.value, day);
         },
-        calendarStyle: CalendarStyle(
-          todayDecoration: const BoxDecoration(
+        calendarStyle: const CalendarStyle(
+          todayDecoration: BoxDecoration(
             color: Colors.green,
             shape: BoxShape.circle,
           ),
-          todayTextStyle: TextStyle(fontSize: 16.sp, color: Colors.white),
-          selectedDecoration: const BoxDecoration(
+          todayTextStyle: TextStyle(color: Colors.white),
+          selectedDecoration: BoxDecoration(
             color: Colors.lightGreen,
             shape: BoxShape.circle,
           ),
-          selectedTextStyle: TextStyle(fontSize: 16.sp, color: Colors.white),
-          defaultTextStyle: TextStyle(fontSize: 16.sp),
-          weekendTextStyle: TextStyle(fontSize: 16.sp),
-          outsideTextStyle: TextStyle(fontSize: 16.sp, color: Colors.grey),
-        ),
-        daysOfWeekStyle: DaysOfWeekStyle(
-          weekdayStyle: TextStyle(fontSize: 16.sp),
-          weekendStyle: TextStyle(fontSize: 16.sp),
+          selectedTextStyle: TextStyle(color: Colors.white),
+          outsideTextStyle: TextStyle(color: Colors.grey),
         ),
         daysOfWeekHeight: 26.r,
       ),

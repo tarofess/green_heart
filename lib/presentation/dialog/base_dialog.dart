@@ -13,15 +13,8 @@ Future<void> showSingleButtonDialogBase({
     barrierDismissible: false,
     builder: (BuildContext dialogContext) {
       return AlertDialog(
-        title: Text(
-          title,
-          style: TextStyle(fontSize: 24.sp),
-          textAlign: TextAlign.center,
-        ),
-        content: Text(
-          content,
-          style: TextStyle(fontSize: 16.sp),
-        ),
+        title: Text(title, textAlign: TextAlign.center),
+        content: Text(content),
         actions: [
           Center(
             child: ElevatedButton(
@@ -33,13 +26,7 @@ Future<void> showSingleButtonDialogBase({
                 ),
               ),
               onPressed: () => handleButtonPress(dialogContext),
-              child: Text(
-                buttonText,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14.sp,
-                ),
-              ),
+              child: Text(buttonText),
             ),
           ),
         ],

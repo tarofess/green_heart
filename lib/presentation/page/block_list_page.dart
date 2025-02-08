@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -17,23 +16,12 @@ class BlockListPage extends ConsumerWidget {
     final blockState = ref.watch(blockNotifierProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'ブロックリスト',
-          style: TextStyle(fontSize: 21.sp),
-        ),
-        toolbarHeight: 58.h,
-      ),
+      appBar: AppBar(title: const Text('ブロックリスト')),
       body: SafeArea(
         child: blockState.when(
           data: (blockList) {
             if (blockList.isEmpty) {
-              return Center(
-                child: Text(
-                  'ブロックしているユーザーはいません',
-                  style: TextStyle(fontSize: 16.sp),
-                ),
-              );
+              return const Center(child: Text('ブロックしているユーザーはいません'));
             }
             return RefreshIndicator(
               onRefresh: () async {
@@ -51,10 +39,7 @@ class BlockListPage extends ConsumerWidget {
                             imageUrl: blockList[index].userImage,
                             radius: 42,
                           ),
-                    title: Text(
-                      blockList[index].userName,
-                      style: TextStyle(fontSize: 16.sp),
-                    ),
+                    title: Text(blockList[index].userName),
                     onTap: () {
                       context.push(
                         '/user',
@@ -72,7 +57,7 @@ class BlockListPage extends ConsumerWidget {
               backgroundColor: Colors.white10,
             );
           },
-          error: (e, _) {
+          error: (e, stackTrace) {
             return AsyncErrorWidget(
               error: e,
               retry: () => ref.refresh(blockNotifierProvider),

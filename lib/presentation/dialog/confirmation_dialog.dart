@@ -12,15 +12,8 @@ Future<bool> showConfirmationDialog({
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text(
-          title,
-          style: TextStyle(fontSize: 24.sp),
-          textAlign: TextAlign.center,
-        ),
-        content: Text(
-          content,
-          style: TextStyle(fontSize: 16.sp),
-        ),
+        title: Text(title, textAlign: TextAlign.center),
+        content: Text(content),
         actions: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -35,13 +28,7 @@ Future<bool> showConfirmationDialog({
                     ),
                   ),
                   onPressed: () => Navigator.of(context).pop(false),
-                  child: Text(
-                    negativeButtonText,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14.sp,
-                    ),
-                  ),
+                  child: Text(negativeButtonText),
                 ),
               ),
               SizedBox(width: 8.h),
@@ -55,13 +42,7 @@ Future<bool> showConfirmationDialog({
                     ),
                   ),
                   onPressed: () => Navigator.of(context).pop(true),
-                  child: Text(
-                    positiveButtonText,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14.sp,
-                    ),
-                  ),
+                  child: Text(positiveButtonText),
                 ),
               ),
             ],

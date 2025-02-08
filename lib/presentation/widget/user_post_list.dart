@@ -58,12 +58,7 @@ class UserPostList extends HookConsumerWidget {
             await ref.read(userPostNotifierProvider(uid).notifier).refresh(uid);
           },
           child: userPosts.isEmpty
-              ? Center(
-                  child: Text(
-                    '投稿はまだありません',
-                    style: TextStyle(fontSize: 16.sp),
-                  ),
-                )
+              ? const Center(child: Text('投稿はまだありません'))
               : ListView.builder(
                   physics: const AlwaysScrollableScrollPhysics(),
                   controller: scrollController,
@@ -71,8 +66,11 @@ class UserPostList extends HookConsumerWidget {
                   itemBuilder: (context, index) {
                     if (index < userPosts.length) {
                       return Padding(
-                        padding:
-                            EdgeInsets.only(left: 8.w, right: 8.w, top: 0.h),
+                        padding: EdgeInsets.only(
+                          left: 8.w,
+                          right: 8.w,
+                          top: 0.h,
+                        ),
                         child: PostCard(
                           key: ValueKey(userPosts[index].id),
                           post: userPosts[index],

@@ -35,13 +35,7 @@ class CommentPage extends HookConsumerWidget {
     final commentTextController = useTextEditingController();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'コメント',
-          style: TextStyle(fontSize: 21.sp),
-        ),
-        toolbarHeight: 58.h,
-      ),
+      appBar: AppBar(title: const Text('コメント')),
       body: SafeArea(
         child: commentState.when(
           data: (comments) {
@@ -51,7 +45,7 @@ class CommentPage extends HookConsumerWidget {
                   child: RefreshIndicator(
                     onRefresh: () => _refreshComments(ref),
                     child: comments.isEmpty
-                        ? _buildEmptyCommentMessage()
+                        ? _buildEmptyCommentMessage(context)
                         : _buildComment(ref, comments, focusNode),
                   ),
                 ),
@@ -92,7 +86,7 @@ class CommentPage extends HookConsumerWidget {
     ref.refresh(commentNotifierProvider(post.id));
   }
 
-  Widget _buildEmptyCommentMessage() {
+  Widget _buildEmptyCommentMessage(BuildContext context) {
     return Center(
       child: SingleChildScrollView(
         child: Column(
@@ -100,18 +94,13 @@ class CommentPage extends HookConsumerWidget {
           children: [
             Text(
               'コメントはまだありません',
-              style: TextStyle(
-                fontSize: 20.sp,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyLarge!
+                  .copyWith(fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16.sp),
-            Text(
-              '最初のコメントを追加してみよう',
-              style: TextStyle(
-                fontSize: 16.sp,
-              ),
-            ),
+            SizedBox(height: 16.h),
+            const Text('最初のコメントを追加してみよう'),
           ],
         ),
       ),
@@ -147,12 +136,11 @@ class CommentPage extends HookConsumerWidget {
       children: [
         commentPageState.isReplying
             ? _buildReplyingMessage(ref, commentPageState)
-            : const SizedBox(),
+            : const SizedBox.shrink(),
         Row(
           children: [
             Expanded(
               child: TextField(
-                style: TextStyle(fontSize: 16.sp),
                 focusNode: focusNode,
                 controller: commentTextController,
                 maxLines: null,
@@ -226,12 +214,9 @@ class CommentPage extends HookConsumerWidget {
           Expanded(
             child: Text(
               '${commentPageState.parentUserName}に返信中...',
-              style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.bold,
-              ),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
           IconButton(

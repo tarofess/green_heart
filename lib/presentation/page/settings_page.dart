@@ -16,13 +16,7 @@ class SettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          '設定',
-          style: TextStyle(fontSize: 21.sp),
-        ),
-        toolbarHeight: 58.h,
-      ),
+      appBar: AppBar(title: const Text('設定')),
       body: ListView(
         children: [
           _buildEditProfileItem(context, ref),
@@ -42,10 +36,7 @@ class SettingsPage extends ConsumerWidget {
         Icons.edit,
         size: 24.r,
       ),
-      title: Text(
-        'プロフィール編集',
-        style: TextStyle(fontSize: 16.sp),
-      ),
+      title: const Text('プロフィール編集'),
       onTap: () {
         context.push('/profile_edit');
       },
@@ -58,10 +49,7 @@ class SettingsPage extends ConsumerWidget {
         Icons.block,
         size: 24.r,
       ),
-      title: Text(
-        'ブロックリスト',
-        style: TextStyle(fontSize: 16.sp),
-      ),
+      title: const Text('ブロックリスト'),
       onTap: () {
         context.push('/block_list');
       },
@@ -74,10 +62,7 @@ class SettingsPage extends ConsumerWidget {
         Icons.mail,
         size: 24.r,
       ),
-      title: Text(
-        'お問い合わせ',
-        style: TextStyle(fontSize: 16.sp),
-      ),
+      title: const Text('お問い合わせ'),
       onTap: () async {
         await ref.read(emailSendUsecaseProvider).execute();
       },
@@ -90,10 +75,7 @@ class SettingsPage extends ConsumerWidget {
         Icons.info,
         size: 24.r,
       ),
-      title: Text(
-        'アプリの情報',
-        style: TextStyle(fontSize: 16.sp),
-      ),
+      title: const Text('アプリの情報'),
       onTap: () async {
         try {
           final appInfo =
@@ -120,10 +102,7 @@ class SettingsPage extends ConsumerWidget {
         Icons.account_circle,
         size: 24.r,
       ),
-      title: Text(
-        'アカウントの情報',
-        style: TextStyle(fontSize: 16.sp),
-      ),
+      title: const Text('アカウントの情報'),
       onTap: () {
         context.push('/account_info');
       },
@@ -136,13 +115,9 @@ class SettingsPage extends ConsumerWidget {
         Icons.logout,
         size: 24.r,
       ),
-      title: Text(
+      title: const Text(
         'ログアウト',
-        style: TextStyle(
-          color: Colors.red,
-          fontWeight: FontWeight.bold,
-          fontSize: 16.sp,
-        ),
+        style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
       ),
       onTap: () async {
         final isConfirmed = await showConfirmationDialog(

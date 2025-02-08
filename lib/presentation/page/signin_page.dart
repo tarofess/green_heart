@@ -25,11 +25,8 @@ class SignInPage extends HookConsumerWidget {
       if (isAccountDeleted != null && isAccountDeleted) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'アカウントが削除されました。ご利用ありがとうございました。',
-                style: TextStyle(fontSize: 14.sp),
-              ),
+            const SnackBar(
+              content: Text('アカウントが削除されました。ご利用ありがとうございました。'),
             ),
           );
         });
@@ -41,7 +38,8 @@ class SignInPage extends HookConsumerWidget {
     return Scaffold(
       body: Column(
         children: [
-          _buildAppTitle(),
+          SizedBox(height: 16.h),
+          _buildAppTitle(context),
           SizedBox(height: 52.h),
           _buildAppIcon(),
           Expanded(
@@ -53,9 +51,16 @@ class SignInPage extends HookConsumerWidget {
                   _buildConsentCheckbox(context, isConsentChecked),
                   SizedBox(height: 16.h),
                   _buildGoogleSignInButton(
-                      context, ref, isConsentChecked.value),
+                    context,
+                    ref,
+                    isConsentChecked.value,
+                  ),
                   SizedBox(height: 16.h),
-                  _buildAppleSignInButton(context, ref, isConsentChecked.value),
+                  _buildAppleSignInButton(
+                    context,
+                    ref,
+                    isConsentChecked.value,
+                  ),
                 ],
               ),
             ),
@@ -65,16 +70,15 @@ class SignInPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildAppTitle() {
+  Widget _buildAppTitle(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(top: 100.h),
       child: Text(
         'グリーンハート',
-        style: TextStyle(
-          fontSize: 32.sp,
-          fontWeight: FontWeight.bold,
-          color: Colors.lightGreen,
-        ),
+        style: Theme.of(context)
+            .textTheme
+            .headlineMedium!
+            .copyWith(color: Colors.lightGreen, fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -88,7 +92,9 @@ class SignInPage extends HookConsumerWidget {
   }
 
   Widget _buildConsentCheckbox(
-      BuildContext context, ValueNotifier<bool> isConsentChecked) {
+    BuildContext context,
+    ValueNotifier<bool> isConsentChecked,
+  ) {
     return Padding(
       padding: EdgeInsets.only(right: 16.w),
       child: Row(
@@ -103,7 +109,7 @@ class SignInPage extends HookConsumerWidget {
           Flexible(
             child: RichText(
               text: TextSpan(
-                style: TextStyle(fontSize: 16.sp, color: Colors.black),
+                style: Theme.of(context).textTheme.bodyMedium,
                 children: [
                   const TextSpan(text: ''),
                   TextSpan(
@@ -132,7 +138,10 @@ class SignInPage extends HookConsumerWidget {
                                   ScrollController scrollController) {
                                 return Padding(
                                   padding: EdgeInsets.only(
-                                      top: 16.h, left: 8.w, right: 8.w),
+                                    top: 16.h,
+                                    left: 8.w,
+                                    right: 8.w,
+                                  ),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.vertical(
                                       top: Radius.circular(20.r),
@@ -157,7 +166,10 @@ class SignInPage extends HookConsumerWidget {
   }
 
   Widget _buildGoogleSignInButton(
-      BuildContext context, WidgetRef ref, bool isEnabled) {
+    BuildContext context,
+    WidgetRef ref,
+    bool isEnabled,
+  ) {
     return Padding(
       padding: EdgeInsets.only(left: 30.w, right: 30.w),
       child: GoogleAuthButton(
@@ -183,12 +195,7 @@ class SignInPage extends HookConsumerWidget {
                   case Failure(message: final message):
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            message,
-                            style: TextStyle(fontSize: 14.sp),
-                          ),
-                        ),
+                        SnackBar(content: Text(message)),
                       );
                     }
                 }
@@ -199,7 +206,10 @@ class SignInPage extends HookConsumerWidget {
   }
 
   Widget _buildAppleSignInButton(
-      BuildContext context, WidgetRef ref, bool isEnabled) {
+    BuildContext context,
+    WidgetRef ref,
+    bool isEnabled,
+  ) {
     return Padding(
       padding: EdgeInsets.only(left: 30.w, right: 30.w),
       child: AppleAuthButton(
@@ -211,9 +221,9 @@ class SignInPage extends HookConsumerWidget {
           iconBackground: isEnabled ? Colors.black : Colors.grey[300],
           iconColor: Colors.white,
           textStyle: TextStyle(
-            color: isEnabled ? Colors.white : Colors.grey,
             fontSize: 15.sp,
             fontWeight: FontWeight.bold,
+            color: isEnabled ? Colors.white : Colors.grey,
           ),
         ),
         onPressed: isEnabled
@@ -229,12 +239,7 @@ class SignInPage extends HookConsumerWidget {
                   case Failure(message: final message):
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            message,
-                            style: TextStyle(fontSize: 14.sp),
-                          ),
-                        ),
+                        SnackBar(content: Text(message)),
                       );
                     }
                 }

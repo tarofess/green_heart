@@ -37,9 +37,7 @@ class PostPage extends HookConsumerWidget {
       appBar: AppBar(
         title: Text(
           '${selectedDay.year}年${selectedDay.month}月${selectedDay.day}日',
-          style: TextStyle(fontSize: 21.sp),
         ),
-        toolbarHeight: 58.h,
         leading: IconButton(
           icon: Icon(Icons.cancel_outlined, size: 24.r),
           onPressed: () async {
@@ -79,7 +77,6 @@ class PostPage extends HookConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     TextField(
-                      style: TextStyle(fontSize: 16.sp),
                       controller: postTextController,
                       focusNode: focusNode,
                       maxLines: null,
@@ -208,7 +205,7 @@ class PostPage extends HookConsumerWidget {
               ),
             ),
           )
-        : const SizedBox();
+        : const SizedBox.shrink();
   }
 
   Widget _buildBottomBar(

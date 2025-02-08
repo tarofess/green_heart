@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -25,9 +24,8 @@ class FollowPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: followType == FollowType.follower
-            ? Text('フォロワー', style: TextStyle(fontSize: 21.sp))
-            : Text('フォロー中', style: TextStyle(fontSize: 21.sp)),
-        toolbarHeight: 58.h,
+            ? const Text('フォロワー')
+            : const Text('フォロー中'),
       ),
       body: followState.when(
         data: (follows) => SafeArea(
@@ -37,7 +35,6 @@ class FollowPage extends ConsumerWidget {
                     followType == FollowType.follower
                         ? 'フォロワーはいません'
                         : 'フォロー中のユーザーはいません',
-                    style: TextStyle(fontSize: 16.sp),
                   ),
                 )
               : RefreshIndicator(
@@ -58,10 +55,7 @@ class FollowPage extends ConsumerWidget {
                                 imageUrl: follows[index].userImage,
                                 radius: 42,
                               ),
-                        title: Text(
-                          follows[index].userName,
-                          style: TextStyle(fontSize: 16.sp),
-                        ),
+                        title: Text(follows[index].userName),
                         onTap: () {
                           final uid = ref.watch(authStateProvider).value?.uid;
                           if (uid != follows[index].uid) {
@@ -76,17 +70,21 @@ class FollowPage extends ConsumerWidget {
                   ),
                 ),
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => AsyncErrorWidget(
-          error: e,
-          retry: () => {
-            followType == FollowType.follow
-                // ignore: unused_result
-                ? ref.refresh(followNotifierProvider(uid))
-                // ignore: unused_result
-                : ref.refresh(followerNotifierProvider(uid)),
-          },
-        ),
+        loading: () {
+          return const Center(child: CircularProgressIndicator());
+        },
+        error: (e, stackTrace) {
+          return AsyncErrorWidget(
+            error: e,
+            retry: () => {
+              followType == FollowType.follow
+                  // ignore: unused_result
+                  ? ref.refresh(followNotifierProvider(uid))
+                  // ignore: unused_result
+                  : ref.refresh(followerNotifierProvider(uid)),
+            },
+          );
+        },
       ),
     );
   }
