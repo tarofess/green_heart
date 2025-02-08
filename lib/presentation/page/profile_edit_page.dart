@@ -458,6 +458,15 @@ class ProfileEditPage extends HookConsumerWidget {
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
       locale: const Locale('ja', 'JP'),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: const ColorScheme.light(primary: Colors.green),
+            dialogBackgroundColor: Colors.white,
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (pickedDate != null) {

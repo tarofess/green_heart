@@ -27,7 +27,7 @@ class BlockAddUsecase {
         createdAt: DateTime.now(),
       );
 
-      await _blockNotifier.addBlock(targetUid, newBlock);
+      await _blockNotifier.addBlock(newBlock);
       await _blockRepository.addBlock(uid, newBlock);
 
       return const Success();

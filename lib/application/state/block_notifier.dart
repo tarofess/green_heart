@@ -15,7 +15,7 @@ class BlockNotifier extends AsyncNotifier<List<Block>> {
     return blocks;
   }
 
-  Future<void> addBlock(String targetUid, Block newBlock) async {
+  Future<void> addBlock(Block newBlock) async {
     state.whenData((currentBlocks) {
       state = AsyncValue.data([...currentBlocks, newBlock]);
     });

@@ -10,16 +10,16 @@ import 'package:green_heart/application/usecase/like_check_usecase.dart';
 class PostDataService {
   final BlockGetUsecase _blockGetUsecase;
   final LikeCheckUsecase _likeCheckUsecase;
-  final String? _uid;
+  final String? _myUid;
 
-  PostDataService(this._blockGetUsecase, this._likeCheckUsecase, this._uid);
+  PostDataService(this._blockGetUsecase, this._likeCheckUsecase, this._myUid);
 
   Future<List<Post>> filterByBlock(List<Post> posts) async {
-    if (_uid == null) {
+    if (_myUid == null) {
       throw Exception('ユーザーが存在しないため投稿を取得できません。再度お試しください。');
     }
 
-    final blockList = await _blockGetUsecase.execute(_uid);
+    final blockList = await _blockGetUsecase.execute(_myUid);
     final targetUids = blockList.map((block) => block.uid).toSet();
 
     return posts.where((post) {
@@ -31,12 +31,12 @@ class PostDataService {
   Future<List<Post>> updateIsLikedStatus(List<Post> posts) async {
     final List<Post> updatedPosts = [];
 
-    if (_uid == null) {
+    if (_myUid == null) {
       throw Exception('ユーザーが存在しないため投稿を取得できません。再度お試しください。');
     }
 
     for (var post in posts) {
-      final isLiked = await _likeCheckUsecase.execute(post.id, _uid);
+      final isLiked = await _likeCheckUsecase.execute(post.id, _myUid);
       post = post.copyWith(isLiked: isLiked);
       updatedPosts.add(post);
     }
