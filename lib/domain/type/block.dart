@@ -7,6 +7,7 @@ part 'block.g.dart';
 class Block with _$Block {
   const factory Block({
     required String uid,
+    required String targetUid,
     required String userName,
     required String? userImage,
     required DateTime createdAt,

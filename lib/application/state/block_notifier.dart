@@ -23,8 +23,9 @@ class BlockNotifier extends AsyncNotifier<List<Block>> {
 
   void deleteBlock(String targetUid) {
     state.whenData((currentBlocks) {
-      final updatedBlock =
-          currentBlocks.where((blocks) => blocks.uid != targetUid).toList();
+      final updatedBlock = currentBlocks
+          .where((blocks) => blocks.targetUid != targetUid)
+          .toList();
       state = AsyncValue.data(updatedBlock);
     });
   }

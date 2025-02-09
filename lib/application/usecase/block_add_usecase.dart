@@ -21,7 +21,8 @@ class BlockAddUsecase {
       }
 
       final newBlock = Block(
-        uid: targetUid,
+        uid: uid,
+        targetUid: targetUid,
         userName: profile.name,
         userImage: profile.imageUrl,
         createdAt: DateTime.now(),

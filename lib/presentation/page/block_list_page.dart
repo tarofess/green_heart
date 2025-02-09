@@ -43,7 +43,7 @@ class BlockListPage extends ConsumerWidget {
                     onTap: () {
                       context.push(
                         '/user',
-                        extra: {'uid': blockList[index].uid},
+                        extra: {'uid': blockList[index].targetUid},
                       );
                     },
                   );

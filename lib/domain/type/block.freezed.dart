@@ -21,6 +21,7 @@ Block _$BlockFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Block {
   String get uid => throw _privateConstructorUsedError;
+  String get targetUid => throw _privateConstructorUsedError;
   String get userName => throw _privateConstructorUsedError;
   String? get userImage => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -40,7 +41,11 @@ abstract class $BlockCopyWith<$Res> {
       _$BlockCopyWithImpl<$Res, Block>;
   @useResult
   $Res call(
-      {String uid, String userName, String? userImage, DateTime createdAt});
+      {String uid,
+      String targetUid,
+      String userName,
+      String? userImage,
+      DateTime createdAt});
 }
 
 /// @nodoc
@@ -59,6 +64,7 @@ class _$BlockCopyWithImpl<$Res, $Val extends Block>
   @override
   $Res call({
     Object? uid = null,
+    Object? targetUid = null,
     Object? userName = null,
     Object? userImage = freezed,
     Object? createdAt = null,
@@ -67,6 +73,10 @@ class _$BlockCopyWithImpl<$Res, $Val extends Block>
       uid: null == uid
           ? _value.uid
           : uid // ignore: cast_nullable_to_non_nullable
+              as String,
+      targetUid: null == targetUid
+          ? _value.targetUid
+          : targetUid // ignore: cast_nullable_to_non_nullable
               as String,
       userName: null == userName
           ? _value.userName
@@ -92,7 +102,11 @@ abstract class _$$BlockImplCopyWith<$Res> implements $BlockCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {String uid, String userName, String? userImage, DateTime createdAt});
+      {String uid,
+      String targetUid,
+      String userName,
+      String? userImage,
+      DateTime createdAt});
 }
 
 /// @nodoc
@@ -109,6 +123,7 @@ class __$$BlockImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? uid = null,
+    Object? targetUid = null,
     Object? userName = null,
     Object? userImage = freezed,
     Object? createdAt = null,
@@ -117,6 +132,10 @@ class __$$BlockImplCopyWithImpl<$Res>
       uid: null == uid
           ? _value.uid
           : uid // ignore: cast_nullable_to_non_nullable
+              as String,
+      targetUid: null == targetUid
+          ? _value.targetUid
+          : targetUid // ignore: cast_nullable_to_non_nullable
               as String,
       userName: null == userName
           ? _value.userName
@@ -139,6 +158,7 @@ class __$$BlockImplCopyWithImpl<$Res>
 class _$BlockImpl implements _Block {
   const _$BlockImpl(
       {required this.uid,
+      required this.targetUid,
       required this.userName,
       required this.userImage,
       required this.createdAt});
@@ -149,6 +169,8 @@ class _$BlockImpl implements _Block {
   @override
   final String uid;
   @override
+  final String targetUid;
+  @override
   final String userName;
   @override
   final String? userImage;
@@ -157,7 +179,7 @@ class _$BlockImpl implements _Block {
 
   @override
   String toString() {
-    return 'Block(uid: $uid, userName: $userName, userImage: $userImage, createdAt: $createdAt)';
+    return 'Block(uid: $uid, targetUid: $targetUid, userName: $userName, userImage: $userImage, createdAt: $createdAt)';
   }
 
   @override
@@ -166,6 +188,8 @@ class _$BlockImpl implements _Block {
         (other.runtimeType == runtimeType &&
             other is _$BlockImpl &&
             (identical(other.uid, uid) || other.uid == uid) &&
+            (identical(other.targetUid, targetUid) ||
+                other.targetUid == targetUid) &&
             (identical(other.userName, userName) ||
                 other.userName == userName) &&
             (identical(other.userImage, userImage) ||
@@ -177,7 +201,7 @@ class _$BlockImpl implements _Block {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, uid, userName, userImage, createdAt);
+      Object.hash(runtimeType, uid, targetUid, userName, userImage, createdAt);
 
   /// Create a copy of Block
   /// with the given fields replaced by the non-null parameter values.
@@ -198,6 +222,7 @@ class _$BlockImpl implements _Block {
 abstract class _Block implements Block {
   const factory _Block(
       {required final String uid,
+      required final String targetUid,
       required final String userName,
       required final String? userImage,
       required final DateTime createdAt}) = _$BlockImpl;
@@ -206,6 +231,8 @@ abstract class _Block implements Block {
 
   @override
   String get uid;
+  @override
+  String get targetUid;
   @override
   String get userName;
   @override

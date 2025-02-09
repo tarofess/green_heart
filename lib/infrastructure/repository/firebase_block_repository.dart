@@ -17,7 +17,7 @@ class FirebaseBlockRepository implements BlockRepository {
           .collection('profile')
           .doc(uid)
           .collection('block')
-          .doc(block.uid);
+          .doc(block.targetUid);
 
       await ref.set(block.toJson()).timeout(Duration(seconds: _timeoutSeconds));
     } catch (e, stackTrace) {
@@ -47,22 +47,34 @@ class FirebaseBlockRepository implements BlockRepository {
   }
 
   @override
+  Future<List<Block>> getBlockedByOther(String uid) async {
+    try {
+      final ref = _firestore
+          .collectionGroup('block')
+          .where('targetUid', isEqualTo: uid);
+
+      final querySnapshot =
+          await ref.get().timeout(Duration(seconds: _timeoutSeconds));
+
+      return querySnapshot.docs
+          .map((doc) => Block.fromJson(doc.data()))
+          .toList();
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('ブロックリストの取得に失敗しました。再度お試しください。');
+    }
+  }
+
+  @override
   Future<void> deleteBlockByUid(String uid, String targetUid) async {
     try {
       final ref = _firestore
           .collection('profile')
           .doc(uid)
           .collection('block')
-          .where('uid', isEqualTo: targetUid);
+          .doc(targetUid);
 
-      final docSnapshot =
-          await ref.get().timeout(Duration(seconds: _timeoutSeconds));
-
-      for (final doc in docSnapshot.docs) {
-        await doc.reference
-            .delete()
-            .timeout(Duration(seconds: _timeoutSeconds));
-      }
+      await ref.delete().timeout(Duration(seconds: _timeoutSeconds));
     } catch (e, stackTrace) {
       if (e is TimeoutException) {
         return;
@@ -74,15 +86,15 @@ class FirebaseBlockRepository implements BlockRepository {
 
   @override
   Future<bool> checkIfBlocked(String uid, String targetUid) async {
-    final query = _firestore
+    final ref = _firestore
         .collection('profile')
         .doc(uid)
         .collection('block')
-        .where('uid', isEqualTo: targetUid);
+        .doc(targetUid);
 
-    final snapshot =
-        await query.get().timeout(Duration(seconds: _timeoutSeconds));
+    final docSnapshot =
+        await ref.get().timeout(Duration(seconds: _timeoutSeconds));
 
-    return snapshot.docs.isNotEmpty;
+    return docSnapshot.exists;
   }
 }
