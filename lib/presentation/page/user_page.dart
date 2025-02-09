@@ -25,6 +25,7 @@ import 'package:green_heart/application/di/block_di.dart';
 import 'package:green_heart/application/di/follow_di.dart';
 import 'package:green_heart/domain/type/result.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
+import 'package:green_heart/application/state/follower_notifier.dart';
 
 class UserPage extends HookConsumerWidget {
   const UserPage({super.key, required this.uid});
@@ -115,6 +116,10 @@ class UserPage extends HookConsumerWidget {
       onRefresh: () async {
         // ignore: unused_result
         ref.refresh(userPageStateNotifierProvider(uid));
+        // ignore: unused_result
+        ref.refresh(followNotifierProvider(uid));
+        // ignore: unused_result
+        ref.refresh(followerNotifierProvider(uid));
       },
       child: CustomScrollView(
         controller: customScrollViewScrollController,
