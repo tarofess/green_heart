@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -30,11 +31,14 @@ class FollowPage extends ConsumerWidget {
       body: followState.when(
         data: (follows) => SafeArea(
           child: follows.isEmpty
-              ? Center(
-                  child: Text(
-                    followType == FollowType.follower
-                        ? 'フォロワーはいません'
-                        : 'フォロー中のユーザーはいません',
+              ? Padding(
+                  padding: EdgeInsets.all(16.w),
+                  child: Center(
+                    child: Text(
+                      followType == FollowType.follower
+                          ? 'フォロワーはいません'
+                          : 'フォロー中のユーザーはいません',
+                    ),
                   ),
                 )
               : RefreshIndicator(

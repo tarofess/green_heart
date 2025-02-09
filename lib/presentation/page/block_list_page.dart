@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -21,7 +22,10 @@ class BlockListPage extends ConsumerWidget {
         child: blockState.when(
           data: (blockList) {
             if (blockList.isEmpty) {
-              return const Center(child: Text('ブロックしているユーザーはいません'));
+              return Padding(
+                padding: EdgeInsets.all(16.w),
+                child: const Center(child: Text('ブロックしているユーザーはいません')),
+              );
             }
             return RefreshIndicator(
               onRefresh: () async {
