@@ -7,15 +7,37 @@ class NotificationSaveUsecase {
 
   NotificationSaveUsecase(this._notificationRepository);
 
-  Future<void> execute(String uid) async {
-    final currentToken = await FirebaseMessaging.instance.getToken();
-    final savedNotification =
-        await _notificationRepository.getNotificationByUid(uid);
+  Future<void> execute(String? uid, String deviceId) async {
+    try {
+      // FCMの現在のトークンを取得
+      final currentToken = await FirebaseMessaging.instance.getToken();
+      if (uid == null || currentToken == null) return;
 
-    if (currentToken != null &&
-        (savedNotification == null ||
-            currentToken != savedNotification.token)) {
-      await _notificationRepository.saveNotification(uid, currentToken);
+      // ユーザー＆デバイスに紐づく通知情報を取得
+      final savedNotification =
+          await _notificationRepository.getNotification(uid, deviceId);
+
+      // このデバイスのトークンがまだ保存されていなければ新規追加
+      if (savedNotification == null) {
+        await _notificationRepository.addNotification(
+          uid,
+          deviceId,
+          currentToken,
+        );
+        return;
+      }
+
+      // 同じデバイスでトークンが変更されていた場合は更新
+      if (savedNotification.token != currentToken) {
+        await _notificationRepository.updateNotification(
+          uid,
+          deviceId,
+          currentToken,
+        );
+        return;
+      }
+    } catch (e) {
+      return;
     }
   }
 }

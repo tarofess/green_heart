@@ -9,9 +9,19 @@ class LikeToggleUsecase {
 
   LikeToggleUsecase(this._likeRepository, this._postManagerNotifier);
 
-  Future<Result> execute(Post post, String uid) async {
+  Future<Result> execute(
+    Post post,
+    String uid,
+    String userName,
+    String userImage,
+  ) async {
     try {
-      final didLike = await _likeRepository.toggleLike(post.id, uid);
+      final didLike = await _likeRepository.toggleLike(
+        post.id,
+        uid,
+        userName,
+        userImage,
+      );
       _postManagerNotifier.toggleLike(post, uid, didLike);
       return const Success();
     } catch (e) {

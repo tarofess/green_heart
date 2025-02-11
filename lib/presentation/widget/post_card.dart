@@ -19,6 +19,7 @@ import 'package:green_heart/presentation/widget/user_firebase_image.dart';
 import 'package:green_heart/domain/type/result.dart';
 import 'package:green_heart/application/state/comment_page_notifier.dart';
 import 'package:green_heart/domain/type/post.dart';
+import 'package:green_heart/application/state/profile_notifier.dart';
 
 class PostCard extends ConsumerWidget {
   PostCard({super.key, required this.post, this.uidInPreviosPage});
@@ -160,13 +161,21 @@ class PostCard extends ConsumerWidget {
       ),
       onTap: () async {
         final uid = ref.read(authStateProvider).value?.uid;
-        if (uid == null) return;
+        final userName = ref.watch(profileNotifierProvider).value?.name;
+        final userImage = ref.watch(profileNotifierProvider).value?.imageUrl;
+
+        if (uid == null || userName == null || userImage == null) return;
 
         final result = await LoadingOverlay.of(
           context,
           backgroundColor: Colors.white10,
         ).during(
-          () => ref.read(likeToggleUsecaseProvider).execute(post, uid),
+          () => ref.read(likeToggleUsecaseProvider).execute(
+                post,
+                uid,
+                userName,
+                userImage,
+              ),
         );
 
         switch (result) {

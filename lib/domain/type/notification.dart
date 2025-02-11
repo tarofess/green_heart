@@ -8,6 +8,7 @@ class Notification with _$Notification {
   const factory Notification({
     required String uid,
     required String token,
+    required String deviceId,
     required DateTime updatedAt,
   }) = _Notification;
 

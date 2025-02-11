@@ -46,6 +46,7 @@ dependencies:
   collection: ^1.18.0
   algoliasearch: ^1.27.3
   envied: ^1.0.0
+  device_info_plus: ^11.3.0
 
   cupertino_icons: ^1.0.8
 

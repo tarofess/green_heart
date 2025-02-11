@@ -22,6 +22,7 @@ Notification _$NotificationFromJson(Map<String, dynamic> json) {
 mixin _$Notification {
   String get uid => throw _privateConstructorUsedError;
   String get token => throw _privateConstructorUsedError;
+  String get deviceId => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
   /// Serializes this Notification to a JSON map.
@@ -40,7 +41,7 @@ abstract class $NotificationCopyWith<$Res> {
           Notification value, $Res Function(Notification) then) =
       _$NotificationCopyWithImpl<$Res, Notification>;
   @useResult
-  $Res call({String uid, String token, DateTime updatedAt});
+  $Res call({String uid, String token, String deviceId, DateTime updatedAt});
 }
 
 /// @nodoc
@@ -60,6 +61,7 @@ class _$NotificationCopyWithImpl<$Res, $Val extends Notification>
   $Res call({
     Object? uid = null,
     Object? token = null,
+    Object? deviceId = null,
     Object? updatedAt = null,
   }) {
     return _then(_value.copyWith(
@@ -70,6 +72,10 @@ class _$NotificationCopyWithImpl<$Res, $Val extends Notification>
       token: null == token
           ? _value.token
           : token // ignore: cast_nullable_to_non_nullable
+              as String,
+      deviceId: null == deviceId
+          ? _value.deviceId
+          : deviceId // ignore: cast_nullable_to_non_nullable
               as String,
       updatedAt: null == updatedAt
           ? _value.updatedAt
@@ -87,7 +93,7 @@ abstract class _$$NotificationImplCopyWith<$Res>
       __$$NotificationImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String uid, String token, DateTime updatedAt});
+  $Res call({String uid, String token, String deviceId, DateTime updatedAt});
 }
 
 /// @nodoc
@@ -105,6 +111,7 @@ class __$$NotificationImplCopyWithImpl<$Res>
   $Res call({
     Object? uid = null,
     Object? token = null,
+    Object? deviceId = null,
     Object? updatedAt = null,
   }) {
     return _then(_$NotificationImpl(
@@ -115,6 +122,10 @@ class __$$NotificationImplCopyWithImpl<$Res>
       token: null == token
           ? _value.token
           : token // ignore: cast_nullable_to_non_nullable
+              as String,
+      deviceId: null == deviceId
+          ? _value.deviceId
+          : deviceId // ignore: cast_nullable_to_non_nullable
               as String,
       updatedAt: null == updatedAt
           ? _value.updatedAt
@@ -128,7 +139,10 @@ class __$$NotificationImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$NotificationImpl implements _Notification {
   const _$NotificationImpl(
-      {required this.uid, required this.token, required this.updatedAt});
+      {required this.uid,
+      required this.token,
+      required this.deviceId,
+      required this.updatedAt});
 
   factory _$NotificationImpl.fromJson(Map<String, dynamic> json) =>
       _$$NotificationImplFromJson(json);
@@ -138,11 +152,13 @@ class _$NotificationImpl implements _Notification {
   @override
   final String token;
   @override
+  final String deviceId;
+  @override
   final DateTime updatedAt;
 
   @override
   String toString() {
-    return 'Notification(uid: $uid, token: $token, updatedAt: $updatedAt)';
+    return 'Notification(uid: $uid, token: $token, deviceId: $deviceId, updatedAt: $updatedAt)';
   }
 
   @override
@@ -152,13 +168,15 @@ class _$NotificationImpl implements _Notification {
             other is _$NotificationImpl &&
             (identical(other.uid, uid) || other.uid == uid) &&
             (identical(other.token, token) || other.token == token) &&
+            (identical(other.deviceId, deviceId) ||
+                other.deviceId == deviceId) &&
             (identical(other.updatedAt, updatedAt) ||
                 other.updatedAt == updatedAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, uid, token, updatedAt);
+  int get hashCode => Object.hash(runtimeType, uid, token, deviceId, updatedAt);
 
   /// Create a copy of Notification
   /// with the given fields replaced by the non-null parameter values.
@@ -180,6 +198,7 @@ abstract class _Notification implements Notification {
   const factory _Notification(
       {required final String uid,
       required final String token,
+      required final String deviceId,
       required final DateTime updatedAt}) = _$NotificationImpl;
 
   factory _Notification.fromJson(Map<String, dynamic> json) =
@@ -189,6 +208,8 @@ abstract class _Notification implements Notification {
   String get uid;
   @override
   String get token;
+  @override
+  String get deviceId;
   @override
   DateTime get updatedAt;
 

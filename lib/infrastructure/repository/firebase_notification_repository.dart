@@ -10,32 +10,12 @@ class FirebaseNotificationRepository implements NotificationRepository {
   final int _timeoutSeconds = 10;
 
   @override
-  Future<Notification?> getNotificationByUid(String uid) async {
-    try {
-      final snapshot = await _firestore
-          .collection('profile')
-          .doc(uid)
-          .collection('notification')
-          .doc(uid)
-          .get()
-          .timeout(Duration(seconds: _timeoutSeconds));
-
-      if (!snapshot.exists) {
-        return null;
-      }
-
-      return Notification.fromJson(snapshot.data()!);
-    } catch (e, stackTrace) {
-      final exception = await ExceptionHandler.handleException(e, stackTrace);
-      throw exception ?? AppException('通知情報の取得に失敗しました。');
-    }
-  }
-
-  @override
-  Future<void> saveNotification(String uid, String fcmToken) async {
+  Future<void> addNotification(
+      String uid, String deviceId, String fcmToken) async {
     try {
       final notification = Notification(
         uid: uid,
+        deviceId: deviceId,
         token: fcmToken,
         updatedAt: DateTime.now(),
       );
@@ -44,8 +24,7 @@ class FirebaseNotificationRepository implements NotificationRepository {
           .collection('profile')
           .doc(uid)
           .collection('notification')
-          .doc(uid)
-          .set(notification.toJson())
+          .add(notification.toJson())
           .timeout(Duration(seconds: _timeoutSeconds));
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
@@ -54,18 +33,51 @@ class FirebaseNotificationRepository implements NotificationRepository {
   }
 
   @override
-  Future<void> deleteNotification(String uid) async {
+  Future<Notification?> getNotification(String uid, String deviceId) async {
     try {
-      await _firestore
+      final snapshot = await _firestore
           .collection('profile')
           .doc(uid)
           .collection('notification')
-          .doc(uid)
-          .delete()
+          .where('deviceId', isEqualTo: deviceId)
+          .get()
           .timeout(Duration(seconds: _timeoutSeconds));
+
+      if (snapshot.docs.isEmpty) return null;
+
+      return Notification.fromJson(snapshot.docs.first.data());
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
-      throw exception ?? AppException('通知情報の削除に失敗しました。');
+      throw exception ?? AppException('通知情報の取得に失敗しました。');
+    }
+  }
+
+  @override
+  Future<void> updateNotification(
+    String uid,
+    String deviceId,
+    String fcmToken,
+  ) async {
+    try {
+      final snapshot = await _firestore
+          .collection('profile')
+          .doc(uid)
+          .collection('notification')
+          .where('deviceId', isEqualTo: deviceId)
+          .get()
+          .timeout(Duration(seconds: _timeoutSeconds));
+
+      if (snapshot.docs.isEmpty) return;
+
+      for (final doc in snapshot.docs) {
+        await doc.reference.update({
+          'token': fcmToken,
+          'updatedAt': DateTime.now(),
+        }).timeout(Duration(seconds: _timeoutSeconds));
+      }
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('通知情報の更新に失敗しました。');
     }
   }
 }

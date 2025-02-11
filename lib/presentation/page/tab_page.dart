@@ -5,6 +5,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/presentation/page/home_page.dart';
 import 'package:green_heart/presentation/page/timeline_page.dart';
+import 'package:green_heart/application/di/notification_di.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
+import 'package:green_heart/application/di/device_info_di.dart';
 
 class TabPage extends HookConsumerWidget {
   const TabPage({super.key});
@@ -12,6 +15,22 @@ class TabPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedIndex = useState(0);
+
+    useEffect(() {
+      void initFcmToken() async {
+        final deviceId = await ref.read(deviceInfoGetUsecaseProvider).execute();
+        if (deviceId == null) return;
+
+        await ref.read(notificationSaveUsecaeProvider).execute(
+              ref.watch(authStateProvider).value?.uid,
+              deviceId,
+            );
+      }
+
+      initFcmToken();
+
+      return () {};
+    }, []);
 
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(

@@ -8,22 +8,16 @@ class MessagingHandlersService {
   }
 
   void _handleForegroundMessage() {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      // フォアグラウンドでの通知処理
-    });
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {});
   }
 
   void _handleBackgroundMessage() {
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      // バックグラウンドでの通知タップ処理
-    });
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {});
   }
 
   Future<void> _handleInitialMessage() async {
     RemoteMessage? message =
         await FirebaseMessaging.instance.getInitialMessage();
-    if (message != null) {
-      // アプリが終了している状態での通知タップ処理
-    }
+    if (message != null) {}
   }
 }

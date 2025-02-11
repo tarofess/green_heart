@@ -18,10 +18,13 @@ class FirebaseInitService implements InitService {
 
   @override
   Future<void> initialize() async {
+    WidgetsFlutterBinding.ensureInitialized();
+
     try {
       await initFirebase();
       await setupFirestore();
       await setupCrashlytics();
+      await setupMessaging();
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException(e.toString());
@@ -30,7 +33,6 @@ class FirebaseInitService implements InitService {
 
   Future<void> initFirebase() async {
     try {
-      WidgetsFlutterBinding.ensureInitialized();
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
@@ -57,6 +59,7 @@ class FirebaseInitService implements InitService {
       FlutterError.onError = (errorDetails) {
         FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
       };
+
       PlatformDispatcher.instance.onError = (error, stack) {
         FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
         return true;
@@ -75,6 +78,7 @@ class FirebaseInitService implements InitService {
         badge: true,
         sound: true,
       );
+
       await FirebaseMessaging.instance.requestPermission(
         alert: true,
         badge: true,

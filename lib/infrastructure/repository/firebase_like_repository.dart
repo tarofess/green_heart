@@ -10,7 +10,12 @@ class FirebaseLikeRepository implements LikeRepository {
   final int _timeoutSeconds = 15;
 
   @override
-  Future<bool> toggleLike(String postId, String uid) async {
+  Future<bool> toggleLike(
+    String postId,
+    String uid,
+    String userName,
+    String userImage,
+  ) async {
     try {
       final likeRef =
           _firestore.collection('post').doc(postId).collection('like').doc(uid);
@@ -24,7 +29,12 @@ class FirebaseLikeRepository implements LikeRepository {
         return false;
       } else {
         // いいねしていなければ追加
-        final like = Like(uid: uid, createdAt: DateTime.now());
+        final like = Like(
+          uid: uid,
+          userName: userName,
+          userImage: userImage,
+          createdAt: DateTime.now(),
+        );
         await likeRef
             .set(like.toJson())
             .timeout(Duration(seconds: _timeoutSeconds));

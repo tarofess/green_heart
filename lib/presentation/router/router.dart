@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -17,21 +16,10 @@ import 'package:green_heart/application/state/account_state_notifier.dart';
 import 'package:green_heart/presentation/page/block_list_page.dart';
 import 'package:green_heart/presentation/page/follow_page.dart';
 import 'package:green_heart/presentation/page/user_diary_detail_page.dart';
-import 'package:green_heart/application/di/notification_di.dart';
 import 'package:green_heart/domain/type/post.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
-
-  ref.listen<AsyncValue<User?>>(authStateProvider, (previous, next) async {
-    if (next.value != null) {
-      try {
-        await ref.read(notificationSaveUsecaeProvider).execute(next.value!.uid);
-      } catch (e) {
-        return;
-      }
-    }
-  });
 
   return GoRouter(
     routes: [

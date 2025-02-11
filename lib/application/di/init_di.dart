@@ -5,7 +5,7 @@ import 'package:green_heart/infrastructure/service/firebase_init_service.dart';
 import 'package:green_heart/infrastructure/service/messaging_handlers_service.dart';
 
 final firebaseInitUsecaseProvider = Provider(
-  (ref) => FirebaseInitUsecase(
-    FirebaseInitService(MessagingHandlersService()),
-  ),
+  (ref) => FirebaseInitUsecase(FirebaseInitService(
+    MessagingHandlersService(),
+  )),
 );
