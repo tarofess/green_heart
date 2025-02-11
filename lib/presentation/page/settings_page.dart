@@ -20,6 +20,7 @@ class SettingsPage extends ConsumerWidget {
       body: ListView(
         children: [
           _buildEditProfileItem(context, ref),
+          _buildNotificationSettingItem(context, ref),
           _buildBlockItem(context, ref),
           _buildContactItem(context, ref),
           _buildAppInfoItem(context, ref),
@@ -39,6 +40,19 @@ class SettingsPage extends ConsumerWidget {
       title: const Text('プロフィール編集'),
       onTap: () {
         context.push('/profile_edit');
+      },
+    );
+  }
+
+  Widget _buildNotificationSettingItem(BuildContext context, WidgetRef ref) {
+    return ListTile(
+      leading: Icon(
+        Icons.notifications,
+        size: 24.r,
+      ),
+      title: const Text('通知設定'),
+      onTap: () {
+        context.push('/notification_setting');
       },
     );
   }

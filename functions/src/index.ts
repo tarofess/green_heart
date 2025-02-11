@@ -154,7 +154,7 @@ export const onAccountDelete = functions.auth.user().onDelete(async (user) => {
         });
 
         // 3. Firestore上の関連データ削除処理
-        // 3-1. プロフィールドキュメントとそのサブコレクション（follow, follower, block, notification）の削除
+        // 3-1. プロフィールドキュメントとそのサブコレクション（follow, follower, block, notification, notificationSetting）の削除
         console.log(`Deleting profile and its subcollections for uid: ${uid}`);
         deletePromises.push(db.recursiveDelete(profileRef));
 
@@ -288,10 +288,10 @@ export const sendLikeNotification = functions.firestore
             console.log("いいねデータがありません。");
             return;
         }
-        const likerUid = likeData.uid; // いいねしたユーザーのUID（Aさん）
-        const likerName = likeData.userName; // いいねしたユーザーの名前（Aさん）
+        const likerUid = likeData.uid;      // いいねしたユーザーのUID
+        const likerName = likeData.userName; // いいねしたユーザーの名前
 
-        // 2. 投稿IDを取得し、投稿ドキュメントから投稿者（Bさん）のUIDを取得
+        // 2. 投稿IDを取得し、投稿ドキュメントから投稿者のUIDを取得
         const { postId } = context.params;
         const postRef = admin.firestore().collection("post").doc(postId);
         const postDoc = await postRef.get();
@@ -300,7 +300,7 @@ export const sendLikeNotification = functions.firestore
             return;
         }
         const postData = postDoc.data();
-        const postOwnerUid = postData?.uid; // 投稿者のUID（Bさん）
+        const postOwnerUid = postData?.uid;
         if (!postOwnerUid) {
             console.log("投稿者のUIDが取得できませんでした。");
             return;
@@ -312,11 +312,12 @@ export const sendLikeNotification = functions.firestore
             return;
         }
 
-        // 4. 投稿者のFCMトークンをprofile/uid/notificationから取得
+        // 4. 投稿者のFCMトークンを profile/{postOwnerUid}/notificationSetting から取得し、
+        //    likeSettingがtrueのトークンのみ収集
         const tokensSnapshot = await admin.firestore()
             .collection("profile")
             .doc(postOwnerUid)
-            .collection("notification")
+            .collection("notificationSetting")
             .get();
 
         if (tokensSnapshot.empty) {
@@ -324,17 +325,17 @@ export const sendLikeNotification = functions.firestore
             return;
         }
 
-        // 複数トークンを格納するための配列を作成
         const tokens: string[] = [];
         tokensSnapshot.forEach(doc => {
             const tokenData = doc.data();
-            if (tokenData.token) {
+            // likeSettingがtrueの場合のみ通知対象とする
+            if (tokenData.token && tokenData.likeSetting) {
                 tokens.push(tokenData.token);
             }
         });
 
         if (tokens.length === 0) {
-            console.log("有効なFCMトークンがありません。");
+            console.log("通知設定がオフのため、送信する有効なFCMトークンがありません。");
             return;
         }
 
@@ -355,6 +356,7 @@ export const sendLikeNotification = functions.firestore
             console.error("通知送信エラー:", error);
         }
     });
+
 
 // コメントされたときに通知を送信
 export const sendCommentNotification = functions.firestore
@@ -378,7 +380,7 @@ export const sendCommentNotification = functions.firestore
             return;
         }
         const postData = postDoc.data();
-        const postOwnerUid = postData?.uid; // 投稿者（投稿主）のUID
+        const postOwnerUid = postData?.uid;
         if (!postOwnerUid) {
             console.log("投稿者のUIDが取得できませんでした。");
             return;
@@ -390,11 +392,12 @@ export const sendCommentNotification = functions.firestore
             return;
         }
 
-        // 4. 投稿者のFCMトークンを profile/{postOwnerUid}/notification から取得
+        // 4. 投稿者のFCMトークンを profile/{postOwnerUid}/notificationSetting から取得し、
+        //    commentSettingがtrueのトークンのみ収集
         const tokensSnapshot = await admin.firestore()
             .collection("profile")
             .doc(postOwnerUid)
-            .collection("notification")
+            .collection("notificationSetting")
             .get();
 
         if (tokensSnapshot.empty) {
@@ -402,17 +405,17 @@ export const sendCommentNotification = functions.firestore
             return;
         }
 
-        // 有効なトークンを配列に格納
         const tokens: string[] = [];
         tokensSnapshot.forEach(doc => {
             const tokenData = doc.data();
-            if (tokenData.token) {
+            // commentSettingがtrueの場合のみ通知対象とする
+            if (tokenData.token && tokenData.commentSetting) {
                 tokens.push(tokenData.token);
             }
         });
 
         if (tokens.length === 0) {
-            console.log("有効なFCMトークンがありません。");
+            console.log("通知設定がオフのため、送信する有効なFCMトークンがありません。");
             return;
         }
 
@@ -434,6 +437,7 @@ export const sendCommentNotification = functions.firestore
         }
     });
 
+
 // フォローされたときに通知を送信
 export const sendFollowNotification = functions.firestore
     .document("profile/{userId}/follower/{followerId}")
@@ -444,8 +448,7 @@ export const sendFollowNotification = functions.firestore
             console.log("フォロー情報がありません。");
             return;
         }
-
-        const followerName = followData.userName;   // フォローしたユーザーの名前
+        const followerName = followData.userName; // フォローしたユーザーの名前
 
         // 2. フォローされたユーザーのUIDを取得（ドキュメントパスの userId）
         const { userId } = context.params;
@@ -454,11 +457,12 @@ export const sendFollowNotification = functions.firestore
             return;
         }
 
-        // 3. フォローされたユーザーのFCMトークンを profile/{userId}/notification から取得
+        // 3. フォローされたユーザーのFCMトークンを profile/{userId}/notificationSetting から取得し、
+        //    followerSettingがtrueのトークンのみ収集
         const tokensSnapshot = await admin.firestore()
             .collection("profile")
             .doc(userId)
-            .collection("notification")
+            .collection("notificationSetting")
             .get();
 
         if (tokensSnapshot.empty) {
@@ -466,17 +470,17 @@ export const sendFollowNotification = functions.firestore
             return;
         }
 
-        // 有効なトークンを配列に格納
         const tokens: string[] = [];
         tokensSnapshot.forEach(doc => {
             const tokenData = doc.data();
-            if (tokenData.token) {
+            // followerSettingがtrueの場合のみ通知対象とする
+            if (tokenData.token && tokenData.followerSetting) {
                 tokens.push(tokenData.token);
             }
         });
 
         if (tokens.length === 0) {
-            console.log("有効なFCMトークンがありません。");
+            console.log("通知設定がオフのため、送信する有効なFCMトークンがありません。");
             return;
         }
 

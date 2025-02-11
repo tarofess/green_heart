@@ -5,7 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/presentation/page/home_page.dart';
 import 'package:green_heart/presentation/page/timeline_page.dart';
-import 'package:green_heart/application/di/notification_di.dart';
+import 'package:green_heart/application/di/notification_setting_di.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/di/device_info_di.dart';
 
