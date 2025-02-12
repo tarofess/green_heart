@@ -49,64 +49,71 @@ class NotificationSettingPage extends HookConsumerWidget {
       return;
     }, []);
 
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, _) async {
-        if (didPop) return;
-
-        final uid = ref.watch(authStateProvider).value?.uid;
-        final deviceId = await ref.read(deviceInfoGetUsecaseProvider).execute();
-
-        if (!context.mounted) return;
-
-        if (uid == null || deviceId == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('予期せぬエラーが発生しました。再度お試しください。')),
-          );
-
-          return;
-        }
-
-        final result = await LoadingOverlay.of(
-          context,
-          message: '設定中',
-          backgroundColor: Colors.white10,
-        ).during(
-          () => ref.read(notificationSettingUpdateUsecaeProvider).execute(
-                uid,
-                deviceId,
-                likeSwitchValue.value,
-                commentSwitchValue.value,
-                followerSwitchValue.value,
-              ),
-        );
-
-        if (!context.mounted) return;
-
-        switch (result) {
-          case Success():
-            Navigator.of(context).pop();
-            break;
-          case Failure(message: final message):
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('エラーが発生し、通知設定が更新できませんでした: $message')),
-            );
-            Navigator.of(context).pop();
-            break;
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(title: const Text('通知設定')),
-        body: Padding(
-          padding: EdgeInsets.only(top: 4.h, left: 4.w),
-          child: Center(
-            child: ListView(
-              children: [
-                _buildLikeSwitch(context, ref, likeSwitchValue),
-                _buildCommentSwitch(context, ref, commentSwitchValue),
-                _buildFollowerSwitch(context, ref, followerSwitchValue),
-              ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('通知設定'),
+        actions: [
+          TextButton(
+            child: const Text(
+              '保存',
+              style: TextStyle(fontWeight: FontWeight.normal),
             ),
+            onPressed: () async {
+              final uid = ref.watch(authStateProvider).value?.uid;
+              final deviceId =
+                  await ref.read(deviceInfoGetUsecaseProvider).execute();
+
+              if (!context.mounted) return;
+
+              if (uid == null || deviceId == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('予期せぬエラーが発生しました。再度お試しください。')),
+                );
+
+                return;
+              }
+
+              final result = await LoadingOverlay.of(
+                context,
+                message: '設定中',
+                backgroundColor: Colors.white10,
+              ).during(
+                () => ref.read(notificationSettingUpdateUsecaeProvider).execute(
+                      uid,
+                      deviceId,
+                      likeSwitchValue.value,
+                      commentSwitchValue.value,
+                      followerSwitchValue.value,
+                    ),
+              );
+
+              if (!context.mounted) return;
+
+              switch (result) {
+                case Success():
+                  Navigator.of(context).pop();
+                  break;
+                case Failure(message: final message):
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('エラーが発生し、通知設定が更新できませんでした: $message')),
+                  );
+                  Navigator.of(context).pop();
+                  break;
+              }
+            },
+          )
+        ],
+      ),
+      body: Padding(
+        padding: EdgeInsets.only(top: 4.h, left: 4.w),
+        child: Center(
+          child: ListView(
+            children: [
+              _buildLikeSwitch(context, ref, likeSwitchValue),
+              _buildCommentSwitch(context, ref, commentSwitchValue),
+              _buildFollowerSwitch(context, ref, followerSwitchValue),
+            ],
           ),
         ),
       ),
