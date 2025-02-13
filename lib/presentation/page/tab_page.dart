@@ -8,6 +8,7 @@ import 'package:green_heart/presentation/page/timeline_page.dart';
 import 'package:green_heart/application/di/notification_setting_di.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/di/device_info_di.dart';
+import 'package:green_heart/presentation/page/notification_page.dart';
 
 class TabPage extends HookConsumerWidget {
   const TabPage({super.key});
@@ -43,6 +44,10 @@ class TabPage extends HookConsumerWidget {
             icon: Icon(Icons.feed_outlined, size: 24.r),
             label: 'みんなの投稿',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notifications_none_outlined, size: 24.r),
+            label: '通知',
+          ),
         ],
         currentIndex: selectedIndex.value,
         onTap: (int index) {
@@ -55,6 +60,10 @@ class TabPage extends HookConsumerWidget {
           const HomePage(),
           if (selectedIndex.value == 1)
             const TimelinePage()
+          else
+            const SizedBox.shrink(),
+          if (selectedIndex.value == 2)
+            const NotificationPage()
           else
             const SizedBox.shrink(),
         ],
