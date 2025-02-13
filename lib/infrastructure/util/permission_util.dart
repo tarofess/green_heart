@@ -25,7 +25,7 @@ class PermissionUtil {
           final result = await showConfirmationDialog(
             context: context,
             title: '権限エラー',
-            content: 'カメラ撮影が拒否されているため写真を撮影できません。\n設定画面でカメラ撮影を許可しますか？',
+            content: 'カメラ撮影が拒否されているため写真を撮影できません。\n設定でカメラ撮影を許可しますか？',
             positiveButtonText: 'はい',
             negativeButtonText: 'いいえ',
           );
@@ -61,7 +61,7 @@ class PermissionUtil {
           final result = await showConfirmationDialog(
             context: context,
             title: '権限エラー',
-            content: 'カメラ撮影が拒否されているため写真を撮影できません。\n設定画面でカメラ撮影を許可しますか？',
+            content: 'カメラ撮影が拒否されているため写真を撮影できません。\n設定でカメラ撮影を許可しますか？',
             positiveButtonText: 'はい',
             negativeButtonText: 'いいえ',
           );
@@ -105,7 +105,7 @@ class PermissionUtil {
           final result = await showConfirmationDialog(
             context: context,
             title: '権限エラー',
-            content: '現在プッシュ通知が受け取れない設定になっています。\n設定画面で通知を許可しますか？',
+            content: '現在プッシュ通知が受け取れない設定になっています。\n設定で通知を許可しますか？',
             positiveButtonText: 'はい',
             negativeButtonText: 'いいえ',
           );
