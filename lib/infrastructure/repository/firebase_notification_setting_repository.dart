@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:green_heart/application/exception/app_exception.dart';
-import 'package:green_heart/application/interface/notification_repository.dart';
+import 'package:green_heart/application/interface/notification_setting_repository.dart';
 import 'package:green_heart/domain/type/notification_setting.dart';
 import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 

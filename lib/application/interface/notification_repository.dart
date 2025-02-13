@@ -1,25 +1,6 @@
-import 'package:green_heart/domain/type/notification_setting.dart';
+import 'package:green_heart/domain/type/notification.dart';
 
-abstract class NotificationSettingRepository {
-  Future<NotificationSetting?> getNotificationSetting(
-    String uid,
-    String deviceId,
-  );
-  Future<void> addNotificationSetting(
-    String uid,
-    String deviceId,
-    String token,
-  );
-  Future<void> updateNotificationSetting(
-    String uid,
-    String deviceId,
-    String token,
-  );
-  Future<void> updateEachNotificationStatus(
-    String uid,
-    String deviceId,
-    bool likeSetting,
-    bool commentSetting,
-    bool followerSetting,
-  );
+abstract class NotificationRepository {
+  Future<List<Notification>> getNotifications(String uid);
+  Future<void> markAsRead(Notification notification);
 }

@@ -1,6 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-import 'package:green_heart/application/interface/notification_repository.dart';
+import 'package:green_heart/application/interface/notification_setting_repository.dart';
 
 class NotificationSaveUsecase {
   final NotificationSettingRepository _notificationRepository;
