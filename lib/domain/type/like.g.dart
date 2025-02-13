@@ -9,7 +9,7 @@ part of 'like.dart';
 _$LikeImpl _$$LikeImplFromJson(Map<String, dynamic> json) => _$LikeImpl(
       uid: json['uid'] as String,
       userName: json['userName'] as String,
-      userImage: json['userImage'] as String,
+      userImage: json['userImage'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
     );
 

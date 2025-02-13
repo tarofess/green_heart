@@ -14,7 +14,7 @@ class FirebaseLikeRepository implements LikeRepository {
     String postId,
     String uid,
     String userName,
-    String userImage,
+    String? userImage,
   ) async {
     try {
       final likeRef =

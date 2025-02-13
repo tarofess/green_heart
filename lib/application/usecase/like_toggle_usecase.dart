@@ -13,7 +13,7 @@ class LikeToggleUsecase {
     Post post,
     String uid,
     String userName,
-    String userImage,
+    String? userImage,
   ) async {
     try {
       final didLike = await _likeRepository.toggleLike(

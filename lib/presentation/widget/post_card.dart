@@ -164,7 +164,7 @@ class PostCard extends ConsumerWidget {
         final userName = ref.watch(profileNotifierProvider).value?.name;
         final userImage = ref.watch(profileNotifierProvider).value?.imageUrl;
 
-        if (uid == null || userName == null || userImage == null) return;
+        if (uid == null || userName == null) return;
 
         final result = await LoadingOverlay.of(
           context,

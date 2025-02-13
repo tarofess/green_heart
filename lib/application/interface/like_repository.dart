@@ -3,7 +3,7 @@ abstract class LikeRepository {
     String postId,
     String uid,
     String userName,
-    String userImage,
+    String? userImage,
   );
   Future<bool> checkIfLiked(String postId, String uid);
 }

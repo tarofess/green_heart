@@ -22,7 +22,7 @@ Like _$LikeFromJson(Map<String, dynamic> json) {
 mixin _$Like {
   String get uid => throw _privateConstructorUsedError;
   String get userName => throw _privateConstructorUsedError;
-  String get userImage => throw _privateConstructorUsedError;
+  String? get userImage => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this Like to a JSON map.
@@ -40,7 +40,7 @@ abstract class $LikeCopyWith<$Res> {
       _$LikeCopyWithImpl<$Res, Like>;
   @useResult
   $Res call(
-      {String uid, String userName, String userImage, DateTime createdAt});
+      {String uid, String userName, String? userImage, DateTime createdAt});
 }
 
 /// @nodoc
@@ -60,7 +60,7 @@ class _$LikeCopyWithImpl<$Res, $Val extends Like>
   $Res call({
     Object? uid = null,
     Object? userName = null,
-    Object? userImage = null,
+    Object? userImage = freezed,
     Object? createdAt = null,
   }) {
     return _then(_value.copyWith(
@@ -72,10 +72,10 @@ class _$LikeCopyWithImpl<$Res, $Val extends Like>
           ? _value.userName
           : userName // ignore: cast_nullable_to_non_nullable
               as String,
-      userImage: null == userImage
+      userImage: freezed == userImage
           ? _value.userImage
           : userImage // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -92,7 +92,7 @@ abstract class _$$LikeImplCopyWith<$Res> implements $LikeCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {String uid, String userName, String userImage, DateTime createdAt});
+      {String uid, String userName, String? userImage, DateTime createdAt});
 }
 
 /// @nodoc
@@ -109,7 +109,7 @@ class __$$LikeImplCopyWithImpl<$Res>
   $Res call({
     Object? uid = null,
     Object? userName = null,
-    Object? userImage = null,
+    Object? userImage = freezed,
     Object? createdAt = null,
   }) {
     return _then(_$LikeImpl(
@@ -121,10 +121,10 @@ class __$$LikeImplCopyWithImpl<$Res>
           ? _value.userName
           : userName // ignore: cast_nullable_to_non_nullable
               as String,
-      userImage: null == userImage
+      userImage: freezed == userImage
           ? _value.userImage
           : userImage // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -150,7 +150,7 @@ class _$LikeImpl implements _Like {
   @override
   final String userName;
   @override
-  final String userImage;
+  final String? userImage;
   @override
   final DateTime createdAt;
 
@@ -198,7 +198,7 @@ abstract class _Like implements Like {
   const factory _Like(
       {required final String uid,
       required final String userName,
-      required final String userImage,
+      required final String? userImage,
       required final DateTime createdAt}) = _$LikeImpl;
 
   factory _Like.fromJson(Map<String, dynamic> json) = _$LikeImpl.fromJson;
@@ -208,7 +208,7 @@ abstract class _Like implements Like {
   @override
   String get userName;
   @override
-  String get userImage;
+  String? get userImage;
   @override
   DateTime get createdAt;
 

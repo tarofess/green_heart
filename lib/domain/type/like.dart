@@ -8,7 +8,7 @@ class Like with _$Like {
   const factory Like({
     required String uid,
     required String userName,
-    required String userImage,
+    required String? userImage,
     required DateTime createdAt,
   }) = _Like;
 
