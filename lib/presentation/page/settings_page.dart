@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:green_heart/infrastructure/util/permission_util.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/auth_di.dart';
@@ -51,8 +52,10 @@ class SettingsPage extends ConsumerWidget {
         size: 24.r,
       ),
       title: const Text('通知設定'),
-      onTap: () {
-        context.push('/notification_setting');
+      onTap: () async {
+        if (await PermissionUtil.requestNotificationPermission(context)) {
+          if (context.mounted) context.push('/notification_setting');
+        }
       },
     );
   }
