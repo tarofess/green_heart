@@ -51,9 +51,12 @@ class TabPage extends HookConsumerWidget {
       ),
       body: IndexedStack(
         index: selectedIndex.value,
-        children: const [
-          HomePage(),
-          TimelinePage(),
+        children: [
+          const HomePage(),
+          if (selectedIndex.value == 1)
+            const TimelinePage()
+          else
+            const SizedBox.shrink(),
         ],
       ),
     );
