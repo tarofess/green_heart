@@ -1,8 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
-admin.initializeApp();
-
 // コメント作成時に、親の post の commentCount を +1 する
 export const onCommentCreated = functions.firestore
     .document('post/{postId}/comment/{commentId}')

@@ -1,8 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
-admin.initializeApp();
-
 // いいね作成時に、親の post の likeCount を +1 する
 export const onLikeCreated = functions.firestore
     .document('post/{postId}/like/{likeId}')

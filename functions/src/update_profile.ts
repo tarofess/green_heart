@@ -1,7 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
-admin.initializeApp();
 const db = admin.firestore();
 
 // ドキュメントリストに対して、500 件ごとにバッチ更新を行うヘルパー関数

@@ -1,8 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
-admin.initializeApp();
-
 // post が削除されたときに、その post に紐づく like, comment も削除する
 export const recursiveDeletePost = functions.firestore
     .document('post/{postId}')

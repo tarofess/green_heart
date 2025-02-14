@@ -1,8 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
-admin.initializeApp();
-
 // いいねが付いたときに通知を送信
 export const sendLikeNotification = functions.firestore
     .document("post/{postId}/like/{likeId}")
