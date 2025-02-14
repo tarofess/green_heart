@@ -30,6 +30,7 @@ abstract class PostRepository {
     SearchPostScrollState searchPostScrollState,
     SearchPostScrollStateNotifier searchPostScrollStateNotifier,
   );
+  Future<List<Post>> getPostById(String postId);
   Future<List<String>> uploadImages(String uid, List<String> paths);
   Future<void> deletePost(String postId);
 }

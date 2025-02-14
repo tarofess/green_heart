@@ -1,3 +1,4 @@
+import 'package:green_heart/application/state/notification_detail_post_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/auth_state_provider.dart';
@@ -21,6 +22,9 @@ class PostManagerNotifier extends Notifier {
     ref.read(searchPostNotifierProvider.notifier).deletePost(
           post.id,
         );
+    ref
+        .read(notificationDetailPostNotifierProvider(post.id).notifier)
+        .deletePost(post.id);
   }
 
   void toggleLike(Post post, String uid, bool didLike) {
@@ -35,6 +39,13 @@ class PostManagerNotifier extends Notifier {
           didLike,
         );
     ref.read(searchPostNotifierProvider.notifier).toggleLike(
+          post.id,
+          uid,
+          didLike,
+        );
+    ref
+        .read(notificationDetailPostNotifierProvider(post.id).notifier)
+        .toggleLike(
           post.id,
           uid,
           didLike,
@@ -63,6 +74,12 @@ class PostManagerNotifier extends Notifier {
           post.id,
           newComment,
         );
+    ref
+        .read(notificationDetailPostNotifierProvider(post.id).notifier)
+        .addComment(
+          post.id,
+          newComment,
+        );
   }
 
   void deleteComment(String postId, int deletedCommentCount) {
@@ -76,6 +93,12 @@ class PostManagerNotifier extends Notifier {
           deletedCommentCount,
         );
     ref.read(searchPostNotifierProvider.notifier).deleteComment(
+          postId,
+          deletedCommentCount,
+        );
+    ref
+        .read(notificationDetailPostNotifierProvider(postId).notifier)
+        .deleteComment(
           postId,
           deletedCommentCount,
         );

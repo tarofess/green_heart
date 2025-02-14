@@ -11,6 +11,7 @@ import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/application/state/post_manager_notifier.dart';
 import 'package:green_heart/application/state/search_post_notifier.dart';
+import 'package:green_heart/application/usecase/post_get_by_id_usecase.dart';
 
 final postAddUsecaseProvider = Provider(
   (ref) {
@@ -43,4 +44,8 @@ final postSearchResultGetUsecaseProvider = Provider(
     FirebasePostRepository(),
     ref.read(searchPostNotifierProvider.notifier),
   ),
+);
+
+final postGetByIdUsecaseProvider = Provider(
+  (ref) => PostGetByIdUsecase(FirebasePostRepository()),
 );

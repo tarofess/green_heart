@@ -187,6 +187,26 @@ class FirebasePostRepository implements PostRepository {
   }
 
   @override
+  Future<List<Post>> getPostById(String postId) async {
+    try {
+      final docSnapshot = await _firestore
+          .collection('post')
+          .doc(postId)
+          .get()
+          .timeout(Duration(seconds: _timeoutSeconds));
+
+      if (!docSnapshot.exists || docSnapshot.data() == null) {
+        return [];
+      }
+
+      return [Post.fromJson(docSnapshot.data() as Map<String, dynamic>)];
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('投稿の取得に失敗しました。再度お試しください。');
+    }
+  }
+
+  @override
   Future<List<String>> uploadImages(String uid, List<String> paths) async {
     try {
       final uploadTasks = paths.map((path) async {

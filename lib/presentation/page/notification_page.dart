@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/notification_notifier.dart';
@@ -35,11 +36,10 @@ class NotificationPage extends ConsumerWidget {
                           notification: notifications[index],
                         ),
                         onTap: () async {
-                          // 未読の場合は既読にする
                           if (notifications[index].isRead == false) {
-                            LoadingOverlay.of(
+                            // 未読の通知を既読にする
+                            await LoadingOverlay.of(
                               context,
-                              message: '読み込み中',
                               backgroundColor: Colors.white10,
                             ).during(
                               () => ref
@@ -48,10 +48,12 @@ class NotificationPage extends ConsumerWidget {
                             );
                           }
 
-                          // postを取得して通知詳細画面に遷移
-                          // context.push('/notification_detail', extra: {
-                          //   'post': post,
-                          // });
+                          final postId = notifications[index].postId;
+                          if (postId == null || !context.mounted) return;
+
+                          context.push('/notification_detail', extra: {
+                            'postId': postId,
+                          });
                         },
                       );
                     },

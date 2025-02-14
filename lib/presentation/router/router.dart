@@ -126,8 +126,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final Map<String, dynamic> extra =
               state.extra as Map<String, dynamic>;
-          final post = extra['post'] as Post;
-          return NotificationDetailPage(post: post);
+          final postId = extra['postId'] as String;
+          return NotificationDetailPage(postId: postId);
         },
       ),
     ],

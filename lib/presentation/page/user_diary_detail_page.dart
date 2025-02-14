@@ -35,7 +35,7 @@ class UserDiaryDetailPage extends ConsumerWidget {
               (posts) => posts.id == selectedPost.id,
             );
             return postData == null
-                ? const Center(child: Text('データがありません'))
+                ? const Center(child: Text('投稿がありません'))
                 : SingleChildScrollView(
                     child: Padding(
                       padding: EdgeInsets.only(
