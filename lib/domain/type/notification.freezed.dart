@@ -24,10 +24,11 @@ mixin _$Notification {
   String get type => throw _privateConstructorUsedError;
   bool get isRead => throw _privateConstructorUsedError;
   String? get postId => throw _privateConstructorUsedError;
+  String? get postContent => throw _privateConstructorUsedError;
   String get receiverUid => throw _privateConstructorUsedError;
   String get senderUid => throw _privateConstructorUsedError;
   String get senderUserName => throw _privateConstructorUsedError;
-  String get senderUserImage => throw _privateConstructorUsedError;
+  String? get senderUserImage => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this Notification to a JSON map.
@@ -51,10 +52,11 @@ abstract class $NotificationCopyWith<$Res> {
       String type,
       bool isRead,
       String? postId,
+      String? postContent,
       String receiverUid,
       String senderUid,
       String senderUserName,
-      String senderUserImage,
+      String? senderUserImage,
       DateTime createdAt});
 }
 
@@ -77,10 +79,11 @@ class _$NotificationCopyWithImpl<$Res, $Val extends Notification>
     Object? type = null,
     Object? isRead = null,
     Object? postId = freezed,
+    Object? postContent = freezed,
     Object? receiverUid = null,
     Object? senderUid = null,
     Object? senderUserName = null,
-    Object? senderUserImage = null,
+    Object? senderUserImage = freezed,
     Object? createdAt = null,
   }) {
     return _then(_value.copyWith(
@@ -100,6 +103,10 @@ class _$NotificationCopyWithImpl<$Res, $Val extends Notification>
           ? _value.postId
           : postId // ignore: cast_nullable_to_non_nullable
               as String?,
+      postContent: freezed == postContent
+          ? _value.postContent
+          : postContent // ignore: cast_nullable_to_non_nullable
+              as String?,
       receiverUid: null == receiverUid
           ? _value.receiverUid
           : receiverUid // ignore: cast_nullable_to_non_nullable
@@ -112,10 +119,10 @@ class _$NotificationCopyWithImpl<$Res, $Val extends Notification>
           ? _value.senderUserName
           : senderUserName // ignore: cast_nullable_to_non_nullable
               as String,
-      senderUserImage: null == senderUserImage
+      senderUserImage: freezed == senderUserImage
           ? _value.senderUserImage
           : senderUserImage // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -137,10 +144,11 @@ abstract class _$$NotificationImplCopyWith<$Res>
       String type,
       bool isRead,
       String? postId,
+      String? postContent,
       String receiverUid,
       String senderUid,
       String senderUserName,
-      String senderUserImage,
+      String? senderUserImage,
       DateTime createdAt});
 }
 
@@ -161,10 +169,11 @@ class __$$NotificationImplCopyWithImpl<$Res>
     Object? type = null,
     Object? isRead = null,
     Object? postId = freezed,
+    Object? postContent = freezed,
     Object? receiverUid = null,
     Object? senderUid = null,
     Object? senderUserName = null,
-    Object? senderUserImage = null,
+    Object? senderUserImage = freezed,
     Object? createdAt = null,
   }) {
     return _then(_$NotificationImpl(
@@ -184,6 +193,10 @@ class __$$NotificationImplCopyWithImpl<$Res>
           ? _value.postId
           : postId // ignore: cast_nullable_to_non_nullable
               as String?,
+      postContent: freezed == postContent
+          ? _value.postContent
+          : postContent // ignore: cast_nullable_to_non_nullable
+              as String?,
       receiverUid: null == receiverUid
           ? _value.receiverUid
           : receiverUid // ignore: cast_nullable_to_non_nullable
@@ -196,10 +209,10 @@ class __$$NotificationImplCopyWithImpl<$Res>
           ? _value.senderUserName
           : senderUserName // ignore: cast_nullable_to_non_nullable
               as String,
-      senderUserImage: null == senderUserImage
+      senderUserImage: freezed == senderUserImage
           ? _value.senderUserImage
           : senderUserImage // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -216,6 +229,7 @@ class _$NotificationImpl implements _Notification {
       required this.type,
       required this.isRead,
       this.postId,
+      this.postContent,
       required this.receiverUid,
       required this.senderUid,
       required this.senderUserName,
@@ -234,19 +248,21 @@ class _$NotificationImpl implements _Notification {
   @override
   final String? postId;
   @override
+  final String? postContent;
+  @override
   final String receiverUid;
   @override
   final String senderUid;
   @override
   final String senderUserName;
   @override
-  final String senderUserImage;
+  final String? senderUserImage;
   @override
   final DateTime createdAt;
 
   @override
   String toString() {
-    return 'Notification(id: $id, type: $type, isRead: $isRead, postId: $postId, receiverUid: $receiverUid, senderUid: $senderUid, senderUserName: $senderUserName, senderUserImage: $senderUserImage, createdAt: $createdAt)';
+    return 'Notification(id: $id, type: $type, isRead: $isRead, postId: $postId, postContent: $postContent, receiverUid: $receiverUid, senderUid: $senderUid, senderUserName: $senderUserName, senderUserImage: $senderUserImage, createdAt: $createdAt)';
   }
 
   @override
@@ -258,6 +274,8 @@ class _$NotificationImpl implements _Notification {
             (identical(other.type, type) || other.type == type) &&
             (identical(other.isRead, isRead) || other.isRead == isRead) &&
             (identical(other.postId, postId) || other.postId == postId) &&
+            (identical(other.postContent, postContent) ||
+                other.postContent == postContent) &&
             (identical(other.receiverUid, receiverUid) ||
                 other.receiverUid == receiverUid) &&
             (identical(other.senderUid, senderUid) ||
@@ -272,8 +290,18 @@ class _$NotificationImpl implements _Notification {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, type, isRead, postId,
-      receiverUid, senderUid, senderUserName, senderUserImage, createdAt);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      type,
+      isRead,
+      postId,
+      postContent,
+      receiverUid,
+      senderUid,
+      senderUserName,
+      senderUserImage,
+      createdAt);
 
   /// Create a copy of Notification
   /// with the given fields replaced by the non-null parameter values.
@@ -297,10 +325,11 @@ abstract class _Notification implements Notification {
       required final String type,
       required final bool isRead,
       final String? postId,
+      final String? postContent,
       required final String receiverUid,
       required final String senderUid,
       required final String senderUserName,
-      required final String senderUserImage,
+      required final String? senderUserImage,
       required final DateTime createdAt}) = _$NotificationImpl;
 
   factory _Notification.fromJson(Map<String, dynamic> json) =
@@ -315,13 +344,15 @@ abstract class _Notification implements Notification {
   @override
   String? get postId;
   @override
+  String? get postContent;
+  @override
   String get receiverUid;
   @override
   String get senderUid;
   @override
   String get senderUserName;
   @override
-  String get senderUserImage;
+  String? get senderUserImage;
   @override
   DateTime get createdAt;
 

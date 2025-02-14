@@ -13,7 +13,7 @@ export const addNotificationOnLike = functions.firestore
         const likeData = snap.data();
         if (!likeData) {
             console.log('No like data found. Exiting function.');
-            return null;
+            return;
         }
         console.log('Received like data:', likeData);
 
@@ -28,18 +28,27 @@ export const addNotificationOnLike = functions.firestore
         const postSnap = await admin.firestore().collection('post').doc(postId).get();
         if (!postSnap.exists) {
             console.log(`Post document with id ${postId} does not exist. Exiting function.`);
-            return null;
+            return;
         }
         const postData = postSnap.data();
         if (!postData || !postData.uid) {
             console.log('Post data is missing or does not contain uid. Exiting function.');
-            return null;
+            return;
         }
         const receiverUid = postData.uid;
         console.log(`Notification receiver uid: ${receiverUid}`);
 
+        // 自分の投稿にいいねした場合は通知を作らない
+        if (senderUid === receiverUid) {
+            console.log('Sender and receiver are the same. Exiting function.');
+            return;
+        }
+
+        const postContent = postData.content;
+        console.log(`Notification post content: ${postContent}`);
+
         // 通知データ作成
-        const notification = createNotificationData('like', receiverUid, senderUid, senderUserName, senderUserImage, postId);
+        const notification = createNotificationData('like', receiverUid, senderUid, senderUserName, senderUserImage, postId, postContent);
         console.log('Notification data to be added:', notification);
 
         // Bさんの通知サブコレクションに追加
@@ -51,7 +60,7 @@ export const addNotificationOnLike = functions.firestore
         } catch (error) {
             console.error('Error while adding notification:', error);
         }
-        return null;
+        return;
     });
 
 /**
@@ -66,7 +75,7 @@ export const addNotificationOnComment = functions.firestore
         const commentData = snap.data();
         if (!commentData) {
             console.log('No comment data found. Exiting function.');
-            return null;
+            return;
         }
         console.log('Received comment data:', commentData);
 
@@ -81,18 +90,27 @@ export const addNotificationOnComment = functions.firestore
         const postSnap = await admin.firestore().collection('post').doc(postId).get();
         if (!postSnap.exists) {
             console.log(`Post document with id ${postId} does not exist. Exiting function.`);
-            return null;
+            return;
         }
         const postData = postSnap.data();
         if (!postData || !postData.uid) {
             console.log('Post data is missing or does not contain uid. Exiting function.');
-            return null;
+            return;
         }
         const receiverUid = postData.uid;
         console.log(`Notification receiver uid: ${receiverUid}`);
 
+        // 自分の投稿にコメントした場合は通知を作らない
+        if (senderUid === receiverUid) {
+            console.log('Sender and receiver are the same. Exiting function.');
+            return;
+        }
+
+        const postContent = postData.content;
+        console.log(`Notification post content: ${postContent}`);
+
         // 通知データ作成
-        const notification = createNotificationData('comment', receiverUid, senderUid, senderUserName, senderUserImage, postId);
+        const notification = createNotificationData('comment', receiverUid, senderUid, senderUserName, senderUserImage, postId, postContent);
         console.log('Notification data to be added:', notification);
 
         // Bさんの通知サブコレクションに追加
@@ -104,7 +122,7 @@ export const addNotificationOnComment = functions.firestore
         } catch (error) {
             console.error('Error while adding notification:', error);
         }
-        return null;
+        return;
     });
 
 /**
@@ -119,7 +137,7 @@ export const addNotificationOnFollow = functions.firestore
         const followData = snap.data();
         if (!followData) {
             console.log('No follow data found. Exiting function.');
-            return null;
+            return;
         }
         console.log('Received follow data:', followData);
 
@@ -131,7 +149,7 @@ export const addNotificationOnFollow = functions.firestore
         console.log(`Notification receiver uid: ${receiverUid}`);
 
         // フォローの場合は投稿IDは関係ないので null をセット
-        const notification = createNotificationData('follow', receiverUid, senderUid, senderUserName, senderUserImage, null);
+        const notification = createNotificationData('follow', receiverUid, senderUid, senderUserName, senderUserImage, null, null);
         console.log('Notification data to be added:', notification);
 
         // Bさんの通知サブコレクションに追加
@@ -143,7 +161,7 @@ export const addNotificationOnFollow = functions.firestore
         } catch (error) {
             console.error('Error while adding notification:', error);
         }
-        return null;
+        return;
     });
 
 /**
@@ -154,6 +172,7 @@ export const addNotificationOnFollow = functions.firestore
  * @param senderUserName Aさんのユーザー名
  * @param senderUserImage Aさんのユーザー画像（存在しなければ null）
  * @param postId 関連する投稿ID。フォローの場合は null とする
+ * @param postContent 関連する投稿内容。フォローの場合は null とする
  * @returns 通知データオブジェクト
  */
 function createNotificationData(
@@ -162,16 +181,18 @@ function createNotificationData(
     senderUid: string,
     senderUserName: string,
     senderUserImage: string | null,
-    postId: string | null
+    postId: string | null,
+    postContent: String | null,
 ) {
     return {
         type,
         isRead: false,
         postId,
+        postContent,
         receiverUid,
         senderUid,
         senderUserName,
         senderUserImage,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: new Date().toISOString(),
     };
 }

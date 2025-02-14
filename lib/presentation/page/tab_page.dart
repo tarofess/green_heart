@@ -56,29 +56,33 @@ class TabPage extends HookConsumerWidget {
               );
         },
       ),
-      body: notificationSetupState.when(data: (data) {
-        return IndexedStack(
-          index: selectedIndex,
-          children: [
-            const HomePage(),
-            if (selectedIndex == 1)
-              const TimelinePage()
-            else
-              const SizedBox.shrink(),
-            if (selectedIndex == 2)
-              const NotificationPage()
-            else
-              const SizedBox.shrink(),
-          ],
-        );
-      }, loading: () {
-        return const Center(child: CircularProgressIndicator());
-      }, error: (e, stackTrace) {
-        return AsyncErrorWidget(
-          error: e,
-          retry: () => ref.refresh(notificationSetupNotifierProvider),
-        );
-      }),
+      body: notificationSetupState.when(
+        data: (data) {
+          return IndexedStack(
+            index: selectedIndex,
+            children: [
+              const HomePage(),
+              if (selectedIndex == 1)
+                const TimelinePage()
+              else
+                const SizedBox.shrink(),
+              if (selectedIndex == 2)
+                const NotificationPage()
+              else
+                const SizedBox.shrink(),
+            ],
+          );
+        },
+        loading: () {
+          return const Center(child: CircularProgressIndicator());
+        },
+        error: (e, stackTrace) {
+          return AsyncErrorWidget(
+            error: e,
+            retry: () => ref.refresh(notificationSetupNotifierProvider),
+          );
+        },
+      ),
     );
   }
 }

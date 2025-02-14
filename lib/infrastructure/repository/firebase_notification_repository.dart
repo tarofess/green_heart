@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'package:green_heart/application/exception/app_exception.dart';
 import 'package:green_heart/application/interface/notification_repository.dart';
 import 'package:green_heart/domain/type/notification.dart';
+import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 
 class FirebaseNotificationRepository implements NotificationRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -23,8 +25,9 @@ class FirebaseNotificationRepository implements NotificationRepository {
       }).toList();
 
       return notifications;
-    } catch (e) {
-      return [];
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('投稿の削除に失敗しました。再度お試しください。');
     }
   }
 

@@ -10,10 +10,11 @@ class Notification with _$Notification {
     required String type,
     required bool isRead,
     String? postId,
+    String? postContent,
     required String receiverUid,
     required String senderUid,
     required String senderUserName,
-    required String senderUserImage,
+    required String? senderUserImage,
     required DateTime createdAt,
   }) = _Notification;
 

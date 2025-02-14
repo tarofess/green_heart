@@ -2,10 +2,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:green_heart/application/interface/notification_setting_repository.dart';
 
-class NotificationSaveUsecase {
+class NotificationSettingSaveUsecase {
   final NotificationSettingRepository _notificationSettingRepository;
 
-  NotificationSaveUsecase(this._notificationSettingRepository);
+  NotificationSettingSaveUsecase(this._notificationSettingRepository);
 
   Future<void> execute(String? uid, String deviceId) async {
     try {

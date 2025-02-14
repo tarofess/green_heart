@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:green_heart/presentation/page/notification_detail_page.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/auth_state_provider.dart';
@@ -119,6 +120,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/notification',
         builder: (context, state) => const NotificationPage(),
+      ),
+      GoRoute(
+        path: '/notification_detail',
+        builder: (context, state) {
+          final Map<String, dynamic> extra =
+              state.extra as Map<String, dynamic>;
+          final post = extra['post'] as Post;
+          return NotificationDetailPage(post: post);
+        },
       ),
     ],
     redirect: (BuildContext context, GoRouterState state) {
