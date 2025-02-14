@@ -235,7 +235,7 @@ class ProfileEditPage extends HookConsumerWidget {
     BuildContext context,
     TextEditingController nameTextController,
   ) {
-    const int maxLength = 15;
+    const int maxLength = 12;
     final remainingChars = useState(maxLength);
 
     useEffect(() {
