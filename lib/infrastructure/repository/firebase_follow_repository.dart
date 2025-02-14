@@ -39,9 +39,8 @@ class FirebaseFollowRepository implements FollowRepository {
             .timeout(Duration(seconds: _timeoutSeconds)),
       ]);
     } catch (e, stackTrace) {
-      if (e is TimeoutException) {
-        return;
-      }
+      if (e is TimeoutException) return;
+
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('フォローに失敗しました。再度お試しください。');
     }
@@ -66,9 +65,8 @@ class FirebaseFollowRepository implements FollowRepository {
         followerRef.delete().timeout(Duration(seconds: _timeoutSeconds)),
       ]);
     } catch (e, stackTrace) {
-      if (e is TimeoutException) {
-        return;
-      }
+      if (e is TimeoutException) return;
+
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('フォロー解除に失敗しました。再度お試しください。');
     }

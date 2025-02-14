@@ -11,7 +11,7 @@ class NotificationPage extends ConsumerWidget {
         title: const Text('通知'),
       ),
       body: const Center(
-        child: Text('通知ページだよ'),
+        child: Text('新しい通知はありません'),
       ),
     );
   }

@@ -47,9 +47,8 @@ class FirebasePostRepository implements PostRepository {
           .timeout(Duration(seconds: _timeoutSeconds));
       return post;
     } catch (e, stackTrace) {
-      if (e is TimeoutException) {
-        return post;
-      }
+      if (e is TimeoutException) return post;
+
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('投稿に失敗しました。再度お試しください。');
     }

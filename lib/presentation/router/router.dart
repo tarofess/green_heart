@@ -17,6 +17,7 @@ import 'package:green_heart/presentation/page/block_list_page.dart';
 import 'package:green_heart/presentation/page/follow_page.dart';
 import 'package:green_heart/presentation/page/user_diary_detail_page.dart';
 import 'package:green_heart/domain/type/post.dart';
+import 'package:green_heart/presentation/page/notification_page.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -114,6 +115,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           final appInfo = extra['app_info'] as String?;
           return AppInfoPage(appInfo: appInfo);
         },
+      ),
+      GoRoute(
+        path: '/notification',
+        builder: (context, state) => const NotificationPage(),
       ),
     ],
     redirect: (BuildContext context, GoRouterState state) {

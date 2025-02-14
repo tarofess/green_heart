@@ -21,9 +21,8 @@ class FirebaseBlockRepository implements BlockRepository {
 
       await ref.set(block.toJson()).timeout(Duration(seconds: _timeoutSeconds));
     } catch (e, stackTrace) {
-      if (e is TimeoutException) {
-        return;
-      }
+      if (e is TimeoutException) return;
+
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('ブロックリストへの追加に失敗しました。再度お試しください。');
     }
@@ -76,9 +75,8 @@ class FirebaseBlockRepository implements BlockRepository {
 
       await ref.delete().timeout(Duration(seconds: _timeoutSeconds));
     } catch (e, stackTrace) {
-      if (e is TimeoutException) {
-        return;
-      }
+      if (e is TimeoutException) return;
+
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('ブロックリストの削除に失敗しました。再度お試しください。');
     }

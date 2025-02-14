@@ -5,33 +5,33 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/presentation/page/home_page.dart';
 import 'package:green_heart/presentation/page/timeline_page.dart';
-import 'package:green_heart/application/di/notification_setting_di.dart';
-import 'package:green_heart/application/state/auth_state_provider.dart';
-import 'package:green_heart/application/di/device_info_di.dart';
 import 'package:green_heart/presentation/page/notification_page.dart';
+import 'package:green_heart/application/state/notification_setup_notifier.dart';
+import 'package:green_heart/presentation/widget/async_error_widget.dart';
+import 'package:green_heart/application/state/selected_tab_index_notifier.dart';
+import 'package:green_heart/infrastructure/service/messaging_handlers_service.dart';
 
 class TabPage extends HookConsumerWidget {
   const TabPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedIndex = useState(0);
+    final notificationSetupState = ref.watch(notificationSetupNotifierProvider);
+    final selectedIndex = ref.watch(selectedTabIndexNotifierProvider);
 
     useEffect(() {
-      void initFcmToken() async {
-        final deviceId = await ref.read(deviceInfoGetUsecaseProvider).execute();
-        if (deviceId == null) return;
+      void setupNotificationHandlers() {
+        final selectedIndexNotifier =
+            ref.read(selectedTabIndexNotifierProvider.notifier);
 
-        await ref.read(notificationSaveUsecaeProvider).execute(
-              ref.watch(authStateProvider).value?.uid,
-              deviceId,
-            );
+        MessagingHandlersService(selectedIndexNotifier)
+            .setupNotificationHandlers();
       }
 
-      initFcmToken();
+      setupNotificationHandlers();
 
-      return () {};
-    }, []);
+      return null;
+    }, const []);
 
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
@@ -49,25 +49,36 @@ class TabPage extends HookConsumerWidget {
             label: '通知',
           ),
         ],
-        currentIndex: selectedIndex.value,
+        currentIndex: selectedIndex,
         onTap: (int index) {
-          selectedIndex.value = index;
+          ref.read(selectedTabIndexNotifierProvider.notifier).setSelectedIndex(
+                index,
+              );
         },
       ),
-      body: IndexedStack(
-        index: selectedIndex.value,
-        children: [
-          const HomePage(),
-          if (selectedIndex.value == 1)
-            const TimelinePage()
-          else
-            const SizedBox.shrink(),
-          if (selectedIndex.value == 2)
-            const NotificationPage()
-          else
-            const SizedBox.shrink(),
-        ],
-      ),
+      body: notificationSetupState.when(data: (data) {
+        return IndexedStack(
+          index: selectedIndex,
+          children: [
+            const HomePage(),
+            if (selectedIndex == 1)
+              const TimelinePage()
+            else
+              const SizedBox.shrink(),
+            if (selectedIndex == 2)
+              const NotificationPage()
+            else
+              const SizedBox.shrink(),
+          ],
+        );
+      }, loading: () {
+        return const Center(child: CircularProgressIndicator());
+      }, error: (e, stackTrace) {
+        return AsyncErrorWidget(
+          error: e,
+          retry: () => ref.refresh(notificationSetupNotifierProvider),
+        );
+      }),
     );
   }
 }

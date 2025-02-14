@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:green_heart/application/exception/app_exception.dart';
@@ -12,7 +13,10 @@ class FirebaseNotificationSettingRepository
 
   @override
   Future<void> addNotificationSetting(
-      String uid, String deviceId, String fcmToken) async {
+    String uid,
+    String deviceId,
+    String fcmToken,
+  ) async {
     try {
       final notification = NotificationSetting(
         uid: uid,
@@ -28,6 +32,8 @@ class FirebaseNotificationSettingRepository
           .add(notification.toJson())
           .timeout(Duration(seconds: _timeoutSeconds));
     } catch (e, stackTrace) {
+      if (e is TimeoutException) return;
+
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('通知情報の保存に失敗しました。');
     }
@@ -35,7 +41,9 @@ class FirebaseNotificationSettingRepository
 
   @override
   Future<NotificationSetting?> getNotificationSetting(
-      String uid, String deviceId) async {
+    String uid,
+    String deviceId,
+  ) async {
     try {
       final snapshot = await _firestore
           .collection('profile')
@@ -78,6 +86,8 @@ class FirebaseNotificationSettingRepository
         }).timeout(Duration(seconds: _timeoutSeconds));
       }
     } catch (e, stackTrace) {
+      if (e is TimeoutException) return;
+
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('通知情報の更新に失敗しました。');
     }
@@ -111,6 +121,8 @@ class FirebaseNotificationSettingRepository
         }).timeout(Duration(seconds: _timeoutSeconds));
       }
     } catch (e, stackTrace) {
+      if (e is TimeoutException) return;
+
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('通知設定の更新に失敗しました。');
     }

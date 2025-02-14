@@ -39,9 +39,8 @@ class FirebaseCommentRepository implements CommentRepository {
 
       return comment;
     } catch (e, stackTrace) {
-      if (e is TimeoutException) {
-        return comment;
-      }
+      if (e is TimeoutException) return comment;
+
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('コメントの追加に失敗しました。再度お試しください。');
     }
@@ -134,9 +133,8 @@ class FirebaseCommentRepository implements CommentRepository {
 
       await commentRef.delete().timeout(Duration(seconds: _timeoutSeconds));
     } catch (e, stackTrace) {
-      if (e is TimeoutException) {
-        return;
-      }
+      if (e is TimeoutException) return;
+
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('コメントの削除に失敗しました。再度お試しください。');
     }
