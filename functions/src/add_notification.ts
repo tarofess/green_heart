@@ -44,6 +44,24 @@ export const addNotificationOnLike = functions.firestore
             return;
         }
 
+        // 【通知設定チェック】いいね通知が有効か確認する
+        const settingSnapshot = await admin.firestore()
+            .collection('profile')
+            .doc(receiverUid)
+            .collection('notificationSetting')
+            .get();
+        let likeEnabled = false;
+        settingSnapshot.forEach(doc => {
+            const data = doc.data();
+            if (data.likeSetting) {
+                likeEnabled = true;
+            }
+        });
+        if (!likeEnabled) {
+            console.log('Like notifications are disabled in settings. Exiting function.');
+            return;
+        }
+
         const postContent = postData.content;
         console.log(`Notification post content: ${postContent}`);
 
@@ -106,6 +124,24 @@ export const addNotificationOnComment = functions.firestore
             return;
         }
 
+        // 【通知設定チェック】コメント通知が有効か確認する
+        const settingSnapshot = await admin.firestore()
+            .collection('profile')
+            .doc(receiverUid)
+            .collection('notificationSetting')
+            .get();
+        let commentEnabled = false;
+        settingSnapshot.forEach(doc => {
+            const data = doc.data();
+            if (data.commentSetting) {
+                commentEnabled = true;
+            }
+        });
+        if (!commentEnabled) {
+            console.log('Comment notifications are disabled in settings. Exiting function.');
+            return;
+        }
+
         const postContent = postData.content;
         console.log(`Notification post content: ${postContent}`);
 
@@ -147,6 +183,24 @@ export const addNotificationOnFollow = functions.firestore
         const senderUserName = followData.userName;
         const senderUserImage = followData.userImage || null;
         console.log(`Notification receiver uid: ${receiverUid}`);
+
+        // 【通知設定チェック】フォロー通知が有効か確認する
+        const settingSnapshot = await admin.firestore()
+            .collection('profile')
+            .doc(receiverUid)
+            .collection('notificationSetting')
+            .get();
+        let followEnabled = false;
+        settingSnapshot.forEach(doc => {
+            const data = doc.data();
+            if (data.followerSetting) {
+                followEnabled = true;
+            }
+        });
+        if (!followEnabled) {
+            console.log('Follow notifications are disabled in settings. Exiting function.');
+            return;
+        }
 
         // フォローの場合は投稿IDは関係ないので null をセット
         const notification = createNotificationData('follow', receiverUid, senderUid, senderUserName, senderUserImage, null, null);
