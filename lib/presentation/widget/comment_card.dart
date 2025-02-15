@@ -51,7 +51,7 @@ class CommentCard extends HookConsumerWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildUserImage(context, CommentType.comment),
+        _buildUserImage(context, ref, CommentType.comment),
         SizedBox(width: 12.w),
         Expanded(
           child: Column(
@@ -83,7 +83,7 @@ class CommentCard extends HookConsumerWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildUserImage(context, CommentType.reply, replyComment),
+          _buildUserImage(context, ref, CommentType.reply, replyComment),
           SizedBox(width: 12.w),
           Expanded(
             child: Column(
@@ -125,13 +125,17 @@ class CommentCard extends HookConsumerWidget {
 
   Widget _buildUserImage(
     BuildContext context,
+    WidgetRef ref,
     CommentType commentType, [
     CommentData? replyComment,
   ]) {
     if (commentType == CommentType.comment) {
       return GestureDetector(
         onTap: () {
-          context.push('/user', extra: {'uid': commentData.comment.uid});
+          final uid = ref.watch(authStateProvider).value?.uid;
+          if (post.uid != uid && commentData.comment.uid != uid) {
+            context.push('/user', extra: {'uid': commentData.comment.uid});
+          }
         },
         child: commentData.comment.userImage == null
             ? const UserEmptyImage(radius: 24)
