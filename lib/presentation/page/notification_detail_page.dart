@@ -23,7 +23,7 @@ class NotificationDetailPage extends ConsumerWidget {
       body: postsState.when(
         data: (posts) {
           return posts.isEmpty
-              ? const Center(child: Text('投稿が見つかりませんでした'))
+              ? const Center(child: Text('投稿がありません'))
               : SafeArea(
                   child: SingleChildScrollView(
                     child: Padding(
