@@ -19,6 +19,7 @@ class SignInPage extends HookConsumerWidget {
     final isConsentChecked = useState(false);
     final isAccountDeleted =
         ref.watch(accountStateNotifierProvider).value?.isDeleted;
+    final accountState = ref.watch(accountStateNotifierProvider);
 
     useEffect(() {
       // アカウント削除後にこの画面に遷移した時に表示する
@@ -42,52 +43,58 @@ class SignInPage extends HookConsumerWidget {
           _buildAppTitle(context),
           SizedBox(height: 52.h),
           _buildAppIcon(),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(bottom: 16.h),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildConsentCheckbox(context, isConsentChecked),
-                  SizedBox(height: 16.h),
-                  _buildGoogleSignInButton(
-                    context,
-                    ref,
-                    isConsentChecked.value,
+          accountState is AsyncLoading
+              ? const SizedBox()
+              : Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: 16.h),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildConsentCheckbox(context, isConsentChecked),
+                        SizedBox(height: 16.h),
+                        _buildGoogleSignInButton(
+                          context,
+                          ref,
+                          isConsentChecked.value,
+                        ),
+                        SizedBox(height: 16.h),
+                        _buildAppleSignInButton(
+                          context,
+                          ref,
+                          isConsentChecked.value,
+                        ),
+                      ],
+                    ),
                   ),
-                  SizedBox(height: 16.h),
-                  _buildAppleSignInButton(
-                    context,
-                    ref,
-                    isConsentChecked.value,
-                  ),
-                ],
-              ),
-            ),
-          ),
+                ),
         ],
       ),
     );
   }
 
   Widget _buildAppTitle(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: 100.h),
-      child: Text(
-        'グリーンハート',
-        style: Theme.of(context)
-            .textTheme
-            .headlineMedium!
-            .copyWith(color: Colors.lightGreen, fontWeight: FontWeight.bold),
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.only(top: 100.h),
+        child: Text(
+          'グリーンハート',
+          style: Theme.of(context)
+              .textTheme
+              .headlineMedium!
+              .copyWith(color: Colors.lightGreen, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
 
   Widget _buildAppIcon() {
-    return Image.asset(
-      'assets/images/icon.png',
-      width: 160.w,
-      height: 160.h,
+    return Center(
+      child: Image.asset(
+        'assets/images/icon.png',
+        width: 160.w,
+        height: 160.h,
+      ),
     );
   }
 
