@@ -40,15 +40,20 @@ class ProfileEditPage extends HookConsumerWidget {
     final bioTextController = useTextEditingController();
 
     useEffect(() {
-      imagePath.value =
-          profileEditPageStateProvider.valueOrNull?.profile?.imageUrl;
-      nameTextController.text =
-          profileEditPageStateProvider.valueOrNull?.profile?.name ?? '';
-      birthdayTextController.text = DateUtil.convertToJapaneseDate(
-        profileEditPageStateProvider.valueOrNull?.profile?.birthday,
-      );
-      bioTextController.text =
-          profileEditPageStateProvider.valueOrNull?.profile?.bio ?? '';
+      void setupProfile() {
+        imagePath.value =
+            profileEditPageStateProvider.valueOrNull?.profile?.imageUrl;
+        nameTextController.text =
+            profileEditPageStateProvider.valueOrNull?.profile?.name ?? '';
+        birthdayTextController.text = DateUtil.convertToJapaneseDate(
+          profileEditPageStateProvider.valueOrNull?.profile?.birthday,
+        );
+        bioTextController.text =
+            profileEditPageStateProvider.valueOrNull?.profile?.bio ?? '';
+      }
+
+      setupProfile();
+
       return null;
     }, [profileEditPageStateProvider.value?.profile]);
 
@@ -243,6 +248,8 @@ class ProfileEditPage extends HookConsumerWidget {
         remainingChars.value = maxLength - nameTextController.text.length;
       }
 
+      listener();
+
       nameTextController.addListener(listener);
       return () => nameTextController.removeListener(listener);
     }, [nameTextController]);
@@ -261,8 +268,9 @@ class ProfileEditPage extends HookConsumerWidget {
             focusNode: _nameFocusNode,
             controller: nameTextController,
             maxLength: maxLength,
-            decoration:
-                _buildInputDecoration('名前を入力してください').copyWith(counterText: ''),
+            decoration: _buildInputDecoration('名前を入力してください').copyWith(
+              counterText: '',
+            ),
             validator: (value) {
               return ProfileValidater.validateName(nameTextController.text);
             },
@@ -389,6 +397,8 @@ class ProfileEditPage extends HookConsumerWidget {
       void listener() {
         remainingChars.value = maxLength - bioTextController.text.length;
       }
+
+      listener();
 
       bioTextController.addListener(listener);
       return () => bioTextController.removeListener(listener);

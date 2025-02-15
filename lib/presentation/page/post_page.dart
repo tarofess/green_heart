@@ -13,10 +13,12 @@ import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/domain/type/result.dart';
 import 'package:green_heart/application/di/picture_di.dart';
+import 'package:green_heart/domain/feature/post_validater.dart';
 
 class PostPage extends HookConsumerWidget {
-  const PostPage({super.key, required this.selectedDay});
+  PostPage({super.key, required this.selectedDay});
 
+  final _formKey = GlobalKey<FormState>();
   final DateTime selectedDay;
 
   @override
@@ -69,29 +71,24 @@ class PostPage extends HookConsumerWidget {
         ],
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    TextField(
-                      controller: postTextController,
-                      focusNode: focusNode,
-                      maxLines: null,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.all(16.w),
-                      ),
-                    ),
-                    _buildPickedImageArea(selectedImages),
-                  ],
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildContent(postTextController, focusNode),
+                      _buildPickedImageArea(selectedImages),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            _buildBottomBar(context, ref, selectedImages),
-          ],
+              _buildBottomBar(context, ref, selectedImages, postTextController),
+            ],
+          ),
         ),
       ),
     );
@@ -109,6 +106,14 @@ class PostPage extends HookConsumerWidget {
       onPressed:
           postTextController.text.isNotEmpty || selectedImages.value.isNotEmpty
               ? () async {
+                  if (!_formKey.currentState!.validate()) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('文字数が1000文字を超えているため投稿できません。'),
+                      ),
+                    );
+                    return;
+                  }
                   focusNode.unfocus();
 
                   final result = await LoadingOverlay.of(
@@ -149,6 +154,24 @@ class PostPage extends HookConsumerWidget {
                   }
                 }
               : null,
+    );
+  }
+
+  Widget _buildContent(
+    TextEditingController postTextController,
+    FocusNode focusNode,
+  ) {
+    return TextFormField(
+      controller: postTextController,
+      focusNode: focusNode,
+      maxLines: 1000,
+      decoration: InputDecoration(
+        border: InputBorder.none,
+        contentPadding: EdgeInsets.all(16.w),
+      ),
+      validator: (value) {
+        return PostValidater.validateContent(postTextController.text);
+      },
     );
   }
 
@@ -212,7 +235,22 @@ class PostPage extends HookConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     ValueNotifier<List<String>> selectedImages,
+    TextEditingController postTextController,
   ) {
+    const int maxLength = 1000;
+    final remainingChars = useState(maxLength);
+
+    useEffect(() {
+      void listener() {
+        remainingChars.value = maxLength - postTextController.text.length;
+      }
+
+      listener();
+
+      postTextController.addListener(listener);
+      return () => postTextController.removeListener(listener);
+    }, [postTextController]);
+
     return Container(
       decoration: BoxDecoration(
         border: Border(top: BorderSide(color: Colors.grey.shade300)),
@@ -220,6 +258,17 @@ class PostPage extends HookConsumerWidget {
       child: Row(
         children: [
           _buildImageIconButton(context, ref, selectedImages),
+          const Spacer(),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              '残り${remainingChars.value}文字',
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall!
+                  .copyWith(color: Colors.green),
+            ),
+          ),
           const Spacer(),
           IconButton(
             icon: Icon(
