@@ -65,6 +65,7 @@ class NotificationCard extends ConsumerWidget {
               ),
               if (notification.type == 'like') const Text('あなたの投稿にいいねしました'),
               if (notification.type == 'comment') const Text('あなたの投稿にコメントしました'),
+              if (notification.type == 'reply') const Text('あなたのコメントに返信しました'),
               if (notification.type == 'follow') const Text('あなたをフォローしました'),
             ],
           ),

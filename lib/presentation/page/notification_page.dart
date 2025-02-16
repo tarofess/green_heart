@@ -27,7 +27,17 @@ class NotificationPage extends ConsumerWidget {
         child: notificationState.when(
           data: (notifications) {
             return notifications.isEmpty
-                ? const Center(child: Text('新しい通知はありません'))
+                ? const CustomScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    slivers: [
+                      SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Center(
+                          child: Text('新しい通知はありません'),
+                        ),
+                      ),
+                    ],
+                  )
                 : ListView.builder(
                     itemCount: notifications.length,
                     itemBuilder: (context, index) {
@@ -37,7 +47,7 @@ class NotificationPage extends ConsumerWidget {
                         ),
                         onTap: () async {
                           if (notifications[index].isRead == false) {
-                            // 未読の通知を既読にする
+                            // 未読の場合は既読にする
                             await LoadingOverlay.of(
                               context,
                               backgroundColor: Colors.white10,
@@ -51,9 +61,10 @@ class NotificationPage extends ConsumerWidget {
                           final postId = notifications[index].postId;
                           if (postId == null || !context.mounted) return;
 
-                          context.push('/notification_detail', extra: {
-                            'postId': postId,
-                          });
+                          context.push(
+                            '/notification_detail',
+                            extra: {'postId': postId},
+                          );
                         },
                       );
                     },
