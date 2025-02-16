@@ -97,12 +97,12 @@ export const addNotificationOnComment = functions.firestore
         }
         console.log('Received comment data:', commentData);
 
-        // Aさんの情報
+        // コメントしたユーザー（例：BさんまたはAさん）の情報
         const senderUid = commentData.uid;
         const senderUserName = commentData.userName;
         const senderUserImage = commentData.userImage || null;
 
-        // 対象の投稿ID
+        // 対象の投稿IDを取得
         const postId = context.params.postId;
         console.log(`Fetching post document for postId: ${postId}`);
         const postSnap = await admin.firestore().collection('post').doc(postId).get();
@@ -115,10 +115,21 @@ export const addNotificationOnComment = functions.firestore
             console.log('Post data is missing or does not contain uid. Exiting function.');
             return;
         }
-        const receiverUid = postData.uid;
-        console.log(`Notification receiver uid: ${receiverUid}`);
 
-        // 自分の投稿にコメントした場合は通知を作らない
+        let receiverUid: string;
+        let notificationType = 'comment'; // 初期値はコメント通知
+        // replyTargetUid が存在すれば返信なので、通知先はコメント相手とし、typeを 'reply' に変更
+        if (commentData.parentCommentId && commentData.replyTargetUid) {
+            receiverUid = commentData.replyTargetUid;
+            notificationType = 'reply';
+            console.log(`This is a reply. Notification receiver (replyTargetUid): ${receiverUid}`);
+        } else {
+            // それ以外はトップレベルコメント→通知先は投稿者
+            receiverUid = postData.uid;
+            console.log(`This is a top-level comment. Notification receiver (post owner): ${receiverUid}`);
+        }
+
+        // 自分自身へのコメント／返信の場合は通知を作らない
         if (senderUid === receiverUid) {
             console.log('Sender and receiver are the same. Exiting function.');
             return;
@@ -145,12 +156,23 @@ export const addNotificationOnComment = functions.firestore
         const postContent = postData.content;
         console.log(`Notification post content: ${postContent}`);
 
-        // 通知データ作成
-        const notification = createNotificationData('comment', receiverUid, senderUid, senderUserName, senderUserImage, postId, postContent);
+        // 通知データ作成（type は 'comment' または 'reply'）
+        const notification = createNotificationData(
+            notificationType,
+            receiverUid,
+            senderUid,
+            senderUserName,
+            senderUserImage,
+            postId,
+            postContent
+        );
         console.log('Notification data to be added:', notification);
 
-        // Bさんの通知サブコレクションに追加
-        const notificationRef = admin.firestore().collection('profile').doc(receiverUid).collection('notification');
+        // 通知データを受け取るユーザーのサブコレクションに追加
+        const notificationRef = admin.firestore()
+            .collection('profile')
+            .doc(receiverUid)
+            .collection('notification');
         try {
             const docRef = await notificationRef.add(notification);
             await docRef.update({ id: docRef.id });
@@ -160,6 +182,7 @@ export const addNotificationOnComment = functions.firestore
         }
         return;
     });
+
 
 /**
  * 【フォロー時の通知】

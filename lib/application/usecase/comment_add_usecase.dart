@@ -13,6 +13,7 @@ class CommentAddUsecase {
     Post post,
     String content,
     String? parentCommentId,
+    String? replyTargetUid,
     String userName,
     String? userImage,
     CommentNotifier commentNotifier,
@@ -23,6 +24,7 @@ class CommentAddUsecase {
         post.id,
         content,
         parentCommentId,
+        replyTargetUid,
         userName,
         userImage,
       );

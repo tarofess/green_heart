@@ -8,11 +8,16 @@ class CommentPageNotifier extends Notifier<CommentPageState> {
     return const CommentPageState();
   }
 
-  void startReply(String parentId, String? parentUserName) {
+  void startReply(
+    String parentId,
+    String? replyTargetUid,
+    String? replyTargetUserName,
+  ) {
     state = state.copyWith(
       isReplying: true,
       parentCommentId: parentId,
-      parentUserName: parentUserName,
+      replyTargetUid: replyTargetUid,
+      replyTargetUserName: replyTargetUserName,
     );
   }
 
@@ -20,7 +25,8 @@ class CommentPageNotifier extends Notifier<CommentPageState> {
     state = state.copyWith(
       isReplying: false,
       parentCommentId: null,
-      parentUserName: null,
+      replyTargetUid: null,
+      replyTargetUserName: null,
     );
   }
 }

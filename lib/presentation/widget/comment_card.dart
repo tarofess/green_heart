@@ -68,7 +68,12 @@ class CommentCard extends HookConsumerWidget {
               SizedBox(height: 8.h),
               _buildCommentText(commentData.comment.content),
               SizedBox(height: 4.h),
-              _buildActions(context, ref, CommentType.comment),
+              _buildActions(
+                context,
+                ref,
+                CommentType.comment,
+                replyComment: commentData,
+              ),
             ],
           ),
         ),
@@ -216,9 +221,8 @@ class CommentCard extends HookConsumerWidget {
       onPressed: () {
         ref.read(commentPageNotifierProvider.notifier).startReply(
               commentData.comment.id,
-              replyComment == null
-                  ? commentData.comment.userName
-                  : replyComment.comment.userName,
+              replyComment?.comment.uid,
+              replyComment?.comment.userName,
             );
         focusNode.requestFocus();
       },

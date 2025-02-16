@@ -10,6 +10,7 @@ class Comment with _$Comment {
     required String uid,
     required String content,
     String? parentCommentId,
+    String? replyTargetUid,
     required String userName,
     required String? userImage,
     required DateTime createdAt,

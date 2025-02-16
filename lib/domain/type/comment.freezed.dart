@@ -24,6 +24,7 @@ mixin _$Comment {
   String get uid => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
   String? get parentCommentId => throw _privateConstructorUsedError;
+  String? get replyTargetUid => throw _privateConstructorUsedError;
   String get userName => throw _privateConstructorUsedError;
   String? get userImage => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -47,6 +48,7 @@ abstract class $CommentCopyWith<$Res> {
       String uid,
       String content,
       String? parentCommentId,
+      String? replyTargetUid,
       String userName,
       String? userImage,
       DateTime createdAt});
@@ -71,6 +73,7 @@ class _$CommentCopyWithImpl<$Res, $Val extends Comment>
     Object? uid = null,
     Object? content = null,
     Object? parentCommentId = freezed,
+    Object? replyTargetUid = freezed,
     Object? userName = null,
     Object? userImage = freezed,
     Object? createdAt = null,
@@ -91,6 +94,10 @@ class _$CommentCopyWithImpl<$Res, $Val extends Comment>
       parentCommentId: freezed == parentCommentId
           ? _value.parentCommentId
           : parentCommentId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      replyTargetUid: freezed == replyTargetUid
+          ? _value.replyTargetUid
+          : replyTargetUid // ignore: cast_nullable_to_non_nullable
               as String?,
       userName: null == userName
           ? _value.userName
@@ -120,6 +127,7 @@ abstract class _$$CommentImplCopyWith<$Res> implements $CommentCopyWith<$Res> {
       String uid,
       String content,
       String? parentCommentId,
+      String? replyTargetUid,
       String userName,
       String? userImage,
       DateTime createdAt});
@@ -142,6 +150,7 @@ class __$$CommentImplCopyWithImpl<$Res>
     Object? uid = null,
     Object? content = null,
     Object? parentCommentId = freezed,
+    Object? replyTargetUid = freezed,
     Object? userName = null,
     Object? userImage = freezed,
     Object? createdAt = null,
@@ -162,6 +171,10 @@ class __$$CommentImplCopyWithImpl<$Res>
       parentCommentId: freezed == parentCommentId
           ? _value.parentCommentId
           : parentCommentId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      replyTargetUid: freezed == replyTargetUid
+          ? _value.replyTargetUid
+          : replyTargetUid // ignore: cast_nullable_to_non_nullable
               as String?,
       userName: null == userName
           ? _value.userName
@@ -187,6 +200,7 @@ class _$CommentImpl implements _Comment {
       required this.uid,
       required this.content,
       this.parentCommentId,
+      this.replyTargetUid,
       required this.userName,
       required this.userImage,
       required this.createdAt});
@@ -203,6 +217,8 @@ class _$CommentImpl implements _Comment {
   @override
   final String? parentCommentId;
   @override
+  final String? replyTargetUid;
+  @override
   final String userName;
   @override
   final String? userImage;
@@ -211,7 +227,7 @@ class _$CommentImpl implements _Comment {
 
   @override
   String toString() {
-    return 'Comment(id: $id, uid: $uid, content: $content, parentCommentId: $parentCommentId, userName: $userName, userImage: $userImage, createdAt: $createdAt)';
+    return 'Comment(id: $id, uid: $uid, content: $content, parentCommentId: $parentCommentId, replyTargetUid: $replyTargetUid, userName: $userName, userImage: $userImage, createdAt: $createdAt)';
   }
 
   @override
@@ -224,6 +240,8 @@ class _$CommentImpl implements _Comment {
             (identical(other.content, content) || other.content == content) &&
             (identical(other.parentCommentId, parentCommentId) ||
                 other.parentCommentId == parentCommentId) &&
+            (identical(other.replyTargetUid, replyTargetUid) ||
+                other.replyTargetUid == replyTargetUid) &&
             (identical(other.userName, userName) ||
                 other.userName == userName) &&
             (identical(other.userImage, userImage) ||
@@ -235,7 +253,7 @@ class _$CommentImpl implements _Comment {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, uid, content,
-      parentCommentId, userName, userImage, createdAt);
+      parentCommentId, replyTargetUid, userName, userImage, createdAt);
 
   /// Create a copy of Comment
   /// with the given fields replaced by the non-null parameter values.
@@ -259,6 +277,7 @@ abstract class _Comment implements Comment {
       required final String uid,
       required final String content,
       final String? parentCommentId,
+      final String? replyTargetUid,
       required final String userName,
       required final String? userImage,
       required final DateTime createdAt}) = _$CommentImpl;
@@ -273,6 +292,8 @@ abstract class _Comment implements Comment {
   String get content;
   @override
   String? get parentCommentId;
+  @override
+  String? get replyTargetUid;
   @override
   String get userName;
   @override

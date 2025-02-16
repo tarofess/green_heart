@@ -16,6 +16,7 @@ class FirebaseCommentRepository implements CommentRepository {
     String postId,
     String content,
     String? parentCommentId,
+    String? replyTargetUid,
     String userName,
     String? userImage,
   ) async {
@@ -27,6 +28,7 @@ class FirebaseCommentRepository implements CommentRepository {
       uid: uid,
       content: content,
       parentCommentId: parentCommentId,
+      replyTargetUid: replyTargetUid,
       userName: userName,
       userImage: userImage,
       createdAt: DateTime.now(),

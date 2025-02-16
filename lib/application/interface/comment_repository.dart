@@ -6,6 +6,7 @@ abstract class CommentRepository {
     String postId,
     String content,
     String? parentCommentId,
+    String? replyTargetUid,
     String userName,
     String? userImage,
   );

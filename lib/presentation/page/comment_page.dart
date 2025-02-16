@@ -175,6 +175,7 @@ class CommentPage extends HookConsumerWidget {
                         post,
                         commentTextController.text,
                         commentPageState.parentCommentId,
+                        commentPageState.replyTargetUid,
                         profile?.name ?? '',
                         profile?.imageUrl,
                         ref.read(commentNotifierProvider(post.id).notifier),
@@ -213,7 +214,7 @@ class CommentPage extends HookConsumerWidget {
         children: [
           Expanded(
             child: Text(
-              '${commentPageState.parentUserName}に返信中...',
+              '${commentPageState.replyTargetUserName}に返信中...',
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
               style: const TextStyle(fontWeight: FontWeight.bold),

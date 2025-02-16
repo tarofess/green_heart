@@ -109,29 +109,37 @@ export const sendCommentNotification = functions.firestore
             return;
         }
 
-        // 3. 自分の投稿にコメントした場合は通知を送信しない
-        if (commenterUid === postOwnerUid) {
-            console.log("自分の投稿にコメントしたので通知は送信しません。");
+        let receiverUid: string;
+        // replyTargetUid があれば返信通知として通知先を設定
+        if (commentData.parentCommentId && commentData.replyTargetUid) {
+            receiverUid = commentData.replyTargetUid;
+            console.log(`This is a reply. Notification receiver (replyTargetUid): ${receiverUid}`);
+        } else {
+            receiverUid = postOwnerUid;
+            console.log(`This is a top-level comment. Notification receiver (post owner): ${receiverUid}`);
+        }
+
+        // 自分自身へのコメント／返信の場合は通知を送信しない
+        if (commenterUid === receiverUid) {
+            console.log("自分の投稿または自分のコメントに対してコメントしたので通知は送信しません。");
             return;
         }
 
-        // 4. 投稿者のFCMトークンを profile/{postOwnerUid}/notificationSetting から取得し、
-        //    commentSettingがtrueのトークンのみ収集
+        // 3. 通知先ユーザーのFCMトークンを profile/{receiverUid}/notificationSetting から取得
         const tokensSnapshot = await admin.firestore()
             .collection("profile")
-            .doc(postOwnerUid)
+            .doc(receiverUid)
             .collection("notificationSetting")
             .get();
 
         if (tokensSnapshot.empty) {
-            console.log("FCMトークンが見つかりませんでした:", postOwnerUid);
+            console.log("FCMトークンが見つかりませんでした:", receiverUid);
             return;
         }
 
         const tokens: string[] = [];
         tokensSnapshot.forEach(doc => {
             const tokenData = doc.data();
-            // commentSettingがtrueの場合のみ通知対象とする
             if (tokenData.token && tokenData.commentSetting) {
                 tokens.push(tokenData.token);
             }
@@ -142,16 +150,16 @@ export const sendCommentNotification = functions.firestore
             return;
         }
 
-        // 5. 通知の内容を設定
+        // 4. プッシュ通知の内容を設定
         const message: admin.messaging.MulticastMessage = {
             tokens: tokens,
             notification: {
                 title: "コメントが届きました！",
-                body: `${commenterName}さんがあなたの投稿にコメントしました！`
+                body: `${commenterName}さんがあなたにコメントしました！`
             }
         };
 
-        // 6. プッシュ通知の送信
+        // 5. プッシュ通知送信
         try {
             const response = await admin.messaging().sendEachForMulticast(message);
             console.log("コメント通知送信結果:", response);
