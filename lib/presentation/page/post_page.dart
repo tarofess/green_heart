@@ -164,7 +164,7 @@ class PostPage extends HookConsumerWidget {
     return TextFormField(
       controller: postTextController,
       focusNode: focusNode,
-      maxLines: 1000,
+      maxLines: null,
       decoration: InputDecoration(
         border: InputBorder.none,
         contentPadding: EdgeInsets.all(16.w),
@@ -263,10 +263,9 @@ class PostPage extends HookConsumerWidget {
             alignment: Alignment.centerRight,
             child: Text(
               '残り${remainingChars.value}文字',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall!
-                  .copyWith(color: Colors.green),
+              style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                    color: remainingChars.value < 0 ? Colors.red : Colors.green,
+                  ),
             ),
           ),
           const Spacer(),
