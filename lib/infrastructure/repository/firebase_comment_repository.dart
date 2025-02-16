@@ -68,31 +68,6 @@ class FirebaseCommentRepository implements CommentRepository {
   }
 
   @override
-  Future<List<Comment>> getReplyComments(
-    String postId,
-    String parentCommentId,
-  ) async {
-    try {
-      final docRef = _firestore
-          .collection('post')
-          .doc(postId)
-          .collection('comment')
-          .where('parentCommentId', isEqualTo: parentCommentId)
-          .orderBy('createdAt', descending: false);
-
-      final docSnapshot =
-          await docRef.get().timeout(Duration(seconds: _timeoutSeconds));
-
-      return docSnapshot.docs
-          .map((doc) => Comment.fromJson(doc.data()))
-          .toList();
-    } catch (e, stackTrace) {
-      final exception = await ExceptionHandler.handleException(e, stackTrace);
-      throw exception ?? AppException('コメントの取得に失敗しました。再度お試しください。');
-    }
-  }
-
-  @override
   Future<int> deleteComment(String postId, String commentId) async {
     try {
       final commentRef = _firestore
@@ -103,7 +78,7 @@ class FirebaseCommentRepository implements CommentRepository {
 
       await commentRef.delete().timeout(Duration(seconds: _timeoutSeconds));
 
-      final replyComments = await getReplyComments(postId, commentId);
+      final replyComments = await _getReplyComments(postId, commentId);
 
       for (final replyComment in replyComments) {
         await deleteReplyComment(postId, replyComment.id);
@@ -137,6 +112,30 @@ class FirebaseCommentRepository implements CommentRepository {
 
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('コメントの削除に失敗しました。再度お試しください。');
+    }
+  }
+
+  Future<List<Comment>> _getReplyComments(
+    String postId,
+    String parentCommentId,
+  ) async {
+    try {
+      final docRef = _firestore
+          .collection('post')
+          .doc(postId)
+          .collection('comment')
+          .where('parentCommentId', isEqualTo: parentCommentId)
+          .orderBy('createdAt', descending: false);
+
+      final docSnapshot =
+          await docRef.get().timeout(Duration(seconds: _timeoutSeconds));
+
+      return docSnapshot.docs
+          .map((doc) => Comment.fromJson(doc.data()))
+          .toList();
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('コメントの取得に失敗しました。再度お試しください。');
     }
   }
 }

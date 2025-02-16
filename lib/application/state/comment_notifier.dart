@@ -14,25 +14,37 @@ class CommentNotifier
   Future<List<CommentData>> build(String arg) async {
     final comments = await ref.read(commentGetUsecaseProvider).execute(arg);
     final filteredComments = await _filterBlockedComments(comments);
-    return _createCommentDataList(filteredComments, arg);
+    return _createCommentDataList(filteredComments);
   }
 
   Future<List<CommentData>> _createCommentDataList(
     List<Comment> comments,
-    String postId,
   ) async {
-    return Future.wait(comments
-        .where((comment) => comment.parentCommentId == null)
-        .map((comment) => _createCommentData(comment, postId)));
+    // 親コメントのみ抽出
+    final parentComments =
+        comments.where((comment) => comment.parentCommentId == null).toList();
+
+    return Future.wait(
+      parentComments.map(
+        (comment) => _createCommentData(comment, comments),
+      ),
+    );
   }
 
-  Future<CommentData> _createCommentData(Comment comment, String postId) async {
-    final replyComments = await ref
-        .read(commentGetReplyUsecaseProvider)
-        .execute(postId, comment.id);
+  Future<CommentData> _createCommentData(
+    Comment comment,
+    List<Comment> allComments,
+  ) async {
+    // parentCommentId が comment.id のコメントを抽出
+    final replyComments = allComments
+        .where((reply) => reply.parentCommentId == comment.id)
+        .toList();
 
+    // 再帰的に _createCommentData を呼び出す
     final replyCommentData = await Future.wait(
-      replyComments.map((reply) => _createCommentData(reply, postId)),
+      replyComments.map(
+        (reply) => _createCommentData(reply, allComments),
+      ),
     );
 
     return CommentData(
@@ -50,6 +62,7 @@ class CommentNotifier
 
     final blockList =
         await ref.read(blockGetUsecaseProvider).execute(currentUid);
+
     return comments
         .where((comment) => !blockList.any((block) => block.uid == comment.uid))
         .toList();

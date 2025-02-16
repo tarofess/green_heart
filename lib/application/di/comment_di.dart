@@ -2,7 +2,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/usecase/comment_add_usecase.dart';
 import 'package:green_heart/application/usecase/comment_delete_usecase.dart';
-import 'package:green_heart/application/usecase/comment_get_reply_usecase.dart';
 import 'package:green_heart/application/usecase/comment_get_usecase.dart';
 import 'package:green_heart/infrastructure/repository/firebase_comment_repository.dart';
 
@@ -16,8 +15,4 @@ final commentAddUsecaseProvider = Provider(
 
 final commentDeleteUsecaseProvider = Provider(
   (ref) => CommentDeleteUsecase(FirebaseCommentRepository()),
-);
-
-final commentGetReplyUsecaseProvider = Provider(
-  (ref) => CommentGetReplyUsecase(FirebaseCommentRepository()),
 );
