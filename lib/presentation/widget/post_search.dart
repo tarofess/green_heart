@@ -52,6 +52,8 @@ class PostSearch extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
+    if (query.isEmpty) return const SizedBox.shrink();
+
     return PostSearchResults(query: query, uid: uid);
   }
 }
