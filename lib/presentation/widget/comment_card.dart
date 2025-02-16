@@ -77,7 +77,10 @@ class CommentCard extends HookConsumerWidget {
   }
 
   Widget _buildChildComment(
-      BuildContext context, WidgetRef ref, CommentData replyComment) {
+    BuildContext context,
+    WidgetRef ref,
+    CommentData replyComment,
+  ) {
     return Padding(
       padding: EdgeInsets.only(left: 24.w, top: 8.h),
       child: Row(
@@ -189,19 +192,7 @@ class CommentCard extends HookConsumerWidget {
   }) {
     return Row(
       children: [
-        TextButton(
-          onPressed: () {
-            ref.read(commentPageNotifierProvider.notifier).startReply(
-                  commentData.comment.id,
-                  commentData.comment.userName,
-                );
-            focusNode.requestFocus();
-          },
-          child: const Text(
-            '返信する',
-            style: TextStyle(fontWeight: FontWeight.normal),
-          ),
-        ),
+        _buildReplyButton(context, ref, replyComment),
         if (commentType == CommentType.comment && commentData.isMe)
           _buildDeleteButton(context, ref)
         else if (commentType == CommentType.reply && replyComment!.isMe)
@@ -212,12 +203,38 @@ class CommentCard extends HookConsumerWidget {
     );
   }
 
+  Widget _buildReplyButton(
+    BuildContext context,
+    WidgetRef ref, [
+    CommentData? replyComment,
+  ]) {
+    return TextButton(
+      child: const Text(
+        '返信する',
+        style: TextStyle(fontWeight: FontWeight.normal),
+      ),
+      onPressed: () {
+        ref.read(commentPageNotifierProvider.notifier).startReply(
+              commentData.comment.id,
+              replyComment == null
+                  ? commentData.comment.userName
+                  : replyComment.comment.userName,
+            );
+        focusNode.requestFocus();
+      },
+    );
+  }
+
   Widget _buildDeleteButton(
     BuildContext context,
     WidgetRef ref, [
     CommentData? replyComment,
   ]) {
     return TextButton(
+      child: const Text(
+        '削除',
+        style: TextStyle(fontWeight: FontWeight.normal),
+      ),
       onPressed: () async {
         final isConfirmed = await showConfirmationDialog(
           context: context,
@@ -259,15 +276,15 @@ class CommentCard extends HookConsumerWidget {
           }
         }
       },
-      child: const Text(
-        '削除',
-        style: TextStyle(fontWeight: FontWeight.normal),
-      ),
     );
   }
 
   Widget _buildReportButton(BuildContext context, WidgetRef ref) {
     return TextButton(
+      child: const Text(
+        '通報',
+        style: TextStyle(fontWeight: FontWeight.normal),
+      ),
       onPressed: () async {
         final reportText = await showReportDialog(context);
         if (reportText == null) return;
@@ -309,10 +326,6 @@ class CommentCard extends HookConsumerWidget {
           }
         }
       },
-      child: const Text(
-        '通報',
-        style: TextStyle(fontWeight: FontWeight.normal),
-      ),
     );
   }
 }
