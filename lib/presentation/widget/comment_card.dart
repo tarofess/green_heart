@@ -51,7 +51,7 @@ class CommentCard extends HookConsumerWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildUserImage(context, ref, CommentType.comment),
+        _buildUserImage(context, ref),
         SizedBox(width: 12.w),
         Expanded(
           child: Column(
@@ -68,12 +68,7 @@ class CommentCard extends HookConsumerWidget {
               SizedBox(height: 8.h),
               _buildCommentText(commentData.comment.content),
               SizedBox(height: 4.h),
-              _buildActions(
-                context,
-                ref,
-                CommentType.comment,
-                replyComment: commentData,
-              ),
+              _buildActions(context, ref),
             ],
           ),
         ),
@@ -91,7 +86,7 @@ class CommentCard extends HookConsumerWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildUserImage(context, ref, CommentType.reply, replyComment),
+          _buildUserImage(context, ref, replyComment),
           SizedBox(width: 12.w),
           Expanded(
             child: Column(
@@ -110,12 +105,7 @@ class CommentCard extends HookConsumerWidget {
                 SizedBox(height: 8.h),
                 _buildCommentText(replyComment.comment.content),
                 SizedBox(height: 4.h),
-                _buildActions(
-                  context,
-                  ref,
-                  CommentType.reply,
-                  replyComment: replyComment,
-                ),
+                _buildActions(context, ref, replyComment),
               ],
             ),
           ),
@@ -133,11 +123,10 @@ class CommentCard extends HookConsumerWidget {
 
   Widget _buildUserImage(
     BuildContext context,
-    WidgetRef ref,
-    CommentType commentType, [
+    WidgetRef ref, [
     CommentData? replyComment,
   ]) {
-    if (commentType == CommentType.comment) {
+    if (replyComment == null) {
       return GestureDetector(
         onTap: () {
           final uid = ref.watch(authStateProvider).value?.uid;
@@ -157,7 +146,7 @@ class CommentCard extends HookConsumerWidget {
         onTap: () {
           context.push('/user', extra: {'uid': replyComment.comment.uid});
         },
-        child: replyComment!.comment.userImage == null
+        child: replyComment.comment.userImage == null
             ? const UserEmptyImage(radius: 24)
             : UserFirebaseImage(
                 imageUrl: replyComment.comment.userImage,
@@ -191,16 +180,15 @@ class CommentCard extends HookConsumerWidget {
 
   Widget _buildActions(
     BuildContext context,
-    WidgetRef ref,
-    CommentType commentType, {
+    WidgetRef ref, [
     CommentData? replyComment,
-  }) {
+  ]) {
     return Row(
       children: [
         _buildReplyButton(context, ref, replyComment),
-        if (commentType == CommentType.comment && commentData.isMe)
+        if (replyComment == null && commentData.isMe)
           _buildDeleteButton(context, ref)
-        else if (commentType == CommentType.reply && replyComment!.isMe)
+        else if (replyComment != null && replyComment.isMe)
           _buildDeleteButton(context, ref, replyComment)
         else
           _buildReportButton(context, ref),
@@ -221,8 +209,12 @@ class CommentCard extends HookConsumerWidget {
       onPressed: () {
         ref.read(commentPageNotifierProvider.notifier).startReply(
               commentData.comment.id,
-              replyComment?.comment.uid,
-              replyComment?.comment.userName,
+              replyComment == null
+                  ? commentData.comment.uid
+                  : replyComment.comment.uid,
+              replyComment == null
+                  ? commentData.comment.userName
+                  : replyComment.comment.userName,
             );
         focusNode.requestFocus();
       },
@@ -332,9 +324,4 @@ class CommentCard extends HookConsumerWidget {
       },
     );
   }
-}
-
-enum CommentType {
-  comment,
-  reply,
 }
