@@ -91,7 +91,7 @@ class FirebaseProfileRepository implements ProfileRepository {
   Future<void> deleteImage(String? imageUrl) async {
     if (imageUrl == null) return;
     try {
-      if (await checkImageExists(imageUrl) == false) {
+      if (await _checkImageExists(imageUrl) == false) {
         return;
       }
       final ref = FirebaseStorage.instance.refFromURL(imageUrl);
@@ -102,8 +102,7 @@ class FirebaseProfileRepository implements ProfileRepository {
     }
   }
 
-  @override
-  Future<bool> checkImageExists(String imageUrl) async {
+  Future<bool> _checkImageExists(String imageUrl) async {
     final ref = FirebaseStorage.instance.refFromURL(imageUrl);
     try {
       await ref.getMetadata().timeout(Duration(seconds: _timeoutSeconds));

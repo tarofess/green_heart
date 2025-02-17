@@ -72,19 +72,27 @@ class FirebaseCommentRepository implements CommentRepository {
   @override
   Future<int> deleteComment(String postId, String commentId) async {
     try {
-      final commentRef = _firestore
+      final ref = _firestore
           .collection('post')
           .doc(postId)
           .collection('comment')
           .doc(commentId);
 
-      await commentRef.delete().timeout(Duration(seconds: _timeoutSeconds));
+      final batch = _firestore.batch();
+      batch.delete(ref);
 
+      // 返信コメントの削除
       final replyComments = await _getReplyComments(postId, commentId);
-
       for (final replyComment in replyComments) {
-        await deleteReplyComment(postId, replyComment.id);
+        final replyRef = _firestore
+            .collection('post')
+            .doc(postId)
+            .collection('comment')
+            .doc(replyComment.id);
+        batch.delete(replyRef);
       }
+
+      await batch.commit();
 
       // 投稿の状態管理コメント数を適切な数に更新するために使われる変数
       final deletedComentCount = replyComments.length + 1;
@@ -94,24 +102,6 @@ class FirebaseCommentRepository implements CommentRepository {
       if (e is TimeoutException) {
         return 0;
       }
-      final exception = await ExceptionHandler.handleException(e, stackTrace);
-      throw exception ?? AppException('コメントの削除に失敗しました。再度お試しください。');
-    }
-  }
-
-  @override
-  Future<void> deleteReplyComment(String postId, String commentId) async {
-    try {
-      final commentRef = _firestore
-          .collection('post')
-          .doc(postId)
-          .collection('comment')
-          .doc(commentId);
-
-      await commentRef.delete().timeout(Duration(seconds: _timeoutSeconds));
-    } catch (e, stackTrace) {
-      if (e is TimeoutException) return;
-
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('コメントの削除に失敗しました。再度お試しください。');
     }
