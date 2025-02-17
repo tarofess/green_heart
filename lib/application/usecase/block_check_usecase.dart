@@ -9,6 +9,7 @@ class BlockCheckUsecase {
     if (currentUserId == null) {
       throw Exception('ユーザーが存在しないのでブロックリストを取得できません。再度お試しください。');
     }
+
     return await _blockRepository.checkIfBlocked(currentUserId, targetUserId);
   }
 }

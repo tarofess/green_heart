@@ -84,15 +84,20 @@ class FirebaseBlockRepository implements BlockRepository {
 
   @override
   Future<bool> checkIfBlocked(String uid, String targetUid) async {
-    final ref = _firestore
-        .collection('profile')
-        .doc(uid)
-        .collection('block')
-        .doc(targetUid);
+    try {
+      final ref = _firestore
+          .collection('profile')
+          .doc(uid)
+          .collection('block')
+          .doc(targetUid);
 
-    final docSnapshot =
-        await ref.get().timeout(Duration(seconds: _timeoutSeconds));
+      final docSnapshot =
+          await ref.get().timeout(Duration(seconds: _timeoutSeconds));
 
-    return docSnapshot.exists;
+      return docSnapshot.exists;
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('ブロックリストの確認に失敗しました。再度お試しください。');
+    }
   }
 }

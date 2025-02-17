@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:green_heart/infrastructure/util/permission_util.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/di/auth_di.dart';
@@ -10,6 +9,8 @@ import 'package:green_heart/presentation/dialog/confirmation_dialog.dart';
 import 'package:green_heart/presentation/dialog/error_dialog.dart';
 import 'package:green_heart/application/state/timeline_scroll_state_notifier.dart';
 import 'package:green_heart/domain/type/result.dart';
+import 'package:green_heart/infrastructure/util/permission_util.dart';
+import 'package:green_heart/presentation/widget/loading_overlay.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -81,7 +82,22 @@ class SettingsPage extends ConsumerWidget {
       ),
       title: const Text('お問い合わせ'),
       onTap: () async {
-        await ref.read(emailSendUsecaseProvider).execute();
+        final result =
+            await LoadingOverlay.of(context, backgroundColor: Colors.white10)
+                .during(
+          () => ref.read(emailSendUsecaseProvider).execute(),
+        );
+
+        switch (result) {
+          case Success():
+            break;
+          case Failure(message: final message):
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(message)),
+              );
+            }
+        }
       },
     );
   }

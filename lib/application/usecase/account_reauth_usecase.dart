@@ -23,6 +23,7 @@ class AccountReauthUsecase {
       } else {
         throw AppException('サポートされていない認証プロバイダです。');
       }
+
       return const Success();
     } catch (e) {
       return Failure(e.toString(), e as Exception?);

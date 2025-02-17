@@ -21,6 +21,7 @@ class AccountDeleteUsecase {
     if (profile == null || user == null) {
       return const Failure('現在アカウント情報が取得できないためアカウントを削除できません。のちほどお試しください。');
     }
+
     try {
       final result = await _accountReauthUsecase.execute(user);
 
