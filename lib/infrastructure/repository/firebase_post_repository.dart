@@ -57,7 +57,7 @@ class FirebasePostRepository implements PostRepository {
   }
 
   @override
-  Future<List<Post>> getPostsByUid(
+  Future<List<Post>> getDiaryPostsByUid(
     String uid,
     UserPostScrollState userPostScrollState,
     UserPostScrollStateNotifier userPostScrollStateNotifier,

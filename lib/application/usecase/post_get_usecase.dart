@@ -13,7 +13,7 @@ class PostGetUsecase {
     UserPostScrollState userPostScrollState,
     UserPostScrollStateNotifier userPostScrollStateNotifier,
   ) async {
-    return await _postRepository.getPostsByUid(
+    return await _postRepository.getDiaryPostsByUid(
       uid,
       userPostScrollState,
       userPostScrollStateNotifier,

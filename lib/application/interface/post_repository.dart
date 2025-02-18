@@ -15,7 +15,7 @@ abstract class PostRepository {
     String? userImage,
     DateTime selectedDay,
   );
-  Future<List<Post>> getPostsByUid(
+  Future<List<Post>> getDiaryPostsByUid(
     String uid,
     UserPostScrollState userPostScrollState,
     UserPostScrollStateNotifier userPostScrollStateNotifier,
