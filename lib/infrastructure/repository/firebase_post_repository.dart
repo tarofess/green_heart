@@ -20,6 +20,8 @@ import 'package:green_heart/domain/type/search_post_scroll_state.dart';
 class FirebasePostRepository implements PostRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final int _timeoutSeconds = 15;
+  final int _pageSize = 12;
+  final int _diaryPageSize = 31;
 
   @override
   Future<Post> addPost(
@@ -61,15 +63,13 @@ class FirebasePostRepository implements PostRepository {
     UserPostScrollStateNotifier userPostScrollStateNotifier,
   ) async {
     try {
-      const int pageSize = 31;
-
       if (!userPostScrollState.hasMore) return [];
 
       Query query = _firestore
           .collection('post')
           .where('uid', isEqualTo: uid)
           .orderBy('releaseDate', descending: true)
-          .limit(pageSize);
+          .limit(_diaryPageSize);
 
       if (userPostScrollState.lastDocument != null) {
         query = query.startAfterDocument(userPostScrollState.lastDocument!);
@@ -77,7 +77,8 @@ class FirebasePostRepository implements PostRepository {
 
       final querySnapshot =
           await query.get().timeout(Duration(seconds: _timeoutSeconds));
-      if (querySnapshot.docs.isEmpty || querySnapshot.docs.length < pageSize) {
+      if (querySnapshot.docs.isEmpty ||
+          querySnapshot.docs.length < _diaryPageSize) {
         userPostScrollStateNotifier.updateHasMore(false);
       }
 
@@ -100,14 +101,12 @@ class FirebasePostRepository implements PostRepository {
     TimelineScrollStateNotifier timelineScrollStateNotifier,
   ) async {
     try {
-      const int pageSize = 15;
-
       if (!timeLineScrollState.hasMore) return [];
 
       Query query = _firestore
           .collection('post')
           .orderBy('createdAt', descending: true)
-          .limit(pageSize);
+          .limit(_pageSize);
 
       if (timeLineScrollState.lastDocument != null) {
         query = query.startAfterDocument(timeLineScrollState.lastDocument!);
@@ -115,7 +114,7 @@ class FirebasePostRepository implements PostRepository {
 
       final querySnapshot =
           await query.get().timeout(Duration(seconds: _timeoutSeconds));
-      if (querySnapshot.docs.isEmpty || querySnapshot.docs.length < pageSize) {
+      if (querySnapshot.docs.isEmpty || querySnapshot.docs.length < _pageSize) {
         timelineScrollStateNotifier.updateHasMore(false);
       }
 
@@ -140,8 +139,6 @@ class FirebasePostRepository implements PostRepository {
     SearchPostScrollStateNotifier searchPostScrollStateNotifier,
   ) async {
     try {
-      const int pageSize = 15;
-
       if (!searchPostScrollState.hasMore) return [];
 
       final client = SearchClient(
@@ -154,14 +151,14 @@ class FirebasePostRepository implements PostRepository {
         queryHits = SearchForHits(
           indexName: 'post',
           query: searchWord,
-          hitsPerPage: pageSize,
+          hitsPerPage: _pageSize,
           page: searchPostScrollState.currentPage,
         );
       } else {
         queryHits = SearchForHits(
           indexName: 'post',
           query: searchWord,
-          hitsPerPage: pageSize,
+          hitsPerPage: _pageSize,
           filters: 'uid:$uid',
           page: searchPostScrollState.currentPage,
         );
