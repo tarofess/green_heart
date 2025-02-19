@@ -189,7 +189,7 @@ class UserPage extends HookConsumerWidget {
     return Padding(
       padding: EdgeInsets.only(left: 8.w),
       child: Text(
-        profile?.name ?? '',
+        profile?.name ?? 'ユーザーは存在しません',
         style: Theme.of(context)
             .textTheme
             .bodyLarge!
