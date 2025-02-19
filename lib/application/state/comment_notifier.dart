@@ -61,9 +61,10 @@ class CommentNotifier
     }
 
     final blockList = await ref.read(blockGetUsecaseProvider).execute(uid);
+    final blockedUserIds = blockList.map((block) => block.targetUid).toSet();
 
     return comments
-        .where((comment) => !blockList.any((block) => block.uid == comment.uid))
+        .where((comment) => !blockedUserIds.contains(comment.uid))
         .toList();
   }
 
