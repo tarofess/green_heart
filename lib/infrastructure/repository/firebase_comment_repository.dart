@@ -78,26 +78,11 @@ class FirebaseCommentRepository implements CommentRepository {
           .collection('comment')
           .doc(commentId);
 
-      final batch = _firestore.batch();
-      batch.delete(ref);
+      final replyCommentCount = await _getReplyCommentCount(postId, commentId);
 
-      // 返信コメントの削除
-      final replyComments = await _getReplyComments(postId, commentId);
-      for (final replyComment in replyComments) {
-        final replyRef = _firestore
-            .collection('post')
-            .doc(postId)
-            .collection('comment')
-            .doc(replyComment.id);
-        batch.delete(replyRef);
-      }
+      await ref.delete().timeout(Duration(seconds: _timeoutSeconds));
 
-      await batch.commit();
-
-      // 投稿の状態管理コメント数を適切な数に更新するために使われる変数
-      final deletedComentCount = replyComments.length + 1;
-
-      return deletedComentCount;
+      return replyCommentCount + 1; // 親コメントも含めて削除した数を返す
     } catch (e, stackTrace) {
       if (e is TimeoutException) {
         return 0;
@@ -107,24 +92,21 @@ class FirebaseCommentRepository implements CommentRepository {
     }
   }
 
-  Future<List<Comment>> _getReplyComments(
+  Future<int> _getReplyCommentCount(
     String postId,
     String parentCommentId,
   ) async {
     try {
-      final docRef = _firestore
+      final ref = _firestore
           .collection('post')
           .doc(postId)
           .collection('comment')
-          .where('parentCommentId', isEqualTo: parentCommentId)
-          .orderBy('createdAt', descending: false);
+          .where('parentCommentId', isEqualTo: parentCommentId);
 
-      final docSnapshot =
-          await docRef.get().timeout(Duration(seconds: _timeoutSeconds));
+      final aggregateQuerySnapshot =
+          await ref.count().get().timeout(Duration(seconds: _timeoutSeconds));
 
-      return docSnapshot.docs
-          .map((doc) => Comment.fromJson(doc.data()))
-          .toList();
+      return aggregateQuerySnapshot.count ?? 0;
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('コメントの取得に失敗しました。再度お試しください。');
