@@ -23,9 +23,8 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<Post>, String?> {
 
     final posts = await _fetchPosts(arg);
     final updatedPosts = await _postDataService.updateIsLikedStatus(posts);
-    final filteredPosts = await _postDataService.filterByBlock(updatedPosts);
 
-    return filteredPosts;
+    return updatedPosts;
   }
 
   Future<List<Post>> _fetchPosts(String uid) async {
@@ -53,12 +52,10 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<Post>, String?> {
         final newPosts = await _fetchPosts(uid);
         final updatedLikePosts =
             await _postDataService.updateIsLikedStatus(newPosts);
-        final filteredPosts =
-            await _postDataService.filterByBlock(updatedLikePosts);
 
         final updatedPosts = [
           ...currentPosts,
-          ...filteredPosts.where((newPost) =>
+          ...updatedLikePosts.where((newPost) =>
               !currentPosts.any((currentPost) => currentPost.id == newPost.id))
         ];
         state = AsyncValue.data(updatedPosts);
@@ -79,7 +76,7 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<Post>, String?> {
       final posts = await _fetchPosts(uid);
       final updatedLikePosts =
           await _postDataService.updateIsLikedStatus(posts);
-      return await _postDataService.filterByBlock(updatedLikePosts);
+      return updatedLikePosts;
     });
   }
 
