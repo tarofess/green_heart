@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
 // いいね作成時に、親の post の likeCount を +1 する
-export const onLikeCreated = functions.firestore
+export const incrementLikeCount = functions.firestore
     .document('post/{postId}/like/{likeId}')
     .onCreate(async (snap, context) => {
         const { postId } = context.params;
@@ -13,7 +13,7 @@ export const onLikeCreated = functions.firestore
     });
 
 // いいね削除時に、親の post の likeCount を -1 する
-export const onLikeDeleted = functions.firestore
+export const decrementLikeCount = functions.firestore
     .document('post/{postId}/like/{likeId}')
     .onDelete(async (snap, context) => {
         const { postId } = context.params;

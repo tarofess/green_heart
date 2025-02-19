@@ -6,7 +6,7 @@ const db = admin.firestore();
 /**
  * コメントが削除されたとき、その子コメントを再帰的に削除する関数
  */
-export const onCommentDelete = functions.firestore
+export const deleteReplyComment = functions.firestore
     .document('post/{postId}/comment/{commentId}')
     .onDelete(async (snap, context) => {
         const { postId, commentId } = context.params;

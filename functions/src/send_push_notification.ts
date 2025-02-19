@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
 // いいねが付いたときに通知を送信
-export const sendLikeNotification = functions.firestore
+export const sendPushNotificationOnLike = functions.firestore
     .document("post/{postId}/like/{likeId}")
     .onCreate(async (snapshot, context) => {
         // 1. いいねドキュメントのデータを取得
@@ -95,7 +95,7 @@ export const sendLikeNotification = functions.firestore
 
 
 // コメントされたときに通知を送信
-export const sendCommentNotification = functions.firestore
+export const sendPushNotificationOnComment = functions.firestore
     .document("post/{postId}/comment/{commentId}")
     .onCreate(async (snapshot, context) => {
         // 1. コメントドキュメントのデータを取得
@@ -196,7 +196,7 @@ export const sendCommentNotification = functions.firestore
 
 
 // フォローされたときに通知を送信
-export const sendFollowNotification = functions.firestore
+export const sendPushNotificationOnFollow = functions.firestore
     .document("profile/{userId}/follower/{followerId}")
     .onCreate(async (snapshot, context) => {
         // 1. フォロー情報のデータを取得
