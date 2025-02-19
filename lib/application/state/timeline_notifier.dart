@@ -17,14 +17,14 @@ class TimelineNotifier extends AsyncNotifier<List<Post>> {
     _postDataService = ref.read(postDataServiceProvider);
     _postInteractionService = ref.read(postInteractionServiceProvider);
 
-    final posts = await _fetchNextPosts();
+    final posts = await _fetchPosts();
     final updatedPosts = await _postDataService.updateIsLikedStatus(posts);
     final filteredPosts = await _postDataService.filterByBlock(updatedPosts);
 
     return filteredPosts;
   }
 
-  Future<List<Post>> _fetchNextPosts() async {
+  Future<List<Post>> _fetchPosts() async {
     final timeLineScrollState = ref.read(timelineScrollStateNotifierProvider);
     if (!timeLineScrollState.hasMore) return [];
 
@@ -38,7 +38,7 @@ class TimelineNotifier extends AsyncNotifier<List<Post>> {
 
     state.whenData((currentPosts) async {
       try {
-        final newPosts = await _fetchNextPosts();
+        final newPosts = await _fetchPosts();
         final updatedLikePosts =
             await _postDataService.updateIsLikedStatus(newPosts);
         final filteredPosts =
@@ -57,12 +57,10 @@ class TimelineNotifier extends AsyncNotifier<List<Post>> {
   }
 
   Future<void> refresh() async {
-    ref.read(timelineScrollStateNotifierProvider.notifier)
-      ..updateLastDocument(null)
-      ..updateHasMore(true);
+    ref.read(timelineScrollStateNotifierProvider.notifier).reset();
 
     state = await AsyncValue.guard(() async {
-      final posts = await _fetchNextPosts();
+      final posts = await _fetchPosts();
       final updatedLikePosts =
           await _postDataService.updateIsLikedStatus(posts);
       return await _postDataService.filterByBlock(updatedLikePosts);

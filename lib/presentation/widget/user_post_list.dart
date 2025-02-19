@@ -25,6 +25,7 @@ class UserPostList extends HookConsumerWidget {
     final isLoadingMore = useState(false);
 
     useEffect(() {
+      // 無限スクロールのための読み込み処理
       void onScroll() async {
         if (isLoadingMore.value) return;
 

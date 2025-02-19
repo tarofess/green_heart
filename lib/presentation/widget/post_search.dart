@@ -66,27 +66,58 @@ class PostSearchResults extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final scrollController = useScrollController();
+    final searchPostState = ref.watch(searchPostNotifierProvider);
+    final hasMore = ref.watch(searchPostScrollStateNotifierProvider).hasMore;
     final isLoadingMore = useState(false);
     final isSearching = useState(false);
+    final scrollController = useScrollController();
 
     useEffect(() {
+      // 無限スクロールのための読み込み処理
       void onScroll() async {
-        scrollController.addListener(() {
-          if (scrollController.position.pixels ==
-              scrollController.position.maxScrollExtent) {
-            _loadMorePosts(context, ref, isLoadingMore);
+        if (isLoadingMore.value) return;
+
+        if (scrollController.position.pixels ==
+            scrollController.position.maxScrollExtent) {
+          try {
+            isLoadingMore.value = true;
+            await ref
+                .read(postSearchResultGetUsecaseProvider)
+                .execute(query, uid);
+          } catch (e) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('データの読み込みに失敗しました。再度お試しください。')),
+              );
+            }
+          } finally {
+            isLoadingMore.value = false;
           }
-        });
+        }
       }
 
-      _loadInitialPosts(context, ref, isSearching);
+      // 初回読み込み
+      void initialLoad() async {
+        try {
+          isSearching.value = true;
+          await ref
+              .read(postSearchResultGetUsecaseProvider)
+              .execute(query, uid);
+          isSearching.value = false;
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('データの読み込みに失敗しました。再度お試しください。')),
+            );
+          }
+        }
+      }
+
+      initialLoad();
+
       scrollController.addListener(onScroll);
       return () => scrollController.removeListener(onScroll);
     }, [scrollController]);
-
-    final searchPostState = ref.watch(searchPostNotifierProvider);
-    final hasMore = ref.watch(searchPostScrollStateNotifierProvider).hasMore;
 
     if (isSearching.value) {
       return const LoadingIndicator(message: '検索中');
@@ -115,51 +146,6 @@ class PostSearchResults extends HookConsumerWidget {
         );
       },
     );
-  }
-
-  Future<void> _loadInitialPosts(
-    BuildContext context,
-    WidgetRef ref,
-    ValueNotifier<bool> isSearching,
-  ) async {
-    isSearching.value = true;
-
-    try {
-      await ref.read(postSearchResultGetUsecaseProvider).execute(query, uid);
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('データの読み込みに失敗しました。再試行してください。'),
-          ),
-        );
-      }
-    } finally {
-      isSearching.value = false;
-    }
-  }
-
-  Future<void> _loadMorePosts(
-    BuildContext context,
-    WidgetRef ref,
-    ValueNotifier<bool> isLoadingMore,
-  ) async {
-    if (isLoadingMore.value) return;
-
-    try {
-      isLoadingMore.value = true;
-      await ref.read(postSearchResultGetUsecaseProvider).execute(query, uid);
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('データの読み込みに失敗しました。再試行してください。'),
-          ),
-        );
-      }
-    } finally {
-      isLoadingMore.value = false;
-    }
   }
 
   Widget _buildPostList({

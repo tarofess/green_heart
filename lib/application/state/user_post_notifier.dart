@@ -21,14 +21,14 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<Post>, String?> {
     _postDataService = ref.read(postDataServiceProvider);
     _postInteractionService = ref.read(postInteractionServiceProvider);
 
-    final posts = await _fetchNextPosts(arg);
+    final posts = await _fetchPosts(arg);
     final updatedPosts = await _postDataService.updateIsLikedStatus(posts);
     final filteredPosts = await _postDataService.filterByBlock(updatedPosts);
 
     return filteredPosts;
   }
 
-  Future<List<Post>> _fetchNextPosts(String uid) async {
+  Future<List<Post>> _fetchPosts(String uid) async {
     final userPostScrollState =
         ref.read(userPostScrollStateNotifierProvider(uid));
     if (!userPostScrollState.hasMore) return [];
@@ -50,7 +50,7 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<Post>, String?> {
 
     state.whenData((currentPosts) async {
       try {
-        final newPosts = await _fetchNextPosts(uid);
+        final newPosts = await _fetchPosts(uid);
         final updatedLikePosts =
             await _postDataService.updateIsLikedStatus(newPosts);
         final filteredPosts =
@@ -73,12 +73,10 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<Post>, String?> {
       throw Exception('ユーザーの投稿を取得できません。再度お試しください。');
     }
 
-    ref.read(userPostScrollStateNotifierProvider(uid).notifier)
-      ..updateLastDocument(null)
-      ..updateHasMore(true);
+    ref.read(userPostScrollStateNotifierProvider(uid).notifier).reset();
 
     state = await AsyncValue.guard(() async {
-      final posts = await _fetchNextPosts(uid);
+      final posts = await _fetchPosts(uid);
       final updatedLikePosts =
           await _postDataService.updateIsLikedStatus(posts);
       return await _postDataService.filterByBlock(updatedLikePosts);

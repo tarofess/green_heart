@@ -20,6 +20,7 @@ class TimelinePage extends HookConsumerWidget {
     final scrollController = useScrollController();
 
     useEffect(() {
+      // 無限スクロールのための読み込み処理
       void onScroll() async {
         if (isLoadingMore.value) return;
 
