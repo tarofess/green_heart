@@ -130,7 +130,7 @@ class CommentCard extends HookConsumerWidget {
       return GestureDetector(
         onTap: () {
           final uid = ref.watch(authStateProvider).value?.uid;
-          if (post.uid != uid && commentData.comment.uid != uid) {
+          if (commentData.comment.uid != uid) {
             context.push('/user', extra: {'uid': commentData.comment.uid});
           }
         },
@@ -144,7 +144,10 @@ class CommentCard extends HookConsumerWidget {
     } else {
       return GestureDetector(
         onTap: () {
-          context.push('/user', extra: {'uid': replyComment.comment.uid});
+          final uid = ref.watch(authStateProvider).value?.uid;
+          if (replyComment.comment.uid != uid) {
+            context.push('/user', extra: {'uid': replyComment.comment.uid});
+          }
         },
         child: replyComment.comment.userImage == null
             ? const UserEmptyImage(radius: 24)

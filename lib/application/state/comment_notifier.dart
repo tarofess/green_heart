@@ -55,13 +55,12 @@ class CommentNotifier
   }
 
   Future<List<Comment>> _filterBlockedComments(List<Comment> comments) async {
-    final currentUid = ref.watch(authStateProvider).value?.uid;
-    if (currentUid == null) {
+    final uid = ref.watch(authStateProvider).value?.uid;
+    if (uid == null) {
       throw Exception('ユーザー情報が取得できません。再度お試し下さい。');
     }
 
-    final blockList =
-        await ref.read(blockGetUsecaseProvider).execute(currentUid);
+    final blockList = await ref.read(blockGetUsecaseProvider).execute(uid);
 
     return comments
         .where((comment) => !blockList.any((block) => block.uid == comment.uid))
