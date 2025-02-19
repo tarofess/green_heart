@@ -35,6 +35,19 @@ export const sendLikeNotification = functions.firestore
             return;
         }
 
+        // ★ ブロックチェック ★
+        // 投稿者が、いいねしたユーザー（likerUid）をブロックしている場合は通知しない
+        const blockSnapshot = await admin.firestore()
+            .collection("profile")
+            .doc(postOwnerUid)
+            .collection("block")
+            .where("targetUid", "==", likerUid)
+            .get();
+        if (!blockSnapshot.empty) {
+            console.log("ブロック済みのユーザーからのいいね通知なので送信しません。");
+            return;
+        }
+
         // 4. 投稿者のFCMトークンを profile/{postOwnerUid}/notificationSetting から取得し、
         //    likeSettingがtrueのトークンのみ収集
         const tokensSnapshot = await admin.firestore()
@@ -125,6 +138,19 @@ export const sendCommentNotification = functions.firestore
             return;
         }
 
+        // ★ ブロックチェック ★
+        // 通知先ユーザーが、コメントしたユーザー（commenterUid）をブロックしている場合は通知しない
+        const blockSnapshot = await admin.firestore()
+            .collection("profile")
+            .doc(receiverUid)
+            .collection("block")
+            .where("targetUid", "==", commenterUid)
+            .get();
+        if (!blockSnapshot.empty) {
+            console.log("ブロック済みのユーザーからのコメント通知なので送信しません。");
+            return;
+        }
+
         // 3. 通知先ユーザーのFCMトークンを profile/{receiverUid}/notificationSetting から取得
         const tokensSnapshot = await admin.firestore()
             .collection("profile")
@@ -182,9 +208,22 @@ export const sendFollowNotification = functions.firestore
         const followerName = followData.userName; // フォローしたユーザーの名前
 
         // 2. フォローされたユーザーのUIDを取得（ドキュメントパスの userId）
-        const { userId } = context.params;
+        const { userId, followerId } = context.params;
         if (!userId) {
             console.log("フォローされたユーザーのUIDが取得できませんでした。");
+            return;
+        }
+
+        // ★ ブロックチェック ★
+        // 通知先ユーザーが、フォローしたユーザー（followerId）をブロックしている場合は通知しない
+        const blockSnapshot = await admin.firestore()
+            .collection("profile")
+            .doc(userId)
+            .collection("block")
+            .where("targetUid", "==", followerId)
+            .get();
+        if (!blockSnapshot.empty) {
+            console.log("ブロック済みのユーザーからのフォロー通知なので送信しません。");
             return;
         }
 
