@@ -125,15 +125,7 @@ class PostSearchResults extends HookConsumerWidget {
     isSearching.value = true;
 
     try {
-      final searchPostScrollState =
-          ref.read(searchPostScrollStateNotifierProvider);
-
-      await ref.read(postSearchResultGetUsecaseProvider).execute(
-            query,
-            uid,
-            searchPostScrollState,
-            ref.read(searchPostScrollStateNotifierProvider.notifier),
-          );
+      await ref.read(postSearchResultGetUsecaseProvider).execute(query, uid);
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -156,16 +148,7 @@ class PostSearchResults extends HookConsumerWidget {
 
     try {
       isLoadingMore.value = true;
-
-      final searchPostScrollState =
-          ref.read(searchPostScrollStateNotifierProvider);
-
-      await ref.read(postSearchResultGetUsecaseProvider).execute(
-            query,
-            uid,
-            searchPostScrollState,
-            ref.read(searchPostScrollStateNotifierProvider.notifier),
-          );
+      await ref.read(postSearchResultGetUsecaseProvider).execute(query, uid);
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

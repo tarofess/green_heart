@@ -33,11 +33,7 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<Post>, String?> {
         ref.read(userPostScrollStateNotifierProvider(uid));
     if (!userPostScrollState.hasMore) return [];
 
-    final posts = await ref.read(postGetUsecaseProvider).execute(
-          uid,
-          userPostScrollState,
-          ref.read(userPostScrollStateNotifierProvider(uid).notifier),
-        );
+    final posts = await ref.read(postGetUsecaseProvider).execute(uid);
 
     posts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return posts;

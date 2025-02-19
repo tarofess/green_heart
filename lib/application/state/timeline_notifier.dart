@@ -28,10 +28,7 @@ class TimelineNotifier extends AsyncNotifier<List<Post>> {
     final timeLineScrollState = ref.read(timelineScrollStateNotifierProvider);
     if (!timeLineScrollState.hasMore) return [];
 
-    final posts = await ref.read(timelineGetUsecaseProvider).execute(
-          timeLineScrollState,
-          ref.read(timelineScrollStateNotifierProvider.notifier),
-        );
+    final posts = await ref.read(timelineGetUsecaseProvider).execute();
     return posts;
   }
 

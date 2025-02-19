@@ -17,7 +17,7 @@ final postAddUsecaseProvider = Provider(
   (ref) {
     final uid = ref.watch(authStateProvider).value?.uid;
     return PostAddUsecase(
-      FirebasePostRepository(),
+      FirebasePostRepository(ref),
       ref.read(profileGetUsecaseProvider),
       ref.read(userPostNotifierProvider(uid).notifier),
     );
@@ -25,27 +25,27 @@ final postAddUsecaseProvider = Provider(
 );
 
 final postGetUsecaseProvider = Provider(
-  (ref) => PostGetUsecase(FirebasePostRepository()),
+  (ref) => PostGetUsecase(FirebasePostRepository(ref)),
 );
 
 final postDeleteUsecaseProvider = Provider(
   (ref) => PostDeleteUsecase(
-    FirebasePostRepository(),
+    FirebasePostRepository(ref),
     ref.read(postManagerNotifierProvider.notifier),
   ),
 );
 
 final timelineGetUsecaseProvider = Provider(
-  (ref) => TimelineGetUsecase(FirebasePostRepository()),
+  (ref) => TimelineGetUsecase(FirebasePostRepository(ref)),
 );
 
 final postSearchResultGetUsecaseProvider = Provider(
   (ref) => PostSearchResultGetUsecase(
-    FirebasePostRepository(),
+    FirebasePostRepository(ref),
     ref.read(searchPostNotifierProvider.notifier),
   ),
 );
 
 final postGetByIdUsecaseProvider = Provider(
-  (ref) => PostGetByIdUsecase(FirebasePostRepository()),
+  (ref) => PostGetByIdUsecase(FirebasePostRepository(ref)),
 );

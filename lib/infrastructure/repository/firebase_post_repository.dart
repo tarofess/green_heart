@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:algoliasearch/algoliasearch.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:green_heart/application/exception/app_exception.dart';
@@ -10,18 +11,18 @@ import 'package:green_heart/application/interface/post_repository.dart';
 import 'package:green_heart/domain/type/post.dart';
 import 'package:green_heart/infrastructure/exception/exception_handler.dart';
 import 'package:green_heart/application/state/timeline_scroll_state_notifier.dart';
-import 'package:green_heart/domain/type/timeline_scroll_state.dart';
 import 'package:green_heart/application/state/user_post_scroll_state_notifier.dart';
-import 'package:green_heart/domain/type/user_post_scroll_state.dart';
 import 'package:green_heart/env/env.dart';
 import 'package:green_heart/application/state/search_post_scroll_state_notifier.dart';
-import 'package:green_heart/domain/type/search_post_scroll_state.dart';
 
 class FirebasePostRepository implements PostRepository {
+  final Ref _ref;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final int _timeoutSeconds = 15;
   final int _pageSize = 12;
   final int _diaryPageSize = 31;
+
+  FirebasePostRepository(this._ref);
 
   @override
   Future<Post> addPost(
@@ -57,11 +58,12 @@ class FirebasePostRepository implements PostRepository {
   }
 
   @override
-  Future<List<Post>> getDiaryPostsByUid(
-    String uid,
-    UserPostScrollState userPostScrollState,
-    UserPostScrollStateNotifier userPostScrollStateNotifier,
-  ) async {
+  Future<List<Post>> getDiaryPostsByUid(String uid) async {
+    final userPostScrollState =
+        _ref.read(userPostScrollStateNotifierProvider(uid));
+    final userPostScrollStateNotifier =
+        _ref.read(userPostScrollStateNotifierProvider(uid).notifier);
+
     try {
       if (!userPostScrollState.hasMore) return [];
 
@@ -96,10 +98,11 @@ class FirebasePostRepository implements PostRepository {
   }
 
   @override
-  Future<List<Post>> getTimelinePosts(
-    TimeLineScrollState timeLineScrollState,
-    TimelineScrollStateNotifier timelineScrollStateNotifier,
-  ) async {
+  Future<List<Post>> getTimelinePosts() async {
+    final timeLineScrollState = _ref.read(timelineScrollStateNotifierProvider);
+    final timelineScrollStateNotifier =
+        _ref.read(timelineScrollStateNotifierProvider.notifier);
+
     try {
       if (!timeLineScrollState.hasMore) return [];
 
@@ -135,9 +138,12 @@ class FirebasePostRepository implements PostRepository {
   Future<List<Post>> getPostsBySearchWord(
     String searchWord,
     String? uid,
-    SearchPostScrollState searchPostScrollState,
-    SearchPostScrollStateNotifier searchPostScrollStateNotifier,
   ) async {
+    final searchPostScrollState =
+        _ref.read(searchPostScrollStateNotifierProvider);
+    final searchPostScrollStateNotifier =
+        _ref.read(searchPostScrollStateNotifierProvider.notifier);
+
     try {
       if (!searchPostScrollState.hasMore) return [];
 
