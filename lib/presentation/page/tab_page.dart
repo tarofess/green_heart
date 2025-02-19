@@ -10,6 +10,7 @@ import 'package:green_heart/application/state/notification_setup_notifier.dart';
 import 'package:green_heart/presentation/widget/async_error_widget.dart';
 import 'package:green_heart/application/state/selected_tab_index_notifier.dart';
 import 'package:green_heart/infrastructure/service/messaging_handlers_service.dart';
+import 'package:green_heart/presentation/widget/loading_indicator.dart';
 
 class TabPage extends HookConsumerWidget {
   const TabPage({super.key});
@@ -18,6 +19,7 @@ class TabPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final notificationSetupState = ref.watch(notificationSetupNotifierProvider);
     final selectedIndex = ref.watch(selectedTabIndexNotifierProvider);
+    final isCompletedSetup = useState(false);
 
     useEffect(() {
       void setupNotificationHandlers() {
@@ -34,30 +36,38 @@ class TabPage extends HookConsumerWidget {
     }, const []);
 
     return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined, size: 24.r),
-            label: 'ホーム',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.feed_outlined, size: 24.r),
-            label: 'みんなの投稿',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications_none_outlined, size: 24.r),
-            label: '通知',
-          ),
-        ],
-        currentIndex: selectedIndex,
-        onTap: (int index) {
-          ref.read(selectedTabIndexNotifierProvider.notifier).setSelectedIndex(
-                index,
-              );
-        },
-      ),
+      bottomNavigationBar: isCompletedSetup.value == true
+          ? BottomNavigationBar(
+              items: [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home_outlined, size: 24.r),
+                  label: 'ホーム',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.feed_outlined, size: 24.r),
+                  label: 'みんなの投稿',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.notifications_none_outlined, size: 24.r),
+                  label: '通知',
+                ),
+              ],
+              currentIndex: selectedIndex,
+              onTap: (int index) {
+                ref
+                    .read(selectedTabIndexNotifierProvider.notifier)
+                    .setSelectedIndex(
+                      index,
+                    );
+              },
+            )
+          : null,
       body: notificationSetupState.when(
         data: (data) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            isCompletedSetup.value = true;
+          });
+
           return IndexedStack(
             index: selectedIndex,
             children: [
@@ -74,7 +84,9 @@ class TabPage extends HookConsumerWidget {
           );
         },
         loading: () {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+            child: LoadingIndicator(message: 'アプリの準備中'),
+          );
         },
         error: (e, stackTrace) {
           return AsyncErrorWidget(
