@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:green_heart/application/exception/app_exception.dart';
@@ -48,6 +49,29 @@ class FirebaseNotificationRepository implements NotificationRepository {
       }
     } catch (e) {
       return;
+    }
+  }
+
+  @override
+  Future<void> deleteById(String notificationId, String uid) async {
+    try {
+      final snapshot = await _firestore
+          .collection('profile')
+          .doc(uid)
+          .collection('notification')
+          .where('id', isEqualTo: notificationId)
+          .get()
+          .timeout(Duration(seconds: _timeoutSeconds));
+
+      if (snapshot.docs.isNotEmpty) {
+        final docRef = snapshot.docs.first.reference;
+        await docRef.delete();
+      }
+    } catch (e, stackTrace) {
+      if (e is TimeoutException) return;
+
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('通知の削除に失敗しました。再度お試しください。');
     }
   }
 }

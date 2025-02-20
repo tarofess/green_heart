@@ -136,12 +136,7 @@ class PostPage extends HookConsumerWidget {
                   switch (result) {
                     case Success():
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            '投稿が完了しました。',
-                            style: TextStyle(fontSize: 14.sp),
-                          ),
-                        ),
+                        const SnackBar(content: Text('投稿が完了しました。')),
                       );
                       context.pop();
                       break;

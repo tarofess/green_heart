@@ -20,21 +20,6 @@ class NotificationNotifier extends AsyncNotifier<List<Notification>> {
     return filteredNotifications;
   }
 
-  Future<void> markAsRead(Notification notification) async {
-    state.whenData((currentNotifications) {
-      final updatedNotifications =
-          currentNotifications.map((currentNotification) {
-        if (currentNotification.id == notification.id) {
-          return currentNotification.copyWith(isRead: true);
-        } else {
-          return currentNotification;
-        }
-      }).toList();
-
-      state = AsyncValue.data(updatedNotifications);
-    });
-  }
-
   Future<List<Notification>> filterByBlock(
     List<Notification> notifications,
   ) async {
@@ -50,6 +35,31 @@ class NotificationNotifier extends AsyncNotifier<List<Notification>> {
         .where(
             (notification) => !blockedUserIds.contains(notification.senderUid))
         .toList();
+  }
+
+  void markAsRead(Notification notification) {
+    state.whenData((currentNotifications) {
+      final updatedNotifications =
+          currentNotifications.map((currentNotification) {
+        if (currentNotification.id == notification.id) {
+          return currentNotification.copyWith(isRead: true);
+        } else {
+          return currentNotification;
+        }
+      }).toList();
+
+      state = AsyncValue.data(updatedNotifications);
+    });
+  }
+
+  void deleteById(String notificationId) {
+    state.whenData((currentNotifications) {
+      final updatedNotifications = currentNotifications.where((notification) {
+        return notification.id != notificationId;
+      }).toList();
+
+      state = AsyncValue.data(updatedNotifications);
+    });
   }
 }
 
