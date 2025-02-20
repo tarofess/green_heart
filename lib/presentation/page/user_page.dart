@@ -153,7 +153,8 @@ class UserPage extends HookConsumerWidget {
                           ? const SizedBox.shrink()
                           : SizedBox(height: 24.h),
                       _buildBirthDate(context, ref, userPageState.profile),
-                      uid == ref.watch(authStateProvider).value?.uid
+                      uid == ref.watch(authStateProvider).value?.uid ||
+                              userPageState.profile?.name == null
                           ? const SizedBox.shrink()
                           : SizedBox(height: 24.h),
                       _buildFollowButton(context, ref, userPageState),
@@ -218,7 +219,8 @@ class UserPage extends HookConsumerWidget {
     WidgetRef ref,
     UserPageState userPageState,
   ) {
-    return uid == ref.watch(authStateProvider).value?.uid
+    return uid == ref.watch(authStateProvider).value?.uid ||
+            userPageState.profile?.name == null
         ? const SizedBox.shrink()
         : Center(
             child: SizedBox(
