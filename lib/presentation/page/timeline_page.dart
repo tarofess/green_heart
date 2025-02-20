@@ -9,6 +9,8 @@ import 'package:green_heart/presentation/widget/post_card.dart';
 import 'package:green_heart/application/state/timeline_notifier.dart';
 import 'package:green_heart/presentation/widget/post_search.dart';
 import 'package:green_heart/application/state/timeline_scroll_state_notifier.dart';
+import 'package:green_heart/application/di/post_di.dart';
+import 'package:green_heart/domain/type/result.dart';
 
 class TimelinePage extends HookConsumerWidget {
   const TimelinePage({super.key});
@@ -26,18 +28,18 @@ class TimelinePage extends HookConsumerWidget {
 
         if (scrollController.position.pixels ==
             scrollController.position.maxScrollExtent) {
-          try {
-            isLoadingMore.value = true;
-            await ref.read(timelineNotifierProvider.notifier).loadMore();
-          } catch (e) {
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('データの読み込みに失敗しました。再試行してください。')),
-              );
-            }
-          } finally {
-            isLoadingMore.value = false;
+          isLoadingMore.value = true;
+
+          final result =
+              await ref.read(timelineLoadMoreUsecaseProvider).execute();
+
+          if (result is Failure && context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('データの読み込みに失敗しました。再度お試しください。')),
+            );
           }
+
+          isLoadingMore.value = false;
         }
       }
 
@@ -70,7 +72,14 @@ class TimelinePage extends HookConsumerWidget {
         data: (timeline) {
           return RefreshIndicator(
             onRefresh: () async {
-              await ref.read(timelineNotifierProvider.notifier).refresh();
+              final result =
+                  await ref.read(timelineRefreshUsecaseProvider).execute();
+
+              if (result is Failure && context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('データの読み込みに失敗しました。再度お試しください。')),
+                );
+              }
             },
             child: ListView.builder(
               physics: const AlwaysScrollableScrollPhysics(),

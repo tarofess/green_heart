@@ -10,6 +10,9 @@ import 'package:green_heart/presentation/widget/async_error_widget.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/domain/type/post.dart';
+import 'package:green_heart/application/di/post_di.dart';
+import 'package:green_heart/application/state/user_post_scroll_state_notifier.dart';
+import 'package:green_heart/domain/type/result.dart';
 
 class UserDiary extends HookConsumerWidget {
   const UserDiary({super.key, required this.uid});
@@ -26,7 +29,19 @@ class UserDiary extends HookConsumerWidget {
       data: (userPosts) {
         return RefreshIndicator(
           onRefresh: () async {
-            await ref.read(userPostNotifierProvider(uid).notifier).refresh(uid);
+            final result = await ref
+                .read(userPostRefreshUsecaseProvider)
+                .execute(
+                  uid,
+                  ref.read(userPostNotifierProvider(uid).notifier),
+                  ref.read(userPostScrollStateNotifierProvider(uid).notifier),
+                );
+
+            if (result is Failure && context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('データの読み込みに失敗しました。再度お試しください。')),
+              );
+            }
           },
           child: _buildCalendar(
             context,
@@ -107,9 +122,19 @@ class UserDiary extends HookConsumerWidget {
           );
 
           if (!hasPostInFocusedDay) {
-            await ref.read(userPostNotifierProvider(uid).notifier).loadMore(
-                  uid,
-                );
+            final result =
+                await ref.read(userPostLoadMoreUsecaseProvider).execute(
+                      uid,
+                      ref.read(userPostScrollStateNotifierProvider(uid)),
+                      ref.read(userPostNotifierProvider(uid).notifier),
+                    );
+
+            if (result is Failure && context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('データの読み込みに失敗しました。再度お試しください。')),
+              );
+            }
+
             focusedDay.value = firstDayInMonth;
           }
         },

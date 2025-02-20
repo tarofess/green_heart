@@ -12,6 +12,12 @@ import 'package:green_heart/application/di/profile_di.dart';
 import 'package:green_heart/application/state/post_manager_notifier.dart';
 import 'package:green_heart/application/state/search_post_notifier.dart';
 import 'package:green_heart/application/usecase/post_get_by_id_usecase.dart';
+import 'package:green_heart/application/state/timeline_notifier.dart';
+import 'package:green_heart/application/state/timeline_scroll_state_notifier.dart';
+import 'package:green_heart/application/usecase/timeline_load_more_usecase.dart';
+import 'package:green_heart/application/usecase/timeline_refresh_usecase.dart';
+import 'package:green_heart/application/usecase/user_post_load_more_usecase.dart';
+import 'package:green_heart/application/usecase/user_post_refresh_usecase.dart';
 
 final postAddUsecaseProvider = Provider(
   (ref) {
@@ -39,6 +45,22 @@ final timelineGetUsecaseProvider = Provider(
   (ref) => TimelineGetUsecase(FirebasePostRepository(ref)),
 );
 
+final timelineLoadMoreUsecaseProvider = Provider(
+  (ref) => TimelineLoadMoreUsecase(
+    FirebasePostRepository(ref),
+    ref.read(timelineNotifierProvider.notifier),
+    ref.watch(timelineScrollStateNotifierProvider),
+  ),
+);
+
+final timelineRefreshUsecaseProvider = Provider(
+  (ref) => TimelineRefreshUsecase(
+    FirebasePostRepository(ref),
+    ref.read(timelineNotifierProvider.notifier),
+    ref.read(timelineScrollStateNotifierProvider.notifier),
+  ),
+);
+
 final postSearchResultGetUsecaseProvider = Provider(
   (ref) => PostSearchResultGetUsecase(
     FirebasePostRepository(ref),
@@ -48,4 +70,12 @@ final postSearchResultGetUsecaseProvider = Provider(
 
 final postGetByIdUsecaseProvider = Provider(
   (ref) => PostGetByIdUsecase(FirebasePostRepository(ref)),
+);
+
+final userPostLoadMoreUsecaseProvider = Provider(
+  (ref) => UserPostLoadMoreUsecase(FirebasePostRepository(ref)),
+);
+
+final userPostRefreshUsecaseProvider = Provider(
+  (ref) => UserPostRefreshUsecase(FirebasePostRepository(ref)),
 );

@@ -8,6 +8,8 @@ import 'package:green_heart/application/state/user_post_scroll_state_notifier.da
 import 'package:green_heart/presentation/widget/async_error_widget.dart';
 import 'package:green_heart/presentation/widget/loading_indicator.dart';
 import 'package:green_heart/presentation/widget/post_card.dart';
+import 'package:green_heart/application/di/post_di.dart';
+import 'package:green_heart/domain/type/result.dart';
 
 class UserPostList extends HookConsumerWidget {
   const UserPostList({
@@ -31,20 +33,22 @@ class UserPostList extends HookConsumerWidget {
 
         if (scrollController.position.pixels ==
             scrollController.position.maxScrollExtent) {
-          try {
-            isLoadingMore.value = true;
-            await ref
-                .read(userPostNotifierProvider(uid).notifier)
-                .loadMore(uid);
-          } catch (e) {
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('データの読み込みに失敗しました。再試行してください。')),
-              );
-            }
-          } finally {
-            isLoadingMore.value = false;
+          isLoadingMore.value = true;
+
+          final result =
+              await ref.read(userPostLoadMoreUsecaseProvider).execute(
+                    uid,
+                    ref.read(userPostScrollStateNotifierProvider(uid)),
+                    ref.read(userPostNotifierProvider(uid).notifier),
+                  );
+
+          if (result is Failure && context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('データの読み込みに失敗しました。再度お試しください。')),
+            );
           }
+
+          isLoadingMore.value = false;
         }
       }
 
@@ -56,7 +60,19 @@ class UserPostList extends HookConsumerWidget {
       data: (userPosts) {
         return RefreshIndicator(
           onRefresh: () async {
-            await ref.read(userPostNotifierProvider(uid).notifier).refresh(uid);
+            final result = await ref
+                .read(userPostRefreshUsecaseProvider)
+                .execute(
+                  uid,
+                  ref.read(userPostNotifierProvider(uid).notifier),
+                  ref.read(userPostScrollStateNotifierProvider(uid).notifier),
+                );
+
+            if (result is Failure && context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('データの読み込みに失敗しました。再度お試しください。')),
+              );
+            }
           },
           child: userPosts.isEmpty
               ? const Center(child: Text('投稿はまだありません'))

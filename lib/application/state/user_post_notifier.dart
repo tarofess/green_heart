@@ -21,37 +21,17 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<Post>, String?> {
     _postDataService = ref.read(postDataServiceProvider);
     _postInteractionService = ref.read(postInteractionServiceProvider);
 
-    final posts = await _fetchPosts(arg);
+    final posts = await ref.read(postGetUsecaseProvider).execute(arg);
     final updatedPosts = await _postDataService.updateIsLikedStatus(posts);
 
     return updatedPosts;
   }
 
-  Future<List<Post>> _fetchPosts(String uid) async {
-    final userPostScrollState =
-        ref.read(userPostScrollStateNotifierProvider(uid));
-    if (!userPostScrollState.hasMore) return [];
-
-    final posts = await ref.read(postGetUsecaseProvider).execute(uid);
-
-    posts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    return posts;
-  }
-
-  Future<void> loadMore(String? uid) async {
-    if (uid == null) {
-      throw Exception('ユーザーの投稿を取得できません。再度お試しください。');
-    }
-
-    final userPostScrollState =
-        ref.read(userPostScrollStateNotifierProvider(uid));
-    if (!userPostScrollState.hasMore) return;
-
+  Future<void> loadMore(List<Post> posts) async {
     state.whenData((currentPosts) async {
       try {
-        final newPosts = await _fetchPosts(uid);
         final updatedLikePosts =
-            await _postDataService.updateIsLikedStatus(newPosts);
+            await _postDataService.updateIsLikedStatus(posts);
 
         final updatedPosts = [
           ...currentPosts,
@@ -65,15 +45,10 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<Post>, String?> {
     });
   }
 
-  Future<void> refresh(String? uid) async {
-    if (uid == null) {
-      throw Exception('ユーザーの投稿を取得できません。再度お試しください。');
-    }
-
+  Future<void> refresh(String? uid, List<Post> posts) async {
     ref.read(userPostScrollStateNotifierProvider(uid).notifier).reset();
 
     state = await AsyncValue.guard(() async {
-      final posts = await _fetchPosts(uid);
       final updatedLikePosts =
           await _postDataService.updateIsLikedStatus(posts);
       return updatedLikePosts;

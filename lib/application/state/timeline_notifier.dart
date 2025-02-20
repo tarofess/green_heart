@@ -4,7 +4,6 @@ import 'package:green_heart/application/di/post_di.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/domain/type/post.dart';
-import 'package:green_heart/application/state/timeline_scroll_state_notifier.dart';
 import 'package:green_heart/application/service/post_interaction_service.dart';
 import 'package:green_heart/application/service/post_data_service.dart';
 
@@ -17,30 +16,18 @@ class TimelineNotifier extends AsyncNotifier<List<Post>> {
     _postDataService = ref.read(postDataServiceProvider);
     _postInteractionService = ref.read(postInteractionServiceProvider);
 
-    final posts = await _fetchPosts();
+    final posts = await ref.read(timelineGetUsecaseProvider).execute();
     final updatedPosts = await _postDataService.updateIsLikedStatus(posts);
     final filteredPosts = await _postDataService.filterByBlock(updatedPosts);
 
     return filteredPosts;
   }
 
-  Future<List<Post>> _fetchPosts() async {
-    final timeLineScrollState = ref.read(timelineScrollStateNotifierProvider);
-    if (!timeLineScrollState.hasMore) return [];
-
-    final posts = await ref.read(timelineGetUsecaseProvider).execute();
-    return posts;
-  }
-
-  Future<void> loadMore() async {
-    final timeLineScrollState = ref.read(timelineScrollStateNotifierProvider);
-    if (!timeLineScrollState.hasMore) return;
-
+  Future<void> loadMore(List<Post> posts) async {
     state.whenData((currentPosts) async {
       try {
-        final newPosts = await _fetchPosts();
         final updatedLikePosts =
-            await _postDataService.updateIsLikedStatus(newPosts);
+            await _postDataService.updateIsLikedStatus(posts);
         final filteredPosts =
             await _postDataService.filterByBlock(updatedLikePosts);
 
@@ -56,11 +43,8 @@ class TimelineNotifier extends AsyncNotifier<List<Post>> {
     });
   }
 
-  Future<void> refresh() async {
-    ref.read(timelineScrollStateNotifierProvider.notifier).reset();
-
+  Future<void> refresh(List<Post> posts) async {
     state = await AsyncValue.guard(() async {
-      final posts = await _fetchPosts();
       final updatedLikePosts =
           await _postDataService.updateIsLikedStatus(posts);
       return await _postDataService.filterByBlock(updatedLikePosts);
