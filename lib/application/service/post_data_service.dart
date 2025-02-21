@@ -8,19 +8,18 @@ import 'package:green_heart/domain/type/block.dart';
 class PostDataService {
   final BlockGetByOtherUseCase _blockGetByOtherUsecase;
   final LikeCheckUsecase _likeCheckUsecase;
-  final String? _myUid;
 
   PostDataService(
     this._blockGetByOtherUsecase,
     this._likeCheckUsecase,
-    this._myUid,
   );
 
   Future<List<Post>> filterByBlock(
     List<Post> posts,
     AsyncValue<List<Block>> blockState,
+    String? uid,
   ) async {
-    if (_myUid == null) {
+    if (uid == null) {
       throw Exception('ユーザーが存在しないため投稿を取得できません。再度お試しください。');
     }
 
@@ -33,7 +32,7 @@ class PostDataService {
     final blockedUserIds = myBlockList.map((block) => block.targetUid).toSet();
 
     // 自分をブロックしているユーザーのuidを取得
-    final blockMeList = await _blockGetByOtherUsecase.execute(_myUid);
+    final blockMeList = await _blockGetByOtherUsecase.execute(uid);
     final blockMeUserIds = blockMeList.map((block) => block.uid).toSet();
 
     // 上記二つのuidを合算
@@ -45,15 +44,15 @@ class PostDataService {
         .toList();
   }
 
-  Future<List<Post>> updateIsLikedStatus(List<Post> posts) async {
+  Future<List<Post>> updateIsLikedStatus(List<Post> posts, String? uid) async {
     final List<Post> updatedPosts = [];
 
-    if (_myUid == null) {
+    if (uid == null) {
       throw Exception('ユーザーが存在しないため投稿を取得できません。再度お試しください。');
     }
 
     for (var post in posts) {
-      final isLiked = await _likeCheckUsecase.execute(post.id, _myUid);
+      final isLiked = await _likeCheckUsecase.execute(post.id, uid);
       post = post.copyWith(isLiked: isLiked);
       updatedPosts.add(post);
     }

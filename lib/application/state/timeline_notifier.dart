@@ -8,6 +8,7 @@ import 'package:green_heart/application/service/post_interaction_service.dart';
 import 'package:green_heart/application/service/post_data_service.dart';
 import 'package:green_heart/application/state/block_notifier.dart';
 import 'package:green_heart/domain/type/block.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
 
 class TimelineNotifier extends AsyncNotifier<List<Post>> {
   late PostDataService _postDataService;
@@ -21,10 +22,12 @@ class TimelineNotifier extends AsyncNotifier<List<Post>> {
     _postInteractionService = ref.read(postInteractionServiceProvider);
     _blockState = ref.read(blockNotifierProvider);
 
+    final uid = ref.watch(authStateProvider).value?.uid;
+
     final posts = await ref.read(timelineGetUsecaseProvider).execute();
-    final updatedPosts = await _postDataService.updateIsLikedStatus(posts);
+    final updatedPosts = await _postDataService.updateIsLikedStatus(posts, uid);
     final filteredPosts =
-        await _postDataService.filterByBlock(updatedPosts, _blockState);
+        await _postDataService.filterByBlock(updatedPosts, _blockState, uid);
 
     // ブロックの状態変更で投稿が変わるのに備えて全通知を保持しておく
     _allPosts = filteredPosts;
@@ -33,21 +36,27 @@ class TimelineNotifier extends AsyncNotifier<List<Post>> {
     ref.listen<AsyncValue<List<Block>>>(blockNotifierProvider,
         (previous, next) async {
       _blockState = next;
-      state = AsyncValue.data(
-        await _postDataService.filterByBlock(_allPosts, next),
+      final filteredPosts = await _postDataService.filterByBlock(
+        _allPosts,
+        next,
+        ref.watch(authStateProvider).value?.uid,
       );
+
+      state = AsyncValue.data(filteredPosts);
     });
 
     return filteredPosts;
   }
 
   Future<void> loadMore(List<Post> posts) async {
+    final uid = ref.watch(authStateProvider).value?.uid;
+
     state.whenData((currentPosts) async {
       try {
         final updatedLikePosts =
-            await _postDataService.updateIsLikedStatus(posts);
-        final filteredPosts =
-            await _postDataService.filterByBlock(updatedLikePosts, _blockState);
+            await _postDataService.updateIsLikedStatus(posts, uid);
+        final filteredPosts = await _postDataService.filterByBlock(
+            updatedLikePosts, _blockState, uid);
 
         final updatedPosts = [
           ...currentPosts,
@@ -62,12 +71,14 @@ class TimelineNotifier extends AsyncNotifier<List<Post>> {
   }
 
   Future<void> refresh(List<Post> posts) async {
+    final uid = ref.watch(authStateProvider).value?.uid;
+
     state = await AsyncValue.guard(() async {
       final updatedLikePosts =
-          await _postDataService.updateIsLikedStatus(posts);
+          await _postDataService.updateIsLikedStatus(posts, uid);
 
       return await _postDataService.filterByBlock(
-          updatedLikePosts, _blockState);
+          updatedLikePosts, _blockState, uid);
     });
   }
 

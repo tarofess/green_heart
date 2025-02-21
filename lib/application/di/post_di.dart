@@ -87,7 +87,6 @@ final userPostRefreshUsecaseProvider = Provider(
 final postDataServiceProvider = Provider((ref) => PostDataService(
       ref.read(blockGetByOtherUsecaseProvider),
       ref.read(likeCheckUsecaseProvider),
-      ref.read(authStateProvider).value?.uid,
     ));
 
 final postInteractionServiceProvider = Provider<PostInteractionService>(

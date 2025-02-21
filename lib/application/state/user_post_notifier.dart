@@ -7,6 +7,7 @@ import 'package:green_heart/domain/type/post.dart';
 import 'package:green_heart/application/state/user_post_scroll_state_notifier.dart';
 import 'package:green_heart/application/service/post_interaction_service.dart';
 import 'package:green_heart/application/service/post_data_service.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
 
 class UserPostNotifier extends FamilyAsyncNotifier<List<Post>, String?> {
   late PostDataService _postDataService;
@@ -21,17 +22,21 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<Post>, String?> {
     _postDataService = ref.read(postDataServiceProvider);
     _postInteractionService = ref.read(postInteractionServiceProvider);
 
+    final uid = ref.watch(authStateProvider).value?.uid;
+
     final posts = await ref.read(postGetUsecaseProvider).execute(arg);
-    final updatedPosts = await _postDataService.updateIsLikedStatus(posts);
+    final updatedPosts = await _postDataService.updateIsLikedStatus(posts, uid);
 
     return updatedPosts;
   }
 
   Future<void> loadMore(List<Post> posts) async {
+    final uid = ref.watch(authStateProvider).value?.uid;
+
     state.whenData((currentPosts) async {
       try {
         final updatedLikePosts =
-            await _postDataService.updateIsLikedStatus(posts);
+            await _postDataService.updateIsLikedStatus(posts, uid);
 
         final updatedPosts = [
           ...currentPosts,
@@ -46,11 +51,12 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<Post>, String?> {
   }
 
   Future<void> refresh(String? uid, List<Post> posts) async {
+    final uid = ref.watch(authStateProvider).value?.uid;
     ref.read(userPostScrollStateNotifierProvider(uid).notifier).reset();
 
     state = await AsyncValue.guard(() async {
       final updatedLikePosts =
-          await _postDataService.updateIsLikedStatus(posts);
+          await _postDataService.updateIsLikedStatus(posts, uid);
       return updatedLikePosts;
     });
   }

@@ -6,6 +6,7 @@ import 'package:green_heart/domain/type/post.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/application/service/post_data_service.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
 
 class NotificationDetailPostNotifier
     extends AutoDisposeFamilyAsyncNotifier<List<Post>, String> {
@@ -17,8 +18,10 @@ class NotificationDetailPostNotifier
     _postDataService = ref.read(postDataServiceProvider);
     _postInteractionService = ref.read(postInteractionServiceProvider);
 
+    final uid = ref.watch(authStateProvider).value?.uid;
+
     final posts = await ref.read(postGetByIdUsecaseProvider).execute(arg);
-    final updatedPosts = await _postDataService.updateIsLikedStatus(posts);
+    final updatedPosts = await _postDataService.updateIsLikedStatus(posts, uid);
     return updatedPosts;
   }
 
