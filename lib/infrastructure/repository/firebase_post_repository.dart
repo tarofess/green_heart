@@ -79,6 +79,7 @@ class FirebasePostRepository implements PostRepository {
 
       final querySnapshot =
           await query.get().timeout(Duration(seconds: _timeoutSeconds));
+
       if (querySnapshot.docs.isEmpty ||
           querySnapshot.docs.length < _diaryPageSize) {
         userPostScrollStateNotifier.updateHasMore(false);
@@ -117,6 +118,7 @@ class FirebasePostRepository implements PostRepository {
 
       final querySnapshot =
           await query.get().timeout(Duration(seconds: _timeoutSeconds));
+
       if (querySnapshot.docs.isEmpty || querySnapshot.docs.length < _pageSize) {
         timelineScrollStateNotifier.updateHasMore(false);
       }
@@ -170,9 +172,10 @@ class FirebasePostRepository implements PostRepository {
         );
       }
 
-      final responseHits = await client.searchIndex(request: queryHits).timeout(
-            Duration(seconds: _timeoutSeconds),
-          );
+      final responseHits = await client
+          .searchIndex(request: queryHits)
+          .timeout(Duration(seconds: _timeoutSeconds));
+
       if (responseHits.hits.isEmpty) {
         searchPostScrollStateNotifier.updateHasMore(false);
       } else {
@@ -180,6 +183,7 @@ class FirebasePostRepository implements PostRepository {
           searchPostScrollState.currentPage + 1,
         );
       }
+
       return responseHits.hits
           .map((hit) => Post.fromJson(hit as Map<String, dynamic>))
           .toList();

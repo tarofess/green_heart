@@ -20,6 +20,23 @@ class NotificationNotifier extends AsyncNotifier<List<Notification>> {
     return filteredNotifications;
   }
 
+  Future<void> loadMore(List<Notification> notifications) async {
+    final filteredNotifications = await filterByBlock(notifications);
+
+    state.whenData((currentNotifications) {
+      final updatedNotifications = List.of(currentNotifications)
+        ..addAll(filteredNotifications);
+
+      state = AsyncValue.data(updatedNotifications);
+    });
+  }
+
+  Future<void> refresh(List<Notification> notifications) async {
+    state = await AsyncValue.guard(() async {
+      return await filterByBlock(notifications);
+    });
+  }
+
   Future<List<Notification>> filterByBlock(
     List<Notification> notifications,
   ) async {

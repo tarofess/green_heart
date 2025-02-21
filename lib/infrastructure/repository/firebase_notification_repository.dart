@@ -1,31 +1,58 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/exception/app_exception.dart';
 import 'package:green_heart/application/interface/notification_repository.dart';
 import 'package:green_heart/domain/type/notification.dart';
 import 'package:green_heart/infrastructure/exception/exception_handler.dart';
+import 'package:green_heart/application/state/notification_scroll_state_notifier.dart';
 
 class FirebaseNotificationRepository implements NotificationRepository {
+  final Ref _ref;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final int _timeoutSeconds = 10;
+  final int _pageSize = 15;
+
+  FirebaseNotificationRepository(this._ref);
 
   @override
   Future<List<Notification>> getNotifications(String uid) async {
+    final notificationScrollState =
+        _ref.read(notificationScrollStateNotifierProvider);
+    final notificationScrollStateNotifier =
+        _ref.read(notificationScrollStateNotifierProvider.notifier);
+
     try {
-      final snapshot = await _firestore
+      if (!notificationScrollState.hasMore) return [];
+
+      Query query = _firestore
           .collection('profile')
           .doc(uid)
           .collection('notification')
           .orderBy('createdAt', descending: true)
-          .get()
-          .timeout(Duration(seconds: _timeoutSeconds));
+          .limit(_pageSize);
 
-      final notifications = snapshot.docs.map((doc) {
-        return Notification.fromJson(doc.data());
-      }).toList();
+      if (notificationScrollState.lastDocument != null) {
+        query = query.startAfterDocument(notificationScrollState.lastDocument!);
+      }
 
-      return notifications;
+      final querySnapshot =
+          await query.get().timeout(Duration(seconds: _timeoutSeconds));
+
+      if (querySnapshot.docs.isEmpty || querySnapshot.docs.length < _pageSize) {
+        notificationScrollStateNotifier.updateHasMore(false);
+      }
+
+      if (querySnapshot.docs.isNotEmpty) {
+        notificationScrollStateNotifier
+            .updateLastDocument(querySnapshot.docs.last);
+      }
+
+      return querySnapshot.docs
+          .map((doc) =>
+              Notification.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('投稿の削除に失敗しました。再度お試しください。');
