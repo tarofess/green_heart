@@ -117,11 +117,25 @@ class UserDiary extends HookConsumerWidget {
           }
         },
         onPageChanged: (firstDayInMonth) async {
-          final hasPostInFocusedDay = userPosts.any(
-            (post) => post.releaseDate.isAtSameMomentAs(firstDayInMonth),
+          // userPostsが空の場合は、focusedDayの更新のみ
+          if (userPosts.isEmpty) {
+            focusedDay.value = firstDayInMonth;
+            return;
+          }
+
+          // 一番古い投稿を取得
+          final oldestPost = userPosts.reduce(
+            (a, b) => a.releaseDate.isBefore(b.releaseDate) ? a : b,
           );
 
-          if (!hasPostInFocusedDay) {
+          // 年月単位で比較するためのDateTimeオブジェクトを作成
+          final displayedYearMonth =
+              DateTime(firstDayInMonth.year, firstDayInMonth.month);
+          final oldestYearMonth = DateTime(
+              oldestPost.releaseDate.year, oldestPost.releaseDate.month);
+
+          // 表示する年月が一番古い投稿の年月と一致する場合、追加読み込みを行う
+          if (displayedYearMonth.isAtSameMomentAs(oldestYearMonth)) {
             final result =
                 await ref.read(userPostLoadMoreUsecaseProvider).execute(
                       uid,

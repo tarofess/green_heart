@@ -20,7 +20,7 @@ class FirebasePostRepository implements PostRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final int _timeoutSeconds = 15;
   final int _pageSize = 12;
-  final int _diaryPageSize = 31;
+  final int _diaryPageSize = 32;
 
   FirebasePostRepository(this._ref);
 
