@@ -25,7 +25,7 @@ class SearchPostNotifier extends AsyncNotifier<List<Post>> {
   }
 
   Future<void> setPostsBySearchWord(List<Post> posts) async {
-    final uid = ref.watch(authStateProvider).value?.uid;
+    final uid = ref.read(authStateProvider).value?.uid;
 
     final filteredPosts =
         await _postDataService.filterByBlock(posts, _blockState, uid);

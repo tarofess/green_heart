@@ -18,11 +18,14 @@ class TimelineNotifier extends AsyncNotifier<List<Post>> {
 
   @override
   Future<List<Post>> build() async {
+    final uid = ref.watch(authStateProvider).value?.uid;
+    if (uid == null) {
+      throw Exception('ユーザー情報が取得できませんでした。再度お試しください。');
+    }
+
     _postDataService = ref.read(postDataServiceProvider);
     _postInteractionService = ref.read(postInteractionServiceProvider);
     _blockState = ref.read(blockNotifierProvider);
-
-    final uid = ref.watch(authStateProvider).value?.uid;
 
     final posts = await ref.read(timelineGetUsecaseProvider).execute();
     final updatedPosts = await _postDataService.updateIsLikedStatus(posts, uid);
@@ -36,11 +39,8 @@ class TimelineNotifier extends AsyncNotifier<List<Post>> {
     ref.listen<AsyncValue<List<Block>>>(blockNotifierProvider,
         (previous, next) async {
       _blockState = next;
-      final filteredPosts = await _postDataService.filterByBlock(
-        _allPosts,
-        next,
-        ref.watch(authStateProvider).value?.uid,
-      );
+      final filteredPosts =
+          await _postDataService.filterByBlock(_allPosts, next, uid);
 
       state = AsyncValue.data(filteredPosts);
     });

@@ -1,4 +1,3 @@
-import 'package:green_heart/application/state/notification_detail_post_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/application/state/auth_state_provider.dart';
@@ -7,6 +6,7 @@ import 'package:green_heart/application/state/user_post_notifier.dart';
 import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/application/state/search_post_notifier.dart';
 import 'package:green_heart/domain/type/post.dart';
+import 'package:green_heart/application/state/notification_detail_post_notifier.dart';
 
 class PostManagerNotifier extends Notifier {
   @override

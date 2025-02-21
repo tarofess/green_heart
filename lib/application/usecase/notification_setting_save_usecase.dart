@@ -7,11 +7,11 @@ class NotificationSettingSaveUsecase {
 
   NotificationSettingSaveUsecase(this._notificationSettingRepository);
 
-  Future<void> execute(String? uid, String deviceId) async {
+  Future<void> execute(String uid, String deviceId) async {
     try {
       // FCMの現在のトークンを取得
       final currentToken = await FirebaseMessaging.instance.getToken();
-      if (uid == null || currentToken == null) return;
+      if (currentToken == null) return;
 
       // ユーザー＆デバイスに紐づく通知情報を取得
       final savedNotification = await _notificationSettingRepository

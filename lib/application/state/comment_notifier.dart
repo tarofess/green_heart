@@ -56,7 +56,7 @@ class CommentNotifier
     return CommentData(
       comment: comment,
       replyComments: replyCommentData,
-      isMe: ref.watch(authStateProvider).value?.uid == comment.uid,
+      isMe: ref.read(authStateProvider).value?.uid == comment.uid,
     );
   }
 

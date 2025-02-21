@@ -15,14 +15,13 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<Post>, String?> {
 
   @override
   Future<List<Post>> build(String? arg) async {
-    if (arg == null) {
-      throw Exception('ユーザーの投稿を取得できません。再度お試しください。');
+    final uid = ref.watch(authStateProvider).value?.uid;
+    if (arg == null || uid == null) {
+      throw Exception('ユーザーの投稿を取得できませんでした。再度お試しください。');
     }
 
     _postDataService = ref.read(postDataServiceProvider);
     _postInteractionService = ref.read(postInteractionServiceProvider);
-
-    final uid = ref.watch(authStateProvider).value?.uid;
 
     final posts = await ref.read(postGetUsecaseProvider).execute(arg);
     final updatedPosts = await _postDataService.updateIsLikedStatus(posts, uid);

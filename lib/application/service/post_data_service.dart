@@ -20,7 +20,7 @@ class PostDataService {
     String? uid,
   ) async {
     if (uid == null) {
-      throw Exception('ユーザーが存在しないため投稿を取得できません。再度お試しください。');
+      throw Exception('ユーザー情報が取得できませんでした。再度お試しください。');
     }
 
     // 自分がブロックしているユーザーのuidを取得
@@ -48,7 +48,7 @@ class PostDataService {
     final List<Post> updatedPosts = [];
 
     if (uid == null) {
-      throw Exception('ユーザーが存在しないため投稿を取得できません。再度お試しください。');
+      throw Exception('ユーザー情報が取得できませんでした。再度お試しください。');
     }
 
     for (var post in posts) {

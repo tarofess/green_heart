@@ -59,7 +59,7 @@ class NotificationNotifier extends AsyncNotifier<List<Notification>> {
   Future<List<Notification>> filterByBlock(
     List<Notification> notifications,
   ) async {
-    final uid = ref.watch(authStateProvider).value?.uid;
+    final uid = ref.read(authStateProvider).value?.uid;
     if (uid == null) {
       throw Exception('ユーザー情報が取得できませんでした。再度お試しください。');
     }

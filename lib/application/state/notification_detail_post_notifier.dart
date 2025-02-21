@@ -15,10 +15,13 @@ class NotificationDetailPostNotifier
 
   @override
   Future<List<Post>> build(String arg) async {
+    final uid = ref.watch(authStateProvider).value?.uid;
+    if (uid == null) {
+      throw Exception('ユーザー情報が取得できませんでした。再度お試しください。');
+    }
+
     _postDataService = ref.read(postDataServiceProvider);
     _postInteractionService = ref.read(postInteractionServiceProvider);
-
-    final uid = ref.watch(authStateProvider).value?.uid;
 
     final posts = await ref.read(postGetByIdUsecaseProvider).execute(arg);
     final updatedPosts = await _postDataService.updateIsLikedStatus(posts, uid);

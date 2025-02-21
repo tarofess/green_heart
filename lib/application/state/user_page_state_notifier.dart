@@ -13,7 +13,7 @@ class UserPageStateNotifier
   @override
   Future<UserPageState> build(String? arg) async {
     if (arg == null) {
-      throw Exception('ユーザー情報が取得できません。再度お試しください。');
+      throw Exception('ユーザー情報が取得できませんでした。再度お試しください。');
     }
 
     final currentUid = ref.watch(authStateProvider).value?.uid;

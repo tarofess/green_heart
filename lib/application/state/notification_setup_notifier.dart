@@ -11,16 +11,18 @@ import 'package:green_heart/application/state/block_notifier.dart';
 class NotificationSetupNotifier extends AsyncNotifier {
   @override
   Future<void> build() async {
+    final uid = ref.watch(authStateProvider).value?.uid;
+    if (uid == null) {
+      throw Exception('ユーザー情報が取得できませんでした。再度お試しください。');
+    }
+
     await setupMessaging();
 
     try {
       final deviceId = await ref.read(deviceInfoGetUsecaseProvider).execute();
       if (deviceId == null) return;
 
-      await ref.read(notificationSaveUsecaeProvider).execute(
-            ref.watch(authStateProvider).value?.uid,
-            deviceId,
-          );
+      await ref.read(notificationSaveUsecaeProvider).execute(uid, deviceId);
 
       // 以後の様々なデータ取得にブロックが必要なためここで取得
       await ref.read(blockNotifierProvider.future);

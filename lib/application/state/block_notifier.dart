@@ -9,8 +9,9 @@ class BlockNotifier extends AsyncNotifier<List<Block>> {
   Future<List<Block>> build() async {
     final uid = ref.watch(authStateProvider).value?.uid;
     if (uid == null) {
-      throw Exception('ユーザーが存在しないのでブロックリストを取得できません。再度お試しください。');
+      throw Exception('ユーザー情報が取得できませんでした。再度お試しください。');
     }
+
     final blocks = await ref.read(blockGetUsecaseProvider).execute(uid);
     return blocks;
   }
