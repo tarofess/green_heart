@@ -21,7 +21,7 @@ class NotificationLoadMoreUsecase {
     try {
       final notifications =
           await _notificationRepository.getNotifications(_uid);
-      _notificationNotifier.loadMore(notifications);
+      await _notificationNotifier.loadMore(notifications);
 
       return const Success();
     } catch (e) {
