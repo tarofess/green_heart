@@ -6,6 +6,7 @@ import 'package:green_heart/application/di/notification_setting_di.dart';
 import 'package:green_heart/application/exception/app_exception.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/infrastructure/exception/exception_handler.dart';
+import 'package:green_heart/application/state/block_notifier.dart';
 
 class NotificationSetupNotifier extends AsyncNotifier {
   @override
@@ -20,6 +21,9 @@ class NotificationSetupNotifier extends AsyncNotifier {
             ref.watch(authStateProvider).value?.uid,
             deviceId,
           );
+
+      // 以後の様々なデータ取得にブロックが必要なためここで取得
+      await ref.read(blockNotifierProvider.future);
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('通知の設定に失敗しました。再度お試しください。');

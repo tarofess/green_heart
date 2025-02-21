@@ -5,20 +5,27 @@ import 'package:green_heart/domain/type/post.dart';
 import 'package:green_heart/application/state/profile_notifier.dart';
 import 'package:green_heart/application/service/post_interaction_service.dart';
 import 'package:green_heart/application/service/post_data_service.dart';
+import 'package:green_heart/application/state/block_notifier.dart';
+import 'package:green_heart/domain/type/block.dart';
+import 'package:green_heart/application/di/post_di.dart';
 
 class SearchPostNotifier extends AsyncNotifier<List<Post>> {
-  late final PostDataService _postDataService;
-  late final PostInteractionService _postInteractionService;
+  late PostDataService _postDataService;
+  late PostInteractionService _postInteractionService;
+  late AsyncValue<List<Block>> _blockState;
 
   @override
   Future<List<Post>> build() async {
     _postDataService = ref.read(postDataServiceProvider);
     _postInteractionService = ref.read(postInteractionServiceProvider);
+    _blockState = ref.watch(blockNotifierProvider);
+
     return [];
   }
 
   Future<void> setPostsBySearchWord(List<Post> posts) async {
-    final filteredPosts = await _postDataService.filterByBlock(posts);
+    final filteredPosts =
+        await _postDataService.filterByBlock(posts, _blockState);
     final updatedPosts =
         await _postDataService.updateIsLikedStatus(filteredPosts);
     state = AsyncValue.data([...state.value ?? [], ...updatedPosts]);

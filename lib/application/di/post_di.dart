@@ -18,6 +18,10 @@ import 'package:green_heart/application/usecase/timeline_load_more_usecase.dart'
 import 'package:green_heart/application/usecase/timeline_refresh_usecase.dart';
 import 'package:green_heart/application/usecase/user_post_load_more_usecase.dart';
 import 'package:green_heart/application/usecase/user_post_refresh_usecase.dart';
+import 'package:green_heart/application/di/block_di.dart';
+import 'package:green_heart/application/di/like_di.dart';
+import 'package:green_heart/application/service/post_data_service.dart';
+import 'package:green_heart/application/service/post_interaction_service.dart';
 
 final postAddUsecaseProvider = Provider(
   (ref) {
@@ -78,4 +82,14 @@ final userPostLoadMoreUsecaseProvider = Provider(
 
 final userPostRefreshUsecaseProvider = Provider(
   (ref) => UserPostRefreshUsecase(FirebasePostRepository(ref)),
+);
+
+final postDataServiceProvider = Provider((ref) => PostDataService(
+      ref.read(blockGetByOtherUsecaseProvider),
+      ref.read(likeCheckUsecaseProvider),
+      ref.read(authStateProvider).value?.uid,
+    ));
+
+final postInteractionServiceProvider = Provider<PostInteractionService>(
+  (ref) => PostInteractionService(),
 );

@@ -9,8 +9,8 @@ import 'package:green_heart/application/service/post_data_service.dart';
 
 class NotificationDetailPostNotifier
     extends AutoDisposeFamilyAsyncNotifier<List<Post>, String> {
-  late final PostDataService _postDataService;
-  late final PostInteractionService _postInteractionService;
+  late PostDataService _postDataService;
+  late PostInteractionService _postInteractionService;
 
   @override
   Future<List<Post>> build(String arg) async {

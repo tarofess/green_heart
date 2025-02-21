@@ -25,7 +25,7 @@ class NotificationRefreshUsecase {
       _notificationScrollStateNotifier.reset();
 
       final notifications = await _repository.getNotifications(_uid);
-      await _notificationNotifier.refresh(notifications);
+      _notificationNotifier.refresh(notifications);
 
       return const Success();
     } catch (e) {

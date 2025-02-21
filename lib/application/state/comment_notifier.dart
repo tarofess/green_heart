@@ -5,15 +5,21 @@ import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/application/di/comment_di.dart';
 import 'package:green_heart/domain/type/comment.dart';
 import 'package:green_heart/application/state/post_manager_notifier.dart';
-import 'package:green_heart/application/di/block_di.dart';
 import 'package:green_heart/domain/type/post.dart';
+import 'package:green_heart/application/state/block_notifier.dart';
+import 'package:green_heart/domain/type/block.dart';
 
 class CommentNotifier
     extends AutoDisposeFamilyAsyncNotifier<List<CommentData>, String> {
+  late AsyncValue<List<Block>> _blockState;
+
   @override
   Future<List<CommentData>> build(String arg) async {
+    _blockState = ref.watch(blockNotifierProvider);
+
     final comments = await ref.read(commentGetUsecaseProvider).execute(arg);
-    final filteredComments = await _filterBlockedComments(comments);
+    final filteredComments = await _filterByBlock(comments);
+
     return _createCommentDataList(filteredComments);
   }
 
@@ -54,14 +60,14 @@ class CommentNotifier
     );
   }
 
-  Future<List<Comment>> _filterBlockedComments(List<Comment> comments) async {
-    final uid = ref.watch(authStateProvider).value?.uid;
-    if (uid == null) {
-      throw Exception('ユーザー情報が取得できません。再度お試し下さい。');
-    }
+  Future<List<Comment>> _filterByBlock(List<Comment> comments) async {
+    final myBlockList = _blockState.when(
+      data: (blocks) => blocks,
+      loading: () => <Block>[],
+      error: (error, _) => <Block>[],
+    );
 
-    final blockList = await ref.read(blockGetUsecaseProvider).execute(uid);
-    final blockedUserIds = blockList.map((block) => block.targetUid).toSet();
+    final blockedUserIds = myBlockList.map((block) => block.targetUid).toSet();
 
     return comments
         .where((comment) => !blockedUserIds.contains(comment.uid))

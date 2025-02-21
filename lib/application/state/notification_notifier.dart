@@ -3,9 +3,13 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:green_heart/application/di/notification_di.dart';
 import 'package:green_heart/application/state/auth_state_provider.dart';
 import 'package:green_heart/domain/type/notification.dart';
-import 'package:green_heart/application/di/block_di.dart';
+import 'package:green_heart/application/state/block_notifier.dart';
+import 'package:green_heart/domain/type/block.dart';
 
 class NotificationNotifier extends AsyncNotifier<List<Notification>> {
+  late AsyncValue<List<Block>> _blockState;
+  List<Notification> _allNotifications = [];
+
   @override
   Future<List<Notification>> build() async {
     final uid = ref.watch(authStateProvider).value?.uid;
@@ -13,15 +17,27 @@ class NotificationNotifier extends AsyncNotifier<List<Notification>> {
       throw Exception('ユーザー情報が取得できませんでした。再度お試しください。');
     }
 
+    _blockState = ref.read(blockNotifierProvider);
+
     final notifications =
         await ref.read(notificationGetUsecaseProvider).execute(uid);
-    final filteredNotifications = await filterByBlock(notifications);
+    final filteredNotifications = filterByBlock(notifications);
+
+    // ブロックの状態変更で通知が変わるのに備えて全通知を保持しておく
+    _allNotifications = filteredNotifications;
+
+    // ブロック情報が更新された場合、保持している通知データに再度フィルターを適用する
+    ref.listen<AsyncValue<List<Block>>>(blockNotifierProvider,
+        (previous, next) {
+      _blockState = next;
+      state = AsyncValue.data(filterByBlock(_allNotifications));
+    });
 
     return filteredNotifications;
   }
 
-  Future<void> loadMore(List<Notification> notifications) async {
-    final filteredNotifications = await filterByBlock(notifications);
+  void loadMore(List<Notification> notifications) {
+    final filteredNotifications = filterByBlock(notifications);
 
     state.whenData((currentNotifications) {
       final updatedNotifications = List.of(currentNotifications)
@@ -31,21 +47,17 @@ class NotificationNotifier extends AsyncNotifier<List<Notification>> {
     });
   }
 
-  Future<void> refresh(List<Notification> notifications) async {
-    state = await AsyncValue.guard(() async {
-      return await filterByBlock(notifications);
-    });
+  void refresh(List<Notification> notifications) {
+    state = AsyncValue.data(filterByBlock(notifications));
   }
 
-  Future<List<Notification>> filterByBlock(
-    List<Notification> notifications,
-  ) async {
-    final uid = ref.watch(authStateProvider).value?.uid;
-    if (uid == null) {
-      throw Exception('ユーザー情報が取得できませんでした。再度お試しください。');
-    }
+  List<Notification> filterByBlock(List<Notification> notifications) {
+    final myBlockList = _blockState.when(
+      data: (blocks) => blocks,
+      loading: () => <Block>[],
+      error: (error, _) => <Block>[],
+    );
 
-    final myBlockList = await ref.read(blockGetUsecaseProvider).execute(uid);
     final blockedUserIds = myBlockList.map((block) => block.targetUid).toSet();
 
     return notifications
