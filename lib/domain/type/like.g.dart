@@ -7,6 +7,7 @@ part of 'like.dart';
 // **************************************************************************
 
 _$LikeImpl _$$LikeImplFromJson(Map<String, dynamic> json) => _$LikeImpl(
+      postId: json['postId'] as String,
       uid: json['uid'] as String,
       userName: json['userName'] as String,
       userImage: json['userImage'] as String?,
@@ -15,6 +16,7 @@ _$LikeImpl _$$LikeImplFromJson(Map<String, dynamic> json) => _$LikeImpl(
 
 Map<String, dynamic> _$$LikeImplToJson(_$LikeImpl instance) =>
     <String, dynamic>{
+      'postId': instance.postId,
       'uid': instance.uid,
       'userName': instance.userName,
       'userImage': instance.userImage,

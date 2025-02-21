@@ -1,18 +1,18 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:green_heart/domain/type/post.dart';
-import 'package:green_heart/application/usecase/like_check_usecase.dart';
 import 'package:green_heart/application/usecase/block_get_by_other_usecase.dart';
 import 'package:green_heart/domain/type/block.dart';
+import 'package:green_heart/application/usecase/like_get_usecase.dart';
 
 class PostDataService {
   final BlockGetByOtherUseCase _blockGetByOtherUsecase;
-  final LikeCheckUsecase _likeCheckUsecase;
+  final LikeGetUsecase _likeGetUsecase;
   final String? _uid;
 
   PostDataService(
     this._blockGetByOtherUsecase,
-    this._likeCheckUsecase,
+    this._likeGetUsecase,
     this._uid,
   );
 
@@ -52,8 +52,9 @@ class PostDataService {
 
     final List<Post> updatedPosts = [];
 
+    final myLikes = await _likeGetUsecase.execute(_uid);
     for (var post in posts) {
-      final isLiked = await _likeCheckUsecase.execute(post.id, _uid);
+      final isLiked = myLikes.any((like) => like.postId == post.id);
       post = post.copyWith(isLiked: isLiked);
       updatedPosts.add(post);
     }

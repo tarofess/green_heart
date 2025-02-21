@@ -20,6 +20,7 @@ Like _$LikeFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Like {
+  String get postId => throw _privateConstructorUsedError;
   String get uid => throw _privateConstructorUsedError;
   String get userName => throw _privateConstructorUsedError;
   String? get userImage => throw _privateConstructorUsedError;
@@ -40,7 +41,11 @@ abstract class $LikeCopyWith<$Res> {
       _$LikeCopyWithImpl<$Res, Like>;
   @useResult
   $Res call(
-      {String uid, String userName, String? userImage, DateTime createdAt});
+      {String postId,
+      String uid,
+      String userName,
+      String? userImage,
+      DateTime createdAt});
 }
 
 /// @nodoc
@@ -58,12 +63,17 @@ class _$LikeCopyWithImpl<$Res, $Val extends Like>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? postId = null,
     Object? uid = null,
     Object? userName = null,
     Object? userImage = freezed,
     Object? createdAt = null,
   }) {
     return _then(_value.copyWith(
+      postId: null == postId
+          ? _value.postId
+          : postId // ignore: cast_nullable_to_non_nullable
+              as String,
       uid: null == uid
           ? _value.uid
           : uid // ignore: cast_nullable_to_non_nullable
@@ -92,7 +102,11 @@ abstract class _$$LikeImplCopyWith<$Res> implements $LikeCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {String uid, String userName, String? userImage, DateTime createdAt});
+      {String postId,
+      String uid,
+      String userName,
+      String? userImage,
+      DateTime createdAt});
 }
 
 /// @nodoc
@@ -107,12 +121,17 @@ class __$$LikeImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? postId = null,
     Object? uid = null,
     Object? userName = null,
     Object? userImage = freezed,
     Object? createdAt = null,
   }) {
     return _then(_$LikeImpl(
+      postId: null == postId
+          ? _value.postId
+          : postId // ignore: cast_nullable_to_non_nullable
+              as String,
       uid: null == uid
           ? _value.uid
           : uid // ignore: cast_nullable_to_non_nullable
@@ -137,7 +156,8 @@ class __$$LikeImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$LikeImpl implements _Like {
   const _$LikeImpl(
-      {required this.uid,
+      {required this.postId,
+      required this.uid,
       required this.userName,
       required this.userImage,
       required this.createdAt});
@@ -145,6 +165,8 @@ class _$LikeImpl implements _Like {
   factory _$LikeImpl.fromJson(Map<String, dynamic> json) =>
       _$$LikeImplFromJson(json);
 
+  @override
+  final String postId;
   @override
   final String uid;
   @override
@@ -156,7 +178,7 @@ class _$LikeImpl implements _Like {
 
   @override
   String toString() {
-    return 'Like(uid: $uid, userName: $userName, userImage: $userImage, createdAt: $createdAt)';
+    return 'Like(postId: $postId, uid: $uid, userName: $userName, userImage: $userImage, createdAt: $createdAt)';
   }
 
   @override
@@ -164,6 +186,7 @@ class _$LikeImpl implements _Like {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$LikeImpl &&
+            (identical(other.postId, postId) || other.postId == postId) &&
             (identical(other.uid, uid) || other.uid == uid) &&
             (identical(other.userName, userName) ||
                 other.userName == userName) &&
@@ -176,7 +199,7 @@ class _$LikeImpl implements _Like {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, uid, userName, userImage, createdAt);
+      Object.hash(runtimeType, postId, uid, userName, userImage, createdAt);
 
   /// Create a copy of Like
   /// with the given fields replaced by the non-null parameter values.
@@ -196,13 +219,16 @@ class _$LikeImpl implements _Like {
 
 abstract class _Like implements Like {
   const factory _Like(
-      {required final String uid,
+      {required final String postId,
+      required final String uid,
       required final String userName,
       required final String? userImage,
       required final DateTime createdAt}) = _$LikeImpl;
 
   factory _Like.fromJson(Map<String, dynamic> json) = _$LikeImpl.fromJson;
 
+  @override
+  String get postId;
   @override
   String get uid;
   @override

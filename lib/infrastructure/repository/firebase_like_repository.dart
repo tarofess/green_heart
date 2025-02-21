@@ -10,6 +10,25 @@ class FirebaseLikeRepository implements LikeRepository {
   final int _timeoutSeconds = 15;
 
   @override
+  Future<List<Like>> getLikes(String uid) async {
+    try {
+      final querySnapshot = await _firestore
+          .collectionGroup('like')
+          .where('uid', isEqualTo: uid)
+          .get()
+          .timeout(Duration(seconds: _timeoutSeconds));
+
+      final likes =
+          querySnapshot.docs.map((doc) => Like.fromJson(doc.data())).toList();
+
+      return likes;
+    } catch (e, stackTrace) {
+      final exception = await ExceptionHandler.handleException(e, stackTrace);
+      throw exception ?? AppException('いいねの取得に失敗しました。再度お試しください。');
+    }
+  }
+
+  @override
   Future<bool> toggleLike(
     String postId,
     String uid,
@@ -17,8 +36,12 @@ class FirebaseLikeRepository implements LikeRepository {
     String? userImage,
   ) async {
     try {
-      final likeRef =
-          _firestore.collection('post').doc(postId).collection('like').doc(uid);
+      final likeRef = _firestore
+          .collection('post')
+          .doc(postId)
+          .collection('like')
+          .doc(postId);
+
       final docSnapshot =
           await likeRef.get().timeout(Duration(seconds: _timeoutSeconds));
 
@@ -30,6 +53,7 @@ class FirebaseLikeRepository implements LikeRepository {
       } else {
         // いいねしていなければ追加
         final like = Like(
+          postId: postId,
           uid: uid,
           userName: userName,
           userImage: userImage,
@@ -44,21 +68,6 @@ class FirebaseLikeRepository implements LikeRepository {
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('いいねに失敗しました。再度お試しください。');
-    }
-  }
-
-  @override
-  Future<bool> checkIfLiked(String postId, String uid) async {
-    try {
-      final ref =
-          _firestore.collection('post').doc(postId).collection('like').doc(uid);
-      final docSnapshot =
-          await ref.get().timeout(Duration(seconds: _timeoutSeconds));
-
-      return docSnapshot.exists;
-    } catch (e, stackTrace) {
-      final exception = await ExceptionHandler.handleException(e, stackTrace);
-      throw exception ?? AppException('いいねの取得に失敗しました。再度お試しください。');
     }
   }
 }
