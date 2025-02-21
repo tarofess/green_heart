@@ -24,7 +24,7 @@ class NotificationDetailPostNotifier
     _postInteractionService = ref.read(postInteractionServiceProvider);
 
     final posts = await ref.read(postGetByIdUsecaseProvider).execute(arg);
-    final updatedPosts = await _postDataService.updateIsLikedStatus(posts, uid);
+    final updatedPosts = await _postDataService.updateIsLikedStatus(posts);
     return updatedPosts;
   }
 

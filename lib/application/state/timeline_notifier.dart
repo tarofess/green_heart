@@ -28,9 +28,9 @@ class TimelineNotifier extends AsyncNotifier<List<Post>> {
     _blockState = ref.read(blockNotifierProvider);
 
     final posts = await ref.read(timelineGetUsecaseProvider).execute();
-    final updatedPosts = await _postDataService.updateIsLikedStatus(posts, uid);
+    final updatedPosts = await _postDataService.updateIsLikedStatus(posts);
     final filteredPosts =
-        await _postDataService.filterByBlock(updatedPosts, _blockState, uid);
+        await _postDataService.filterByBlock(updatedPosts, _blockState);
 
     // ブロックの状態変更で投稿が変わるのに備えて全通知を保持しておく
     _allPosts = filteredPosts;
@@ -40,7 +40,7 @@ class TimelineNotifier extends AsyncNotifier<List<Post>> {
         (previous, next) async {
       _blockState = next;
       final filteredPosts =
-          await _postDataService.filterByBlock(_allPosts, next, uid);
+          await _postDataService.filterByBlock(_allPosts, next);
 
       state = AsyncValue.data(filteredPosts);
     });
@@ -49,14 +49,12 @@ class TimelineNotifier extends AsyncNotifier<List<Post>> {
   }
 
   Future<void> loadMore(List<Post> posts) async {
-    final uid = ref.watch(authStateProvider).value?.uid;
-
     state.whenData((currentPosts) async {
       try {
         final updatedLikePosts =
-            await _postDataService.updateIsLikedStatus(posts, uid);
-        final filteredPosts = await _postDataService.filterByBlock(
-            updatedLikePosts, _blockState, uid);
+            await _postDataService.updateIsLikedStatus(posts);
+        final filteredPosts =
+            await _postDataService.filterByBlock(updatedLikePosts, _blockState);
 
         final updatedPosts = [
           ...currentPosts,
@@ -71,14 +69,12 @@ class TimelineNotifier extends AsyncNotifier<List<Post>> {
   }
 
   Future<void> refresh(List<Post> posts) async {
-    final uid = ref.watch(authStateProvider).value?.uid;
-
     state = await AsyncValue.guard(() async {
       final updatedLikePosts =
-          await _postDataService.updateIsLikedStatus(posts, uid);
+          await _postDataService.updateIsLikedStatus(posts);
 
       return await _postDataService.filterByBlock(
-          updatedLikePosts, _blockState, uid);
+          updatedLikePosts, _blockState);
     });
   }
 

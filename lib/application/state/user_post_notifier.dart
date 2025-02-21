@@ -24,18 +24,16 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<Post>, String?> {
     _postInteractionService = ref.read(postInteractionServiceProvider);
 
     final posts = await ref.read(postGetUsecaseProvider).execute(arg);
-    final updatedPosts = await _postDataService.updateIsLikedStatus(posts, uid);
+    final updatedPosts = await _postDataService.updateIsLikedStatus(posts);
 
     return updatedPosts;
   }
 
   Future<void> loadMore(List<Post> posts) async {
-    final uid = ref.watch(authStateProvider).value?.uid;
-
     state.whenData((currentPosts) async {
       try {
         final updatedLikePosts =
-            await _postDataService.updateIsLikedStatus(posts, uid);
+            await _postDataService.updateIsLikedStatus(posts);
 
         final updatedPosts = [
           ...currentPosts,
@@ -50,12 +48,11 @@ class UserPostNotifier extends FamilyAsyncNotifier<List<Post>, String?> {
   }
 
   Future<void> refresh(String? uid, List<Post> posts) async {
-    final uid = ref.watch(authStateProvider).value?.uid;
     ref.read(userPostScrollStateNotifierProvider(uid).notifier).reset();
 
     state = await AsyncValue.guard(() async {
       final updatedLikePosts =
-          await _postDataService.updateIsLikedStatus(posts, uid);
+          await _postDataService.updateIsLikedStatus(posts);
       return updatedLikePosts;
     });
   }
