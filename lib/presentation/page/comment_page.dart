@@ -143,7 +143,8 @@ class CommentPage extends HookConsumerWidget {
               child: TextField(
                 focusNode: focusNode,
                 controller: commentTextController,
-                maxLines: null,
+                minLines: 1,
+                maxLines: 5,
                 keyboardType: TextInputType.multiline,
                 textInputAction: TextInputAction.newline,
                 decoration: InputDecoration(
