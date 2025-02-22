@@ -26,6 +26,7 @@ class FirebasePostRepository implements PostRepository {
 
   @override
   Future<Post> addPost(
+    String postId,
     String uid,
     String content,
     List<String> imageUrls,
@@ -33,9 +34,8 @@ class FirebasePostRepository implements PostRepository {
     String? userImage,
     DateTime selectedDay,
   ) async {
-    final docRef = _firestore.collection('post').doc();
     final post = Post(
-      id: docRef.id,
+      id: postId,
       uid: uid,
       content: content,
       imageUrls: imageUrls,
@@ -44,8 +44,11 @@ class FirebasePostRepository implements PostRepository {
       releaseDate: selectedDay,
       createdAt: DateTime.now(),
     );
+
     try {
-      await docRef
+      await _firestore
+          .collection('post')
+          .doc(postId)
           .set(post.toJson())
           .timeout(Duration(seconds: _timeoutSeconds));
       return post;
@@ -214,14 +217,17 @@ class FirebasePostRepository implements PostRepository {
   }
 
   @override
-  Future<List<String>> uploadImages(String uid, List<String> paths) async {
+  Future<(String postId, List<String>)> uploadImages(
+      String uid, List<String> paths) async {
     try {
+      final postId = _firestore.collection('post').doc().id;
+
       final uploadTasks = paths.map((path) async {
         File file = File(path);
         String fileName = const Uuid().v4();
         Reference ref = FirebaseStorage.instance
             .ref()
-            .child('image/post/$uid/$fileName.jpg');
+            .child('image/post/$postId/$fileName.jpg');
         await ref.putFile(file).timeout(Duration(seconds: _timeoutSeconds));
         return await ref
             .getDownloadURL()
@@ -229,7 +235,7 @@ class FirebasePostRepository implements PostRepository {
       });
 
       final urls = await Future.wait(uploadTasks);
-      return urls;
+      return (postId, urls);
     } catch (e, stackTrace) {
       final exception = await ExceptionHandler.handleException(e, stackTrace);
       throw exception ?? AppException('画像のアップロードに失敗しました。再度お試しください。');

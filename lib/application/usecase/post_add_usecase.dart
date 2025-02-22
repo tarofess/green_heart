@@ -26,8 +26,12 @@ class PostAddUsecase {
       }
 
       final profile = await _profileGetUsecase.execute(uid);
-      final imageUrls = await _postRepository.uploadImages(uid, paths);
+      final uploadedRecords = await _postRepository.uploadImages(uid, paths);
+      final postId = uploadedRecords.$1;
+      final imageUrls = uploadedRecords.$2;
+
       final newPost = await _postRepository.addPost(
+        postId,
         uid,
         content,
         imageUrls,

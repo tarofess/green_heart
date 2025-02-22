@@ -7,6 +7,7 @@ if (!admin.apps.length) {
 export * from './add_notification';
 export * from './delete_comment';
 export * from './delete_notification_job';
+export * from './delete_post_image';
 export * from './recursive_delete_account';
 export * from './recursive_delete_post';
 export * from './send_push_notification';
