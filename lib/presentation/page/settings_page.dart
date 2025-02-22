@@ -11,6 +11,8 @@ import 'package:green_heart/application/state/timeline_scroll_state_notifier.dar
 import 'package:green_heart/domain/type/result.dart';
 import 'package:green_heart/infrastructure/util/permission_util.dart';
 import 'package:green_heart/presentation/widget/loading_overlay.dart';
+import 'package:green_heart/application/state/auth_state_provider.dart';
+import 'package:green_heart/application/state/user_post_scroll_state_notifier.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -165,7 +167,11 @@ class SettingsPage extends ConsumerWidget {
         final result = await ref.read(signOutUseCaseProvider).execute();
         switch (result) {
           case Success():
+            final uid = ref.read(authStateProvider).value?.uid;
+            if (uid == null) return;
+
             ref.read(timelineScrollStateNotifierProvider.notifier).reset();
+            ref.read(userPostScrollStateNotifierProvider(uid).notifier).reset();
             break;
           case Failure(message: final message):
             if (context.mounted) {
