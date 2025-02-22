@@ -137,7 +137,16 @@ class NotificationPage extends HookConsumerWidget {
                       .execute(notifications[index]));
                 }
 
-                if (notifications[index].postId != null && context.mounted) {
+                if (!context.mounted) return;
+
+                // フォローの通知の場合はユーザー画面に遷移
+                if (notifications[index].type == 'follow') {
+                  context.push(
+                    '/user',
+                    extra: {'uid': notifications[index].senderUid},
+                  );
+                } else {
+                  // いいねとコメントの通知の場合は投稿詳細画面に遷移
                   context.push(
                     '/notification_detail',
                     extra: {'postId': notifications[index].postId},
